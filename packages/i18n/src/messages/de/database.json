@@ -185,7 +185,11 @@
     "changeColor": "Farbe ändern",
     "deleteOption": "Option löschen",
     "newOption": "Neue Option",
-    "addOption": "Option hinzufügen"
+    "addOption": "Option hinzufügen",
+    "aiMarker": "Spalte mit KI-Anweisung",
+    "aiSetUp": "KI-Anweisung einrichten",
+    "aiEdit": "KI-Anweisung bearbeiten",
+    "aiFill": "Spalte mit KI ausfüllen"
   },
   "config": {
     "relation": {
@@ -341,6 +345,99 @@
     "trash": "In den Papierkorb",
     "clear": "Auswahl aufheben",
     "trashConfirmTitle": "{count, plural, one {Eine Zeile in den Papierkorb legen?} other {# Zeilen in den Papierkorb legen?}}",
-    "trashConfirmDescription": "{count, plural, one {Die Zeile kommt in den Papierkorb, samt den Seiten darunter.} other {Die # Zeilen kommen in den Papierkorb, samt den Seiten darunter.}} Von dort holst du jede einzeln zurück."
+    "trashConfirmDescription": "{count, plural, one {Die Zeile kommt in den Papierkorb, samt den Seiten darunter.} other {Die # Zeilen kommen in den Papierkorb, samt den Seiten darunter.}} Von dort holst du jede einzeln zurück.",
+    "aiFill": "Mit KI ausfüllen"
+  },
+  "aiFill": {
+    "configTitle": "KI-Anweisung für „{name}“",
+    "configDescription": "Die KI füllt die Zellen dieser Spalte aus dem, was in jeder Zeile steht. Einen Wert, den jemand eingetragen hat, lässt sie stehen, solange du nicht ausdrücklich etwas anderes sagst.",
+    "preset": "Vorlage",
+    "presets": {
+      "summary": "Zusammenfassung",
+      "key_points": "Stichpunkte",
+      "tags": "Schlagwörter",
+      "translate": "Übersetzung",
+      "document_date": "Datum aus dem Dokument",
+      "sender": "Absender aus dem Dokument",
+      "recipient": "Empfänger aus dem Dokument",
+      "custom": "Eigene Anweisung"
+    },
+    "targetLanguage": "Zielsprache",
+    "targetLanguagePlaceholder": "zum Beispiel Englisch",
+    "instruction": "Anweisung",
+    "instructionExtra": "Ergänzung zur Vorlage (freiwillig)",
+    "instructionPlaceholder": "Was soll in dieser Spalte stehen?",
+    "sources": "Was die KI lesen darf",
+    "useContent": "Inhalt der Seite",
+    "useProperties": "Die anderen Eigenschaften der Zeile",
+    "useAttachments": "Angehängte Dateien",
+    "allowNewOptions": "Neue Optionen erlauben",
+    "allowNewOptionsHint": "Passt keine vorhandene Option, darf die KI eine neue anlegen. Das geht nur, wenn du die Spalten ändern darfst und die KI nur deine eigenen, geprüften Dateien gelesen hat.",
+    "autoFill": "Automatisch ausfüllen",
+    "auto": {
+      "off": "Nie, nur auf Anfrage",
+      "on_create": "Bei neuen Zeilen",
+      "on_change": "Bei neuen Zeilen und wenn sich ihr Inhalt ändert"
+    },
+    "autoFillHint": "Von selbst füllt die KI nur leere Zellen und ihre eigenen Werte, nie einen Wert, den jemand eingetragen hat. Jeder Durchgang kostet wie ein KI-Lauf.",
+    "problems": {
+      "type_unsupported": "Diese Art von Spalte kann die KI nicht ausfüllen.",
+      "preset_type": "Diese Vorlage passt nicht zu dieser Art von Spalte.",
+      "instruction_required": "Eine eigene Anweisung braucht einen Text.",
+      "language_required": "Für die Übersetzung fehlt die Zielsprache.",
+      "options_type": "Neue Optionen gibt es nur bei Auswahlspalten.",
+      "no_source": "Wähle mindestens eine Quelle, aus der die KI lesen darf."
+    },
+    "remove": "Anweisung entfernen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "fillTitle": "„{name}“ mit KI ausfüllen",
+    "fillDescriptionColumn": "Die KI geht die ganze Spalte durch, Zeile für Zeile.",
+    "fillDescriptionRows": "{count, plural, one {Die KI füllt die Zelle der ausgewählten Zeile.} other {Die KI füllt die Zellen der # ausgewählten Zeilen.}}",
+    "mode": "Welche Zellen",
+    "modes": {
+      "empty_only": "Nur leere Zellen",
+      "replace_ai": "Leere Zellen und frühere KI-Werte",
+      "replace_all": "Alle Zellen, auch eingetragene Werte"
+    },
+    "modeHints": {
+      "empty_only": "Was schon dasteht, bleibt unverändert.",
+      "replace_ai": "Erneuert Werte, die die KI geschrieben und seitdem niemand geändert hat.",
+      "replace_all": "Überschreibt auch Werte, die jemand von Hand eingetragen hat."
+    },
+    "counting": "Die Zellen werden gezählt …",
+    "preview": "{count, plural, =0 {Hier gibt es nichts auszufüllen.} one {Eine Zelle wird ausgefüllt.} other {# Zellen werden ausgefüllt.}}",
+    "previewRemaining": "{count, plural, one {Eine weitere Zeile bleibt für den nächsten Durchgang, weil einer höchstens {limit} Zeilen füllt.} other {# weitere Zeilen bleiben für den nächsten Durchgang, weil einer höchstens {limit} Zeilen füllt.}}",
+    "previewKept": "{count, plural, one {Eine Zelle mit Wert bleibt, wie sie ist.} other {# Zellen mit Wert bleiben, wie sie sind.}}",
+    "previewForbidden": "{count, plural, one {Eine Zeile darfst du nicht ändern.} other {# Zeilen darfst du nicht ändern.}}",
+    "costHint": "Jede Zelle ist ein Aufruf des Modells und erscheint im Nutzungsbericht.",
+    "start": "{count, plural, =0 {Ausfüllen} one {Eine Zelle ausfüllen} other {# Zellen ausfüllen}}",
+    "markPending": "Die KI füllt diese Zelle gerade aus.",
+    "markFilled": "Von der KI ausgefüllt am {when}.",
+    "markFailed": "Die KI konnte diese Zelle am {when} nicht ausfüllen: {reason}",
+    "markEmpty": "Die KI hat am {when} nichts Passendes gefunden.",
+    "fillCell": "Mit KI ausfüllen",
+    "fillAgain": "Klicke, um neu auszufüllen.",
+    "progress": "{name}: {done} von {total} Zellen",
+    "progressLabel": "Fortschritt beim Ausfüllen von {name}",
+    "cancelRun": "Abbrechen",
+    "errors": {
+      "model_failed": "Der Aufruf des Modells ist fehlgeschlagen.",
+      "key_refused": "Der Anbieter hat den Schlüssel abgelehnt, der den Lauf bezahlt.",
+      "key_unreadable": "Der Schlüssel dieses Arbeitsbereichs lässt sich nicht lesen.",
+      "answer_unreadable": "Die Antwort des Modells war nicht lesbar.",
+      "answer_invalid": "Die Antwort passt nicht zur Art der Spalte.",
+      "option_unknown": "Die Antwort nennt eine Option, die es nicht gibt.",
+      "option_untrusted": "Eine neue Option wäre aus fremden Inhalten gekommen, deshalb wurde keine angelegt.",
+      "option_forbidden": "Für eine neue Option fehlt das Recht, die Spalten zu ändern.",
+      "person_unknown": "Die Antwort nennt niemanden aus diesem Arbeitsbereich.",
+      "row_unavailable": "Die Zeile ist weg oder nicht mehr lesbar.",
+      "forbidden": "Diese Zeile darfst du nicht ändern.",
+      "not_empty": "Die Zelle hat schon einen Wert.",
+      "not_ai_value": "Die Zelle hat einen eingetragenen Wert.",
+      "budget_exceeded": "Das Budget war aufgebraucht.",
+      "timed_out": "Die Zeit für den Durchgang war um.",
+      "run_ended": "Der Durchgang endete vorher."
+    }
   }
 }

@@ -185,7 +185,11 @@
     "changeColor": "Kleur wijzigen",
     "deleteOption": "Optie verwijderen",
     "newOption": "Nieuwe optie",
-    "addOption": "Optie toevoegen"
+    "addOption": "Optie toevoegen",
+    "aiMarker": "Kolom met AI-instructie",
+    "aiSetUp": "AI-instructie instellen",
+    "aiEdit": "AI-instructie bewerken",
+    "aiFill": "Kolom invullen met AI"
   },
   "config": {
     "relation": {
@@ -341,6 +345,99 @@
     "trash": "Naar de prullenbak",
     "clear": "Selectie opheffen",
     "trashConfirmTitle": "{count, plural, one {Eén rij naar de prullenbak verplaatsen?} other {# rijen naar de prullenbak verplaatsen?}}",
-    "trashConfirmDescription": "{count, plural, one {De rij verhuist naar de prullenbak, inclusief de onderliggende pagina’s.} other {De # rijen verhuizen naar de prullenbak, inclusief de onderliggende pagina’s.}} Van daaruit kun je ze stuk voor stuk terugzetten."
+    "trashConfirmDescription": "{count, plural, one {De rij verhuist naar de prullenbak, inclusief de onderliggende pagina’s.} other {De # rijen verhuizen naar de prullenbak, inclusief de onderliggende pagina’s.}} Van daaruit kun je ze stuk voor stuk terugzetten.",
+    "aiFill": "Invullen met AI"
+  },
+  "aiFill": {
+    "configTitle": "AI-instructie voor „{name}”",
+    "configDescription": "De AI vult de cellen in deze kolom op basis van wat er in elke rij staat. Een waarde die iemand handmatig heeft ingevoerd, blijft behouden, tenzij je uitdrukkelijk iets anders aangeeft.",
+    "preset": "Sjabloon",
+    "presets": {
+      "summary": "Samenvatting",
+      "key_points": "Belangrijkste punten",
+      "tags": "Labels",
+      "translate": "Vertaling",
+      "document_date": "Datum uit het document",
+      "sender": "Afzender uit het document",
+      "recipient": "Ontvanger uit het document",
+      "custom": "Aangepaste instructie"
+    },
+    "targetLanguage": "Doeltaal",
+    "targetLanguagePlaceholder": "bijvoorbeeld Engels",
+    "instruction": "Instructie",
+    "instructionExtra": "Aanvulling op het sjabloon (optioneel)",
+    "instructionPlaceholder": "Wat moet er in deze kolom staan?",
+    "sources": "Wat de AI mag lezen",
+    "useContent": "Inhoud van de pagina",
+    "useProperties": "De andere eigenschappen van de rij",
+    "useAttachments": "Bijgevoegde bestanden",
+    "allowNewOptions": "Nieuwe opties toestaan",
+    "allowNewOptionsHint": "Als er geen bestaande optie past, mag de AI een nieuwe aanmaken. Dit kan alleen als je de kolommen mag bewerken en de AI alleen je eigen, gecontroleerde bestanden heeft gelezen.",
+    "autoFill": "Automatisch invullen",
+    "auto": {
+      "off": "Nooit, alleen op verzoek",
+      "on_create": "Bij nieuwe rijen",
+      "on_change": "Bij nieuwe rijen en wanneer de inhoud ervan verandert"
+    },
+    "autoFillHint": "Automatisch vult de AI alleen lege cellen en eigen waarden in, nooit een waarde die iemand zelf heeft ingevoerd. Elke beurt kost evenveel als een AI-uitvoering.",
+    "problems": {
+      "type_unsupported": "Dit type kolom kan de AI niet invullen.",
+      "preset_type": "Dit sjabloon past niet bij dit type kolom.",
+      "instruction_required": "Een aangepaste instructie heeft tekst nodig.",
+      "language_required": "Voor de vertaling ontbreekt de doeltaal.",
+      "options_type": "Nieuwe opties zijn alleen mogelijk bij selectiekolommen.",
+      "no_source": "Kies ten minste één bron waaruit de AI mag lezen."
+    },
+    "remove": "Instructie verwijderen",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "fillTitle": "„{name}” met AI invullen",
+    "fillDescriptionColumn": "De AI doorloopt de hele kolom, rij voor rij.",
+    "fillDescriptionRows": "{count, plural, one {De AI vult de cel van de geselecteerde rij in.} other {De AI vult de cellen van de # geselecteerde rijen in.}}",
+    "mode": "Welke cellen",
+    "modes": {
+      "empty_only": "Alleen lege cellen",
+      "replace_ai": "Lege cellen en eerdere AI-waarden",
+      "replace_all": "Alle cellen, ook ingevoerde waarden"
+    },
+    "modeHints": {
+      "empty_only": "Wat er al staat, blijft ongewijzigd.",
+      "replace_ai": "Vernieuwt waarden die door de AI zijn geschreven en sindsdien niet zijn gewijzigd.",
+      "replace_all": "Overschrijft ook waarden die iemand handmatig heeft ingevoerd."
+    },
+    "counting": "Cellen worden geteld …",
+    "preview": "{count, plural, =0 {Hier valt niets in te vullen.} one {Eén cel wordt ingevuld.} other {# cellen worden ingevuld.}}",
+    "previewRemaining": "{count, plural, one {Nog één rij blijft over voor de volgende ronde, omdat er per ronde maximaal {limit} rijen worden ingevuld.} other {Nog # rijen blijven over voor de volgende ronde, omdat er per ronde maximaal {limit} rijen worden ingevuld.}}",
+    "previewKept": "{count, plural, one {Eén cel met waarde blijft zoals deze is.} other {# cellen met waarde blijven zoals ze zijn.}}",
+    "previewForbidden": "{count, plural, one {Eén rij mag je niet bewerken.} other {# rijen mag je niet bewerken.}}",
+    "costHint": "Elke cel is een aanroep van het model en verschijnt in het gebruiksrapport.",
+    "start": "{count, plural, =0 {Invullen} one {Eén cel invullen} other {# cellen invullen}}",
+    "markPending": "De AI is deze cel nu aan het invullen.",
+    "markFilled": "Door de AI ingevuld op {when}.",
+    "markFailed": "De AI kon deze cel op {when} niet invullen: {reason}",
+    "markEmpty": "De AI heeft op {when} niets passends gevonden.",
+    "fillCell": "Met AI invullen",
+    "fillAgain": "Klik om opnieuw in te vullen.",
+    "progress": "{name}: {done} van {total} cellen",
+    "progressLabel": "Voortgang bij het invullen van {name}",
+    "cancelRun": "Annuleren",
+    "errors": {
+      "model_failed": "De aanroep van het model is mislukt.",
+      "key_refused": "De provider heeft de sleutel geweigerd die voor de uitvoering betaalt.",
+      "key_unreadable": "De sleutel van deze werkruimte kan niet worden gelezen.",
+      "answer_unreadable": "Het antwoord van het model was niet leesbaar.",
+      "answer_invalid": "Het antwoord past niet bij het type kolom.",
+      "option_unknown": "Het antwoord bevat een optie die niet bestaat.",
+      "option_untrusted": "Een nieuwe optie zou afkomstig zijn van externe inhoud en is daarom niet aangemaakt.",
+      "option_forbidden": "Voor een nieuwe optie ontbreken de rechten om kolommen te wijzigen.",
+      "person_unknown": "Het antwoord noemt niemand uit deze werkruimte.",
+      "row_unavailable": "De rij is verdwenen of niet meer leesbaar.",
+      "forbidden": "Deze rij mag je niet bewerken.",
+      "not_empty": "De cel heeft al een waarde.",
+      "not_ai_value": "De cel heeft een handmatig ingevoerde waarde.",
+      "budget_exceeded": "Het budget was op.",
+      "timed_out": "De tijd voor de run was om.",
+      "run_ended": "De run is voortijdig beëindigd."
+    }
   }
 }

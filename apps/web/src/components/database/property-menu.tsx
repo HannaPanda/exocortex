@@ -6,6 +6,7 @@ import {
   MoreVerticalIcon,
   PlusIcon,
   SettingsIcon,
+  SparklesIcon,
   TrashIcon,
   XIcon,
 } from 'lucide-react';
@@ -51,6 +52,7 @@ import {
   useUpdateDatabaseView,
 } from '@/lib/api/database-queries';
 
+import { type AiFillControls } from './ai-fill';
 import {
   isPropertyConfigComplete,
   type PropertyConfig,
@@ -81,6 +83,8 @@ interface PropertyMenuProps {
   view: DatabaseView;
   columns: DatabaseProperty[];
   readOnly: boolean;
+  /** The AI fill's dialogs (issue #237); absent where a header offers none. */
+  ai?: AiFillControls;
 }
 
 /** Column header: name, icon-labelled type, and the manage/delete menu. */
@@ -91,6 +95,7 @@ export function PropertyMenu({
   view,
   columns,
   readOnly,
+  ai,
 }: PropertyMenuProps) {
   const t = useTranslations('database.propertyMenu');
   const typeLabel = usePropertyTypeLabel();
@@ -108,13 +113,23 @@ export function PropertyMenu({
   const hasOptions = OPTION_PROPERTY_TYPES.has(property.type);
   const hasConfig = CONFIGURED_PROPERTY_TYPE_SET.has(property.type);
 
+  const hasAi = property.ai !== null && property.ai !== undefined;
+  const aiMarker = hasAi ? (
+    <SparklesIcon
+      className="size-3 shrink-0 text-muted-foreground"
+      aria-label={t('aiMarker')}
+      data-testid={`property-ai-marker-${property.id}`}
+    />
+  ) : null;
+
   if (readOnly) {
     return (
       <span
-        className="truncate text-xs font-medium text-muted-foreground"
+        className="flex min-w-0 items-center gap-1 truncate text-xs font-medium text-muted-foreground"
         title={typeLabel(property.type)}
       >
-        {property.name}
+        <span className="truncate">{property.name}</span>
+        {aiMarker}
       </span>
     );
   }
@@ -129,7 +144,10 @@ export function PropertyMenu({
               className="flex min-w-0 flex-1 items-center justify-between gap-1 rounded-sm px-1 py-0.5 hover:bg-accent"
               data-testid={`property-menu-${property.id}`}
             >
-              <span className="truncate">{property.name}</span>
+              <span className="flex min-w-0 items-center gap-1">
+                <span className="truncate">{property.name}</span>
+                {aiMarker}
+              </span>
               <MoreVerticalIcon className="size-3.5 shrink-0 text-muted-foreground" />
             </button>
           }
@@ -167,6 +185,25 @@ export function PropertyMenu({
             >
               <SettingsIcon /> {t('configure', { type: typeLabel(property.type) })}
             </DropdownMenuItem>
+          ) : null}
+          {ai !== undefined && ai.canConfigure(property) ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => ai.configure(property)}
+                data-testid={`property-ai-configure-${property.id}`}
+              >
+                <SparklesIcon /> {hasAi ? t('aiEdit') : t('aiSetUp')}
+              </DropdownMenuItem>
+              {hasAi ? (
+                <DropdownMenuItem
+                  onClick={() => ai.fill(property)}
+                  data-testid={`property-ai-fill-${property.id}`}
+                >
+                  <SparklesIcon /> {t('aiFill')}
+                </DropdownMenuItem>
+              ) : null}
+            </>
           ) : null}
           <DropdownMenuSeparator />
           <DropdownMenuItem variant="destructive" onClick={() => setConfirmingDelete(true)}>

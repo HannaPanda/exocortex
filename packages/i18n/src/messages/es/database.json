@@ -185,7 +185,11 @@
     "changeColor": "Cambiar color",
     "deleteOption": "Eliminar opción",
     "newOption": "Nueva opción",
-    "addOption": "Añadir opción"
+    "addOption": "Añadir opción",
+    "aiMarker": "Columna con instrucción de IA",
+    "aiSetUp": "Configurar instrucción de IA",
+    "aiEdit": "Editar instrucción de IA",
+    "aiFill": "Rellenar columna con IA"
   },
   "config": {
     "relation": {
@@ -341,6 +345,99 @@
     "trash": "Mover a la papelera",
     "clear": "Deseleccionar",
     "trashConfirmTitle": "{count, plural, one {¿Mover una fila a la papelera?} many {¿Mover # filas a la papelera?} other {¿Mover # filas a la papelera?}}",
-    "trashConfirmDescription": "{count, plural, one {La fila se moverá a la papelera, incluidas las páginas que contiene.} many {Las # filas se moverán a la papelera, incluidas las páginas que contienen.} other {Las # filas se moverán a la papelera, incluidas las páginas que contienen.}} Podrás restaurar cada una de ellas por separado desde allí."
+    "trashConfirmDescription": "{count, plural, one {La fila se moverá a la papelera, incluidas las páginas que contiene.} many {Las # filas se moverán a la papelera, incluidas las páginas que contienen.} other {Las # filas se moverán a la papelera, incluidas las páginas que contienen.}} Podrás restaurar cada una de ellas por separado desde allí.",
+    "aiFill": "Rellenar con IA"
+  },
+  "aiFill": {
+    "configTitle": "Instrucción de IA para «{name}»",
+    "configDescription": "La IA rellena las celdas de esta columna a partir de lo que hay en cada fila. Conservará cualquier valor introducido manualmente a menos que indiques expresamente lo contrario.",
+    "preset": "Plantilla",
+    "presets": {
+      "summary": "Resumen",
+      "key_points": "Puntos clave",
+      "tags": "Etiquetas",
+      "translate": "Traducción",
+      "document_date": "Fecha del documento",
+      "sender": "Remitente del documento",
+      "recipient": "Destinatario del documento",
+      "custom": "Instrucción personalizada"
+    },
+    "targetLanguage": "Idioma de destino",
+    "targetLanguagePlaceholder": "por ejemplo, inglés",
+    "instruction": "Instrucción",
+    "instructionExtra": "Añadido a la plantilla (opcional)",
+    "instructionPlaceholder": "¿Qué debería figurar en esta columna?",
+    "sources": "Qué puede leer la IA",
+    "useContent": "Contenido de la página",
+    "useProperties": "Las demás propiedades de la fila",
+    "useAttachments": "Archivos adjuntos",
+    "allowNewOptions": "Permitir opciones nuevas",
+    "allowNewOptionsHint": "Si ninguna opción existente encaja, la IA puede crear una nueva. Solo funciona si tienes permiso para modificar columnas y la IA solo ha leído tus propios archivos verificados.",
+    "autoFill": "Rellenar automáticamente",
+    "auto": {
+      "off": "Nunca, solo a petición",
+      "on_create": "En filas nuevas",
+      "on_change": "En filas nuevas y cuando cambie su contenido"
+    },
+    "autoFillHint": "Por sí sola, la IA solo rellena celdas vacías y sus propios valores, nunca un valor introducido manualmente. Cada pasada consume como una ejecución de IA.",
+    "problems": {
+      "type_unsupported": "La IA no puede rellenar este tipo de columna.",
+      "preset_type": "Esta plantilla no es compatible con este tipo de columna.",
+      "instruction_required": "Una instrucción personalizada necesita texto.",
+      "language_required": "Falta el idioma de destino para la traducción.",
+      "options_type": "Solo las columnas de selección admiten opciones nuevas.",
+      "no_source": "Elige al menos una fuente que la IA pueda leer."
+    },
+    "remove": "Eliminar instrucción",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "fillTitle": "Rellenar «{name}» con IA",
+    "fillDescriptionColumn": "La IA revisará toda la columna, fila por fila.",
+    "fillDescriptionRows": "{count, plural, one {La IA rellenará la celda de la fila seleccionada.} many {La IA rellenará las celdas de las # filas seleccionadas.} other {La IA rellenará las celdas de las # filas seleccionadas.}}",
+    "mode": "Qué celdas",
+    "modes": {
+      "empty_only": "Solo celdas vacías",
+      "replace_ai": "Celdas vacías y valores anteriores de IA",
+      "replace_all": "Todas las celdas, incluidos valores introducidos"
+    },
+    "modeHints": {
+      "empty_only": "Lo que ya está escrito se mantiene sin cambios.",
+      "replace_ai": "Actualiza valores generados por la IA que nadie haya modificado desde entonces.",
+      "replace_all": "Sobrescribe también los valores que alguien haya introducido manualmente."
+    },
+    "counting": "Contando celdas…",
+    "preview": "{count, plural, =0 {No hay nada que rellenar aquí.} one {Se rellenará una celda.} many {Se rellenarán # celdas.} other {Se rellenarán # celdas.}}",
+    "previewRemaining": "{count, plural, one {Queda otra fila para la próxima tanda, ya que cada una rellena como máximo {limit} filas.} many {Quedan otras # filas para la próxima tanda, ya que cada una rellena como máximo {limit} filas.} other {Quedan otras # filas para la próxima tanda, ya que cada una rellena como máximo {limit} filas.}}",
+    "previewKept": "{count, plural, one {Una celda con valor se mantendrá como está.} many {# celdas con valor se mantendrán como están.} other {# celdas con valor se mantendrán como están.}}",
+    "previewForbidden": "{count, plural, one {No tienes permiso para modificar una fila.} many {No tienes permiso para modificar # filas.} other {No tienes permiso para modificar # filas.}}",
+    "costHint": "Cada celda supone una llamada al modelo y aparecerá en el informe de uso.",
+    "start": "{count, plural, =0 {Rellenar} one {Rellenar una celda} many {Rellenar # celdas} other {Rellenar # celdas}}",
+    "markPending": "La IA está rellenando esta celda.",
+    "markFilled": "Rellenado por la IA el {when}.",
+    "markFailed": "La IA no pudo rellenar esta celda el {when}: {reason}",
+    "markEmpty": "La IA no encontró nada adecuado el {when}.",
+    "fillCell": "Rellenar con IA",
+    "fillAgain": "Haz clic para volver a rellenar.",
+    "progress": "{name}: {done} de {total} celdas",
+    "progressLabel": "Progreso al rellenar {name}",
+    "cancelRun": "Cancelar",
+    "errors": {
+      "model_failed": "La llamada al modelo ha fallado.",
+      "key_refused": "El proveedor ha rechazado la clave que paga la ejecución.",
+      "key_unreadable": "No se puede leer la clave de este espacio de trabajo.",
+      "answer_unreadable": "La respuesta del modelo no era legible.",
+      "answer_invalid": "La respuesta no coincide con el tipo de columna.",
+      "option_unknown": "La respuesta indica una opción que no existe.",
+      "option_untrusted": "La nueva opción provendría de contenido externo, por lo que no se ha creado.",
+      "option_forbidden": "Faltan permisos para modificar las columnas y crear una nueva opción.",
+      "person_unknown": "La respuesta no menciona a nadie de este espacio de trabajo.",
+      "row_unavailable": "La fila ya no existe o no se puede leer.",
+      "forbidden": "No tienes permiso para modificar esta fila.",
+      "not_empty": "La celda ya tiene un valor.",
+      "not_ai_value": "La celda tiene un valor introducido manualmente.",
+      "budget_exceeded": "Se agotó el presupuesto.",
+      "timed_out": "Se agotó el tiempo de la ejecución.",
+      "run_ended": "La ejecución finalizó antes."
+    }
   }
 }

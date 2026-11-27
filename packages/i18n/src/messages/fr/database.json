@@ -185,7 +185,11 @@
     "changeColor": "Changer la couleur",
     "deleteOption": "Supprimer l’option",
     "newOption": "Nouvelle option",
-    "addOption": "Ajouter une option"
+    "addOption": "Ajouter une option",
+    "aiMarker": "Colonne avec instruction IA",
+    "aiSetUp": "Configurer l’instruction IA",
+    "aiEdit": "Modifier l’instruction IA",
+    "aiFill": "Remplir la colonne avec l’IA"
   },
   "config": {
     "relation": {
@@ -341,6 +345,99 @@
     "trash": "Mettre à la corbeille",
     "clear": "Désélectionner",
     "trashConfirmTitle": "{count, plural, one {Mettre une ligne à la corbeille ?} many {Mettre # lignes à la corbeille ?} other {Mettre # lignes à la corbeille ?}}",
-    "trashConfirmDescription": "{count, plural, one {La ligne ira dans la corbeille, ainsi que ses sous-pages.} many {Les # lignes iront dans la corbeille, ainsi que leurs sous-pages.} other {Les # lignes iront dans la corbeille, ainsi que leurs sous-pages.}} Tu pourras les restaurer une par une depuis là-bas."
+    "trashConfirmDescription": "{count, plural, one {La ligne ira dans la corbeille, ainsi que ses sous-pages.} many {Les # lignes iront dans la corbeille, ainsi que leurs sous-pages.} other {Les # lignes iront dans la corbeille, ainsi que leurs sous-pages.}} Tu pourras les restaurer une par une depuis là-bas.",
+    "aiFill": "Remplir avec l’IA"
+  },
+  "aiFill": {
+    "configTitle": "Instruction IA pour « {name} »",
+    "configDescription": "L’IA remplit les cellules de cette colonne à partir du contenu de chaque ligne. Elle conserve toute valeur saisie manuellement, sauf indication contraire explicite.",
+    "preset": "Modèle",
+    "presets": {
+      "summary": "Résumé",
+      "key_points": "Points clés",
+      "tags": "Mots-clés",
+      "translate": "Traduction",
+      "document_date": "Date du document",
+      "sender": "Expéditeur du document",
+      "recipient": "Destinataire du document",
+      "custom": "Instruction personnalisée"
+    },
+    "targetLanguage": "Langue cible",
+    "targetLanguagePlaceholder": "par exemple anglais",
+    "instruction": "Instruction",
+    "instructionExtra": "Complément au modèle (facultatif)",
+    "instructionPlaceholder": "Que doit contenir cette colonne ?",
+    "sources": "Ce que l’IA peut lire",
+    "useContent": "Contenu de la page",
+    "useProperties": "Les autres propriétés de la ligne",
+    "useAttachments": "Fichiers joints",
+    "allowNewOptions": "Autoriser de nouvelles options",
+    "allowNewOptionsHint": "Si aucune option existante ne convient, l’IA peut en créer une nouvelle. Cela n’est possible que si tu as le droit de modifier les colonnes et que l’IA n’a lu que tes propres fichiers vérifiés.",
+    "autoFill": "Remplissage automatique",
+    "auto": {
+      "off": "Jamais, uniquement sur demande",
+      "on_create": "Pour les nouvelles lignes",
+      "on_change": "Pour les nouvelles lignes et lorsque leur contenu change"
+    },
+    "autoFillHint": "Automatiquement, l’IA ne remplit que les cellules vides et ses propres valeurs, jamais une valeur saisie manuellement. Chaque passage est facturé comme une exécution d’IA.",
+    "problems": {
+      "type_unsupported": "L’IA ne peut pas remplir ce type de colonne.",
+      "preset_type": "Ce modèle ne convient pas à ce type de colonne.",
+      "instruction_required": "Une instruction personnalisée nécessite un texte.",
+      "language_required": "La langue cible est requise pour la traduction.",
+      "options_type": "Les nouvelles options ne sont possibles que pour les colonnes de sélection.",
+      "no_source": "Sélectionne au moins une source dans laquelle l’IA peut lire."
+    },
+    "remove": "Supprimer l’instruction",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "fillTitle": "Remplir « {name} » avec l’IA",
+    "fillDescriptionColumn": "L’IA parcourt toute la colonne, ligne par ligne.",
+    "fillDescriptionRows": "{count, plural, one {L’IA remplit la cellule de la ligne sélectionnée.} many {L’IA remplit les cellules des # lignes sélectionnées.} other {L’IA remplit les cellules des # lignes sélectionnées.}}",
+    "mode": "Quelles cellules",
+    "modes": {
+      "empty_only": "Cellules vides uniquement",
+      "replace_ai": "Cellules vides et anciennes valeurs générées par l’IA",
+      "replace_all": "Toutes les cellules, y compris les valeurs saisies"
+    },
+    "modeHints": {
+      "empty_only": "Le contenu existant reste inchangé.",
+      "replace_ai": "Met à jour les valeurs générées par l’IA qui n’ont pas été modifiées depuis.",
+      "replace_all": "Remplace aussi les valeurs saisies manuellement."
+    },
+    "counting": "Comptage des cellules en cours…",
+    "preview": "{count, plural, =0 {Rien à remplir ici.} one {Une cellule sera remplie.} many {# cellules seront remplies.} other {# cellules seront remplies.}}",
+    "previewRemaining": "{count, plural, one {Une autre ligne reste pour le prochain passage, car un passage remplit au maximum {limit} lignes.} many {# autres lignes restent pour le prochain passage, car un passage remplit au maximum {limit} lignes.} other {# autres lignes restent pour le prochain passage, car un passage remplit au maximum {limit} lignes.}}",
+    "previewKept": "{count, plural, one {Une cellule déjà remplie reste inchangée.} many {# cellules déjà remplies restent inchangées.} other {# cellules déjà remplies restent inchangées.}}",
+    "previewForbidden": "{count, plural, one {Tu ne peux pas modifier une ligne.} many {Tu ne peux pas modifier # lignes.} other {Tu ne peux pas modifier # lignes.}}",
+    "costHint": "Chaque cellule correspond à un appel au modèle et apparaît dans le rapport d’utilisation.",
+    "start": "{count, plural, =0 {Remplir} one {Remplir une cellule} many {Remplir # cellules} other {Remplir # cellules}}",
+    "markPending": "L’IA remplit cette cellule en ce moment.",
+    "markFilled": "Rempli par l’IA le {when}.",
+    "markFailed": "L’IA n’a pas pu remplir cette cellule le {when} : {reason}",
+    "markEmpty": "L’IA n’a rien trouvé de pertinent le {when}.",
+    "fillCell": "Remplir avec l’IA",
+    "fillAgain": "Clique pour remplir à nouveau.",
+    "progress": "{name} : {done} sur {total} cellules",
+    "progressLabel": "Progression du remplissage de {name}",
+    "cancelRun": "Annuler",
+    "errors": {
+      "model_failed": "L’appel au modèle a échoué.",
+      "key_refused": "Le fournisseur a refusé la clé qui finance l’exécution.",
+      "key_unreadable": "Impossible de lire la clé de cet espace de travail.",
+      "answer_unreadable": "La réponse du modèle est illisible.",
+      "answer_invalid": "La réponse ne correspond pas au type de colonne.",
+      "option_unknown": "La réponse mentionne une option inexistante.",
+      "option_untrusted": "La nouvelle option proviendrait de contenus tiers ; aucune option n’a donc été créée.",
+      "option_forbidden": "Autorisation manquante pour modifier les colonnes afin d’ajouter une option.",
+      "person_unknown": "La réponse ne mentionne aucun membre de cet espace de travail.",
+      "row_unavailable": "La ligne est introuvable ou illisible.",
+      "forbidden": "Tu n’as pas le droit de modifier cette ligne.",
+      "not_empty": "La cellule contient déjà une valeur.",
+      "not_ai_value": "La cellule contient une valeur saisie manuellement.",
+      "budget_exceeded": "Le budget a été dépassé.",
+      "timed_out": "Le délai imparti pour l’exécution est écoulé.",
+      "run_ended": "L’exécution s’est arrêtée prématurément."
+    }
   }
 }

@@ -483,7 +483,12 @@
       "trash": "{count, plural, one {Geselecteerde rij naar de prullenbak} other {# geselecteerde rijen naar de prullenbak}}",
       "trashKeywords": "selectie rijen verwijderen prullenbak weggooien",
       "clear": "Selectie opheffen",
-      "clearKeywords": "selectie opheffen deselecteren rijen"
+      "clearKeywords": "selectie opheffen deselecteren rijen",
+      "aiFillColumn": "Kolom invullen met AI",
+      "aiFillColumnKeywords": "ai ki invullen autofill kolom automatisch samenvatting",
+      "aiFillPlaceholder": "Welke kolom?",
+      "aiFill": "{count, plural, one {Selectie invullen met AI} other {# rijen invullen met AI}}",
+      "aiFillKeywords": "ai ki invullen autofill selectie rijen"
     },
     "rowPeek": {
       "openAsPage": "Geopende regel als hele pagina openen",

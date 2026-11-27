@@ -15,6 +15,7 @@ import {
 } from '@/lib/api/database-queries';
 import { documentHref } from '@/lib/document-href';
 
+import { aiColumns, type AiFillControls } from './ai-fill';
 import { type CellValue } from './cells';
 import { type RowHandleActions } from './row-handle';
 import { RowMoveDialog } from './row-move-dialog';
@@ -67,6 +68,7 @@ export function useRowActions({
   readOnly,
   paletteEnabled,
   onOpenPeek,
+  ai,
 }: {
   workspaceId: string;
   documentId: string;
@@ -76,6 +78,8 @@ export function useRowActions({
   readOnly: boolean;
   paletteEnabled: boolean;
   onOpenPeek: (rowId: string) => void;
+  /** The AI fill's dialogs, for "fill with AI" on a selection (issue #237). */
+  ai?: AiFillControls;
 }) {
   const t = useTranslations('database.selection');
   const router = useRouter();
@@ -163,11 +167,17 @@ export function useRowActions({
     };
   };
 
+  const hasAi = ai !== undefined;
+  const fillable = React.useMemo(() => (hasAi ? aiColumns(properties) : []), [hasAi, properties]);
+
   useRowSelectionCommands({
     enabled: paletteEnabled && !readOnly && rows.length > 0,
     selectedCount: selectedIds.length,
     properties: writable,
+    aiColumns: fillable,
     handlers: {
+      aiFill: (property) => ai?.fill(property, selectedIds),
+      aiFillColumn: (property) => ai?.fill(property),
       selectAll: () => setSelection(toggleAllRows(EMPTY_ROW_SELECTION, order)),
       clear,
       duplicate: () => duplicate(selectedIds),
@@ -194,6 +204,8 @@ export function useRowActions({
           editing={editing}
           onEdit={setEditing}
           onSetValue={setValue}
+          aiColumns={fillable}
+          onAiFill={(property) => ai?.fill(property, selectedIds)}
           onDuplicate={() => duplicate(selectedIds)}
           onTrash={() => void trash(selectedIds)}
           onClear={clear}

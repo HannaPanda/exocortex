@@ -483,7 +483,12 @@
       "trash": "{count, plural, one {Mettre la ligne sélectionnée à la corbeille} many {Mettre # lignes sélectionnées à la corbeille} other {Mettre # lignes sélectionnées à la corbeille}}",
       "trashKeywords": "sélection lignes supprimer corbeille retirer",
       "clear": "Désélectionner tout",
-      "clearKeywords": "sélection désélectionner annuler lignes"
+      "clearKeywords": "sélection désélectionner annuler lignes",
+      "aiFillColumn": "Remplir la colonne avec l’IA",
+      "aiFillColumnKeywords": "ia ai remplir autofill colonne automatique résumé",
+      "aiFillPlaceholder": "Quelle colonne ?",
+      "aiFill": "{count, plural, one {Remplir la sélection avec l’IA} many {# lignes avec l’IA} other {# lignes avec l’IA}}",
+      "aiFillKeywords": "ia ai remplir autofill sélection lignes"
     },
     "rowPeek": {
       "openAsPage": "Ouvrir la ligne ouverte en pleine page",

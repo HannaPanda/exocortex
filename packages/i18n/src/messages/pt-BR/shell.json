@@ -483,7 +483,12 @@
       "trash": "{count, plural, one {Mover linha selecionada para a lixeira} many {Mover # linhas selecionadas para a lixeira} other {Mover # linhas selecionadas para a lixeira}}",
       "trashKeywords": "seleção linhas excluir lixeira remover",
       "clear": "Limpar seleção",
-      "clearKeywords": "limpar seleção desmarcar linhas"
+      "clearKeywords": "limpar seleção desmarcar linhas",
+      "aiFillColumn": "Preencher coluna com IA",
+      "aiFillColumnKeywords": "ia ai preencher autofill coluna automaticamente resumo",
+      "aiFillPlaceholder": "Qual coluna?",
+      "aiFill": "{count, plural, one {Preencher seleção com IA} many {# linhas preenchidas com IA} other {Preencher # linhas com IA}}",
+      "aiFillKeywords": "ia ai preencher autofill seleção linhas"
     },
     "rowPeek": {
       "openAsPage": "Abrir linha aberta como página inteira",

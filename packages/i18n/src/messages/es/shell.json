@@ -483,7 +483,12 @@
       "trash": "{count, plural, one {Mover la fila seleccionada a la papelera} many {Mover # filas seleccionadas a la papelera} other {Mover # filas seleccionadas a la papelera}}",
       "trashKeywords": "selección filas eliminar papelera borrar quitar",
       "clear": "Deseleccionar",
-      "clearKeywords": "selección deseleccionar cancelar filas"
+      "clearKeywords": "selección deseleccionar cancelar filas",
+      "aiFillColumn": "Rellenar columna con IA",
+      "aiFillColumnKeywords": "ia ai rellenar autorrellenar columna automaticamente resumen",
+      "aiFillPlaceholder": "¿Qué columna?",
+      "aiFill": "{count, plural, one {Rellenar selección con IA} many {# filas con IA} other {# filas con IA}}",
+      "aiFillKeywords": "ia ai rellenar autorrellenar seleccion filas"
     },
     "rowPeek": {
       "openAsPage": "Abrir fila actual como página completa",

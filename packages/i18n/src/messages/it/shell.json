@@ -483,7 +483,12 @@
       "trash": "{count, plural, one {Sposta la riga selezionata nel cestino} many {Sposta # righe selezionate nel cestino} other {Sposta # righe selezionate nel cestino}}",
       "trashKeywords": "selezione righe elimina cestino rimuovi",
       "clear": "Deseleziona tutto",
-      "clearKeywords": "annulla selezione deseleziona righe"
+      "clearKeywords": "annulla selezione deseleziona righe",
+      "aiFillColumn": "Compila colonna con l’IA",
+      "aiFillColumnKeywords": "ia ai compila completamento automatico colonna automaticamente riassunto sintesi",
+      "aiFillPlaceholder": "Quale colonna?",
+      "aiFill": "{count, plural, one {Compila selezione con l’IA} many {Compila # righe con l’IA} other {Compila # righe con l’IA}}",
+      "aiFillKeywords": "ia ai compila completamento automatico selezione righe"
     },
     "rowPeek": {
       "openAsPage": "Apri la riga aperta come pagina intera",

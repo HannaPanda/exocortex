@@ -185,7 +185,11 @@
     "changeColor": "Zmień kolor",
     "deleteOption": "Usuń opcję",
     "newOption": "Nowa opcja",
-    "addOption": "Dodaj opcję"
+    "addOption": "Dodaj opcję",
+    "aiMarker": "Kolumna z instrukcją AI",
+    "aiSetUp": "Skonfiguruj instrukcję AI",
+    "aiEdit": "Edytuj instrukcję AI",
+    "aiFill": "Wypełnij kolumnę z użyciem AI"
   },
   "config": {
     "relation": {
@@ -341,6 +345,99 @@
     "trash": "Do kosza",
     "clear": "Odznacz wszystko",
     "trashConfirmTitle": "{count, plural, one {Przenieść wiersz do kosza?} few {Przenieść # wiersze do kosza?} many {Przenieść # wierszy do kosza?} other {Przenieść # wiersza do kosza?}}",
-    "trashConfirmDescription": "{count, plural, one {Wiersz trafi do kosza wraz ze znajdującymi się pod nim stronami.} few {# wiersze trafią do kosza wraz ze znajdującymi się pod nimi stronami.} many {# wierszy trafi do kosza wraz ze znajdującymi się pod nimi stronami.} other {# wiersza trafi do kosza wraz ze znajdującymi się pod nimi stronami.}} Stamtąd możesz przywrócić każdy z nich pojedynczo."
+    "trashConfirmDescription": "{count, plural, one {Wiersz trafi do kosza wraz ze znajdującymi się pod nim stronami.} few {# wiersze trafią do kosza wraz ze znajdującymi się pod nimi stronami.} many {# wierszy trafi do kosza wraz ze znajdującymi się pod nimi stronami.} other {# wiersza trafi do kosza wraz ze znajdującymi się pod nimi stronami.}} Stamtąd możesz przywrócić każdy z nich pojedynczo.",
+    "aiFill": "Wypełnij z użyciem AI"
+  },
+  "aiFill": {
+    "configTitle": "Instrukcja AI dla „{name}”",
+    "configDescription": "AI wypełnia komórki tej kolumny na podstawie zawartości każdego wiersza. Wartość wprowadzona ręcznie pozostanie nienaruszona, chyba że wskażesz inaczej.",
+    "preset": "Szablon",
+    "presets": {
+      "summary": "Podsumowanie",
+      "key_points": "Główne punkty",
+      "tags": "Tagi",
+      "translate": "Tłumaczenie",
+      "document_date": "Data z dokumentu",
+      "sender": "Nadawca z dokumentu",
+      "recipient": "Odbiorca z dokumentu",
+      "custom": "Własna instrukcja"
+    },
+    "targetLanguage": "Język docelowy",
+    "targetLanguagePlaceholder": "na przykład angielski",
+    "instruction": "Instrukcja",
+    "instructionExtra": "Uzupełnienie szablonu (opcjonalnie)",
+    "instructionPlaceholder": "Co ma się znaleźć w tej kolumnie?",
+    "sources": "Co AI może czytać",
+    "useContent": "Zawartość strony",
+    "useProperties": "Inne właściwości wiersza",
+    "useAttachments": "Załączone pliki",
+    "allowNewOptions": "Zezwalaj na nowe opcje",
+    "allowNewOptionsHint": "Jeśli żadna z istniejących opcji nie pasuje, AI może utworzyć nową. Jest to możliwe tylko wtedy, gdy masz uprawnienia do edycji kolumn, a AI czyta wyłącznie twoje własne, sprawdzone pliki.",
+    "autoFill": "Wypełniaj automatycznie",
+    "auto": {
+      "off": "Nigdy, tylko na żądanie",
+      "on_create": "Dla nowych wierszy",
+      "on_change": "Dla nowych wierszy i przy zmianie ich zawartości"
+    },
+    "autoFillHint": "Automatycznie AI uzupełnia tylko puste komórki oraz własne wartości — nigdy wartości wpisanych ręcznie. Każde wykonanie zużywa limit zapytań AI.",
+    "problems": {
+      "type_unsupported": "AI nie może wypełnić tego typu kolumny.",
+      "preset_type": "Ten szablon nie pasuje do tego typu kolumny.",
+      "instruction_required": "Własna instrukcja wymaga podania tekstu.",
+      "language_required": "Do tłumaczenia brakuje języka docelowego.",
+      "options_type": "Nowe opcje są dostępne tylko w kolumnach wyboru.",
+      "no_source": "Wybierz przynajmniej jedno źródło, z którego AI może czytać."
+    },
+    "remove": "Usuń instrukcję",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "fillTitle": "Wypełnij „{name}” za pomocą AI",
+    "fillDescriptionColumn": "AI przejrzy całą kolumnę, wiersz po wierszu.",
+    "fillDescriptionRows": "{count, plural, one {AI wypełni komórkę w wybranym wierszu.} few {AI wypełni komórki w # wybranych wierszach.} many {AI wypełni komórki w # wybranych wierszach.} other {AI wypełni komórki w # wybranego wiersza.}}",
+    "mode": "Które komórki",
+    "modes": {
+      "empty_only": "Tylko puste komórki",
+      "replace_ai": "Puste komórki i wcześniejsze wartości AI",
+      "replace_all": "Wszystkie komórki, w tym wpisane wartości"
+    },
+    "modeHints": {
+      "empty_only": "To, co już jest wpisane, pozostanie bez zmian.",
+      "replace_ai": "Aktualizuje wartości utworzone przez AI, których nikt od tamtej pory nie zmienił.",
+      "replace_all": "Zastępuje również wartości wprowadzone ręcznie."
+    },
+    "counting": "Liczenie komórek…",
+    "preview": "{count, plural, =0 {Nie ma tu nic do wypełnienia.} one {Zostanie wypełniona jedna komórka.} few {Zostaną wypełnione # komórki.} many {Zostanie wypełnionych # komórek.} other {Zostanie wypełnione # komórki.}}",
+    "previewRemaining": "{count, plural, one {Jeden kolejny wiersz pozostaje na następny przebieg, ponieważ jeden przebieg obejmuje maksymalnie {limit} wierszy.} few {# kolejne wiersze pozostają na następny przebieg, ponieważ jeden przebieg obejmuje maksymalnie {limit} wierszy.} many {# kolejnych wierszy pozostaje na następny przebieg, ponieważ jeden przebieg obejmuje maksymalnie {limit} wierszy.} other {# kolejnego wiersza pozostaje na następny przebieg, ponieważ jeden przebieg obejmuje maksymalnie {limit} wierszy.}}",
+    "previewKept": "{count, plural, one {Jedna komórka z wartością pozostanie bez zmian.} few {# komórki z wartością pozostaną bez zmian.} many {# komórek z wartością pozostanie bez zmian.} other {# komórki z wartością pozostanie bez zmian.}}",
+    "previewForbidden": "{count, plural, one {Nie masz uprawnień do edycji jednego wiersza.} few {Nie masz uprawnień do edycji # wierszy.} many {Nie masz uprawnień do edycji # wierszy.} other {Nie masz uprawnień do edycji # wiersza.}}",
+    "costHint": "Każda komórka to jedno wywołanie modelu, które pojawi się w raporcie użycia.",
+    "start": "{count, plural, =0 {Wypełnij} one {Wypełnij jedną komórkę} few {Wypełnij # komórki} many {Wypełnij # komórek} other {Wypełnij # komórki}}",
+    "markPending": "AI wypełnia właśnie tę komórkę.",
+    "markFilled": "Wypełnione przez AI w dniu {when}.",
+    "markFailed": "AI nie mogła wypełnić tej komórki w dniu {when}: {reason}",
+    "markEmpty": "W dniu {when} AI nie znalazła nic pasującego.",
+    "fillCell": "Wypełnij za pomocą AI",
+    "fillAgain": "Kliknij, aby wypełnić ponownie.",
+    "progress": "{name}: {done} z {total} komórek",
+    "progressLabel": "Postęp wypełniania {name}",
+    "cancelRun": "Anuluj",
+    "errors": {
+      "model_failed": "Wywołanie modelu nie powiodło się.",
+      "key_refused": "Dostawca odrzucił klucz używany do opłacenia tego przebiegu.",
+      "key_unreadable": "Nie można odczytać klucza tego obszaru roboczego.",
+      "answer_unreadable": "Odpowiedź modelu była nieczytelna.",
+      "answer_invalid": "Odpowiedź nie pasuje do typu kolumny.",
+      "option_unknown": "Odpowiedź wskazuje opcję, która nie istnieje.",
+      "option_untrusted": "Nowa opcja pochodziłaby z treści zewnętrznych, dlatego nie została utworzona.",
+      "option_forbidden": "Brak uprawnień do edycji kolumn, aby utworzyć nową opcję.",
+      "person_unknown": "Odpowiedź nie wskazuje nikogo z tego obszaru roboczego.",
+      "row_unavailable": "Wiersz został usunięty lub nie można go już odczytać.",
+      "forbidden": "Nie masz uprawnień do edycji tego wiersza.",
+      "not_empty": "Komórka ma już wartość.",
+      "not_ai_value": "Komórka zawiera wpisaną wartość.",
+      "budget_exceeded": "Budżet został wyczerpany.",
+      "timed_out": "Upłynął limit czasu dla tego przebiegu.",
+      "run_ended": "Przebieg zakończył się wcześniej."
+    }
   }
 }

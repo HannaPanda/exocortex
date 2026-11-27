@@ -483,7 +483,12 @@
       "trash": "{count, plural, one {Przenieś zaznaczony wiersz do kosza} few {Przenieś # zaznaczone wiersze do kosza} many {Przenieś # zaznaczonych wierszy do kosza} other {Przenieś # zaznaczonego wiersza do kosza}}",
       "trashKeywords": "zaznaczenie wiersze usuń kosz skasuj",
       "clear": "Odznacz wszystko",
-      "clearKeywords": "odznacz zaznaczenie cofnij wiersze"
+      "clearKeywords": "odznacz zaznaczenie cofnij wiersze",
+      "aiFillColumn": "Wypełnij kolumnę za pomocą AI",
+      "aiFillColumnKeywords": "ki ai wypełnij autofill kolumna automatycznie podsumowanie",
+      "aiFillPlaceholder": "Która kolumna?",
+      "aiFill": "{count, plural, one {Wypełnij zaznaczenie za pomocą AI} few {Wypełnij # wiersze za pomocą AI} many {Wypełnij # wierszy za pomocą AI} other {Wypełnij # wiersza za pomocą AI}}",
+      "aiFillKeywords": "ki ai wypełnij autofill zaznaczenie wiersze"
     },
     "rowPeek": {
       "openAsPage": "Otwórz otwarty wiersz jako całą stronę",

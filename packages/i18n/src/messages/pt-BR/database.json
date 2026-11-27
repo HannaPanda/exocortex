@@ -185,7 +185,11 @@
     "changeColor": "Alterar cor",
     "deleteOption": "Excluir opção",
     "newOption": "Nova opção",
-    "addOption": "Adicionar opção"
+    "addOption": "Adicionar opção",
+    "aiMarker": "Coluna com instrução de IA",
+    "aiSetUp": "Configurar instrução de IA",
+    "aiEdit": "Editar instrução de IA",
+    "aiFill": "Preencher coluna com IA"
   },
   "config": {
     "relation": {
@@ -341,6 +345,99 @@
     "trash": "Mover para a lixeira",
     "clear": "Limpar seleção",
     "trashConfirmTitle": "{count, plural, one {Mover uma linha para a lixeira?} many {Mover # linhas para a lixeira?} other {Mover # linhas para a lixeira?}}",
-    "trashConfirmDescription": "{count, plural, one {A linha vai para a lixeira, junto com as páginas abaixo dela.} many {As # linhas vão para a lixeira, junto com as páginas abaixo delas.} other {As # linhas vão para a lixeira, junto com as páginas abaixo delas.}} De lá, você pode restaurar cada uma individualmente."
+    "trashConfirmDescription": "{count, plural, one {A linha vai para a lixeira, junto com as páginas abaixo dela.} many {As # linhas vão para a lixeira, junto com as páginas abaixo delas.} other {As # linhas vão para a lixeira, junto com as páginas abaixo delas.}} De lá, você pode restaurar cada uma individualmente.",
+    "aiFill": "Preencher com IA"
+  },
+  "aiFill": {
+    "configTitle": "Instrução de IA para “{name}”",
+    "configDescription": "A IA preenche as células desta coluna a partir do conteúdo de cada linha. Valores inseridos manualmente são mantidos, a menos que você defina expressamente o contrário.",
+    "preset": "Modelo",
+    "presets": {
+      "summary": "Resumo",
+      "key_points": "Tópicos principais",
+      "tags": "Tags",
+      "translate": "Tradução",
+      "document_date": "Data do documento",
+      "sender": "Remetente do documento",
+      "recipient": "Destinatário do documento",
+      "custom": "Instrução personalizada"
+    },
+    "targetLanguage": "Idioma de destino",
+    "targetLanguagePlaceholder": "por exemplo, inglês",
+    "instruction": "Instrução",
+    "instructionExtra": "Complemento ao modelo (opcional)",
+    "instructionPlaceholder": "O que deve constar nesta coluna?",
+    "sources": "O que a IA pode ler",
+    "useContent": "Conteúdo da página",
+    "useProperties": "As outras propriedades da linha",
+    "useAttachments": "Arquivos anexados",
+    "allowNewOptions": "Permitir novas opções",
+    "allowNewOptionsHint": "Se nenhuma opção existente for adequada, a IA pode criar uma nova. Isso só funciona se você tiver permissão para alterar as colunas e se a IA tiver lido apenas seus próprios arquivos verificados.",
+    "autoFill": "Preencher automaticamente",
+    "auto": {
+      "off": "Nunca, apenas quando solicitado",
+      "on_create": "Em novas linhas",
+      "on_change": "Em novas linhas e quando o conteúdo for alterado"
+    },
+    "autoFillHint": "Automaticamente, a IA preenche apenas células vazias ou valores gerados por ela mesma, nunca um valor inserido manualmente. Cada execução consome o equivalente a uma consulta de IA.",
+    "problems": {
+      "type_unsupported": "A IA não pode preencher este tipo de coluna.",
+      "preset_type": "Este modelo não é compatível com este tipo de coluna.",
+      "instruction_required": "Uma instrução personalizada precisa de um texto.",
+      "language_required": "O idioma de destino é obrigatório para a tradução.",
+      "options_type": "Novas opções só estão disponíveis para colunas de seleção.",
+      "no_source": "Selecione ao menos uma fonte que a IA possa ler."
+    },
+    "remove": "Remover instrução",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "fillTitle": "Preencher “{name}” com IA",
+    "fillDescriptionColumn": "A IA percorre a coluna inteira, linha por linha.",
+    "fillDescriptionRows": "{count, plural, one {A IA preenche a célula da linha selecionada.} many {A IA preenche as células das # linhas selecionadas.} other {A IA preenche as células das # linhas selecionadas.}}",
+    "mode": "Quais células",
+    "modes": {
+      "empty_only": "Apenas células vazias",
+      "replace_ai": "Células vazias e valores anteriores da IA",
+      "replace_all": "Todas as células, incluindo valores inseridos"
+    },
+    "modeHints": {
+      "empty_only": "O que já estiver preenchido permanece inalterado.",
+      "replace_ai": "Atualiza valores gerados pela IA que ninguém alterou desde então.",
+      "replace_all": "Substitui inclusive valores que alguém inseriu manualmente."
+    },
+    "counting": "Contando as células…",
+    "preview": "{count, plural, =0 {Não há nada para preencher aqui.} one {Uma célula será preenchida.} many {# células serão preenchidas.} other {# células serão preenchidas.}}",
+    "previewRemaining": "{count, plural, one {Mais uma linha fica para a próxima execução, pois o limite por execução é de {limit} linhas.} many {Mais # linhas ficam para a próxima execução, pois o limite por execução é de {limit} linhas.} other {Mais # linhas ficam para a próxima execução, pois o limite por execução é de {limit} linhas.}}",
+    "previewKept": "{count, plural, one {Uma célula com valor permanece como está.} many {# células com valor permanecem como estão.} other {# células com valor permanecem como estão.}}",
+    "previewForbidden": "{count, plural, one {Você não tem permissão para alterar uma linha.} many {Você não tem permissão para alterar # linhas.} other {Você não tem permissão para alterar # linhas.}}",
+    "costHint": "Cada célula é uma chamada ao modelo e aparece no relatório de uso.",
+    "start": "{count, plural, =0 {Preencher} one {Preencher uma célula} many {Preencher # células} other {Preencher # células}}",
+    "markPending": "A IA está preenchendo esta célula agora.",
+    "markFilled": "Preenchido pela IA em {when}.",
+    "markFailed": "A IA não conseguiu preencher esta célula em {when}: {reason}",
+    "markEmpty": "A IA não encontrou nada correspondente em {when}.",
+    "fillCell": "Preencher com IA",
+    "fillAgain": "Clique para preencher novamente.",
+    "progress": "{name}: {done} de {total} células",
+    "progressLabel": "Progresso do preenchimento de {name}",
+    "cancelRun": "Cancelar",
+    "errors": {
+      "model_failed": "A chamada ao modelo falhou.",
+      "key_refused": "O provedor recusou a chave usada para custear a execução.",
+      "key_unreadable": "Não é possível ler a chave deste espaço de trabalho.",
+      "answer_unreadable": "A resposta do modelo não pôde ser lida.",
+      "answer_invalid": "A resposta não é compatível com o tipo da coluna.",
+      "option_unknown": "A resposta indica uma opção que não existe.",
+      "option_untrusted": "Uma nova opção viria de conteúdo externo, por isso nenhuma foi criada.",
+      "option_forbidden": "Falta permissão para alterar as colunas e criar uma nova opção.",
+      "person_unknown": "A resposta não indica ninguém deste espaço de trabalho.",
+      "row_unavailable": "A linha sumiu ou não pode mais ser lida.",
+      "forbidden": "Você não tem permissão para alterar esta linha.",
+      "not_empty": "A célula já tem um valor.",
+      "not_ai_value": "A célula tem um valor inserido manualmente.",
+      "budget_exceeded": "O orçamento foi esgotado.",
+      "timed_out": "O tempo da execução acabou.",
+      "run_ended": "A execução terminou antes."
+    }
   }
 }

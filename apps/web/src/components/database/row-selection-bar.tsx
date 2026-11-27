@@ -1,6 +1,6 @@
 'use client';
 
-import { CopyIcon, PencilLineIcon, Trash2Icon, XIcon } from 'lucide-react';
+import { CopyIcon, PencilLineIcon, SparklesIcon, Trash2Icon, XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { type DatabaseProperty, type DatabaseRow } from '@exocortex/contracts';
@@ -55,10 +55,15 @@ export function RowSelectionBar({
   editing,
   onEdit,
   onSetValue,
+  aiColumns = [],
+  onAiFill,
   onDuplicate,
   onTrash,
   onClear,
 }: {
+  /** Columns with an AI instruction the selection can be filled in (issue #237). */
+  aiColumns?: readonly DatabaseProperty[];
+  onAiFill?: (property: DatabaseProperty) => void;
   /** The selected rows, in table order. */
   rows: readonly DatabaseRow[];
   properties: readonly DatabaseProperty[];
@@ -99,6 +104,28 @@ export function RowSelectionBar({
                 key={property.id}
                 data-testid={`selection-property-${property.id}`}
                 onClick={() => onEdit(property)}
+              >
+                {property.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+      {aiColumns.length === 0 || onAiFill === undefined ? null : (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="ghost" size="sm" disabled={busy} data-testid="selection-ai-fill">
+                <SparklesIcon /> {t('aiFill')}
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="start" className="max-h-80 overflow-y-auto">
+            {aiColumns.map((property) => (
+              <DropdownMenuItem
+                key={property.id}
+                data-testid={`selection-ai-fill-${property.id}`}
+                onClick={() => onAiFill(property)}
               >
                 {property.name}
               </DropdownMenuItem>

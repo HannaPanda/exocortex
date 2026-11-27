@@ -11,6 +11,7 @@ import {
   type DatabaseProperty,
   type DatabaseRow,
   type DatabaseView,
+  isEmptyCellValue,
 } from '@exocortex/contracts';
 import {
   Button,
@@ -35,6 +36,7 @@ import {
 } from '@/lib/api/database-queries';
 
 import { AddPropertyButton } from './add-property-button';
+import { AiCellMark, AiFillProgress, useAiFillControls } from './ai-fill';
 import { PropertyCell } from './cells';
 import { PropertyMenu } from './property-menu';
 import { RowHandle, type RowHandleActions } from './row-handle';
@@ -139,6 +141,7 @@ export function TableView({
     null,
   );
 
+  const ai = useAiFillControls(documentId);
   const rowActions = useRowActions({
     workspaceId,
     documentId,
@@ -148,6 +151,7 @@ export function TableView({
     readOnly,
     paletteEnabled,
     onOpenPeek: openRow,
+    ai: readOnly ? undefined : ai,
   });
 
   const rowHeight = rowHeightOf(view);
@@ -189,6 +193,10 @@ export function TableView({
   return (
     <>
       {rowActions.bar}
+      <AiFillProgress
+        documentId={documentId}
+        enabled={properties.some((property) => property.ai !== null && property.ai !== undefined)}
+      />
       {/* This element is the scrollport: the table's own container is switched
           to `overflow-visible` so the sticky header sticks against a box that
           really scrolls, and the sticky title column stays put while scrolling
@@ -252,6 +260,7 @@ export function TableView({
                       view={view}
                       columns={columns}
                       readOnly={readOnly}
+                      ai={ai}
                     />
                     {readOnly ? null : (
                       <ColumnResizeHandle
@@ -330,7 +339,17 @@ export function TableView({
                   const cellValue =
                     row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
                   return (
-                    <TableCell key={property.id} className={cn('p-0 align-top', CELL_LINES)}>
+                    <TableCell
+                      key={property.id}
+                      className={cn('group/cell relative p-0 align-top', CELL_LINES)}
+                    >
+                      <AiCellMark
+                        row={row}
+                        property={property}
+                        empty={isEmptyCellValue(cellValue)}
+                        readOnly={readOnly}
+                        onFill={() => ai.fillCells(property, [row.document.id])}
+                      />
                       <PropertyCell
                         property={property}
                         value={cellValue}
@@ -371,6 +390,7 @@ export function TableView({
         ) : null}
 
         {rowActions.dialogs}
+        {ai.dialogs}
       </div>
     </>
   );

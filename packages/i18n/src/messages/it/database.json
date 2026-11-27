@@ -185,7 +185,11 @@
     "changeColor": "Cambia colore",
     "deleteOption": "Elimina opzione",
     "newOption": "Nuova opzione",
-    "addOption": "Aggiungi opzione"
+    "addOption": "Aggiungi opzione",
+    "aiMarker": "Colonna con istruzione IA",
+    "aiSetUp": "Imposta istruzione IA",
+    "aiEdit": "Modifica istruzione IA",
+    "aiFill": "Compila colonna con l’IA"
   },
   "config": {
     "relation": {
@@ -341,6 +345,99 @@
     "trash": "Nel cestino",
     "clear": "Deseleziona",
     "trashConfirmTitle": "{count, plural, one {Spostare una riga nel cestino?} many {Spostare # righe nel cestino?} other {Spostare # righe nel cestino?}}",
-    "trashConfirmDescription": "{count, plural, one {La riga finirà nel cestino, insieme alle pagine sottostanti.} many {Le # righe finiranno nel cestino, insieme alle pagine sottostanti.} other {Le # righe finiranno nel cestino, insieme alle pagine sottostanti.}} Da lì puoi ripristinare ciascuna singolarmente."
+    "trashConfirmDescription": "{count, plural, one {La riga finirà nel cestino, insieme alle pagine sottostanti.} many {Le # righe finiranno nel cestino, insieme alle pagine sottostanti.} other {Le # righe finiranno nel cestino, insieme alle pagine sottostanti.}} Da lì puoi ripristinare ciascuna singolarmente.",
+    "aiFill": "Compila con l’IA"
+  },
+  "aiFill": {
+    "configTitle": "Istruzione IA per «{name}»",
+    "configDescription": "L’IA compila le celle di questa colonna in base al contenuto di ogni riga. Se un valore è stato inserito manualmente, non verrà modificato a meno che tu non indichi esplicitamente il contrario.",
+    "preset": "Modello",
+    "presets": {
+      "summary": "Riassunto",
+      "key_points": "Punti chiave",
+      "tags": "Tag",
+      "translate": "Traduzione",
+      "document_date": "Data dal documento",
+      "sender": "Mittente dal documento",
+      "recipient": "Destinatario dal documento",
+      "custom": "Istruzione personalizzata"
+    },
+    "targetLanguage": "Lingua di destinazione",
+    "targetLanguagePlaceholder": "ad esempio inglese",
+    "instruction": "Istruzione",
+    "instructionExtra": "Aggiunta al modello (facoltativa)",
+    "instructionPlaceholder": "Cosa deve comparire in questa colonna?",
+    "sources": "Cosa può leggere l’IA",
+    "useContent": "Contenuto della pagina",
+    "useProperties": "Le altre proprietà della riga",
+    "useAttachments": "File allegati",
+    "allowNewOptions": "Consenti nuove opzioni",
+    "allowNewOptionsHint": "Se nessuna opzione esistente è adatta, l’IA può crearne una nuova. Funziona solo se hai il permesso di modificare le colonne e se l’IA ha letto solo file verificati.",
+    "autoFill": "Compilazione automatica",
+    "auto": {
+      "off": "Mai, solo su richiesta",
+      "on_create": "Per le nuove righe",
+      "on_change": "Per le nuove righe e quando il loro contenuto cambia"
+    },
+    "autoFillHint": "In automatico l’IA compila solo le celle vuote o i valori generati da essa, mai i valori inseriti manualmente. Ogni esecuzione consuma crediti IA.",
+    "problems": {
+      "type_unsupported": "L’IA non può compilare questo tipo di colonna.",
+      "preset_type": "Questo modello non è compatibile con questo tipo di colonna.",
+      "instruction_required": "Un’istruzione personalizzata richiede un testo.",
+      "language_required": "Per la traduzione manca la lingua di destinazione.",
+      "options_type": "Le nuove opzioni sono disponibili solo per le colonne di tipo selezione.",
+      "no_source": "Seleziona almeno una fonte da cui l’IA può leggere."
+    },
+    "remove": "Rimuovi istruzione",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "fillTitle": "Compila «{name}» con l’IA",
+    "fillDescriptionColumn": "L’IA esamina l’intera colonna, riga per riga.",
+    "fillDescriptionRows": "{count, plural, one {L’IA compila la cella della riga selezionata.} many {L’IA compila le celle delle # righe selezionate.} other {L’IA compila le celle delle # righe selezionate.}}",
+    "mode": "Quali celle",
+    "modes": {
+      "empty_only": "Solo le celle vuote",
+      "replace_ai": "Celle vuote e valori IA precedenti",
+      "replace_all": "Tutte le celle, anche i valori inseriti"
+    },
+    "modeHints": {
+      "empty_only": "Ciò che è già presente rimane invariato.",
+      "replace_ai": "Aggiorna i valori generati dall’IA e non modificati da nessuno da allora.",
+      "replace_all": "Sovrascrive anche i valori inseriti manualmente."
+    },
+    "counting": "Conteggio delle celle in corso…",
+    "preview": "{count, plural, =0 {Non c’è nulla da compilare qui.} one {Verrà compilata una cella.} many {Verranno compilate # celle.} other {Verranno compilate # celle.}}",
+    "previewRemaining": "{count, plural, one {Un’altra riga rimarrà per il passaggio successivo, poiché un singolo passaggio compila al massimo {limit} righe.} many {# altre righe rimarranno per il passaggio successivo, poiché un singolo passaggio compila al massimo {limit} righe.} other {# altre righe rimarranno per il passaggio successivo, poiché un singolo passaggio compila al massimo {limit} righe.}}",
+    "previewKept": "{count, plural, one {Una cella con un valore rimane invariata.} many {# celle con un valore rimangono invariate.} other {# celle con un valore rimangono invariate.}}",
+    "previewForbidden": "{count, plural, one {Non puoi modificare una riga.} many {Non puoi modificare # righe.} other {Non puoi modificare # righe.}}",
+    "costHint": "Ogni cella corrisponde a una chiamata al modello e compare nel resoconto sull’utilizzo.",
+    "start": "{count, plural, =0 {Compila} one {Compila una cella} many {Compila # celle} other {Compila # celle}}",
+    "markPending": "L’IA sta compilando questa cella.",
+    "markFilled": "Compilato dall’IA il {when}.",
+    "markFailed": "Il {when} l’IA non è riuscita a compilare questa cella: {reason}",
+    "markEmpty": "Il {when} l’IA non ha trovato nulla di adatto.",
+    "fillCell": "Compila con l’IA",
+    "fillAgain": "Fai clic per compilare di nuovo.",
+    "progress": "{name}: {done} di {total} celle",
+    "progressLabel": "Avanzamento della compilazione di {name}",
+    "cancelRun": "Annulla",
+    "errors": {
+      "model_failed": "La chiamata al modello non è riuscita.",
+      "key_refused": "Il fornitore ha rifiutato la chiave con cui viene pagata l’esecuzione.",
+      "key_unreadable": "Impossibile leggere la chiave di questa area di lavoro.",
+      "answer_unreadable": "La risposta del modello non era leggibile.",
+      "answer_invalid": "La risposta non corrisponde al tipo di colonna.",
+      "option_unknown": "La risposta indica un’opzione inesistente.",
+      "option_untrusted": "Una nuova opzione sarebbe derivata da contenuti esterni, pertanto non ne è stata creata alcuna.",
+      "option_forbidden": "Mancano i permessi per modificare le colonne per creare una nuova opzione.",
+      "person_unknown": "La risposta non indica alcuna persona di questa area di lavoro.",
+      "row_unavailable": "La riga non esiste più o non è più leggibile.",
+      "forbidden": "Non puoi modificare questa riga.",
+      "not_empty": "La cella contiene già un valore.",
+      "not_ai_value": "La cella contiene un valore inserito manualmente.",
+      "budget_exceeded": "Il budget è stato esaurito.",
+      "timed_out": "Il tempo a disposizione per l’esecuzione è scaduto.",
+      "run_ended": "L’esecuzione si è interrotta prima."
+    }
   }
 }

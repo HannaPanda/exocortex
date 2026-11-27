@@ -185,7 +185,11 @@
     "changeColor": "Change color",
     "deleteOption": "Delete option",
     "newOption": "New option",
-    "addOption": "Add option"
+    "addOption": "Add option",
+    "aiMarker": "Column with AI instruction",
+    "aiSetUp": "Set up AI instruction",
+    "aiEdit": "Edit AI instruction",
+    "aiFill": "Fill column with AI"
   },
   "config": {
     "relation": {
@@ -341,6 +345,99 @@
     "trash": "Move to trash",
     "clear": "Clear selection",
     "trashConfirmTitle": "{count, plural, one {Move one row to the trash?} other {Move # rows to the trash?}}",
-    "trashConfirmDescription": "{count, plural, one {The row will be moved to the trash, along with any pages inside it.} other {The # rows will be moved to the trash, along with any pages inside them.}} You can restore each one individually from there."
+    "trashConfirmDescription": "{count, plural, one {The row will be moved to the trash, along with any pages inside it.} other {The # rows will be moved to the trash, along with any pages inside them.}} You can restore each one individually from there.",
+    "aiFill": "Fill with AI"
+  },
+  "aiFill": {
+    "configTitle": "AI instruction for “{name}”",
+    "configDescription": "The AI fills the cells in this column based on what is in each row. It leaves any value entered by a person untouched unless you explicitly state otherwise.",
+    "preset": "Template",
+    "presets": {
+      "summary": "Summary",
+      "key_points": "Key points",
+      "tags": "Tags",
+      "translate": "Translation",
+      "document_date": "Date from document",
+      "sender": "Sender from document",
+      "recipient": "Recipient from document",
+      "custom": "Custom instruction"
+    },
+    "targetLanguage": "Target language",
+    "targetLanguagePlaceholder": "for example English",
+    "instruction": "Instruction",
+    "instructionExtra": "Addition to template (optional)",
+    "instructionPlaceholder": "What should go in this column?",
+    "sources": "What the AI may read",
+    "useContent": "Page content",
+    "useProperties": "The row’s other properties",
+    "useAttachments": "Attached files",
+    "allowNewOptions": "Allow new options",
+    "allowNewOptionsHint": "If no existing option fits, the AI may create a new one. This only works if you have permission to edit columns and the AI has only read your own verified files.",
+    "autoFill": "Auto-fill",
+    "auto": {
+      "off": "Never, on request only",
+      "on_create": "For new rows",
+      "on_change": "For new rows and whenever their content changes"
+    },
+    "autoFillHint": "On its own, the AI only fills empty cells and its own values—never a value entered by a person. Each run is charged like an AI run.",
+    "problems": {
+      "type_unsupported": "The AI cannot fill this kind of column.",
+      "preset_type": "This template does not match this kind of column.",
+      "instruction_required": "A custom instruction needs text.",
+      "language_required": "Translation requires a target language.",
+      "options_type": "New options are only available for select columns.",
+      "no_source": "Choose at least one source the AI is allowed to read from."
+    },
+    "remove": "Remove instruction",
+    "cancel": "Cancel",
+    "save": "Save",
+    "fillTitle": "Fill “{name}” with AI",
+    "fillDescriptionColumn": "The AI goes through the entire column, row by row.",
+    "fillDescriptionRows": "{count, plural, one {The AI fills the cell in the selected row.} other {The AI fills the cells in the # selected rows.}}",
+    "mode": "Which cells",
+    "modes": {
+      "empty_only": "Empty cells only",
+      "replace_ai": "Empty cells and previous AI values",
+      "replace_all": "All cells, including entered values"
+    },
+    "modeHints": {
+      "empty_only": "Existing values remain unchanged.",
+      "replace_ai": "Updates values written by the AI that have not been changed since.",
+      "replace_all": "Also overwrites values entered by hand."
+    },
+    "counting": "Counting cells…",
+    "preview": "{count, plural, =0 {Nothing to fill here.} one {1 cell will be filled.} other {# cells will be filled.}}",
+    "previewRemaining": "{count, plural, one {1 more row remains for the next run, because a run fills at most {limit} rows.} other {# more rows remain for the next run, because a run fills at most {limit} rows.}}",
+    "previewKept": "{count, plural, one {1 cell with a value remains as is.} other {# cells with values remain as they are.}}",
+    "previewForbidden": "{count, plural, one {You cannot edit 1 row.} other {You cannot edit # rows.}}",
+    "costHint": "Each cell is a model call and appears in the usage report.",
+    "start": "{count, plural, =0 {Fill} one {Fill 1 cell} other {Fill # cells}}",
+    "markPending": "The AI is currently filling this cell.",
+    "markFilled": "Filled by AI on {when}.",
+    "markFailed": "The AI could not fill this cell on {when}: {reason}",
+    "markEmpty": "The AI found nothing suitable on {when}.",
+    "fillCell": "Fill with AI",
+    "fillAgain": "Click to fill again.",
+    "progress": "{name}: {done} of {total} cells",
+    "progressLabel": "Progress filling {name}",
+    "cancelRun": "Cancel",
+    "errors": {
+      "model_failed": "The model call failed.",
+      "key_refused": "The provider rejected the key paying for this run.",
+      "key_unreadable": "The key for this workspace cannot be read.",
+      "answer_unreadable": "The model’s response was unreadable.",
+      "answer_invalid": "The response does not match the column type.",
+      "option_unknown": "The response mentions an option that does not exist.",
+      "option_untrusted": "A new option would have come from untrusted content, so none was created.",
+      "option_forbidden": "You do not have permission to edit columns to create a new option.",
+      "person_unknown": "The response does not mention anyone from this workspace.",
+      "row_unavailable": "The row is gone or no longer readable.",
+      "forbidden": "You cannot edit this row.",
+      "not_empty": "The cell already has a value.",
+      "not_ai_value": "The cell has an entered value.",
+      "budget_exceeded": "The budget was exhausted.",
+      "timed_out": "The run timed out.",
+      "run_ended": "The run ended early."
+    }
   }
 }

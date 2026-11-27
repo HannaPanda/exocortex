@@ -5320,6 +5320,318 @@
       "source": "165b0a5acd381ac6",
       "output": "49ddf7c4d21883b4"
     },
+    "database.aiFill.allowNewOptions": {
+      "source": "4698c18226e0f16a",
+      "output": "724a117d2dbd4214"
+    },
+    "database.aiFill.allowNewOptionsHint": {
+      "source": "62411204bc816a90",
+      "output": "477cea00ec89ab96"
+    },
+    "database.aiFill.auto.off": {
+      "source": "be9d46abb699ccdd",
+      "output": "d6c8e053448ba9f9"
+    },
+    "database.aiFill.auto.on_change": {
+      "source": "dbb3a410644bdaac",
+      "output": "406466687b41ff70"
+    },
+    "database.aiFill.auto.on_create": {
+      "source": "b926baff9d255a9b",
+      "output": "44e4b46135e92774"
+    },
+    "database.aiFill.autoFill": {
+      "source": "247bcf83a290af2d",
+      "output": "33840c914613effc"
+    },
+    "database.aiFill.autoFillHint": {
+      "source": "383c3d79b2a6a652",
+      "output": "ee2261ce2a7f4e3e"
+    },
+    "database.aiFill.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
+    },
+    "database.aiFill.cancelRun": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
+    },
+    "database.aiFill.configDescription": {
+      "source": "fcc8ea9f3b3b8a8b",
+      "output": "30e17ba2cc97b851"
+    },
+    "database.aiFill.configTitle": {
+      "source": "9576f5f0b88ce647",
+      "output": "a0aa549c7c567004"
+    },
+    "database.aiFill.costHint": {
+      "source": "f4ce52312b51425c",
+      "output": "96928cc30f6b0608"
+    },
+    "database.aiFill.counting": {
+      "source": "5f29f0aefdb5fe76",
+      "output": "1c2a263619385042"
+    },
+    "database.aiFill.errors.answer_invalid": {
+      "source": "f1a007a00ad6b3c1",
+      "output": "90c62d73bae75497"
+    },
+    "database.aiFill.errors.answer_unreadable": {
+      "source": "b0e180b2a351c537",
+      "output": "2d38d056bbaa27ca"
+    },
+    "database.aiFill.errors.budget_exceeded": {
+      "source": "7146c1deeedb7f37",
+      "output": "d5e7c4cd5fc249b7"
+    },
+    "database.aiFill.errors.forbidden": {
+      "source": "b10096a6f50a4042",
+      "output": "a552c51197afba01"
+    },
+    "database.aiFill.errors.key_refused": {
+      "source": "f796917a8c31130b",
+      "output": "c84bcdc61fcf5c5d"
+    },
+    "database.aiFill.errors.key_unreadable": {
+      "source": "33dffce247f8ee8a",
+      "output": "fe064047ac3f263d"
+    },
+    "database.aiFill.errors.model_failed": {
+      "source": "8d736d5a997ecfdc",
+      "output": "8816a6540df0521e"
+    },
+    "database.aiFill.errors.not_ai_value": {
+      "source": "515ecfed7c96e50c",
+      "output": "2db86f9dcd3f8900"
+    },
+    "database.aiFill.errors.not_empty": {
+      "source": "56de9445f5d69795",
+      "output": "72c100669c1bb0b6"
+    },
+    "database.aiFill.errors.option_forbidden": {
+      "source": "3065b703261a268e",
+      "output": "43db32bbfe518270"
+    },
+    "database.aiFill.errors.option_unknown": {
+      "source": "5b92f05e1edf9913",
+      "output": "807d3c926ee5c61f"
+    },
+    "database.aiFill.errors.option_untrusted": {
+      "source": "e4784072f1c89e40",
+      "output": "9a48f3b3a439f155"
+    },
+    "database.aiFill.errors.person_unknown": {
+      "source": "df5b97c762ca125f",
+      "output": "8bacacef00b0f433"
+    },
+    "database.aiFill.errors.row_unavailable": {
+      "source": "bc244bd180bc1e8f",
+      "output": "e880dd67ce18e756"
+    },
+    "database.aiFill.errors.run_ended": {
+      "source": "a348f74e59a1bdcf",
+      "output": "b676f4faa5dd6948"
+    },
+    "database.aiFill.errors.timed_out": {
+      "source": "6e2ef7ce69160e90",
+      "output": "c7bfeb833821883e"
+    },
+    "database.aiFill.fillAgain": {
+      "source": "afb603ee4ec6a509",
+      "output": "f3604b2935f3f341"
+    },
+    "database.aiFill.fillCell": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "f1cadc617ab3830f"
+    },
+    "database.aiFill.fillDescriptionColumn": {
+      "source": "73e0477f57f82fe2",
+      "output": "461b504000028f5c"
+    },
+    "database.aiFill.fillDescriptionRows": {
+      "source": "13ed559575bd03d7",
+      "output": "f3b08ac9aea597ae"
+    },
+    "database.aiFill.fillTitle": {
+      "source": "0daeb9e06471f530",
+      "output": "e95a648c410ab600"
+    },
+    "database.aiFill.instruction": {
+      "source": "e1812557f499c9f2",
+      "output": "112f3ccb1b36a86a"
+    },
+    "database.aiFill.instructionExtra": {
+      "source": "2201e65c15361482",
+      "output": "8aa2ea5803a16b5a"
+    },
+    "database.aiFill.instructionPlaceholder": {
+      "source": "ea490f765e1561ac",
+      "output": "e4efb4f78c267477"
+    },
+    "database.aiFill.markEmpty": {
+      "source": "5d1bc6092634352e",
+      "output": "a15911c6dd68c314"
+    },
+    "database.aiFill.markFailed": {
+      "source": "87d721ea94306caf",
+      "output": "df5c03c7fb26465d"
+    },
+    "database.aiFill.markFilled": {
+      "source": "eed8c0e19d92ebf1",
+      "output": "2767a3bf7077a037"
+    },
+    "database.aiFill.markPending": {
+      "source": "8068dc4d004d6a28",
+      "output": "fbf53b6e59d074de"
+    },
+    "database.aiFill.mode": {
+      "source": "43578f91c932ba27",
+      "output": "9f35fd784947997b"
+    },
+    "database.aiFill.modeHints.empty_only": {
+      "source": "a44623ce9e23c984",
+      "output": "30eed68e77b9ccc3"
+    },
+    "database.aiFill.modeHints.replace_ai": {
+      "source": "c2880c099810d76a",
+      "output": "b4275f24c8b98e27"
+    },
+    "database.aiFill.modeHints.replace_all": {
+      "source": "49646787d0b069f5",
+      "output": "9f7a060b0613b735"
+    },
+    "database.aiFill.modes.empty_only": {
+      "source": "16fcf5a03d2e26d9",
+      "output": "31146bb1f9fefe01"
+    },
+    "database.aiFill.modes.replace_ai": {
+      "source": "83e53f3a760dcd6d",
+      "output": "3bba52462280bb90"
+    },
+    "database.aiFill.modes.replace_all": {
+      "source": "465481ce851b1c5a",
+      "output": "13b458c58259e424"
+    },
+    "database.aiFill.preset": {
+      "source": "697cf59a6265909a",
+      "output": "0575f29df888a27e"
+    },
+    "database.aiFill.presets.custom": {
+      "source": "f79621c094c19f7f",
+      "output": "8ff736eb8406612e"
+    },
+    "database.aiFill.presets.document_date": {
+      "source": "a6af4d3b8981e35a",
+      "output": "1009126a4e49b7c2"
+    },
+    "database.aiFill.presets.key_points": {
+      "source": "3e43605c04dda66e",
+      "output": "c925a0fbcc77e84b"
+    },
+    "database.aiFill.presets.recipient": {
+      "source": "80980b3a90e3064b",
+      "output": "257ebf5fd7890607"
+    },
+    "database.aiFill.presets.sender": {
+      "source": "fee558c76c500c19",
+      "output": "cf56dc10b969cf0d"
+    },
+    "database.aiFill.presets.summary": {
+      "source": "9d589ca0f3ade5c8",
+      "output": "8e76a94ac8320d51"
+    },
+    "database.aiFill.presets.tags": {
+      "source": "f446aa67edb8d37a",
+      "output": "1331275bc537b4c2"
+    },
+    "database.aiFill.presets.translate": {
+      "source": "08145060a96d1a5e",
+      "output": "6fbd766b1a71cc4d"
+    },
+    "database.aiFill.preview": {
+      "source": "643ad1c3dd837881",
+      "output": "7ccb0a9ed069dd27"
+    },
+    "database.aiFill.previewForbidden": {
+      "source": "7f6ae8553bb02c23",
+      "output": "2f959fcf0cbcc1e0"
+    },
+    "database.aiFill.previewKept": {
+      "source": "4527833bece3d812",
+      "output": "ebddfa7cc2d533b2"
+    },
+    "database.aiFill.previewRemaining": {
+      "source": "c262465605b97371",
+      "output": "50ae1347b09c662e"
+    },
+    "database.aiFill.problems.instruction_required": {
+      "source": "f7afb45aa5efbabb",
+      "output": "067afde56239704c"
+    },
+    "database.aiFill.problems.language_required": {
+      "source": "44c521ad2219b190",
+      "output": "9af3f3a47950d074"
+    },
+    "database.aiFill.problems.no_source": {
+      "source": "156ce1e517226c00",
+      "output": "644e58851a5f5261"
+    },
+    "database.aiFill.problems.options_type": {
+      "source": "25e6b6a5e4dc4cfc",
+      "output": "eda7c8e43072fd51"
+    },
+    "database.aiFill.problems.preset_type": {
+      "source": "11b90c6bf34c7abf",
+      "output": "fff24061588f3c99"
+    },
+    "database.aiFill.problems.type_unsupported": {
+      "source": "6aeeb3e63ff5a09f",
+      "output": "00afcf45af5696bd"
+    },
+    "database.aiFill.progress": {
+      "source": "2f800f0400b785de",
+      "output": "f127df3cc2f6a765"
+    },
+    "database.aiFill.progressLabel": {
+      "source": "e314a3de2c02fcee",
+      "output": "6a68baa8543fb07b"
+    },
+    "database.aiFill.remove": {
+      "source": "d2d632557dfa28da",
+      "output": "79b4368e570c6772"
+    },
+    "database.aiFill.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "1509f561f2416598"
+    },
+    "database.aiFill.sources": {
+      "source": "1822080663f48a10",
+      "output": "e33016f4297b62fc"
+    },
+    "database.aiFill.start": {
+      "source": "59bb1d26aa76c8fb",
+      "output": "5670d86f37b345ce"
+    },
+    "database.aiFill.targetLanguage": {
+      "source": "adadf8178c43b100",
+      "output": "ea252b75a5db40e8"
+    },
+    "database.aiFill.targetLanguagePlaceholder": {
+      "source": "2200ca9074c67936",
+      "output": "8ec4c7fbd4b358fb"
+    },
+    "database.aiFill.useAttachments": {
+      "source": "d5a43d5de330cbf7",
+      "output": "ecc5a28d1f5e894a"
+    },
+    "database.aiFill.useContent": {
+      "source": "c277089021bf3023",
+      "output": "c661980d2edbebfc"
+    },
+    "database.aiFill.useProperties": {
+      "source": "a86c52cf1134f030",
+      "output": "4b37d9601a6c5797"
+    },
     "database.board.chooseGroupProperty": {
       "source": "e5b414d9288ce8ce",
       "output": "4cac12bacfb18574"
@@ -6036,6 +6348,22 @@
       "source": "f95c8f4fc95f757c",
       "output": "ffbcabd155ad0e68"
     },
+    "database.propertyMenu.aiEdit": {
+      "source": "977311cdcda61190",
+      "output": "ca28a552bc4b9d67"
+    },
+    "database.propertyMenu.aiFill": {
+      "source": "4acd48040768601d",
+      "output": "f1d72bdb1b06c0b3"
+    },
+    "database.propertyMenu.aiMarker": {
+      "source": "8501f5a8dc0b46fd",
+      "output": "ecea050b23267132"
+    },
+    "database.propertyMenu.aiSetUp": {
+      "source": "d7efd4be09af772e",
+      "output": "0a5aa049857c6b66"
+    },
     "database.propertyMenu.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "19766ed6ccb2f4a3"
@@ -6263,6 +6591,10 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "f59ab8d1331b7b16"
+    },
+    "database.selection.aiFill": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "f1cadc617ab3830f"
     },
     "database.selection.clear": {
       "source": "f4d1e48c718f8956",
@@ -12985,16 +13317,16 @@
       "output": "93869aaaffdd94c2"
     },
     "features.datenbank-ki-spalten.details.p2": {
-      "source": "f446f6c930630ff0",
-      "output": "6caabd34ce7be203"
+      "source": "22489920e90e6b9a",
+      "output": "80262450a588f2a8"
     },
     "features.datenbank-ki-spalten.details.p3": {
       "source": "2f37fa50412342ac",
       "output": "61c8def890882c19"
     },
     "features.datenbank-ki-spalten.details.p4": {
-      "source": "7bf7da1f22bfbd01",
-      "output": "42755771dd473368"
+      "source": "89bc8af9a3f85b99",
+      "output": "7f980a5c8d3d6047"
     },
     "features.datenbank-ki-spalten.summary": {
       "source": "d299d3c176e8509e",
@@ -13003,6 +13335,10 @@
     "features.datenbank-ki-spalten.title": {
       "source": "936d9a1e13438ab4",
       "output": "c6be2eb182367aa3"
+    },
+    "features.datenbank-ki-spalten.where": {
+      "source": "0868d4b22053d073",
+      "output": "19880017da3c05e5"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -22188,6 +22524,26 @@
       "source": "90a7a8715ab690cb",
       "output": "5e86170847cef1ac"
     },
+    "shell.paletteCommands.rowSelection.aiFill": {
+      "source": "39be5c88f2267065",
+      "output": "b414fbeec8c012f9"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumn": {
+      "source": "4acd48040768601d",
+      "output": "f1d72bdb1b06c0b3"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumnKeywords": {
+      "source": "b936f6ddeb26933f",
+      "output": "2d4f8a921bf92338"
+    },
+    "shell.paletteCommands.rowSelection.aiFillKeywords": {
+      "source": "a738576dec47896c",
+      "output": "632a54fbc797d990"
+    },
+    "shell.paletteCommands.rowSelection.aiFillPlaceholder": {
+      "source": "59128adce081c782",
+      "output": "ffaf47920a4f3df6"
+    },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
       "output": "cea4d2e010b8fd52"
@@ -30710,6 +31066,318 @@
       "source": "165b0a5acd381ac6",
       "output": "3596f448b0ef929a"
     },
+    "database.aiFill.allowNewOptions": {
+      "source": "4698c18226e0f16a",
+      "output": "88a1dd23cb14119c"
+    },
+    "database.aiFill.allowNewOptionsHint": {
+      "source": "62411204bc816a90",
+      "output": "a6debdd76ae39bba"
+    },
+    "database.aiFill.auto.off": {
+      "source": "be9d46abb699ccdd",
+      "output": "ee8cc05c67e08949"
+    },
+    "database.aiFill.auto.on_change": {
+      "source": "dbb3a410644bdaac",
+      "output": "0fc1f7606c07e0b8"
+    },
+    "database.aiFill.auto.on_create": {
+      "source": "b926baff9d255a9b",
+      "output": "5ef96b9a0cb8422a"
+    },
+    "database.aiFill.autoFill": {
+      "source": "247bcf83a290af2d",
+      "output": "3cc9158758c567a6"
+    },
+    "database.aiFill.autoFillHint": {
+      "source": "383c3d79b2a6a652",
+      "output": "ad193f087bae745d"
+    },
+    "database.aiFill.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "database.aiFill.cancelRun": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "database.aiFill.configDescription": {
+      "source": "fcc8ea9f3b3b8a8b",
+      "output": "ac4c8ea0c4afcbd3"
+    },
+    "database.aiFill.configTitle": {
+      "source": "9576f5f0b88ce647",
+      "output": "89a2ddef328933e0"
+    },
+    "database.aiFill.costHint": {
+      "source": "f4ce52312b51425c",
+      "output": "068e2355b4bd7d82"
+    },
+    "database.aiFill.counting": {
+      "source": "5f29f0aefdb5fe76",
+      "output": "a14f1f7a53da257b"
+    },
+    "database.aiFill.errors.answer_invalid": {
+      "source": "f1a007a00ad6b3c1",
+      "output": "be11d9174d9125d1"
+    },
+    "database.aiFill.errors.answer_unreadable": {
+      "source": "b0e180b2a351c537",
+      "output": "e1f359c8fd5dad37"
+    },
+    "database.aiFill.errors.budget_exceeded": {
+      "source": "7146c1deeedb7f37",
+      "output": "7ee1def03fdebaaa"
+    },
+    "database.aiFill.errors.forbidden": {
+      "source": "b10096a6f50a4042",
+      "output": "ecd8a28b98fe53f8"
+    },
+    "database.aiFill.errors.key_refused": {
+      "source": "f796917a8c31130b",
+      "output": "d602d27ccb08e337"
+    },
+    "database.aiFill.errors.key_unreadable": {
+      "source": "33dffce247f8ee8a",
+      "output": "c68f45b89054b8c7"
+    },
+    "database.aiFill.errors.model_failed": {
+      "source": "8d736d5a997ecfdc",
+      "output": "d85207cce785c132"
+    },
+    "database.aiFill.errors.not_ai_value": {
+      "source": "515ecfed7c96e50c",
+      "output": "2ef7f1eb8004c31d"
+    },
+    "database.aiFill.errors.not_empty": {
+      "source": "56de9445f5d69795",
+      "output": "61b75822185a22ce"
+    },
+    "database.aiFill.errors.option_forbidden": {
+      "source": "3065b703261a268e",
+      "output": "d2c3ee5b453d70e4"
+    },
+    "database.aiFill.errors.option_unknown": {
+      "source": "5b92f05e1edf9913",
+      "output": "17ea6bbd5e5b0014"
+    },
+    "database.aiFill.errors.option_untrusted": {
+      "source": "e4784072f1c89e40",
+      "output": "d28a703d6461df5d"
+    },
+    "database.aiFill.errors.person_unknown": {
+      "source": "df5b97c762ca125f",
+      "output": "70ecb94ea14b1695"
+    },
+    "database.aiFill.errors.row_unavailable": {
+      "source": "bc244bd180bc1e8f",
+      "output": "a95f8f146b589414"
+    },
+    "database.aiFill.errors.run_ended": {
+      "source": "a348f74e59a1bdcf",
+      "output": "bbbb7448b8c14e35"
+    },
+    "database.aiFill.errors.timed_out": {
+      "source": "6e2ef7ce69160e90",
+      "output": "ebf8b8818f7d00e3"
+    },
+    "database.aiFill.fillAgain": {
+      "source": "afb603ee4ec6a509",
+      "output": "efb0e022f6b80e63"
+    },
+    "database.aiFill.fillCell": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "5ce000f4a7a0ac1e"
+    },
+    "database.aiFill.fillDescriptionColumn": {
+      "source": "73e0477f57f82fe2",
+      "output": "05ca263760835179"
+    },
+    "database.aiFill.fillDescriptionRows": {
+      "source": "13ed559575bd03d7",
+      "output": "980eff9bd494ffaf"
+    },
+    "database.aiFill.fillTitle": {
+      "source": "0daeb9e06471f530",
+      "output": "27b2178e7c7be3cc"
+    },
+    "database.aiFill.instruction": {
+      "source": "e1812557f499c9f2",
+      "output": "07dbe28f35c9ec85"
+    },
+    "database.aiFill.instructionExtra": {
+      "source": "2201e65c15361482",
+      "output": "3bccbc6e24064da7"
+    },
+    "database.aiFill.instructionPlaceholder": {
+      "source": "ea490f765e1561ac",
+      "output": "7c806ce0a6adeeaa"
+    },
+    "database.aiFill.markEmpty": {
+      "source": "5d1bc6092634352e",
+      "output": "2aaaba3748dfa2fb"
+    },
+    "database.aiFill.markFailed": {
+      "source": "87d721ea94306caf",
+      "output": "d55a4c8f92c07ae4"
+    },
+    "database.aiFill.markFilled": {
+      "source": "eed8c0e19d92ebf1",
+      "output": "29772e8857d6aeb2"
+    },
+    "database.aiFill.markPending": {
+      "source": "8068dc4d004d6a28",
+      "output": "a4df16d65b41ef0a"
+    },
+    "database.aiFill.mode": {
+      "source": "43578f91c932ba27",
+      "output": "ba424b3b68174294"
+    },
+    "database.aiFill.modeHints.empty_only": {
+      "source": "a44623ce9e23c984",
+      "output": "341e4295d3e8eca5"
+    },
+    "database.aiFill.modeHints.replace_ai": {
+      "source": "c2880c099810d76a",
+      "output": "7f902e396452b62c"
+    },
+    "database.aiFill.modeHints.replace_all": {
+      "source": "49646787d0b069f5",
+      "output": "1075cb8d738ec1d6"
+    },
+    "database.aiFill.modes.empty_only": {
+      "source": "16fcf5a03d2e26d9",
+      "output": "1db6370b4dab6092"
+    },
+    "database.aiFill.modes.replace_ai": {
+      "source": "83e53f3a760dcd6d",
+      "output": "5318b0f4e9627fe1"
+    },
+    "database.aiFill.modes.replace_all": {
+      "source": "465481ce851b1c5a",
+      "output": "4b2d9d4a4015348a"
+    },
+    "database.aiFill.preset": {
+      "source": "697cf59a6265909a",
+      "output": "65ebd9bd0f84e77a"
+    },
+    "database.aiFill.presets.custom": {
+      "source": "f79621c094c19f7f",
+      "output": "33baee798dd25e79"
+    },
+    "database.aiFill.presets.document_date": {
+      "source": "a6af4d3b8981e35a",
+      "output": "1218c91f97233736"
+    },
+    "database.aiFill.presets.key_points": {
+      "source": "3e43605c04dda66e",
+      "output": "f79c65a217bcb03b"
+    },
+    "database.aiFill.presets.recipient": {
+      "source": "80980b3a90e3064b",
+      "output": "26d13e63cd892d8a"
+    },
+    "database.aiFill.presets.sender": {
+      "source": "fee558c76c500c19",
+      "output": "2408a3d377d3f0c3"
+    },
+    "database.aiFill.presets.summary": {
+      "source": "9d589ca0f3ade5c8",
+      "output": "ed7bdc67c84b3ed6"
+    },
+    "database.aiFill.presets.tags": {
+      "source": "f446aa67edb8d37a",
+      "output": "137cb944c5267302"
+    },
+    "database.aiFill.presets.translate": {
+      "source": "08145060a96d1a5e",
+      "output": "f36e5b259bc91585"
+    },
+    "database.aiFill.preview": {
+      "source": "643ad1c3dd837881",
+      "output": "91e6e70d1844c012"
+    },
+    "database.aiFill.previewForbidden": {
+      "source": "7f6ae8553bb02c23",
+      "output": "64eafca6c9a40f5f"
+    },
+    "database.aiFill.previewKept": {
+      "source": "4527833bece3d812",
+      "output": "7d7f15b95431e08b"
+    },
+    "database.aiFill.previewRemaining": {
+      "source": "c262465605b97371",
+      "output": "c158c07093402ffe"
+    },
+    "database.aiFill.problems.instruction_required": {
+      "source": "f7afb45aa5efbabb",
+      "output": "b02f12c365a56433"
+    },
+    "database.aiFill.problems.language_required": {
+      "source": "44c521ad2219b190",
+      "output": "4445282600b68016"
+    },
+    "database.aiFill.problems.no_source": {
+      "source": "156ce1e517226c00",
+      "output": "d309147d960ddb4c"
+    },
+    "database.aiFill.problems.options_type": {
+      "source": "25e6b6a5e4dc4cfc",
+      "output": "eb29736cc7e21394"
+    },
+    "database.aiFill.problems.preset_type": {
+      "source": "11b90c6bf34c7abf",
+      "output": "a53988908bdf88a1"
+    },
+    "database.aiFill.problems.type_unsupported": {
+      "source": "6aeeb3e63ff5a09f",
+      "output": "234d32f9ac063c7b"
+    },
+    "database.aiFill.progress": {
+      "source": "2f800f0400b785de",
+      "output": "aaaf32fe587d9ef1"
+    },
+    "database.aiFill.progressLabel": {
+      "source": "e314a3de2c02fcee",
+      "output": "46a6093e7d04bf79"
+    },
+    "database.aiFill.remove": {
+      "source": "d2d632557dfa28da",
+      "output": "5dffacd2c119d3b1"
+    },
+    "database.aiFill.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "13e51a210f45ed1b"
+    },
+    "database.aiFill.sources": {
+      "source": "1822080663f48a10",
+      "output": "33bfeb68fccce56a"
+    },
+    "database.aiFill.start": {
+      "source": "59bb1d26aa76c8fb",
+      "output": "8aa81f3b4fb542f7"
+    },
+    "database.aiFill.targetLanguage": {
+      "source": "adadf8178c43b100",
+      "output": "2c6aa5621b0a9571"
+    },
+    "database.aiFill.targetLanguagePlaceholder": {
+      "source": "2200ca9074c67936",
+      "output": "88221c9ac0a3954a"
+    },
+    "database.aiFill.useAttachments": {
+      "source": "d5a43d5de330cbf7",
+      "output": "a85fad96eea98af3"
+    },
+    "database.aiFill.useContent": {
+      "source": "c277089021bf3023",
+      "output": "0e11b95d213bc233"
+    },
+    "database.aiFill.useProperties": {
+      "source": "a86c52cf1134f030",
+      "output": "3dac83f71b27ff7a"
+    },
     "database.board.chooseGroupProperty": {
       "source": "e5b414d9288ce8ce",
       "output": "ca71acd60442f8ca"
@@ -31426,6 +32094,22 @@
       "source": "f95c8f4fc95f757c",
       "output": "7dd7985291ca12fc"
     },
+    "database.propertyMenu.aiEdit": {
+      "source": "977311cdcda61190",
+      "output": "3d18fe6e0bcf01a7"
+    },
+    "database.propertyMenu.aiFill": {
+      "source": "4acd48040768601d",
+      "output": "b3318b86238f82cc"
+    },
+    "database.propertyMenu.aiMarker": {
+      "source": "8501f5a8dc0b46fd",
+      "output": "e1412b0694d83047"
+    },
+    "database.propertyMenu.aiSetUp": {
+      "source": "d7efd4be09af772e",
+      "output": "f5e0fb76a31e6185"
+    },
     "database.propertyMenu.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -31653,6 +32337,10 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "30d1a8cd45b235e9"
+    },
+    "database.selection.aiFill": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "5ce000f4a7a0ac1e"
     },
     "database.selection.clear": {
       "source": "f4d1e48c718f8956",
@@ -38375,16 +39063,16 @@
       "output": "214fff5fb543cf38"
     },
     "features.datenbank-ki-spalten.details.p2": {
-      "source": "f446f6c930630ff0",
-      "output": "6e55dd8863e87c0e"
+      "source": "22489920e90e6b9a",
+      "output": "410c7efdc8b6f5d4"
     },
     "features.datenbank-ki-spalten.details.p3": {
       "source": "2f37fa50412342ac",
       "output": "92aece56d38ac505"
     },
     "features.datenbank-ki-spalten.details.p4": {
-      "source": "7bf7da1f22bfbd01",
-      "output": "1ad0ef1a2b245da6"
+      "source": "89bc8af9a3f85b99",
+      "output": "32acf5e812e2cc59"
     },
     "features.datenbank-ki-spalten.summary": {
       "source": "d299d3c176e8509e",
@@ -38393,6 +39081,10 @@
     "features.datenbank-ki-spalten.title": {
       "source": "936d9a1e13438ab4",
       "output": "694ecd1e3a36de09"
+    },
+    "features.datenbank-ki-spalten.where": {
+      "source": "0868d4b22053d073",
+      "output": "d900af89df3a14a3"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -47578,6 +48270,26 @@
       "source": "90a7a8715ab690cb",
       "output": "a69ccbfd2ee63321"
     },
+    "shell.paletteCommands.rowSelection.aiFill": {
+      "source": "39be5c88f2267065",
+      "output": "cfd49536646428f3"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumn": {
+      "source": "4acd48040768601d",
+      "output": "b3318b86238f82cc"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumnKeywords": {
+      "source": "b936f6ddeb26933f",
+      "output": "5b7839df0b33c919"
+    },
+    "shell.paletteCommands.rowSelection.aiFillKeywords": {
+      "source": "a738576dec47896c",
+      "output": "ced4000d329548aa"
+    },
+    "shell.paletteCommands.rowSelection.aiFillPlaceholder": {
+      "source": "59128adce081c782",
+      "output": "10e3aefd75aefd41"
+    },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
       "output": "85630e64570942dd"
@@ -56100,6 +56812,318 @@
       "source": "165b0a5acd381ac6",
       "output": "91ab0d619233f20d"
     },
+    "database.aiFill.allowNewOptions": {
+      "source": "4698c18226e0f16a",
+      "output": "0f42341c6cff1415"
+    },
+    "database.aiFill.allowNewOptionsHint": {
+      "source": "62411204bc816a90",
+      "output": "c69bb66d5dced975"
+    },
+    "database.aiFill.auto.off": {
+      "source": "be9d46abb699ccdd",
+      "output": "97b1ace1eae13929"
+    },
+    "database.aiFill.auto.on_change": {
+      "source": "dbb3a410644bdaac",
+      "output": "cafc861ffbfbaf82"
+    },
+    "database.aiFill.auto.on_create": {
+      "source": "b926baff9d255a9b",
+      "output": "e9c6b9ad94fa2699"
+    },
+    "database.aiFill.autoFill": {
+      "source": "247bcf83a290af2d",
+      "output": "d24c26c84c177ea2"
+    },
+    "database.aiFill.autoFillHint": {
+      "source": "383c3d79b2a6a652",
+      "output": "20f0800e43820a2a"
+    },
+    "database.aiFill.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
+    },
+    "database.aiFill.cancelRun": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
+    },
+    "database.aiFill.configDescription": {
+      "source": "fcc8ea9f3b3b8a8b",
+      "output": "423b18418b087e3f"
+    },
+    "database.aiFill.configTitle": {
+      "source": "9576f5f0b88ce647",
+      "output": "91f9c718f8b04653"
+    },
+    "database.aiFill.costHint": {
+      "source": "f4ce52312b51425c",
+      "output": "fd375e84c61680ae"
+    },
+    "database.aiFill.counting": {
+      "source": "5f29f0aefdb5fe76",
+      "output": "35972712b6a9878c"
+    },
+    "database.aiFill.errors.answer_invalid": {
+      "source": "f1a007a00ad6b3c1",
+      "output": "fc0be3140a9326c6"
+    },
+    "database.aiFill.errors.answer_unreadable": {
+      "source": "b0e180b2a351c537",
+      "output": "ac4ce315987375d8"
+    },
+    "database.aiFill.errors.budget_exceeded": {
+      "source": "7146c1deeedb7f37",
+      "output": "2938d130226fcafd"
+    },
+    "database.aiFill.errors.forbidden": {
+      "source": "b10096a6f50a4042",
+      "output": "27fbe3cdbfdf43dc"
+    },
+    "database.aiFill.errors.key_refused": {
+      "source": "f796917a8c31130b",
+      "output": "663630f917aacd00"
+    },
+    "database.aiFill.errors.key_unreadable": {
+      "source": "33dffce247f8ee8a",
+      "output": "707531c6cf1e84c8"
+    },
+    "database.aiFill.errors.model_failed": {
+      "source": "8d736d5a997ecfdc",
+      "output": "099772fd8d2b8d71"
+    },
+    "database.aiFill.errors.not_ai_value": {
+      "source": "515ecfed7c96e50c",
+      "output": "bd56398202614cae"
+    },
+    "database.aiFill.errors.not_empty": {
+      "source": "56de9445f5d69795",
+      "output": "3ef6fc03cc189911"
+    },
+    "database.aiFill.errors.option_forbidden": {
+      "source": "3065b703261a268e",
+      "output": "4208b3742fd08e37"
+    },
+    "database.aiFill.errors.option_unknown": {
+      "source": "5b92f05e1edf9913",
+      "output": "2338c36892ec5976"
+    },
+    "database.aiFill.errors.option_untrusted": {
+      "source": "e4784072f1c89e40",
+      "output": "7f7d1698fbcfd73e"
+    },
+    "database.aiFill.errors.person_unknown": {
+      "source": "df5b97c762ca125f",
+      "output": "6693a7547fb5a81b"
+    },
+    "database.aiFill.errors.row_unavailable": {
+      "source": "bc244bd180bc1e8f",
+      "output": "725f5a24aab798f9"
+    },
+    "database.aiFill.errors.run_ended": {
+      "source": "a348f74e59a1bdcf",
+      "output": "20b8e0e3ddb0339d"
+    },
+    "database.aiFill.errors.timed_out": {
+      "source": "6e2ef7ce69160e90",
+      "output": "d437bf019d4b3aaa"
+    },
+    "database.aiFill.fillAgain": {
+      "source": "afb603ee4ec6a509",
+      "output": "b66ffe27af16ce37"
+    },
+    "database.aiFill.fillCell": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "b87a06b8eda6b692"
+    },
+    "database.aiFill.fillDescriptionColumn": {
+      "source": "73e0477f57f82fe2",
+      "output": "4cf644c92d9aac83"
+    },
+    "database.aiFill.fillDescriptionRows": {
+      "source": "13ed559575bd03d7",
+      "output": "0e6f92756e08fcc3"
+    },
+    "database.aiFill.fillTitle": {
+      "source": "0daeb9e06471f530",
+      "output": "6796f221b34e2144"
+    },
+    "database.aiFill.instruction": {
+      "source": "e1812557f499c9f2",
+      "output": "112f3ccb1b36a86a"
+    },
+    "database.aiFill.instructionExtra": {
+      "source": "2201e65c15361482",
+      "output": "f1d37de6e57711fd"
+    },
+    "database.aiFill.instructionPlaceholder": {
+      "source": "ea490f765e1561ac",
+      "output": "c416d76494cc9a24"
+    },
+    "database.aiFill.markEmpty": {
+      "source": "5d1bc6092634352e",
+      "output": "07144ea2b4df772c"
+    },
+    "database.aiFill.markFailed": {
+      "source": "87d721ea94306caf",
+      "output": "126a0016a69d46ab"
+    },
+    "database.aiFill.markFilled": {
+      "source": "eed8c0e19d92ebf1",
+      "output": "892b8d8c3282e9c2"
+    },
+    "database.aiFill.markPending": {
+      "source": "8068dc4d004d6a28",
+      "output": "b28fd1422ca997a2"
+    },
+    "database.aiFill.mode": {
+      "source": "43578f91c932ba27",
+      "output": "a155db412f459f31"
+    },
+    "database.aiFill.modeHints.empty_only": {
+      "source": "a44623ce9e23c984",
+      "output": "7d64f8410c76f639"
+    },
+    "database.aiFill.modeHints.replace_ai": {
+      "source": "c2880c099810d76a",
+      "output": "4096f63c15cdc8fa"
+    },
+    "database.aiFill.modeHints.replace_all": {
+      "source": "49646787d0b069f5",
+      "output": "1ed06ef22cec12cf"
+    },
+    "database.aiFill.modes.empty_only": {
+      "source": "16fcf5a03d2e26d9",
+      "output": "9f821d3ceb5b38dd"
+    },
+    "database.aiFill.modes.replace_ai": {
+      "source": "83e53f3a760dcd6d",
+      "output": "2228e6ac51785c90"
+    },
+    "database.aiFill.modes.replace_all": {
+      "source": "465481ce851b1c5a",
+      "output": "196a7462020b364c"
+    },
+    "database.aiFill.preset": {
+      "source": "697cf59a6265909a",
+      "output": "e61bbb839ef8d8cb"
+    },
+    "database.aiFill.presets.custom": {
+      "source": "f79621c094c19f7f",
+      "output": "96e16c1ddb7c0899"
+    },
+    "database.aiFill.presets.document_date": {
+      "source": "a6af4d3b8981e35a",
+      "output": "fa058e14bfee3042"
+    },
+    "database.aiFill.presets.key_points": {
+      "source": "3e43605c04dda66e",
+      "output": "40085b5d3ab2bc21"
+    },
+    "database.aiFill.presets.recipient": {
+      "source": "80980b3a90e3064b",
+      "output": "c71a4c603d6f9b6a"
+    },
+    "database.aiFill.presets.sender": {
+      "source": "fee558c76c500c19",
+      "output": "be3848f5a63e2c94"
+    },
+    "database.aiFill.presets.summary": {
+      "source": "9d589ca0f3ade5c8",
+      "output": "9d750fae748681ca"
+    },
+    "database.aiFill.presets.tags": {
+      "source": "f446aa67edb8d37a",
+      "output": "8d86add39f466227"
+    },
+    "database.aiFill.presets.translate": {
+      "source": "08145060a96d1a5e",
+      "output": "e6646d00094878b4"
+    },
+    "database.aiFill.preview": {
+      "source": "643ad1c3dd837881",
+      "output": "88be97ddd5d33af8"
+    },
+    "database.aiFill.previewForbidden": {
+      "source": "7f6ae8553bb02c23",
+      "output": "f3222f15e65ea942"
+    },
+    "database.aiFill.previewKept": {
+      "source": "4527833bece3d812",
+      "output": "4f62cbcebad74883"
+    },
+    "database.aiFill.previewRemaining": {
+      "source": "c262465605b97371",
+      "output": "917dc9a1a9d1e798"
+    },
+    "database.aiFill.problems.instruction_required": {
+      "source": "f7afb45aa5efbabb",
+      "output": "aa3ca99ce46cdcc7"
+    },
+    "database.aiFill.problems.language_required": {
+      "source": "44c521ad2219b190",
+      "output": "47cb3475026c89a5"
+    },
+    "database.aiFill.problems.no_source": {
+      "source": "156ce1e517226c00",
+      "output": "f78e49dbce72aad0"
+    },
+    "database.aiFill.problems.options_type": {
+      "source": "25e6b6a5e4dc4cfc",
+      "output": "cbad8b4b32c7f7fd"
+    },
+    "database.aiFill.problems.preset_type": {
+      "source": "11b90c6bf34c7abf",
+      "output": "7454645b59a21635"
+    },
+    "database.aiFill.problems.type_unsupported": {
+      "source": "6aeeb3e63ff5a09f",
+      "output": "a098f272d8d0e0d2"
+    },
+    "database.aiFill.progress": {
+      "source": "2f800f0400b785de",
+      "output": "f9165127668cce10"
+    },
+    "database.aiFill.progressLabel": {
+      "source": "e314a3de2c02fcee",
+      "output": "a3411e0295bb8ea7"
+    },
+    "database.aiFill.remove": {
+      "source": "d2d632557dfa28da",
+      "output": "d257670fa84dfc9f"
+    },
+    "database.aiFill.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "71dc74873e23107d"
+    },
+    "database.aiFill.sources": {
+      "source": "1822080663f48a10",
+      "output": "f78341359c57c852"
+    },
+    "database.aiFill.start": {
+      "source": "59bb1d26aa76c8fb",
+      "output": "cebaecb9fbc15789"
+    },
+    "database.aiFill.targetLanguage": {
+      "source": "adadf8178c43b100",
+      "output": "1af01df6e3c9cd9c"
+    },
+    "database.aiFill.targetLanguagePlaceholder": {
+      "source": "2200ca9074c67936",
+      "output": "9ae839c17aa1a0c1"
+    },
+    "database.aiFill.useAttachments": {
+      "source": "d5a43d5de330cbf7",
+      "output": "0cb2492afc478b14"
+    },
+    "database.aiFill.useContent": {
+      "source": "c277089021bf3023",
+      "output": "1605542d9f2a7533"
+    },
+    "database.aiFill.useProperties": {
+      "source": "a86c52cf1134f030",
+      "output": "eb71d93fe193ca83"
+    },
     "database.board.chooseGroupProperty": {
       "source": "e5b414d9288ce8ce",
       "output": "4fa56638d77e9003"
@@ -56816,6 +57840,22 @@
       "source": "f95c8f4fc95f757c",
       "output": "fe53de84368498d3"
     },
+    "database.propertyMenu.aiEdit": {
+      "source": "977311cdcda61190",
+      "output": "f0c651856158bbee"
+    },
+    "database.propertyMenu.aiFill": {
+      "source": "4acd48040768601d",
+      "output": "2ee43949815ed90c"
+    },
+    "database.propertyMenu.aiMarker": {
+      "source": "8501f5a8dc0b46fd",
+      "output": "00b09d48a68fa310"
+    },
+    "database.propertyMenu.aiSetUp": {
+      "source": "d7efd4be09af772e",
+      "output": "a70ed8a6de34fe24"
+    },
     "database.propertyMenu.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "46ad3916f6a09798"
@@ -57043,6 +58083,10 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "2c847c1c25d59e21"
+    },
+    "database.selection.aiFill": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "b87a06b8eda6b692"
     },
     "database.selection.clear": {
       "source": "f4d1e48c718f8956",
@@ -63765,16 +64809,16 @@
       "output": "53679ef27c8bc6ac"
     },
     "features.datenbank-ki-spalten.details.p2": {
-      "source": "f446f6c930630ff0",
-      "output": "b8b028dbfcd0be9f"
+      "source": "22489920e90e6b9a",
+      "output": "a2942db5492292d6"
     },
     "features.datenbank-ki-spalten.details.p3": {
       "source": "2f37fa50412342ac",
       "output": "f7c86cb6eebaaa28"
     },
     "features.datenbank-ki-spalten.details.p4": {
-      "source": "7bf7da1f22bfbd01",
-      "output": "578796d3c73994d5"
+      "source": "89bc8af9a3f85b99",
+      "output": "dc766fb8dd18cca2"
     },
     "features.datenbank-ki-spalten.summary": {
       "source": "d299d3c176e8509e",
@@ -63783,6 +64827,10 @@
     "features.datenbank-ki-spalten.title": {
       "source": "936d9a1e13438ab4",
       "output": "9bbd3aa45f9133f9"
+    },
+    "features.datenbank-ki-spalten.where": {
+      "source": "0868d4b22053d073",
+      "output": "6a3fdcf06a4d4682"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -72968,6 +74016,26 @@
       "source": "90a7a8715ab690cb",
       "output": "509275280bf8f738"
     },
+    "shell.paletteCommands.rowSelection.aiFill": {
+      "source": "39be5c88f2267065",
+      "output": "a74ce34366180b18"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumn": {
+      "source": "4acd48040768601d",
+      "output": "2ee43949815ed90c"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumnKeywords": {
+      "source": "b936f6ddeb26933f",
+      "output": "0f92730c187cd36c"
+    },
+    "shell.paletteCommands.rowSelection.aiFillKeywords": {
+      "source": "a738576dec47896c",
+      "output": "4f4e5de1ea9039e1"
+    },
+    "shell.paletteCommands.rowSelection.aiFillPlaceholder": {
+      "source": "59128adce081c782",
+      "output": "998c3b56420bd82f"
+    },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
       "output": "dada8eb20666dfb4"
@@ -81490,6 +82558,318 @@
       "source": "165b0a5acd381ac6",
       "output": "aa3ad5704fecc086"
     },
+    "database.aiFill.allowNewOptions": {
+      "source": "4698c18226e0f16a",
+      "output": "cdb537beeda905f7"
+    },
+    "database.aiFill.allowNewOptionsHint": {
+      "source": "62411204bc816a90",
+      "output": "8206f1021271c82f"
+    },
+    "database.aiFill.auto.off": {
+      "source": "be9d46abb699ccdd",
+      "output": "e6f6a418751a258f"
+    },
+    "database.aiFill.auto.on_change": {
+      "source": "dbb3a410644bdaac",
+      "output": "f7a4ce70db58b17c"
+    },
+    "database.aiFill.auto.on_create": {
+      "source": "b926baff9d255a9b",
+      "output": "bed8e64fddac049e"
+    },
+    "database.aiFill.autoFill": {
+      "source": "247bcf83a290af2d",
+      "output": "8a9fda4fe7255c72"
+    },
+    "database.aiFill.autoFillHint": {
+      "source": "383c3d79b2a6a652",
+      "output": "555d4ac4164486c6"
+    },
+    "database.aiFill.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
+    },
+    "database.aiFill.cancelRun": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
+    },
+    "database.aiFill.configDescription": {
+      "source": "fcc8ea9f3b3b8a8b",
+      "output": "4a974150f939725a"
+    },
+    "database.aiFill.configTitle": {
+      "source": "9576f5f0b88ce647",
+      "output": "f9279b12b36a01b6"
+    },
+    "database.aiFill.costHint": {
+      "source": "f4ce52312b51425c",
+      "output": "403d2a8564f89611"
+    },
+    "database.aiFill.counting": {
+      "source": "5f29f0aefdb5fe76",
+      "output": "11a9ce77ce10acc7"
+    },
+    "database.aiFill.errors.answer_invalid": {
+      "source": "f1a007a00ad6b3c1",
+      "output": "69dee2f6bcbbc6bf"
+    },
+    "database.aiFill.errors.answer_unreadable": {
+      "source": "b0e180b2a351c537",
+      "output": "8c30d9e85f901637"
+    },
+    "database.aiFill.errors.budget_exceeded": {
+      "source": "7146c1deeedb7f37",
+      "output": "f00504bdd752e557"
+    },
+    "database.aiFill.errors.forbidden": {
+      "source": "b10096a6f50a4042",
+      "output": "f4c15b1807643299"
+    },
+    "database.aiFill.errors.key_refused": {
+      "source": "f796917a8c31130b",
+      "output": "b3ba52a40055b32f"
+    },
+    "database.aiFill.errors.key_unreadable": {
+      "source": "33dffce247f8ee8a",
+      "output": "7c441934f9a3fc3a"
+    },
+    "database.aiFill.errors.model_failed": {
+      "source": "8d736d5a997ecfdc",
+      "output": "cd4e60b894a9c827"
+    },
+    "database.aiFill.errors.not_ai_value": {
+      "source": "515ecfed7c96e50c",
+      "output": "e60ee9ff44d6f4ee"
+    },
+    "database.aiFill.errors.not_empty": {
+      "source": "56de9445f5d69795",
+      "output": "85fbe3104a0a92c2"
+    },
+    "database.aiFill.errors.option_forbidden": {
+      "source": "3065b703261a268e",
+      "output": "c172661c8b9242c7"
+    },
+    "database.aiFill.errors.option_unknown": {
+      "source": "5b92f05e1edf9913",
+      "output": "c9770a1961d34cc7"
+    },
+    "database.aiFill.errors.option_untrusted": {
+      "source": "e4784072f1c89e40",
+      "output": "4ea9b7d22aac8d06"
+    },
+    "database.aiFill.errors.person_unknown": {
+      "source": "df5b97c762ca125f",
+      "output": "5b0d45b0a2def531"
+    },
+    "database.aiFill.errors.row_unavailable": {
+      "source": "bc244bd180bc1e8f",
+      "output": "e3c8227e86d94f92"
+    },
+    "database.aiFill.errors.run_ended": {
+      "source": "a348f74e59a1bdcf",
+      "output": "19bc38339f6c5f3b"
+    },
+    "database.aiFill.errors.timed_out": {
+      "source": "6e2ef7ce69160e90",
+      "output": "9ca92b70d5636d21"
+    },
+    "database.aiFill.fillAgain": {
+      "source": "afb603ee4ec6a509",
+      "output": "06530e30386cecca"
+    },
+    "database.aiFill.fillCell": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "66f71b943e33d201"
+    },
+    "database.aiFill.fillDescriptionColumn": {
+      "source": "73e0477f57f82fe2",
+      "output": "f37046816e1ea61e"
+    },
+    "database.aiFill.fillDescriptionRows": {
+      "source": "13ed559575bd03d7",
+      "output": "e85f1dab3bac1bb9"
+    },
+    "database.aiFill.fillTitle": {
+      "source": "0daeb9e06471f530",
+      "output": "103acf83f5181803"
+    },
+    "database.aiFill.instruction": {
+      "source": "e1812557f499c9f2",
+      "output": "b865fbbd2d5d302f"
+    },
+    "database.aiFill.instructionExtra": {
+      "source": "2201e65c15361482",
+      "output": "32774b57926d2d66"
+    },
+    "database.aiFill.instructionPlaceholder": {
+      "source": "ea490f765e1561ac",
+      "output": "e7e6e3ea124bf076"
+    },
+    "database.aiFill.markEmpty": {
+      "source": "5d1bc6092634352e",
+      "output": "68a27b67a306a345"
+    },
+    "database.aiFill.markFailed": {
+      "source": "87d721ea94306caf",
+      "output": "9ab1d0f05ab2eaa2"
+    },
+    "database.aiFill.markFilled": {
+      "source": "eed8c0e19d92ebf1",
+      "output": "7f89078f5fa3ade5"
+    },
+    "database.aiFill.markPending": {
+      "source": "8068dc4d004d6a28",
+      "output": "55729195fba5f41a"
+    },
+    "database.aiFill.mode": {
+      "source": "43578f91c932ba27",
+      "output": "e067c21796bfbf3d"
+    },
+    "database.aiFill.modeHints.empty_only": {
+      "source": "a44623ce9e23c984",
+      "output": "def999c93d5ea0db"
+    },
+    "database.aiFill.modeHints.replace_ai": {
+      "source": "c2880c099810d76a",
+      "output": "ef9855f8fb5b6062"
+    },
+    "database.aiFill.modeHints.replace_all": {
+      "source": "49646787d0b069f5",
+      "output": "8cff8a944613f677"
+    },
+    "database.aiFill.modes.empty_only": {
+      "source": "16fcf5a03d2e26d9",
+      "output": "6b180df3f384d41a"
+    },
+    "database.aiFill.modes.replace_ai": {
+      "source": "83e53f3a760dcd6d",
+      "output": "0ec797b7d9a75fcd"
+    },
+    "database.aiFill.modes.replace_all": {
+      "source": "465481ce851b1c5a",
+      "output": "fac83d9979ed19da"
+    },
+    "database.aiFill.preset": {
+      "source": "697cf59a6265909a",
+      "output": "90c2d339a9d57c99"
+    },
+    "database.aiFill.presets.custom": {
+      "source": "f79621c094c19f7f",
+      "output": "b929e31b525fc151"
+    },
+    "database.aiFill.presets.document_date": {
+      "source": "a6af4d3b8981e35a",
+      "output": "5ff409ec2b87bcab"
+    },
+    "database.aiFill.presets.key_points": {
+      "source": "3e43605c04dda66e",
+      "output": "0162e3f12a311129"
+    },
+    "database.aiFill.presets.recipient": {
+      "source": "80980b3a90e3064b",
+      "output": "14d380c7a893d303"
+    },
+    "database.aiFill.presets.sender": {
+      "source": "fee558c76c500c19",
+      "output": "d66fdb30b443b5fc"
+    },
+    "database.aiFill.presets.summary": {
+      "source": "9d589ca0f3ade5c8",
+      "output": "7ec5b7dfe6663f45"
+    },
+    "database.aiFill.presets.tags": {
+      "source": "f446aa67edb8d37a",
+      "output": "1503916a2ab2b0fd"
+    },
+    "database.aiFill.presets.translate": {
+      "source": "08145060a96d1a5e",
+      "output": "6239c543b6000711"
+    },
+    "database.aiFill.preview": {
+      "source": "643ad1c3dd837881",
+      "output": "ee185e7f7f5e2a81"
+    },
+    "database.aiFill.previewForbidden": {
+      "source": "7f6ae8553bb02c23",
+      "output": "009bab28953e6cbc"
+    },
+    "database.aiFill.previewKept": {
+      "source": "4527833bece3d812",
+      "output": "fc4c29e5c29a15ba"
+    },
+    "database.aiFill.previewRemaining": {
+      "source": "c262465605b97371",
+      "output": "8895fdb2d9947d1f"
+    },
+    "database.aiFill.problems.instruction_required": {
+      "source": "f7afb45aa5efbabb",
+      "output": "1764b1458efd76c1"
+    },
+    "database.aiFill.problems.language_required": {
+      "source": "44c521ad2219b190",
+      "output": "6339a0da9c202572"
+    },
+    "database.aiFill.problems.no_source": {
+      "source": "156ce1e517226c00",
+      "output": "e6ea7d7e47dfde2f"
+    },
+    "database.aiFill.problems.options_type": {
+      "source": "25e6b6a5e4dc4cfc",
+      "output": "9832affc7f577e10"
+    },
+    "database.aiFill.problems.preset_type": {
+      "source": "11b90c6bf34c7abf",
+      "output": "ed77f6575f865d02"
+    },
+    "database.aiFill.problems.type_unsupported": {
+      "source": "6aeeb3e63ff5a09f",
+      "output": "e80d3009853c4b23"
+    },
+    "database.aiFill.progress": {
+      "source": "2f800f0400b785de",
+      "output": "94e97301a6421140"
+    },
+    "database.aiFill.progressLabel": {
+      "source": "e314a3de2c02fcee",
+      "output": "fc316cedfd041cda"
+    },
+    "database.aiFill.remove": {
+      "source": "d2d632557dfa28da",
+      "output": "e638287adf19a8cf"
+    },
+    "database.aiFill.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "c5997e85ae513c07"
+    },
+    "database.aiFill.sources": {
+      "source": "1822080663f48a10",
+      "output": "43db94548fb90f8d"
+    },
+    "database.aiFill.start": {
+      "source": "59bb1d26aa76c8fb",
+      "output": "81623963dd574dff"
+    },
+    "database.aiFill.targetLanguage": {
+      "source": "adadf8178c43b100",
+      "output": "e2e133e96683e1d1"
+    },
+    "database.aiFill.targetLanguagePlaceholder": {
+      "source": "2200ca9074c67936",
+      "output": "d5ed584440d7447c"
+    },
+    "database.aiFill.useAttachments": {
+      "source": "d5a43d5de330cbf7",
+      "output": "807e488591b284fc"
+    },
+    "database.aiFill.useContent": {
+      "source": "c277089021bf3023",
+      "output": "c2229954886d5502"
+    },
+    "database.aiFill.useProperties": {
+      "source": "a86c52cf1134f030",
+      "output": "5c76e1f7ad0b8bc7"
+    },
     "database.board.chooseGroupProperty": {
       "source": "e5b414d9288ce8ce",
       "output": "ccc563a616b3c29e"
@@ -82206,6 +83586,22 @@
       "source": "f95c8f4fc95f757c",
       "output": "0c9b551b15a6111e"
     },
+    "database.propertyMenu.aiEdit": {
+      "source": "977311cdcda61190",
+      "output": "635e1a0805c4f05f"
+    },
+    "database.propertyMenu.aiFill": {
+      "source": "4acd48040768601d",
+      "output": "3032c17c14a17793"
+    },
+    "database.propertyMenu.aiMarker": {
+      "source": "8501f5a8dc0b46fd",
+      "output": "f91fca3b41d42cc2"
+    },
+    "database.propertyMenu.aiSetUp": {
+      "source": "d7efd4be09af772e",
+      "output": "082978e3997ababc"
+    },
     "database.propertyMenu.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "18c9d912a21072dd"
@@ -82433,6 +83829,10 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "bc0274205537c131"
+    },
+    "database.selection.aiFill": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "66f71b943e33d201"
     },
     "database.selection.clear": {
       "source": "f4d1e48c718f8956",
@@ -89155,16 +90555,16 @@
       "output": "9b8f39daa72e0b30"
     },
     "features.datenbank-ki-spalten.details.p2": {
-      "source": "f446f6c930630ff0",
-      "output": "b485b111c79de38f"
+      "source": "22489920e90e6b9a",
+      "output": "7d5d465f3c95137b"
     },
     "features.datenbank-ki-spalten.details.p3": {
       "source": "2f37fa50412342ac",
       "output": "1c5a28dc5ff44d00"
     },
     "features.datenbank-ki-spalten.details.p4": {
-      "source": "7bf7da1f22bfbd01",
-      "output": "cabbee506a3e559f"
+      "source": "89bc8af9a3f85b99",
+      "output": "de65762bbc3e9807"
     },
     "features.datenbank-ki-spalten.summary": {
       "source": "d299d3c176e8509e",
@@ -89173,6 +90573,10 @@
     "features.datenbank-ki-spalten.title": {
       "source": "936d9a1e13438ab4",
       "output": "15d91b79816e5843"
+    },
+    "features.datenbank-ki-spalten.where": {
+      "source": "0868d4b22053d073",
+      "output": "3b4d6c8c9487e021"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -98358,6 +99762,26 @@
       "source": "90a7a8715ab690cb",
       "output": "d6f1d37680b0897e"
     },
+    "shell.paletteCommands.rowSelection.aiFill": {
+      "source": "39be5c88f2267065",
+      "output": "c453fdcc018de349"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumn": {
+      "source": "4acd48040768601d",
+      "output": "3032c17c14a17793"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumnKeywords": {
+      "source": "b936f6ddeb26933f",
+      "output": "bb60383e2e5427a3"
+    },
+    "shell.paletteCommands.rowSelection.aiFillKeywords": {
+      "source": "a738576dec47896c",
+      "output": "d2c4f826e2349fe1"
+    },
+    "shell.paletteCommands.rowSelection.aiFillPlaceholder": {
+      "source": "59128adce081c782",
+      "output": "313422d467c85b37"
+    },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
       "output": "db81f66d0297820a"
@@ -106880,6 +108304,318 @@
       "source": "165b0a5acd381ac6",
       "output": "9d4a11516ec42cae"
     },
+    "database.aiFill.allowNewOptions": {
+      "source": "4698c18226e0f16a",
+      "output": "00e7a94a7b182c68"
+    },
+    "database.aiFill.allowNewOptionsHint": {
+      "source": "62411204bc816a90",
+      "output": "5c908627bf662d11"
+    },
+    "database.aiFill.auto.off": {
+      "source": "be9d46abb699ccdd",
+      "output": "d873ac5a96bcdaf9"
+    },
+    "database.aiFill.auto.on_change": {
+      "source": "dbb3a410644bdaac",
+      "output": "4560609233e022c8"
+    },
+    "database.aiFill.auto.on_create": {
+      "source": "b926baff9d255a9b",
+      "output": "82b32de9c2715295"
+    },
+    "database.aiFill.autoFill": {
+      "source": "247bcf83a290af2d",
+      "output": "3a056234e326095c"
+    },
+    "database.aiFill.autoFillHint": {
+      "source": "383c3d79b2a6a652",
+      "output": "fce39c7404d1b5a4"
+    },
+    "database.aiFill.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
+    },
+    "database.aiFill.cancelRun": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
+    },
+    "database.aiFill.configDescription": {
+      "source": "fcc8ea9f3b3b8a8b",
+      "output": "d1d6e4ea2ea3bde6"
+    },
+    "database.aiFill.configTitle": {
+      "source": "9576f5f0b88ce647",
+      "output": "9c3cbad1b4c23593"
+    },
+    "database.aiFill.costHint": {
+      "source": "f4ce52312b51425c",
+      "output": "9f2602fe40a29671"
+    },
+    "database.aiFill.counting": {
+      "source": "5f29f0aefdb5fe76",
+      "output": "3ba75bdc2a5b95ad"
+    },
+    "database.aiFill.errors.answer_invalid": {
+      "source": "f1a007a00ad6b3c1",
+      "output": "5c8e9db476647509"
+    },
+    "database.aiFill.errors.answer_unreadable": {
+      "source": "b0e180b2a351c537",
+      "output": "51e27203167e5a74"
+    },
+    "database.aiFill.errors.budget_exceeded": {
+      "source": "7146c1deeedb7f37",
+      "output": "ed92ee090276f8af"
+    },
+    "database.aiFill.errors.forbidden": {
+      "source": "b10096a6f50a4042",
+      "output": "e8890e6c34a17b96"
+    },
+    "database.aiFill.errors.key_refused": {
+      "source": "f796917a8c31130b",
+      "output": "197a81a296fbbc2a"
+    },
+    "database.aiFill.errors.key_unreadable": {
+      "source": "33dffce247f8ee8a",
+      "output": "9adb887dd58a7e25"
+    },
+    "database.aiFill.errors.model_failed": {
+      "source": "8d736d5a997ecfdc",
+      "output": "b8efc936a04ada06"
+    },
+    "database.aiFill.errors.not_ai_value": {
+      "source": "515ecfed7c96e50c",
+      "output": "cf91e48acf463340"
+    },
+    "database.aiFill.errors.not_empty": {
+      "source": "56de9445f5d69795",
+      "output": "368b9e02840904f9"
+    },
+    "database.aiFill.errors.option_forbidden": {
+      "source": "3065b703261a268e",
+      "output": "2b0908d6211f21af"
+    },
+    "database.aiFill.errors.option_unknown": {
+      "source": "5b92f05e1edf9913",
+      "output": "8f97470330baf306"
+    },
+    "database.aiFill.errors.option_untrusted": {
+      "source": "e4784072f1c89e40",
+      "output": "728513b5a0b144be"
+    },
+    "database.aiFill.errors.person_unknown": {
+      "source": "df5b97c762ca125f",
+      "output": "e61bb873d96abc6a"
+    },
+    "database.aiFill.errors.row_unavailable": {
+      "source": "bc244bd180bc1e8f",
+      "output": "72facc8aefe0c24e"
+    },
+    "database.aiFill.errors.run_ended": {
+      "source": "a348f74e59a1bdcf",
+      "output": "8247329f9071826e"
+    },
+    "database.aiFill.errors.timed_out": {
+      "source": "6e2ef7ce69160e90",
+      "output": "446d4fcde6a15838"
+    },
+    "database.aiFill.fillAgain": {
+      "source": "afb603ee4ec6a509",
+      "output": "6d34ec502545c867"
+    },
+    "database.aiFill.fillCell": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "02421a1cc664208f"
+    },
+    "database.aiFill.fillDescriptionColumn": {
+      "source": "73e0477f57f82fe2",
+      "output": "977fc566ee557882"
+    },
+    "database.aiFill.fillDescriptionRows": {
+      "source": "13ed559575bd03d7",
+      "output": "bca9d3b13887a27f"
+    },
+    "database.aiFill.fillTitle": {
+      "source": "0daeb9e06471f530",
+      "output": "e5677f79eb25291e"
+    },
+    "database.aiFill.instruction": {
+      "source": "e1812557f499c9f2",
+      "output": "0d4d725a6c8a9c7a"
+    },
+    "database.aiFill.instructionExtra": {
+      "source": "2201e65c15361482",
+      "output": "b804a716f5838a81"
+    },
+    "database.aiFill.instructionPlaceholder": {
+      "source": "ea490f765e1561ac",
+      "output": "75be5e16b9b2f11e"
+    },
+    "database.aiFill.markEmpty": {
+      "source": "5d1bc6092634352e",
+      "output": "21df14133bd111c1"
+    },
+    "database.aiFill.markFailed": {
+      "source": "87d721ea94306caf",
+      "output": "a78b713322eb9544"
+    },
+    "database.aiFill.markFilled": {
+      "source": "eed8c0e19d92ebf1",
+      "output": "d086df3ec2136d4c"
+    },
+    "database.aiFill.markPending": {
+      "source": "8068dc4d004d6a28",
+      "output": "3ad65b2f0f2be7d4"
+    },
+    "database.aiFill.mode": {
+      "source": "43578f91c932ba27",
+      "output": "8ebb0f29dc68f494"
+    },
+    "database.aiFill.modeHints.empty_only": {
+      "source": "a44623ce9e23c984",
+      "output": "562d337223bc82da"
+    },
+    "database.aiFill.modeHints.replace_ai": {
+      "source": "c2880c099810d76a",
+      "output": "c114e6ddcea2db43"
+    },
+    "database.aiFill.modeHints.replace_all": {
+      "source": "49646787d0b069f5",
+      "output": "05ac7180ebf6ef92"
+    },
+    "database.aiFill.modes.empty_only": {
+      "source": "16fcf5a03d2e26d9",
+      "output": "7628ca4690837ecf"
+    },
+    "database.aiFill.modes.replace_ai": {
+      "source": "83e53f3a760dcd6d",
+      "output": "01de14d6d5e84602"
+    },
+    "database.aiFill.modes.replace_all": {
+      "source": "465481ce851b1c5a",
+      "output": "0c1b52d7b036ac24"
+    },
+    "database.aiFill.preset": {
+      "source": "697cf59a6265909a",
+      "output": "67adf9903ff9cd68"
+    },
+    "database.aiFill.presets.custom": {
+      "source": "f79621c094c19f7f",
+      "output": "405e95e4e0bd572d"
+    },
+    "database.aiFill.presets.document_date": {
+      "source": "a6af4d3b8981e35a",
+      "output": "d9b96a0e484227f0"
+    },
+    "database.aiFill.presets.key_points": {
+      "source": "3e43605c04dda66e",
+      "output": "ea599e993f9368f7"
+    },
+    "database.aiFill.presets.recipient": {
+      "source": "80980b3a90e3064b",
+      "output": "ed248a1a7f31dd74"
+    },
+    "database.aiFill.presets.sender": {
+      "source": "fee558c76c500c19",
+      "output": "e79776c6d31eb88c"
+    },
+    "database.aiFill.presets.summary": {
+      "source": "9d589ca0f3ade5c8",
+      "output": "df48ff00370c0231"
+    },
+    "database.aiFill.presets.tags": {
+      "source": "f446aa67edb8d37a",
+      "output": "934b8899c3d918d4"
+    },
+    "database.aiFill.presets.translate": {
+      "source": "08145060a96d1a5e",
+      "output": "8a02c4665b7fa609"
+    },
+    "database.aiFill.preview": {
+      "source": "643ad1c3dd837881",
+      "output": "3d74f347ea9ff372"
+    },
+    "database.aiFill.previewForbidden": {
+      "source": "7f6ae8553bb02c23",
+      "output": "6ad5161462153c78"
+    },
+    "database.aiFill.previewKept": {
+      "source": "4527833bece3d812",
+      "output": "79174b4cd9a6cbab"
+    },
+    "database.aiFill.previewRemaining": {
+      "source": "c262465605b97371",
+      "output": "20cd2a61ff3d6ccb"
+    },
+    "database.aiFill.problems.instruction_required": {
+      "source": "f7afb45aa5efbabb",
+      "output": "1e0cda840254c184"
+    },
+    "database.aiFill.problems.language_required": {
+      "source": "44c521ad2219b190",
+      "output": "4c25bef9bfacdddb"
+    },
+    "database.aiFill.problems.no_source": {
+      "source": "156ce1e517226c00",
+      "output": "f34bf2a8c8b898f9"
+    },
+    "database.aiFill.problems.options_type": {
+      "source": "25e6b6a5e4dc4cfc",
+      "output": "3e75436dfc6bd758"
+    },
+    "database.aiFill.problems.preset_type": {
+      "source": "11b90c6bf34c7abf",
+      "output": "f6621914446e3237"
+    },
+    "database.aiFill.problems.type_unsupported": {
+      "source": "6aeeb3e63ff5a09f",
+      "output": "84f2fd6d341d8dd7"
+    },
+    "database.aiFill.progress": {
+      "source": "2f800f0400b785de",
+      "output": "b7ac344c38e6ad50"
+    },
+    "database.aiFill.progressLabel": {
+      "source": "e314a3de2c02fcee",
+      "output": "f780962811d6458a"
+    },
+    "database.aiFill.remove": {
+      "source": "d2d632557dfa28da",
+      "output": "4ba1e6516e0666c0"
+    },
+    "database.aiFill.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "3caa6d88a258af55"
+    },
+    "database.aiFill.sources": {
+      "source": "1822080663f48a10",
+      "output": "49724fbf99709854"
+    },
+    "database.aiFill.start": {
+      "source": "59bb1d26aa76c8fb",
+      "output": "e828b84e0b31b7a6"
+    },
+    "database.aiFill.targetLanguage": {
+      "source": "adadf8178c43b100",
+      "output": "4dd650f410e03e84"
+    },
+    "database.aiFill.targetLanguagePlaceholder": {
+      "source": "2200ca9074c67936",
+      "output": "9a28f0eb4cb9a598"
+    },
+    "database.aiFill.useAttachments": {
+      "source": "d5a43d5de330cbf7",
+      "output": "f8c68bb81d137a69"
+    },
+    "database.aiFill.useContent": {
+      "source": "c277089021bf3023",
+      "output": "7c76b8f56c37210b"
+    },
+    "database.aiFill.useProperties": {
+      "source": "a86c52cf1134f030",
+      "output": "c89cd27a8a89a0be"
+    },
     "database.board.chooseGroupProperty": {
       "source": "e5b414d9288ce8ce",
       "output": "b4ed67a07829398b"
@@ -107596,6 +109332,22 @@
       "source": "f95c8f4fc95f757c",
       "output": "afd62fd4cc4eb5aa"
     },
+    "database.propertyMenu.aiEdit": {
+      "source": "977311cdcda61190",
+      "output": "83b083d4d8b70e67"
+    },
+    "database.propertyMenu.aiFill": {
+      "source": "4acd48040768601d",
+      "output": "5c726de3c662b7a6"
+    },
+    "database.propertyMenu.aiMarker": {
+      "source": "8501f5a8dc0b46fd",
+      "output": "603b1c99672fad06"
+    },
+    "database.propertyMenu.aiSetUp": {
+      "source": "d7efd4be09af772e",
+      "output": "915ac361dcdf7c37"
+    },
     "database.propertyMenu.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "c6a8d25fe37a7cc5"
@@ -107823,6 +109575,10 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "c8cede0af6281136"
+    },
+    "database.selection.aiFill": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "8a75aabc3bd2e408"
     },
     "database.selection.clear": {
       "source": "f4d1e48c718f8956",
@@ -114545,16 +116301,16 @@
       "output": "360aeb74014fd40c"
     },
     "features.datenbank-ki-spalten.details.p2": {
-      "source": "f446f6c930630ff0",
-      "output": "1d5a1b93fab2dbc6"
+      "source": "22489920e90e6b9a",
+      "output": "e00d285c61b0095a"
     },
     "features.datenbank-ki-spalten.details.p3": {
       "source": "2f37fa50412342ac",
       "output": "92f8658d163c708a"
     },
     "features.datenbank-ki-spalten.details.p4": {
-      "source": "7bf7da1f22bfbd01",
-      "output": "5b48576d0d41f3d1"
+      "source": "89bc8af9a3f85b99",
+      "output": "980fa4ef8ebf1bcd"
     },
     "features.datenbank-ki-spalten.summary": {
       "source": "d299d3c176e8509e",
@@ -114563,6 +116319,10 @@
     "features.datenbank-ki-spalten.title": {
       "source": "936d9a1e13438ab4",
       "output": "13b820b9c063df3f"
+    },
+    "features.datenbank-ki-spalten.where": {
+      "source": "0868d4b22053d073",
+      "output": "9af63e226440f614"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -123748,6 +125508,26 @@
       "source": "90a7a8715ab690cb",
       "output": "89663ced05f912eb"
     },
+    "shell.paletteCommands.rowSelection.aiFill": {
+      "source": "39be5c88f2267065",
+      "output": "e41add865914b9d2"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumn": {
+      "source": "4acd48040768601d",
+      "output": "5c726de3c662b7a6"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumnKeywords": {
+      "source": "b936f6ddeb26933f",
+      "output": "c25ffa926d679772"
+    },
+    "shell.paletteCommands.rowSelection.aiFillKeywords": {
+      "source": "a738576dec47896c",
+      "output": "3c351b41e236c2ca"
+    },
+    "shell.paletteCommands.rowSelection.aiFillPlaceholder": {
+      "source": "59128adce081c782",
+      "output": "3ed6fb5d3dc08dc7"
+    },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
       "output": "c5388e7872812f98"
@@ -132270,6 +134050,318 @@
       "source": "165b0a5acd381ac6",
       "output": "f82f28dad418bd90"
     },
+    "database.aiFill.allowNewOptions": {
+      "source": "4698c18226e0f16a",
+      "output": "522766213e006311"
+    },
+    "database.aiFill.allowNewOptionsHint": {
+      "source": "62411204bc816a90",
+      "output": "d4a31052dc7fb4b1"
+    },
+    "database.aiFill.auto.off": {
+      "source": "be9d46abb699ccdd",
+      "output": "d632afadc1f1926e"
+    },
+    "database.aiFill.auto.on_change": {
+      "source": "dbb3a410644bdaac",
+      "output": "11fd2f762ad0b790"
+    },
+    "database.aiFill.auto.on_create": {
+      "source": "b926baff9d255a9b",
+      "output": "adbad95aa5eaf3ed"
+    },
+    "database.aiFill.autoFill": {
+      "source": "247bcf83a290af2d",
+      "output": "7e29c16d6e547d32"
+    },
+    "database.aiFill.autoFillHint": {
+      "source": "383c3d79b2a6a652",
+      "output": "311afd605fe21382"
+    },
+    "database.aiFill.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
+    },
+    "database.aiFill.cancelRun": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
+    },
+    "database.aiFill.configDescription": {
+      "source": "fcc8ea9f3b3b8a8b",
+      "output": "ad261185c86187de"
+    },
+    "database.aiFill.configTitle": {
+      "source": "9576f5f0b88ce647",
+      "output": "9964a57c8e087ca4"
+    },
+    "database.aiFill.costHint": {
+      "source": "f4ce52312b51425c",
+      "output": "11c8f0908d71fdfb"
+    },
+    "database.aiFill.counting": {
+      "source": "5f29f0aefdb5fe76",
+      "output": "ad82d7a73d3c22e0"
+    },
+    "database.aiFill.errors.answer_invalid": {
+      "source": "f1a007a00ad6b3c1",
+      "output": "04f083a4024d6f3f"
+    },
+    "database.aiFill.errors.answer_unreadable": {
+      "source": "b0e180b2a351c537",
+      "output": "a6547788aa776eed"
+    },
+    "database.aiFill.errors.budget_exceeded": {
+      "source": "7146c1deeedb7f37",
+      "output": "c972f0b5531c4ca4"
+    },
+    "database.aiFill.errors.forbidden": {
+      "source": "b10096a6f50a4042",
+      "output": "b44effdf4a1e3f54"
+    },
+    "database.aiFill.errors.key_refused": {
+      "source": "f796917a8c31130b",
+      "output": "8793373713d53b3f"
+    },
+    "database.aiFill.errors.key_unreadable": {
+      "source": "33dffce247f8ee8a",
+      "output": "d4b520c224e7325d"
+    },
+    "database.aiFill.errors.model_failed": {
+      "source": "8d736d5a997ecfdc",
+      "output": "7889e404d5754045"
+    },
+    "database.aiFill.errors.not_ai_value": {
+      "source": "515ecfed7c96e50c",
+      "output": "a71e2ea826c210e7"
+    },
+    "database.aiFill.errors.not_empty": {
+      "source": "56de9445f5d69795",
+      "output": "ceaed7fbbe8f3ed1"
+    },
+    "database.aiFill.errors.option_forbidden": {
+      "source": "3065b703261a268e",
+      "output": "c315922d06f0d51a"
+    },
+    "database.aiFill.errors.option_unknown": {
+      "source": "5b92f05e1edf9913",
+      "output": "a36e24da573d3fe0"
+    },
+    "database.aiFill.errors.option_untrusted": {
+      "source": "e4784072f1c89e40",
+      "output": "7ec65d3d2e7e52b4"
+    },
+    "database.aiFill.errors.person_unknown": {
+      "source": "df5b97c762ca125f",
+      "output": "9f5e1e9e83b6ff3f"
+    },
+    "database.aiFill.errors.row_unavailable": {
+      "source": "bc244bd180bc1e8f",
+      "output": "b89e1edd245f5a54"
+    },
+    "database.aiFill.errors.run_ended": {
+      "source": "a348f74e59a1bdcf",
+      "output": "c4fd083df94ef8f9"
+    },
+    "database.aiFill.errors.timed_out": {
+      "source": "6e2ef7ce69160e90",
+      "output": "130d7041684747a0"
+    },
+    "database.aiFill.fillAgain": {
+      "source": "afb603ee4ec6a509",
+      "output": "7ada10305752350a"
+    },
+    "database.aiFill.fillCell": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "93c0c25388257ad3"
+    },
+    "database.aiFill.fillDescriptionColumn": {
+      "source": "73e0477f57f82fe2",
+      "output": "11aee0bcd6ce0ad4"
+    },
+    "database.aiFill.fillDescriptionRows": {
+      "source": "13ed559575bd03d7",
+      "output": "08561c7918c00d90"
+    },
+    "database.aiFill.fillTitle": {
+      "source": "0daeb9e06471f530",
+      "output": "1818d6802c40f86a"
+    },
+    "database.aiFill.instruction": {
+      "source": "e1812557f499c9f2",
+      "output": "a582fcc5fd59fb11"
+    },
+    "database.aiFill.instructionExtra": {
+      "source": "2201e65c15361482",
+      "output": "db76a4c8f8c91b57"
+    },
+    "database.aiFill.instructionPlaceholder": {
+      "source": "ea490f765e1561ac",
+      "output": "40955283f69f3a1e"
+    },
+    "database.aiFill.markEmpty": {
+      "source": "5d1bc6092634352e",
+      "output": "746341fa9f0be00b"
+    },
+    "database.aiFill.markFailed": {
+      "source": "87d721ea94306caf",
+      "output": "4dfde17e0d712149"
+    },
+    "database.aiFill.markFilled": {
+      "source": "eed8c0e19d92ebf1",
+      "output": "e27c97e1584b254a"
+    },
+    "database.aiFill.markPending": {
+      "source": "8068dc4d004d6a28",
+      "output": "44b1d36c0d3e5d29"
+    },
+    "database.aiFill.mode": {
+      "source": "43578f91c932ba27",
+      "output": "9f2ae362652a6144"
+    },
+    "database.aiFill.modeHints.empty_only": {
+      "source": "a44623ce9e23c984",
+      "output": "a131372b919f7ad2"
+    },
+    "database.aiFill.modeHints.replace_ai": {
+      "source": "c2880c099810d76a",
+      "output": "486596f5214d7573"
+    },
+    "database.aiFill.modeHints.replace_all": {
+      "source": "49646787d0b069f5",
+      "output": "62de4513a73fdc1d"
+    },
+    "database.aiFill.modes.empty_only": {
+      "source": "16fcf5a03d2e26d9",
+      "output": "7ccd62658fbd5053"
+    },
+    "database.aiFill.modes.replace_ai": {
+      "source": "83e53f3a760dcd6d",
+      "output": "343fe8e92bc301d9"
+    },
+    "database.aiFill.modes.replace_all": {
+      "source": "465481ce851b1c5a",
+      "output": "c19ad1bebfcebffd"
+    },
+    "database.aiFill.preset": {
+      "source": "697cf59a6265909a",
+      "output": "7c3bd97e2b010d50"
+    },
+    "database.aiFill.presets.custom": {
+      "source": "f79621c094c19f7f",
+      "output": "cb688d3cbbfa3039"
+    },
+    "database.aiFill.presets.document_date": {
+      "source": "a6af4d3b8981e35a",
+      "output": "9a1a9bc375066d6e"
+    },
+    "database.aiFill.presets.key_points": {
+      "source": "3e43605c04dda66e",
+      "output": "be2452861c101a00"
+    },
+    "database.aiFill.presets.recipient": {
+      "source": "80980b3a90e3064b",
+      "output": "9a5110b916054e32"
+    },
+    "database.aiFill.presets.sender": {
+      "source": "fee558c76c500c19",
+      "output": "9041d8c82cbb22c5"
+    },
+    "database.aiFill.presets.summary": {
+      "source": "9d589ca0f3ade5c8",
+      "output": "b56e987391c7f083"
+    },
+    "database.aiFill.presets.tags": {
+      "source": "f446aa67edb8d37a",
+      "output": "2c2951f0ec18a399"
+    },
+    "database.aiFill.presets.translate": {
+      "source": "08145060a96d1a5e",
+      "output": "7f948e4c9ac9dcc4"
+    },
+    "database.aiFill.preview": {
+      "source": "643ad1c3dd837881",
+      "output": "e1002dba2c0e9bd5"
+    },
+    "database.aiFill.previewForbidden": {
+      "source": "7f6ae8553bb02c23",
+      "output": "bea94925c61a5d65"
+    },
+    "database.aiFill.previewKept": {
+      "source": "4527833bece3d812",
+      "output": "a58295ad5cb82ae6"
+    },
+    "database.aiFill.previewRemaining": {
+      "source": "c262465605b97371",
+      "output": "8bbe1b3590d9418c"
+    },
+    "database.aiFill.problems.instruction_required": {
+      "source": "f7afb45aa5efbabb",
+      "output": "76acaf04ec3d4b88"
+    },
+    "database.aiFill.problems.language_required": {
+      "source": "44c521ad2219b190",
+      "output": "34b8552cad8803de"
+    },
+    "database.aiFill.problems.no_source": {
+      "source": "156ce1e517226c00",
+      "output": "965050d498006532"
+    },
+    "database.aiFill.problems.options_type": {
+      "source": "25e6b6a5e4dc4cfc",
+      "output": "b0aca7151f1aebb6"
+    },
+    "database.aiFill.problems.preset_type": {
+      "source": "11b90c6bf34c7abf",
+      "output": "9e2a43c9ded14d23"
+    },
+    "database.aiFill.problems.type_unsupported": {
+      "source": "6aeeb3e63ff5a09f",
+      "output": "bb616d038c4b0756"
+    },
+    "database.aiFill.progress": {
+      "source": "2f800f0400b785de",
+      "output": "26229f4afc378212"
+    },
+    "database.aiFill.progressLabel": {
+      "source": "e314a3de2c02fcee",
+      "output": "484838340f56c0d9"
+    },
+    "database.aiFill.remove": {
+      "source": "d2d632557dfa28da",
+      "output": "6e1babbba18434b9"
+    },
+    "database.aiFill.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "b6a0c0c469c5b62d"
+    },
+    "database.aiFill.sources": {
+      "source": "1822080663f48a10",
+      "output": "265a1e604e7e0081"
+    },
+    "database.aiFill.start": {
+      "source": "59bb1d26aa76c8fb",
+      "output": "4b9b16eae5220a88"
+    },
+    "database.aiFill.targetLanguage": {
+      "source": "adadf8178c43b100",
+      "output": "f2ce6c8d1595424c"
+    },
+    "database.aiFill.targetLanguagePlaceholder": {
+      "source": "2200ca9074c67936",
+      "output": "314281be785df232"
+    },
+    "database.aiFill.useAttachments": {
+      "source": "d5a43d5de330cbf7",
+      "output": "dac2a75bf819e5be"
+    },
+    "database.aiFill.useContent": {
+      "source": "c277089021bf3023",
+      "output": "9a94acc0e09db3c3"
+    },
+    "database.aiFill.useProperties": {
+      "source": "a86c52cf1134f030",
+      "output": "daf86fd15dc1f7c3"
+    },
     "database.board.chooseGroupProperty": {
       "source": "e5b414d9288ce8ce",
       "output": "73ed2c61643a70ff"
@@ -132986,6 +135078,22 @@
       "source": "f95c8f4fc95f757c",
       "output": "505b5ded059fe76d"
     },
+    "database.propertyMenu.aiEdit": {
+      "source": "977311cdcda61190",
+      "output": "58240acb3762d496"
+    },
+    "database.propertyMenu.aiFill": {
+      "source": "4acd48040768601d",
+      "output": "94a268e91f6f4941"
+    },
+    "database.propertyMenu.aiMarker": {
+      "source": "8501f5a8dc0b46fd",
+      "output": "681bd25bf948a214"
+    },
+    "database.propertyMenu.aiSetUp": {
+      "source": "d7efd4be09af772e",
+      "output": "becc4d366b21d240"
+    },
     "database.propertyMenu.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "49285f0029725b67"
@@ -133213,6 +135321,10 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "5604e5096a53eba8"
+    },
+    "database.selection.aiFill": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "029170d2783eea58"
     },
     "database.selection.clear": {
       "source": "f4d1e48c718f8956",
@@ -139935,16 +142047,16 @@
       "output": "918d678b0db24ae4"
     },
     "features.datenbank-ki-spalten.details.p2": {
-      "source": "f446f6c930630ff0",
-      "output": "ccb50ba59a79dd48"
+      "source": "22489920e90e6b9a",
+      "output": "7e21ec3d45b851d0"
     },
     "features.datenbank-ki-spalten.details.p3": {
       "source": "2f37fa50412342ac",
       "output": "13a17a2bf8630125"
     },
     "features.datenbank-ki-spalten.details.p4": {
-      "source": "7bf7da1f22bfbd01",
-      "output": "05eaf4d7786b8ab0"
+      "source": "89bc8af9a3f85b99",
+      "output": "7545b8ea5186962d"
     },
     "features.datenbank-ki-spalten.summary": {
       "source": "d299d3c176e8509e",
@@ -139953,6 +142065,10 @@
     "features.datenbank-ki-spalten.title": {
       "source": "936d9a1e13438ab4",
       "output": "5ccc16fb444bd29c"
+    },
+    "features.datenbank-ki-spalten.where": {
+      "source": "0868d4b22053d073",
+      "output": "2f1e660f28ede19f"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -149138,6 +151254,26 @@
       "source": "90a7a8715ab690cb",
       "output": "b150d3b17c5d09f6"
     },
+    "shell.paletteCommands.rowSelection.aiFill": {
+      "source": "39be5c88f2267065",
+      "output": "a7482f39613c19a5"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumn": {
+      "source": "4acd48040768601d",
+      "output": "b65cd8a8a88885bd"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumnKeywords": {
+      "source": "b936f6ddeb26933f",
+      "output": "994e03c3da4e090c"
+    },
+    "shell.paletteCommands.rowSelection.aiFillKeywords": {
+      "source": "a738576dec47896c",
+      "output": "ac73b3429bc9d281"
+    },
+    "shell.paletteCommands.rowSelection.aiFillPlaceholder": {
+      "source": "59128adce081c782",
+      "output": "e6e05d9303a04229"
+    },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",
       "output": "47fc4f72ed64104f"
@@ -157660,6 +159796,318 @@
       "source": "165b0a5acd381ac6",
       "output": "cf19ae407725cf37"
     },
+    "database.aiFill.allowNewOptions": {
+      "source": "4698c18226e0f16a",
+      "output": "efcdf820f6903604"
+    },
+    "database.aiFill.allowNewOptionsHint": {
+      "source": "62411204bc816a90",
+      "output": "ba745cf52b53a212"
+    },
+    "database.aiFill.auto.off": {
+      "source": "be9d46abb699ccdd",
+      "output": "49f9661f297dd2de"
+    },
+    "database.aiFill.auto.on_change": {
+      "source": "dbb3a410644bdaac",
+      "output": "8d9126f773672373"
+    },
+    "database.aiFill.auto.on_create": {
+      "source": "b926baff9d255a9b",
+      "output": "81b4a29f46cf3fbd"
+    },
+    "database.aiFill.autoFill": {
+      "source": "247bcf83a290af2d",
+      "output": "fc1096ad174ef482"
+    },
+    "database.aiFill.autoFillHint": {
+      "source": "383c3d79b2a6a652",
+      "output": "fe7925ae256988c3"
+    },
+    "database.aiFill.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "database.aiFill.cancelRun": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "database.aiFill.configDescription": {
+      "source": "fcc8ea9f3b3b8a8b",
+      "output": "b2267336d1729ace"
+    },
+    "database.aiFill.configTitle": {
+      "source": "9576f5f0b88ce647",
+      "output": "131bbef177d9d219"
+    },
+    "database.aiFill.costHint": {
+      "source": "f4ce52312b51425c",
+      "output": "173e6d7980ff5e97"
+    },
+    "database.aiFill.counting": {
+      "source": "5f29f0aefdb5fe76",
+      "output": "c2c921c95abe8ee8"
+    },
+    "database.aiFill.errors.answer_invalid": {
+      "source": "f1a007a00ad6b3c1",
+      "output": "3c0380ba740b49d1"
+    },
+    "database.aiFill.errors.answer_unreadable": {
+      "source": "b0e180b2a351c537",
+      "output": "d1e174bfa8561084"
+    },
+    "database.aiFill.errors.budget_exceeded": {
+      "source": "7146c1deeedb7f37",
+      "output": "ec448c2d6d4af7c1"
+    },
+    "database.aiFill.errors.forbidden": {
+      "source": "b10096a6f50a4042",
+      "output": "0b94946553603a02"
+    },
+    "database.aiFill.errors.key_refused": {
+      "source": "f796917a8c31130b",
+      "output": "62f025d93eb06340"
+    },
+    "database.aiFill.errors.key_unreadable": {
+      "source": "33dffce247f8ee8a",
+      "output": "5a1eac8fd64636e3"
+    },
+    "database.aiFill.errors.model_failed": {
+      "source": "8d736d5a997ecfdc",
+      "output": "f9829e49ec23affc"
+    },
+    "database.aiFill.errors.not_ai_value": {
+      "source": "515ecfed7c96e50c",
+      "output": "fe7251122804a0a3"
+    },
+    "database.aiFill.errors.not_empty": {
+      "source": "56de9445f5d69795",
+      "output": "766b25b995ea3690"
+    },
+    "database.aiFill.errors.option_forbidden": {
+      "source": "3065b703261a268e",
+      "output": "cc250359d8a8a93c"
+    },
+    "database.aiFill.errors.option_unknown": {
+      "source": "5b92f05e1edf9913",
+      "output": "5e512b19de8ddc65"
+    },
+    "database.aiFill.errors.option_untrusted": {
+      "source": "e4784072f1c89e40",
+      "output": "49b32a939cd76602"
+    },
+    "database.aiFill.errors.person_unknown": {
+      "source": "df5b97c762ca125f",
+      "output": "6ea9e376cf4d833f"
+    },
+    "database.aiFill.errors.row_unavailable": {
+      "source": "bc244bd180bc1e8f",
+      "output": "81ff928d6ea18c81"
+    },
+    "database.aiFill.errors.run_ended": {
+      "source": "a348f74e59a1bdcf",
+      "output": "ba8fa4100c8c51a8"
+    },
+    "database.aiFill.errors.timed_out": {
+      "source": "6e2ef7ce69160e90",
+      "output": "75ad9a2433a71c7b"
+    },
+    "database.aiFill.fillAgain": {
+      "source": "afb603ee4ec6a509",
+      "output": "60bd8f4f42a264ae"
+    },
+    "database.aiFill.fillCell": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "0322532a361107e8"
+    },
+    "database.aiFill.fillDescriptionColumn": {
+      "source": "73e0477f57f82fe2",
+      "output": "9c9dd0fd775d0200"
+    },
+    "database.aiFill.fillDescriptionRows": {
+      "source": "13ed559575bd03d7",
+      "output": "3f0882b430e518a9"
+    },
+    "database.aiFill.fillTitle": {
+      "source": "0daeb9e06471f530",
+      "output": "0fda0ee8c882fb61"
+    },
+    "database.aiFill.instruction": {
+      "source": "e1812557f499c9f2",
+      "output": "324815baa1d79ff1"
+    },
+    "database.aiFill.instructionExtra": {
+      "source": "2201e65c15361482",
+      "output": "268712741b7b7e18"
+    },
+    "database.aiFill.instructionPlaceholder": {
+      "source": "ea490f765e1561ac",
+      "output": "e13b3c66bca9a522"
+    },
+    "database.aiFill.markEmpty": {
+      "source": "5d1bc6092634352e",
+      "output": "70599d272f28b638"
+    },
+    "database.aiFill.markFailed": {
+      "source": "87d721ea94306caf",
+      "output": "62613e8254b4967a"
+    },
+    "database.aiFill.markFilled": {
+      "source": "eed8c0e19d92ebf1",
+      "output": "ee2cee846bf86dff"
+    },
+    "database.aiFill.markPending": {
+      "source": "8068dc4d004d6a28",
+      "output": "1d6cbdf6aa72dc65"
+    },
+    "database.aiFill.mode": {
+      "source": "43578f91c932ba27",
+      "output": "04546183096d27e7"
+    },
+    "database.aiFill.modeHints.empty_only": {
+      "source": "a44623ce9e23c984",
+      "output": "06948bdfb8caedb6"
+    },
+    "database.aiFill.modeHints.replace_ai": {
+      "source": "c2880c099810d76a",
+      "output": "ef7591dedf33681d"
+    },
+    "database.aiFill.modeHints.replace_all": {
+      "source": "49646787d0b069f5",
+      "output": "0067e73b58618879"
+    },
+    "database.aiFill.modes.empty_only": {
+      "source": "16fcf5a03d2e26d9",
+      "output": "f1fc3ec5a8054029"
+    },
+    "database.aiFill.modes.replace_ai": {
+      "source": "83e53f3a760dcd6d",
+      "output": "f510b8c2148b623a"
+    },
+    "database.aiFill.modes.replace_all": {
+      "source": "465481ce851b1c5a",
+      "output": "678e070ebb96283b"
+    },
+    "database.aiFill.preset": {
+      "source": "697cf59a6265909a",
+      "output": "a5ab3212dad17406"
+    },
+    "database.aiFill.presets.custom": {
+      "source": "f79621c094c19f7f",
+      "output": "472d036d892ff421"
+    },
+    "database.aiFill.presets.document_date": {
+      "source": "a6af4d3b8981e35a",
+      "output": "0f61801fecfec36d"
+    },
+    "database.aiFill.presets.key_points": {
+      "source": "3e43605c04dda66e",
+      "output": "5fa376c905d9bf68"
+    },
+    "database.aiFill.presets.recipient": {
+      "source": "80980b3a90e3064b",
+      "output": "591274f8d1bae913"
+    },
+    "database.aiFill.presets.sender": {
+      "source": "fee558c76c500c19",
+      "output": "a45204b48fa55af7"
+    },
+    "database.aiFill.presets.summary": {
+      "source": "9d589ca0f3ade5c8",
+      "output": "3c9717bdf2260bc9"
+    },
+    "database.aiFill.presets.tags": {
+      "source": "f446aa67edb8d37a",
+      "output": "1331275bc537b4c2"
+    },
+    "database.aiFill.presets.translate": {
+      "source": "08145060a96d1a5e",
+      "output": "31049c42a96d707e"
+    },
+    "database.aiFill.preview": {
+      "source": "643ad1c3dd837881",
+      "output": "9d1166e6e46e7580"
+    },
+    "database.aiFill.previewForbidden": {
+      "source": "7f6ae8553bb02c23",
+      "output": "59dc42cb38ad6873"
+    },
+    "database.aiFill.previewKept": {
+      "source": "4527833bece3d812",
+      "output": "82f8da70d295b3ab"
+    },
+    "database.aiFill.previewRemaining": {
+      "source": "c262465605b97371",
+      "output": "95c7e94247eef6af"
+    },
+    "database.aiFill.problems.instruction_required": {
+      "source": "f7afb45aa5efbabb",
+      "output": "eaef15a58f455876"
+    },
+    "database.aiFill.problems.language_required": {
+      "source": "44c521ad2219b190",
+      "output": "4b3e6a0a4ad52e70"
+    },
+    "database.aiFill.problems.no_source": {
+      "source": "156ce1e517226c00",
+      "output": "2fc4b6b1cbf99e56"
+    },
+    "database.aiFill.problems.options_type": {
+      "source": "25e6b6a5e4dc4cfc",
+      "output": "65e07af79596f957"
+    },
+    "database.aiFill.problems.preset_type": {
+      "source": "11b90c6bf34c7abf",
+      "output": "635f892effe669fd"
+    },
+    "database.aiFill.problems.type_unsupported": {
+      "source": "6aeeb3e63ff5a09f",
+      "output": "436f4771466c6cc1"
+    },
+    "database.aiFill.progress": {
+      "source": "2f800f0400b785de",
+      "output": "2a5b769f95001051"
+    },
+    "database.aiFill.progressLabel": {
+      "source": "e314a3de2c02fcee",
+      "output": "831e321f9c4a5e88"
+    },
+    "database.aiFill.remove": {
+      "source": "d2d632557dfa28da",
+      "output": "30f527de05ebca75"
+    },
+    "database.aiFill.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "aef7cd5b2081351d"
+    },
+    "database.aiFill.sources": {
+      "source": "1822080663f48a10",
+      "output": "ffec1dc8f35fddf3"
+    },
+    "database.aiFill.start": {
+      "source": "59bb1d26aa76c8fb",
+      "output": "eb5fef401adc0ccf"
+    },
+    "database.aiFill.targetLanguage": {
+      "source": "adadf8178c43b100",
+      "output": "2c6aa5621b0a9571"
+    },
+    "database.aiFill.targetLanguagePlaceholder": {
+      "source": "2200ca9074c67936",
+      "output": "66110c4b19ec1c52"
+    },
+    "database.aiFill.useAttachments": {
+      "source": "d5a43d5de330cbf7",
+      "output": "81c1d233c63d8939"
+    },
+    "database.aiFill.useContent": {
+      "source": "c277089021bf3023",
+      "output": "597422d13d686315"
+    },
+    "database.aiFill.useProperties": {
+      "source": "a86c52cf1134f030",
+      "output": "1aa63bc214f4e08d"
+    },
     "database.board.chooseGroupProperty": {
       "source": "e5b414d9288ce8ce",
       "output": "b31168a2e6fe1661"
@@ -158376,6 +160824,22 @@
       "source": "f95c8f4fc95f757c",
       "output": "a3c8b441e95771f6"
     },
+    "database.propertyMenu.aiEdit": {
+      "source": "977311cdcda61190",
+      "output": "f8e0d0241ef1f950"
+    },
+    "database.propertyMenu.aiFill": {
+      "source": "4acd48040768601d",
+      "output": "09e6518d1a8f3a4f"
+    },
+    "database.propertyMenu.aiMarker": {
+      "source": "8501f5a8dc0b46fd",
+      "output": "570bb45123b723b9"
+    },
+    "database.propertyMenu.aiSetUp": {
+      "source": "d7efd4be09af772e",
+      "output": "53adfec0a9e6f203"
+    },
     "database.propertyMenu.cancel": {
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
@@ -158603,6 +161067,10 @@
     "database.rows.untitled": {
       "source": "b6cdf93125700c82",
       "output": "9469c6553b7543ea"
+    },
+    "database.selection.aiFill": {
+      "source": "fad5c095e6ca2b3d",
+      "output": "0322532a361107e8"
     },
     "database.selection.clear": {
       "source": "f4d1e48c718f8956",
@@ -165325,16 +167793,16 @@
       "output": "31386ca98b900de0"
     },
     "features.datenbank-ki-spalten.details.p2": {
-      "source": "f446f6c930630ff0",
-      "output": "70efc3eaddab3fc0"
+      "source": "22489920e90e6b9a",
+      "output": "ee190ce1fdd1d93c"
     },
     "features.datenbank-ki-spalten.details.p3": {
       "source": "2f37fa50412342ac",
       "output": "eed51fdaba4c4718"
     },
     "features.datenbank-ki-spalten.details.p4": {
-      "source": "7bf7da1f22bfbd01",
-      "output": "bc05d32b4844d6dd"
+      "source": "89bc8af9a3f85b99",
+      "output": "e79d97078e6f2343"
     },
     "features.datenbank-ki-spalten.summary": {
       "source": "d299d3c176e8509e",
@@ -165343,6 +167811,10 @@
     "features.datenbank-ki-spalten.title": {
       "source": "936d9a1e13438ab4",
       "output": "055ef74b92b734a3"
+    },
+    "features.datenbank-ki-spalten.where": {
+      "source": "0868d4b22053d073",
+      "output": "3081842ec8564f13"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -174527,6 +176999,26 @@
     "shell.paletteCommands.rowPeek.openAsPageKeywords": {
       "source": "90a7a8715ab690cb",
       "output": "f0df782aa668393d"
+    },
+    "shell.paletteCommands.rowSelection.aiFill": {
+      "source": "39be5c88f2267065",
+      "output": "64d69424691b4aa9"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumn": {
+      "source": "4acd48040768601d",
+      "output": "09e6518d1a8f3a4f"
+    },
+    "shell.paletteCommands.rowSelection.aiFillColumnKeywords": {
+      "source": "b936f6ddeb26933f",
+      "output": "37dac62f832e1aa3"
+    },
+    "shell.paletteCommands.rowSelection.aiFillKeywords": {
+      "source": "a738576dec47896c",
+      "output": "a181a8507aef83bc"
+    },
+    "shell.paletteCommands.rowSelection.aiFillPlaceholder": {
+      "source": "59128adce081c782",
+      "output": "77dbb238619f6418"
     },
     "shell.paletteCommands.rowSelection.clear": {
       "source": "f4d1e48c718f8956",

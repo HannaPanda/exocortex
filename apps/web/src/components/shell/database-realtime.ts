@@ -2,6 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 
+import { invalidateAiFillAfterEvent } from '@/lib/api/database-ai-fill-queries';
 import { invalidateDatabaseAfterEvent } from '@/lib/api/database-queries';
 import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 
@@ -45,6 +46,11 @@ export function useDatabaseRealtime(): void {
     parentChanged(event.payload.document.parentId);
     parentChanged(event.payload.previousParentId);
   });
+  // An AI fill moved on (issue #237): a cell failed, the batch started or
+  // ended. Cells it filled arrive as row changes above.
+  useRealtimeEvent('database.ai_fill.changed', (event) =>
+    invalidateAiFillAfterEvent(queryClient, event.payload.documentId),
+  );
   useRealtimeEvent('database.view.changed', (event) =>
     invalidateDatabaseAfterEvent(queryClient, {
       kind: 'view',

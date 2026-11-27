@@ -1,6 +1,13 @@
 'use client';
 
-import { CopyIcon, PencilLineIcon, SquareCheckIcon, SquareIcon, Trash2Icon } from 'lucide-react';
+import {
+  CopyIcon,
+  PencilLineIcon,
+  SparklesIcon,
+  SquareCheckIcon,
+  SquareIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -18,6 +25,10 @@ export interface RowSelectionHandlers {
   duplicate: () => void;
   trash: () => void;
   edit: (property: DatabaseProperty) => void;
+  /** Fill the selection's cells of a column with its AI instruction (issue #237). */
+  aiFill: (property: DatabaseProperty) => void;
+  /** Fill a whole column with its AI instruction (issue #237). */
+  aiFillColumn: (property: DatabaseProperty) => void;
 }
 
 /**
@@ -32,11 +43,14 @@ export function useRowSelectionCommands({
   enabled,
   selectedCount,
   properties,
+  aiColumns = [],
   handlers,
 }: {
   enabled: boolean;
   selectedCount: number;
   properties: readonly DatabaseProperty[];
+  /** Columns with an AI instruction (issue #237). */
+  aiColumns?: readonly DatabaseProperty[];
   handlers: RowSelectionHandlers;
 }): void {
   const t = useTranslations('shell.paletteCommands.rowSelection');
@@ -54,6 +68,26 @@ export function useRowSelectionCommands({
         run: () => latest.current.selectAll(),
       },
     ];
+    if (aiColumns.length > 0) {
+      list.push({
+        id: 'database-ai-fill-column',
+        group: 'page',
+        label: t('aiFillColumn'),
+        placeholder: t('aiFillPlaceholder'),
+        icon: <SparklesIcon className={ICON} />,
+        keywords: keywordsOf(t('aiFillColumnKeywords')),
+        searchable: true,
+        children: () =>
+          aiColumns.map((property) => ({
+            id: `database-ai-fill-column-${property.id}`,
+            group: 'page',
+            label: property.name,
+            icon: <SparklesIcon className={ICON} />,
+            keywords: [],
+            run: () => latest.current.aiFillColumn(property),
+          })),
+      });
+    }
     if (selectedCount === 0) return list;
     const columns: PaletteCommand[] = properties.map((property) => ({
       id: `rows-set-${property.id}`,
@@ -73,6 +107,26 @@ export function useRowSelectionCommands({
         keywords: keywordsOf(t('setValueKeywords')),
         searchable: true,
         children: () => columns,
+      });
+    }
+    if (aiColumns.length > 0) {
+      list.push({
+        id: 'rows-ai-fill',
+        group: 'page',
+        label: t('aiFill', { count: selectedCount }),
+        placeholder: t('aiFillPlaceholder'),
+        icon: <SparklesIcon className={ICON} />,
+        keywords: keywordsOf(t('aiFillKeywords')),
+        searchable: true,
+        children: () =>
+          aiColumns.map((property) => ({
+            id: `rows-ai-fill-${property.id}`,
+            group: 'page',
+            label: property.name,
+            icon: <SparklesIcon className={ICON} />,
+            keywords: [],
+            run: () => latest.current.aiFill(property),
+          })),
       });
     }
     list.push(
@@ -102,7 +156,7 @@ export function useRowSelectionCommands({
       },
     );
     return list;
-  }, [enabled, latest, properties, selectedCount, t]);
+  }, [aiColumns, enabled, latest, properties, selectedCount, t]);
 
   usePaletteContribution('database-rows', commands);
 }

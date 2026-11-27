@@ -483,7 +483,12 @@
       "trash": "{count, plural, one {Move selected row to trash} other {Move # selected rows to trash}}",
       "trashKeywords": "selection rows delete trash remove",
       "clear": "Clear selection",
-      "clearKeywords": "clear selection deselect rows"
+      "clearKeywords": "clear selection deselect rows",
+      "aiFillColumn": "Fill column with AI",
+      "aiFillColumnKeywords": "ai fill autofill column automatic summary",
+      "aiFillPlaceholder": "Which column?",
+      "aiFill": "{count, plural, one {Fill selection with AI} other {Fill # rows with AI}}",
+      "aiFillKeywords": "ai fill autofill selection rows"
     },
     "rowPeek": {
       "openAsPage": "Open open row as full page",

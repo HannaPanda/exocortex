@@ -483,7 +483,12 @@
       "trash": "{count, plural, one {Ausgewählte Zeile in den Papierkorb} other {# ausgewählte Zeilen in den Papierkorb}}",
       "trashKeywords": "auswahl zeilen löschen papierkorb entfernen",
       "clear": "Auswahl aufheben",
-      "clearKeywords": "auswahl aufheben abwählen zeilen"
+      "clearKeywords": "auswahl aufheben abwählen zeilen",
+      "aiFillColumn": "Spalte mit KI ausfüllen",
+      "aiFillColumnKeywords": "ki ai ausfüllen autofill spalte automatisch zusammenfassung",
+      "aiFillPlaceholder": "Welche Spalte?",
+      "aiFill": "{count, plural, one {Auswahl mit KI ausfüllen} other {# Zeilen mit KI ausfüllen}}",
+      "aiFillKeywords": "ki ai ausfüllen autofill auswahl zeilen"
     },
     "rowPeek": {
       "openAsPage": "Offene Zeile als ganze Seite öffnen",
