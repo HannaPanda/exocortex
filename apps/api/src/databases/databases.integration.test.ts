@@ -866,6 +866,24 @@ describe('date spans', () => {
     });
   });
 
+  it('reads a time written without a zone in the zone of the column (#255)', async () => {
+    const { collectionId, whenId } = await setupCalendar();
+    // Noon in Berlin in winter is 11:00 UTC; a value with its own offset
+    // keeps it.
+    const row = await addEvent(
+      collectionId,
+      whenId,
+      'Ohne Zone',
+      '2026-11-26T12:00:00',
+      '2026-11-26T14:00:00+01:00',
+    );
+    expect(row.values.find((value) => value.propertyId === whenId)?.value).toEqual({
+      start: '2026-11-26T11:00:00.000Z',
+      end: '2026-11-26T13:00:00.000Z',
+      allDay: false,
+    });
+  });
+
   it('keeps a plain DATE property answering as an ISO string', async () => {
     const collectionId = await createCollection('Fristen');
     const due = await properties.create({
@@ -1240,7 +1258,9 @@ describe('linked and computed properties', () => {
     const filled = page.rows.find((row) => row.document.title === 'Projekt');
     expect(valueOf(filled!, count)).toBe(2);
     expect(valueOf(filled!, sum)).toBe(42.5);
-    expect(valueOf(filled!, earliest)).toBe('2026-03-01T00:00:00.000Z');
+    // "Fällig" holds whole days, so the earliest of them is a day too: the
+    // midnight instant would read as the evening before west of UTC (#255).
+    expect(valueOf(filled!, earliest)).toBe('2026-03-01');
 
     // A project with no links counts zero and sums zero, but has no earliest
     // date: "no rows had a date" is empty, not a date.

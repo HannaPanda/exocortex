@@ -67,9 +67,9 @@ existed keeps behaving exactly as it did.
 
 | `config` field | Effect                                                                                                                                                                                                   |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `includeTime`  | The value carries a time of day. Editors switch from `<input type="date">` to `<input type="datetime-local">`, and rendering shows the time.                                                             |
+| `includeTime`  | The value carries a time of day. Editors switch from `DatePicker` to `DateTimePicker` (day plus `TimeInput`), and rendering shows the time on the reader's clock.                                        |
 | `isRange`      | The value is a span. **This changes the response shape** of every value of that property: `false` returns the bare ISO string, `true` returns `{ start, end, allDay }` (`databaseDateRangeValueSchema`). |
-| `timeZone`     | IANA zone the wall-clock parts were authored in. Stored instants are always UTC; this only records the authoring zone.                                                                                   |
+| `timeZone`     | IANA zone the wall-clock parts were authored in. Stored instants are always UTC; a written date and time without `Z` or an offset is read in this zone (#255).                                           |
 
 Storage is three columns on `DocumentPropertyValue`: `dateValue` (the instant,
 and the start of a span), `dateEndValue` (exclusive end, null = no stated end,
@@ -85,6 +85,38 @@ Two rules that are easy to get wrong:
 - **Turning `isRange` off is refused** while rows still carry an end
   (`database_property_date_range_in_use`, 409). Clearing those ends first is the
   caller's decision.
+
+- **A written time names its zone**, or the column does (issue #255). A
+  string with `Z` or an offset is that instant; a bare day (`2026-11-26`) is UTC
+  midnight. A date and time with neither (`2026-11-26T12:00:00`) is read in the
+  column's `config.timeZone` when it has one (`instantFromIsoInput` in
+  `packages/contracts/src/zoned-time.ts`, tested over both transition nights),
+  and otherwise stays what `Date` makes of it on a UTC host, which is UTC. The
+  MCP tool descriptions say so, because an importer that sends noon without a
+  zone otherwise lands an hour off for every reader in Berlin.
+
+### Showing a date (issue #255)
+
+Every stored instant stays UTC, on the wire and in SQL: filters, sorting,
+formulas and rollups compute in UTC (ADR-041), and `data` on the MCP surface
+is the ISO string the API answered. Only the rendering is the reader's:
+
+- a time is shown in the zone of the reader's device (the `exocortex.tz`
+  cookie on the server, the browser's own zone in the client) and on the
+  reader's clock: the interface language's, or the 24- or 12-hour clock the
+  account chose (`User.timeFormat`, `/einstellungen/sprache`,
+  `exo_me_preferences_set`). `useFormatter` from `apps/web/src/lib/formatter.ts`
+  adds that clock to every option set with a time; next-intl's own is refused
+  by lint. Time is entered with `TimeInput`, never the browser's time field,
+  which follows the operating system rather than the interface.
+- a whole day never moves: a DATE without a time, an all-day span, and a
+  rollup or formula that provably yields one (`derivedDateIsWholeDay`: a
+  whole-day column, its earliest or latest, `dateAdd` of one, an `if` of two)
+  are formatted in UTC. A whole-day derived value is answered as `YYYY-MM-DD`
+  rather than the midnight instant, so no client can read it in the wrong
+  zone.
+- `exo_database_query` writes a whole day as the day in its table text and a
+  time as the UTC instant; the server knows no reader's zone to say more.
 
 An all-day value is a _floating_ calendar date stored as UTC midnight. Read it
 off the ISO string; converting it into the viewer's zone shifts every birthday a

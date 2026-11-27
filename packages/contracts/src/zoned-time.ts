@@ -54,7 +54,8 @@ export function localTimeParts(instant: Date, timeZone: string): LocalDateTime {
  * around a transition, and applying it lands close enough for the second to be
  * right. A local time that does not exist (the hour a zone skips in spring) is
  * pushed forward rather than dropped, and one that exists twice resolves to
- * the first -- both are answers, and a caller that cares compares the result
+ * the second, the one after the clocks went back (issue #255 measured it:
+ * 02:30 on 25 October 2026 in Berlin is 01:30 UTC) -- both are answers, and a caller that cares compares the result
  * against what it asked for.
  */
 export function instantAtLocalTime(local: LocalDateTime, timeZone: string): Date {
@@ -148,4 +149,41 @@ export function lastLocalHourSlot(now: Date, hour: number, timeZone: string): Da
     return instantAtLocalTime({ ...addLocalDays(day, -1), hour, minute: 0 }, timeZone);
   }
   return slot;
+}
+
+/** A date and time with no zone and no offset: `2026-11-26T12:00` or `…T12:00:00.000`. */
+const ZONELESS_DATE_TIME =
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3})\d*)?)?$/;
+
+/**
+ * The instant an ISO string written into a DATE column means (issue #255).
+ *
+ * A string with `Z` or an offset says which instant it is, and a bare day
+ * (`2026-11-26`) is UTC midnight, the convention every whole day here
+ * follows. A date and time without either is a wall-clock time, and it is
+ * read in `timeZone`, the zone the column says its times are written in --
+ * an importer that sends `2026-11-26T12:00:00` for a meeting at noon in
+ * Berlin meant noon in Berlin, not 13:00. Without a zone on the column it
+ * stays what `Date` makes of it on a server that runs in UTC, so nothing a
+ * writer sends today changes its meaning. Null for anything that is not a
+ * date at all.
+ */
+export function instantFromIsoInput(value: string, timeZone: string | null): Date | null {
+  const zoneless = timeZone === null ? null : ZONELESS_DATE_TIME.exec(value);
+  if (zoneless !== null && timeZone !== null && isUsableTimeZone(timeZone)) {
+    const [, year, month, day, hour, minute, second = '0', fraction = '0'] = zoneless;
+    const instant = instantAtLocalTime(
+      {
+        year: Number(year),
+        month: Number(month),
+        day: Number(day),
+        hour: Number(hour),
+        minute: Number(minute),
+      },
+      timeZone,
+    );
+    return new Date(instant.getTime() + Number(second) * 1000 + Number(fraction.padEnd(3, '0')));
+  }
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
 }

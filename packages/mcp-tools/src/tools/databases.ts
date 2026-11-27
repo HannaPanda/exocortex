@@ -22,6 +22,7 @@ import {
   documentTitleSchema,
   idSchema,
   IMPLEMENTED_PROPERTY_TYPES,
+  parseDatePropertyConfig,
   queryDatabaseRowsRequestSchema,
   queryDatabaseRowsResponseSchema,
   reorderDatabasePropertyRequestSchema,
@@ -489,17 +490,44 @@ const MAX_QUERY_ROWS = 50;
 /**
  * One cell as table text. A date span is an object, so `String()` alone would
  * put "[object Object]" in front of the model where an appointment belongs.
+ *
+ * A time stays the ISO instant in UTC, which is unambiguous for a model and
+ * for a script alike (issue #255); `data` carries it unchanged either way. A
+ * whole day is written as the day: as an instant it is UTC midnight, which
+ * reads as the evening before in any zone west of Greenwich. Whether a value
+ * is a whole day comes from the span's own `allDay`, or from the column when
+ * the caller knows it (`wholeDay`).
  */
-function formatCell(value: DatabaseRowPropertyValue['value']): string {
+function formatCell(value: DatabaseRowPropertyValue['value'], wholeDay = false): string {
   if (value === null) return '';
+  const day = (iso: string, whole: boolean) => (whole ? iso.slice(0, 10) : iso);
   if (typeof value === 'object' && !Array.isArray(value) && 'start' in value) {
-    return value.end === null ? value.start : `${value.start} bis ${value.end}`;
+    const whole = wholeDay || value.allDay;
+    return value.end === null
+      ? day(value.start, whole)
+      : `${day(value.start, whole)} bis ${day(value.end, whole)}`;
   }
+  if (typeof value === 'string' && wholeDay) return day(value, true);
   return String(value);
 }
 
-function formatRow(row: DatabaseRow): string[] {
-  return [row.document.title, ...row.values.map((v) => formatCell(v.value))];
+/** The DATE columns without a time: their values are whole days. */
+function wholeDayColumns(properties: readonly DatabaseProperty[]): Set<string> {
+  return new Set(
+    properties
+      .filter(
+        (property) =>
+          property.type === 'DATE' && !parseDatePropertyConfig(property.config).includeTime,
+      )
+      .map((property) => property.id),
+  );
+}
+
+function formatRow(row: DatabaseRow, wholeDays: ReadonlySet<string>): string[] {
+  return [
+    row.document.title,
+    ...row.values.map((v) => formatCell(v.value, wholeDays.has(v.propertyId))),
+  ];
 }
 
 function propertyLabelsFor(rows: readonly DatabaseRow[]): string[] {
@@ -520,18 +548,29 @@ export const databaseQueryTool: AnyToolDefinition = defineTool({
   mutating: false,
   async execute(client, input) {
     const { documentId, ...body } = input;
-    const result = await client.request({
-      method: 'POST',
-      path: `/api/documents/${documentId}/rows/query`,
-      body,
-      responseSchema: queryDatabaseRowsResponseSchema,
-    });
+    const [result, properties] = await Promise.all([
+      client.request({
+        method: 'POST',
+        path: `/api/documents/${documentId}/rows/query`,
+        body,
+        responseSchema: queryDatabaseRowsResponseSchema,
+      }),
+      client.request({
+        method: 'GET',
+        path: `/api/documents/${documentId}/properties`,
+        responseSchema: databasePropertyListResponseSchema,
+      }),
+    ]);
+    const wholeDays = wholeDayColumns(properties.properties);
     const capped = result.rows.slice(0, MAX_QUERY_ROWS);
     const headers = ['Titel', ...propertyLabelsFor(capped)];
     const text =
       capped.length === 0
         ? 'Keine Zeilen gefunden.'
-        : renderMarkdownTable(headers, capped.map(formatRow)) +
+        : renderMarkdownTable(
+            headers,
+            capped.map((row) => formatRow(row, wholeDays)),
+          ) +
           (result.rows.length > MAX_QUERY_ROWS
             ? `\n\n… ${result.rows.length - MAX_QUERY_ROWS} weitere Zeile(n) nicht angezeigt (gekürzt).`
             : '');
@@ -577,7 +616,7 @@ const databaseRowCreateInputSchema = z
 export const databaseRowCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_database_row_create',
   description:
-    'Legt eine neue Zeile in einer Datenbank an. Ein Datumswert ist normalerweise ein ISO-String; ist die Eigenschaft ein Zeitraum (isRange), dann { start, end, allDay }.',
+    'Legt eine neue Zeile in einer Datenbank an. Ein Datumswert ist normalerweise ein ISO-String; ist die Eigenschaft ein Zeitraum (isRange), dann { start, end, allDay }. Ein ganzer Tag ist "2026-11-26", ein Zeitpunkt trägt seine Zone: "2026-11-26T12:00:00+01:00" oder "2026-11-26T11:00:00Z". Ohne Zone gilt die Zeitzone der Spalte (config.timeZone), und hat die Spalte keine, UTC.',
   inputSchema: databaseRowCreateInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'databases',
@@ -605,7 +644,7 @@ const databaseRowUpdateInputSchema = z
 export const databaseRowUpdateTool: AnyToolDefinition = defineTool({
   name: 'exo_database_row_update',
   description:
-    'Aktualisiert einzelne Spaltenwerte einer Zeile. Ein Datumswert ist normalerweise ein ISO-String; ist die Eigenschaft ein Zeitraum (isRange), dann { start, end, allDay }.',
+    'Aktualisiert einzelne Spaltenwerte einer Zeile. Ein Datumswert ist normalerweise ein ISO-String; ist die Eigenschaft ein Zeitraum (isRange), dann { start, end, allDay }. Ein ganzer Tag ist "2026-11-26", ein Zeitpunkt trägt seine Zone: "2026-11-26T12:00:00+01:00" oder "2026-11-26T11:00:00Z". Ohne Zone gilt die Zeitzone der Spalte (config.timeZone), und hat die Spalte keine, UTC.',
   inputSchema: databaseRowUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'databases',

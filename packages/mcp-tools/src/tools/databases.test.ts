@@ -8,6 +8,7 @@ import {
   databaseOptionDeleteTool,
   databaseOptionUpdateTool,
   databasePropertyReorderTool,
+  databaseQueryTool,
   databaseRowGetTool,
   databaseSchemaTool,
   databaseViewReorderTool,
@@ -342,5 +343,75 @@ describe('the capabilities that used to be drag-and-drop only', () => {
 
     expect(calls[0]?.path).toBe('/api/documents/col1234567/views/view123456/reorder');
     expect(calls[0]?.body).toEqual({ afterViewId: 'view000000' });
+  });
+});
+
+describe('databaseQueryTool (issue #255)', () => {
+  it('writes a whole day as the day and keeps a time as the UTC instant', async () => {
+    const now = new Date().toISOString();
+    const property = (id: string, name: string, config: Record<string, unknown>) => ({
+      id,
+      documentId: 'col1234567',
+      type: 'DATE',
+      name,
+      orderKey: 'a0',
+      config,
+      options: [],
+      createdAt: now,
+      updatedAt: now,
+    });
+    const responsesByPath: Record<string, unknown> = {
+      '/api/documents/col1234567/rows/query': {
+        rows: [
+          {
+            document: rowDocument,
+            values: [
+              { propertyId: 'propdue1234', value: '2026-02-27T00:00:00.000Z' },
+              {
+                propertyId: 'propmeet123',
+                value: {
+                  start: '2026-11-26T11:00:00.000Z',
+                  end: '2026-11-26T11:15:00.000Z',
+                  allDay: false,
+                },
+              },
+              {
+                propertyId: 'propaway123',
+                value: {
+                  start: '2026-02-27T00:00:00.000Z',
+                  end: '2026-12-31T00:00:00.000Z',
+                  allDay: true,
+                },
+              },
+            ],
+          },
+        ],
+        nextCursor: null,
+      },
+      '/api/documents/col1234567/properties': {
+        properties: [
+          property('propdue1234', 'Fällig', { includeTime: false }),
+          property('propmeet123', 'Termin', { includeTime: true, isRange: true }),
+          property('propaway123', 'Abwesend', { includeTime: true, isRange: true }),
+        ],
+      },
+    };
+    const client: ExocortexApiClient = {
+      async request(input) {
+        return input.responseSchema.parse(responsesByPath[input.path]);
+      },
+      async upload() {
+        throw new Error('no upload expected');
+      },
+    };
+
+    const result = await databaseQueryTool.run(client, { documentId: 'col1234567' });
+
+    expect(result.text).toContain('| 2026-02-27 |');
+    expect(result.text).toContain('2026-11-26T11:00:00.000Z bis 2026-11-26T11:15:00.000Z');
+    expect(result.text).toContain('2026-02-27 bis 2026-12-31');
+    expect(result.text).not.toContain('2026-02-27T00:00:00.000Z');
+    // The data stays exactly what the API answered.
+    expect(JSON.stringify(result.data)).toContain('2026-02-27T00:00:00.000Z');
   });
 });

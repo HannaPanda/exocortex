@@ -96,7 +96,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/documents/:x/inherited-shares` | ✓ | ✓ | ✓ | `exo_share_inherited` |
 | `GET /api/documents/:x/links` | ✓ | ✓ | ✓ | `exo_page_backlinks` |
 | `GET /api/documents/:x/overview` | ✓ | ✓ | ✓ | `exo_page_overview_read` |
-| `GET /api/documents/:x/properties` | ✓ | ✓ | ✓ | `exo_database_schema` |
+| `GET /api/documents/:x/properties` | ✓ | ✓ | ✓ | `exo_database_query`, `exo_database_schema` |
 | `GET /api/documents/:x/related` | ✓ | ✓ | ✓ | `exo_page_related` |
 | `GET /api/documents/:x/row` | ✓ | ✓ | ✓ | `exo_database_row_get` |
 | `GET /api/documents/:x/shares` | ✓ | ✓ | ✓ | `exo_share_list` |

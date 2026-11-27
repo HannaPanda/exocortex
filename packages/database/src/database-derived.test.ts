@@ -7,6 +7,7 @@ import {
   buildDerivedSchema,
   compileDerived,
   type DatabasePropertyRef,
+  derivedDateIsWholeDay,
   DerivedPropertyError,
   derivedResultType,
 } from './database-derived';
@@ -236,5 +237,64 @@ describe('compileDerived for a formula', () => {
     const sql = compileDerived(property, buildDerivedSchema([...BASE, property]));
     expect(sql.sql).not.toContain('DROP TABLE');
     expect(sql.values).toContain("'; DROP TABLE document; --");
+  });
+});
+
+describe('derivedDateIsWholeDay (issue #255)', () => {
+  const taskMeeting: DatabasePropertyRef = {
+    id: 'prop_meeting',
+    documentId: TASKS,
+    name: 'Termin',
+    type: 'DATE',
+    config: { includeTime: true },
+  };
+  const all = (...extra: DatabasePropertyRef[]) =>
+    buildDerivedSchema([...BASE, taskMeeting, ...extra]);
+
+  it('knows a date column without a time, and that created time is an instant', () => {
+    expect(derivedDateIsWholeDay(taskDue, all())).toBe(true);
+    expect(derivedDateIsWholeDay(taskMeeting, all())).toBe(false);
+    const created: DatabasePropertyRef = {
+      id: 'prop_created',
+      documentId: TASKS,
+      name: 'Angelegt',
+      type: 'CREATED_TIME',
+    };
+    expect(derivedDateIsWholeDay(created, all(created))).toBe(false);
+  });
+
+  it('follows the earliest or latest of a whole-day column through a rollup', () => {
+    const latest = rollup('prop_latest', {
+      relationPropertyId: projectTasks.id,
+      targetPropertyId: taskDue.id,
+      aggregate: 'latest',
+    });
+    const meeting = rollup('prop_meeting_latest', {
+      relationPropertyId: projectTasks.id,
+      targetPropertyId: taskMeeting.id,
+      aggregate: 'earliest',
+    });
+    expect(derivedDateIsWholeDay(latest, all(latest, meeting))).toBe(true);
+    expect(derivedDateIsWholeDay(meeting, all(latest, meeting))).toBe(false);
+  });
+
+  it('reads a formula: prop, dateAdd and if keep a whole day, now() does not', () => {
+    const cases: [string, boolean][] = [
+      ['prop("Fällig")', true],
+      ['dateAdd(prop("Fällig"); 7)', true],
+      ['if(prop("Fällig") > now(); prop("Fällig"); dateAdd(prop("Fällig"); 1))', true],
+      ['prop("Termin")', false],
+      ['now()', false],
+      ['if(true; prop("Fällig"); now())', false],
+    ];
+    for (const [expression, expected] of cases) {
+      const property = formula('prop_f', expression, TASKS);
+      expect(derivedDateIsWholeDay(property, all(property)), expression).toBe(expected);
+    }
+  });
+
+  it('answers no rather than looping on a formula that reads itself', () => {
+    const property = formula('prop_self', 'prop("prop_self")', TASKS);
+    expect(derivedDateIsWholeDay(property, all(property))).toBe(false);
   });
 });

@@ -9,6 +9,7 @@ import {
   type FormulaNode,
   type FormulaPropertyResolver,
   type FormulaValueType,
+  parseDatePropertyConfig,
   parseFormula,
   parseFormulaConfig,
   parseRelationConfig,
@@ -706,4 +707,79 @@ export function derivedResultType(
   schema: DerivedSchema,
 ): FormulaValueType {
   return formulaTypeOf(property, schema);
+}
+
+/**
+ * Whether a date a derived property answers with is a whole day rather than
+ * an instant (issue #255).
+ *
+ * A whole day is stored as UTC midnight, and read in a zone west of Greenwich
+ * that midnight is the evening before: a formula reading a due date showed
+ * "26.02., 19:00" in New York for the 27th. The API therefore answers a whole
+ * day as `YYYY-MM-DD`, which nobody can read in the wrong zone, and this
+ * decides which dates are whole days, from the schema alone:
+ *
+ * - a DATE column without a time; CREATED and UPDATED time are instants
+ * - the earliest or latest of such a column, through a rollup
+ * - in a formula: `prop()` of either, `dateAdd()` of a whole day, and an
+ *   `if()` whose two branches both are; `now()` is an instant
+ *
+ * Anything it cannot prove is an instant, which is what every date was
+ * before, so a doubt costs the old rendering and never a shifted day.
+ */
+export function derivedDateIsWholeDay(
+  property: DatabasePropertyRef,
+  schema: DerivedSchema,
+  seen: ReadonlySet<string> = new Set(),
+): boolean {
+  if (seen.has(property.id) || seen.size >= MAX_DERIVED_DEPTH) return false;
+  const inner = new Set([...seen, property.id]);
+  switch (property.type) {
+    case 'DATE':
+      return !parseDatePropertyConfig(property.config).includeTime;
+    case 'ROLLUP': {
+      const config = parseRollupConfig(property.config);
+      if (config === null || config.targetPropertyId === null) return false;
+      if (config.aggregate !== 'earliest' && config.aggregate !== 'latest') return false;
+      const target = schema.byId.get(config.targetPropertyId);
+      return target !== undefined && derivedDateIsWholeDay(target, schema, inner);
+    }
+    case 'FORMULA': {
+      const config = parseFormulaConfig(property.config);
+      if (config === null) return false;
+      let node: FormulaNode;
+      try {
+        node = parseFormula(config.expression);
+      } catch {
+        return false;
+      }
+      return formulaNodeIsWholeDay(node, schema, property.documentId ?? '', inner);
+    }
+    default:
+      return false;
+  }
+}
+
+function formulaNodeIsWholeDay(
+  node: FormulaNode,
+  schema: DerivedSchema,
+  collectionId: string,
+  seen: ReadonlySet<string>,
+): boolean {
+  if (node.kind === 'property') {
+    const referenced = resolveRef(node.ref, schema, collectionId);
+    return referenced !== undefined && derivedDateIsWholeDay(referenced, schema, seen);
+  }
+  if (node.kind !== 'call') return false;
+  const [first, second, third] = node.args;
+  if (node.name === 'dateAdd' && first !== undefined) {
+    return formulaNodeIsWholeDay(first, schema, collectionId, seen);
+  }
+  if (node.name === 'if' && second !== undefined && third !== undefined) {
+    return (
+      formulaNodeIsWholeDay(second, schema, collectionId, seen) &&
+      formulaNodeIsWholeDay(third, schema, collectionId, seen)
+    );
+  }
+  return false;
 }

@@ -21,6 +21,7 @@ import {
   databaseSortSchema,
   EMPTY_DATABASE_FILTER_GROUP,
   type FormulaValueType,
+  instantFromIsoInput,
   parseDatePropertyConfig,
   type QueryDatabaseRowsRequest,
   type QueryDatabaseRowsResponse,
@@ -30,6 +31,7 @@ import {
   type DatabasePropertyRef,
   type DatabaseQueryRowRecord,
   type DatabaseQueryScope,
+  derivedDateIsWholeDay,
   derivedPropertiesOf,
   DerivedPropertyError,
   formulaTypeOf,
@@ -118,6 +120,7 @@ function storedToDateResponseValue(
 function derivedToResponseValue(
   type: FormulaValueType,
   raw: unknown,
+  wholeDay: boolean,
 ): DatabaseRowPropertyValue['value'] {
   if (raw === null || raw === undefined) return null;
   if (type === 'number') {
@@ -125,7 +128,13 @@ function derivedToResponseValue(
     return Number.isFinite(parsed) ? parsed : null;
   }
   if (type === 'boolean') return Boolean(raw);
-  if (type === 'date') return raw instanceof Date ? raw.toISOString() : String(raw);
+  if (type === 'date') {
+    // A whole day travels as the day itself (issue #255): as an instant it
+    // is UTC midnight, which a reader west of Greenwich sees as the evening
+    // before. `derivedDateIsWholeDay` decides which dates are whole days.
+    const iso = raw instanceof Date ? raw.toISOString() : String(raw);
+    return wholeDay && /^\d{4}-\d{2}-\d{2}T/.test(iso) ? iso.slice(0, 10) : iso;
+  }
   return String(raw);
 }
 
@@ -154,10 +163,14 @@ interface ColumnData {
   jsonValue: Prisma.InputJsonValue | typeof Prisma.JsonNull;
 }
 
-function parseIsoOrThrow(propertyId: string, value: string): Date {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    throw AppError.validation(`Property ${propertyId} received an invalid date`);
+/**
+ * A written date as its instant. A date and time without a zone is read in
+ * the column's own zone when it has one (`instantFromIsoInput`, issue #255).
+ */
+function parseIsoOrThrow(property: DatabasePropertyRef, value: string): Date {
+  const date = instantFromIsoInput(value, parseDatePropertyConfig(property.config).timeZone);
+  if (date === null) {
+    throw AppError.validation(`Property ${property.id} received an invalid date`);
   }
   return date;
 }
@@ -175,7 +188,7 @@ function toDateColumnData(
   empty: ColumnData,
 ): ColumnData {
   if (typeof value === 'string') {
-    return { ...empty, dateValue: parseIsoOrThrow(property.id, value) };
+    return { ...empty, dateValue: parseIsoOrThrow(property, value) };
   }
   if (typeof value !== 'object' || Array.isArray(value)) {
     throw AppError.validation(`Property ${property.id} expects an ISO date string or a date span`);
@@ -189,8 +202,8 @@ function toDateColumnData(
   if (!span.success) {
     throw AppError.validation(`Property ${property.id} expects { start, end, allDay }`);
   }
-  const start = parseIsoOrThrow(property.id, span.data.start);
-  const end = span.data.end === null ? null : parseIsoOrThrow(property.id, span.data.end);
+  const start = parseIsoOrThrow(property, span.data.start);
+  const end = span.data.end === null ? null : parseIsoOrThrow(property, span.data.end);
   if (end !== null && end < start) {
     throw AppError.validation(`Property ${property.id} received a span that ends before it starts`);
   }
@@ -345,7 +358,11 @@ export class DatabaseRowsService {
     if (isDerivedColumn(property.type)) {
       return {
         propertyId: property.id,
-        value: derivedToResponseValue(formulaTypeOf(property, scope.schema), sources.derived),
+        value: derivedToResponseValue(
+          formulaTypeOf(property, scope.schema),
+          sources.derived,
+          derivedDateIsWholeDay(property, scope.schema),
+        ),
       };
     }
     return { propertyId: property.id, value: storedToResponseValue(property, sources.stored) };

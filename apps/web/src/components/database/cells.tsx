@@ -17,7 +17,7 @@ import {
   COMPUTED_PROPERTY_TYPES,
   DERIVED_PROPERTY_TYPE_SET,
 } from './property-types';
-import { ReadonlyCell } from './readonly-cell';
+import { ReadonlyCell, useComputedValueFormat } from './readonly-cell';
 import { RelationCell, RelationValueDisplay } from './relation-cell';
 import { IdListCell, NumberCell, TextCell } from './text-cells';
 
@@ -110,7 +110,16 @@ export function PropertyValueDisplay({
 }) {
   const t = useTranslations('database.cells');
   const formatDateValue = useDateValueFormat();
+  const formatComputedValue = useComputedValueFormat();
   if (value === null || (Array.isArray(value) && value.length === 0)) return null;
+
+  if (COMPUTED_PROPERTY_TYPES.has(property.type) || DERIVED_PROPERTY_TYPE_SET.has(property.type)) {
+    return (
+      <span className="truncate text-xs text-muted-foreground">
+        {formatComputedValue(property, value)}
+      </span>
+    );
+  }
 
   if (property.type === 'CHECKBOX') {
     return value === true ? (

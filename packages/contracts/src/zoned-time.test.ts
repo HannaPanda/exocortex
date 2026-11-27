@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { instantAtLocalTime, lastLocalHourSlot, localTimeParts } from './zoned-time';
+import {
+  instantAtLocalTime,
+  instantFromIsoInput,
+  lastLocalHourSlot,
+  localTimeParts,
+} from './zoned-time';
 
 /**
  * The zone arithmetic three features share (issue #106).
@@ -79,5 +84,48 @@ describe('lastLocalHourSlot', () => {
       const slot = lastLocalHourSlot(now, digest, 'Europe/Berlin');
       expect(now.getTime() - slot.getTime()).toBeLessThan(26 * 60 * 60 * 1000);
     }
+  });
+});
+
+describe('instantFromIsoInput (issue #255)', () => {
+  const iso = (value: string, zone: string | null) =>
+    instantFromIsoInput(value, zone)?.toISOString() ?? null;
+
+  it('takes an instant that names its zone as it is, whatever the column says', () => {
+    expect(iso('2026-11-26T11:00:00Z', 'Europe/Berlin')).toBe('2026-11-26T11:00:00.000Z');
+    expect(iso('2026-11-26T12:00:00+01:00', 'America/New_York')).toBe('2026-11-26T11:00:00.000Z');
+  });
+
+  it('keeps a bare day at UTC midnight, so a whole day never moves', () => {
+    expect(iso('2026-11-26', 'Europe/Berlin')).toBe('2026-11-26T00:00:00.000Z');
+    expect(iso('2026-11-26', 'Pacific/Auckland')).toBe('2026-11-26T00:00:00.000Z');
+  });
+
+  it("reads a zoneless time in the column's zone, in winter and in summer", () => {
+    expect(iso('2026-11-26T12:00:00', 'Europe/Berlin')).toBe('2026-11-26T11:00:00.000Z');
+    expect(iso('2026-07-15T12:00', 'Europe/Berlin')).toBe('2026-07-15T10:00:00.000Z');
+    expect(iso('2026-11-26T12:00:30.250', 'Europe/Berlin')).toBe('2026-11-26T11:00:30.250Z');
+  });
+
+  it('gets both transition nights right', () => {
+    // 29 March: 02:00 jumps to 03:00. 01:30 is still winter, 03:30 summer.
+    expect(iso('2026-03-29T01:30', 'Europe/Berlin')).toBe('2026-03-29T00:30:00.000Z');
+    expect(iso('2026-03-29T03:30', 'Europe/Berlin')).toBe('2026-03-29T01:30:00.000Z');
+    // 25 October: 03:00 falls back to 02:00, and 02:30 happens twice;
+    // `instantAtLocalTime` answers with the second, in winter time.
+    expect(iso('2026-10-25T02:30', 'Europe/Berlin')).toBe('2026-10-25T01:30:00.000Z');
+    expect(iso('2026-10-25T04:00', 'Europe/Berlin')).toBe('2026-10-25T03:00:00.000Z');
+  });
+
+  it('changes nothing for a column without a zone or with one the runtime does not know', () => {
+    expect(iso('2026-11-26T12:00:00', null)).toBe(new Date('2026-11-26T12:00:00').toISOString());
+    expect(iso('2026-11-26T12:00:00', 'Mars/Olympus')).toBe(
+      new Date('2026-11-26T12:00:00').toISOString(),
+    );
+  });
+
+  it('refuses what is not a date', () => {
+    expect(iso('morgen', 'Europe/Berlin')).toBeNull();
+    expect(iso('', null)).toBeNull();
   });
 });
