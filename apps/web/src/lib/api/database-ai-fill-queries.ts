@@ -21,11 +21,11 @@ import { databaseQueryKeys } from './database-queries';
  * as `database.ai_fill.changed`, which invalidates both lists below.
  */
 export const aiFillQueryKeys = {
-  active: (documentId: string) => ['database', documentId, 'ai-fills', 'active'] as const,
+  list: (documentId: string) => ['database', documentId, 'ai-fills'] as const,
 };
 
 function invalidateAfterFill(client: ReturnType<typeof useQueryClient>, documentId: string): void {
-  void client.invalidateQueries({ queryKey: aiFillQueryKeys.active(documentId) });
+  void client.invalidateQueries({ queryKey: aiFillQueryKeys.list(documentId) });
   void client.invalidateQueries({ queryKey: ['database', documentId, 'rows'] });
   void client.invalidateQueries({ queryKey: ['database', 'row'] });
 }
@@ -88,17 +88,22 @@ export function useRetryAiFill(documentId: string) {
 }
 
 /**
- * The batches of a database that are still working, for the progress strip.
- * Polled slowly while one runs, because a missed event must not leave a bar
- * standing still forever; the events are what makes it move promptly.
+ * The newest batches of a database, for the strip above the table: those still
+ * working and the latest that ended. Polled slowly while one works, because a
+ * missed event must not leave a bar standing still forever; the events are
+ * what makes it move promptly.
  */
-export function useActiveAiFills(documentId: string, enabled: boolean) {
+export function useAiFills(documentId: string, enabled: boolean) {
   return useQuery({
-    queryKey: aiFillQueryKeys.active(documentId),
-    queryFn: () =>
-      apiRequest<AiFillRunListResponse>(`/api/documents/${documentId}/ai-fills?active=true`),
+    queryKey: aiFillQueryKeys.list(documentId),
+    queryFn: () => apiRequest<AiFillRunListResponse>(`/api/documents/${documentId}/ai-fills`),
     enabled,
-    refetchInterval: (query) => ((query.state.data?.runs.length ?? 0) > 0 ? 5_000 : false),
+    refetchInterval: (query) =>
+      (query.state.data?.runs ?? []).some(
+        (run) => run.status === 'pending' || run.status === 'running',
+      )
+        ? 5_000
+        : false,
   });
 }
 

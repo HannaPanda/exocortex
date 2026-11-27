@@ -6,7 +6,6 @@ import {
   Loader2Icon,
   RotateCwIcon,
   SparklesIcon,
-  XIcon,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -39,7 +38,6 @@ import {
   DialogTitle,
   Input,
   Label,
-  Progress,
   Select,
   SelectContent,
   SelectItem,
@@ -53,8 +51,6 @@ import {
 } from '@exocortex/ui';
 
 import {
-  useActiveAiFills,
-  useCancelAiFill,
   useRemovePropertyAi,
   useSetPropertyAi,
   useStartAiFill,
@@ -553,53 +549,6 @@ export function AiCellMark({
         {again ? ` ${t('fillAgain')}` : null}
       </TooltipContent>
     </Tooltip>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// The batches still working
-// ---------------------------------------------------------------------------
-
-/** One line per batch that is still working, with how far it is and a way to stop it. */
-export function AiFillProgress({ documentId, enabled }: { documentId: string; enabled: boolean }) {
-  const t = useTranslations('database.aiFill');
-  const active = useActiveAiFills(documentId, enabled);
-  const cancel = useCancelAiFill(documentId);
-  const runs = active.data?.runs ?? [];
-  if (runs.length === 0) return null;
-  return (
-    <div className="grid gap-1 border-b border-border px-2 py-1.5" data-testid="ai-fill-progress">
-      {runs.map((run) => {
-        const done = run.counts.total - run.counts.queued - run.counts.running;
-        return (
-          <div
-            key={run.id}
-            className="flex items-center gap-2 text-sm"
-            data-testid={`ai-fill-run-${run.id}`}
-          >
-            <SparklesIcon className="size-4 shrink-0 text-muted-foreground" />
-            <span className="min-w-0 truncate">
-              {t('progress', { name: run.propertyName, done, total: run.counts.total })}
-            </span>
-            <Progress
-              className="w-32 shrink-0"
-              value={run.counts.total === 0 ? 0 : (done / run.counts.total) * 100}
-              label={t('progressLabel', { name: run.propertyName })}
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="ml-auto"
-              disabled={cancel.isPending}
-              data-testid={`ai-fill-cancel-${run.id}`}
-              onClick={() => cancel.mutate(run.id)}
-            >
-              <XIcon /> {t('cancelRun')}
-            </Button>
-          </div>
-        );
-      })}
-    </div>
   );
 }
 

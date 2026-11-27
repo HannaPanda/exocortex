@@ -438,6 +438,9 @@
       "budget_exceeded": "The budget was exhausted.",
       "timed_out": "The run timed out.",
       "run_ended": "The run ended early."
-    }
+    },
+    "openCells": "{name}: {count, plural, one {One cell wasn’t filled.} other {# cells weren’t filled.}}",
+    "retryRun": "Try again",
+    "dismiss": "Dismiss"
   }
 }

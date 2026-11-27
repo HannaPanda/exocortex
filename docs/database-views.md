@@ -612,9 +612,11 @@ The value is an ordinary stored value, never a formula (ADR-041).
   corner (AI value with time, pending, failed with the reason, nothing found)
   and offers an empty cell of a configured column on hover; pressing it fills
   that one cell in `replace_ai`, so it never overwrites a person's value.
-  `AiFillProgress` is the strip above the table for every batch still working,
-  with its cancel; `database.ai_fill.changed` invalidates it and the rows, and
-  it polls every five seconds while a batch is open in case an event is missed.
+  `AiFillProgress` (`ai-fill-progress.tsx`) is the strip above the table for
+  every batch still working, with its cancel, and for the newest batch that
+  ended in the last half hour with failed or cancelled cells, with its retry;
+  `database.ai_fill.changed` invalidates it and the rows, and it polls every
+  five seconds while a batch is open in case an event is missed.
   The palette offers "fill column" and, with a selection, "fill selection"
   (`row-selection-commands.tsx`).
 

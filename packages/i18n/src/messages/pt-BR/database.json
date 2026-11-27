@@ -438,6 +438,9 @@
       "budget_exceeded": "O orçamento foi esgotado.",
       "timed_out": "O tempo da execução acabou.",
       "run_ended": "A execução terminou antes."
-    }
+    },
+    "openCells": "{name}: {count, plural, one {Uma célula não foi preenchida.} many {# de células não foram preenchidas.} other {# células não foram preenchidas.}}",
+    "retryRun": "Tentar novamente",
+    "dismiss": "Ocultar"
   }
 }

@@ -438,6 +438,9 @@
       "budget_exceeded": "Het budget was op.",
       "timed_out": "De tijd voor de run was om.",
       "run_ended": "De run is voortijdig beëindigd."
-    }
+    },
+    "openCells": "{name}: {count, plural, one {Eén cel is niet ingevuld.} other {# cellen zijn niet ingevuld.}}",
+    "retryRun": "Opnieuw proberen",
+    "dismiss": "Verbergen"
   }
 }

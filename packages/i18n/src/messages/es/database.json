@@ -438,6 +438,9 @@
       "budget_exceeded": "Se agotó el presupuesto.",
       "timed_out": "Se agotó el tiempo de la ejecución.",
       "run_ended": "La ejecución finalizó antes."
-    }
+    },
+    "openCells": "{name}: {count, plural, one {No se ha rellenado una celda.} many {No se han rellenado # celdas.} other {No se han rellenado # celdas.}}",
+    "retryRun": "Reintentar",
+    "dismiss": "Ocultar"
   }
 }

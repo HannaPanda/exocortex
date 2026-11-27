@@ -438,6 +438,9 @@
       "budget_exceeded": "Budżet został wyczerpany.",
       "timed_out": "Upłynął limit czasu dla tego przebiegu.",
       "run_ended": "Przebieg zakończył się wcześniej."
-    }
+    },
+    "openCells": "{name}: {count, plural, one {Jedna komórka nie została wypełniona.} few {# komórki nie zostały wypełnione.} many {# komórek nie zostało wypełnionych.} other {# komórki nie zostało wypełnionych.}}",
+    "retryRun": "Spróbuj ponownie",
+    "dismiss": "Ukryj"
   }
 }

@@ -438,6 +438,9 @@
       "budget_exceeded": "Das Budget war aufgebraucht.",
       "timed_out": "Die Zeit für den Durchgang war um.",
       "run_ended": "Der Durchgang endete vorher."
-    }
+    },
+    "openCells": "{name}: {count, plural, one {Eine Zelle wurde nicht ausgefüllt.} other {# Zellen wurden nicht ausgefüllt.}}",
+    "retryRun": "Noch einmal versuchen",
+    "dismiss": "Ausblenden"
   }
 }

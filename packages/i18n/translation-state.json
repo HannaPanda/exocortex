@@ -5372,6 +5372,10 @@
       "source": "5f29f0aefdb5fe76",
       "output": "1c2a263619385042"
     },
+    "database.aiFill.dismiss": {
+      "source": "042fae8a9e4a74b8",
+      "output": "48845bff334a50a5"
+    },
     "database.aiFill.errors.answer_invalid": {
       "source": "f1a007a00ad6b3c1",
       "output": "90c62d73bae75497"
@@ -5512,6 +5516,10 @@
       "source": "465481ce851b1c5a",
       "output": "13b458c58259e424"
     },
+    "database.aiFill.openCells": {
+      "source": "df9b037f0eb17f13",
+      "output": "2265cbc5e92eaa7f"
+    },
     "database.aiFill.preset": {
       "source": "697cf59a6265909a",
       "output": "0575f29df888a27e"
@@ -5599,6 +5607,10 @@
     "database.aiFill.remove": {
       "source": "d2d632557dfa28da",
       "output": "79b4368e570c6772"
+    },
+    "database.aiFill.retryRun": {
+      "source": "a0f4238e9feb2574",
+      "output": "d8b8392e2c542950"
     },
     "database.aiFill.save": {
       "source": "f6b2ff39f540eb81",
@@ -31118,6 +31130,10 @@
       "source": "5f29f0aefdb5fe76",
       "output": "a14f1f7a53da257b"
     },
+    "database.aiFill.dismiss": {
+      "source": "042fae8a9e4a74b8",
+      "output": "dd680772877e1917"
+    },
     "database.aiFill.errors.answer_invalid": {
       "source": "f1a007a00ad6b3c1",
       "output": "be11d9174d9125d1"
@@ -31258,6 +31274,10 @@
       "source": "465481ce851b1c5a",
       "output": "4b2d9d4a4015348a"
     },
+    "database.aiFill.openCells": {
+      "source": "df9b037f0eb17f13",
+      "output": "5ec919e50bf56809"
+    },
     "database.aiFill.preset": {
       "source": "697cf59a6265909a",
       "output": "65ebd9bd0f84e77a"
@@ -31345,6 +31365,10 @@
     "database.aiFill.remove": {
       "source": "d2d632557dfa28da",
       "output": "5dffacd2c119d3b1"
+    },
+    "database.aiFill.retryRun": {
+      "source": "a0f4238e9feb2574",
+      "output": "a9254c5f812829af"
     },
     "database.aiFill.save": {
       "source": "f6b2ff39f540eb81",
@@ -56864,6 +56888,10 @@
       "source": "5f29f0aefdb5fe76",
       "output": "35972712b6a9878c"
     },
+    "database.aiFill.dismiss": {
+      "source": "042fae8a9e4a74b8",
+      "output": "04ae28b7f7cc7536"
+    },
     "database.aiFill.errors.answer_invalid": {
       "source": "f1a007a00ad6b3c1",
       "output": "fc0be3140a9326c6"
@@ -57004,6 +57032,10 @@
       "source": "465481ce851b1c5a",
       "output": "196a7462020b364c"
     },
+    "database.aiFill.openCells": {
+      "source": "df9b037f0eb17f13",
+      "output": "75683e8726c9dde4"
+    },
     "database.aiFill.preset": {
       "source": "697cf59a6265909a",
       "output": "e61bbb839ef8d8cb"
@@ -57091,6 +57123,10 @@
     "database.aiFill.remove": {
       "source": "d2d632557dfa28da",
       "output": "d257670fa84dfc9f"
+    },
+    "database.aiFill.retryRun": {
+      "source": "a0f4238e9feb2574",
+      "output": "af273d956b5bec8d"
     },
     "database.aiFill.save": {
       "source": "f6b2ff39f540eb81",
@@ -82610,6 +82646,10 @@
       "source": "5f29f0aefdb5fe76",
       "output": "11a9ce77ce10acc7"
     },
+    "database.aiFill.dismiss": {
+      "source": "042fae8a9e4a74b8",
+      "output": "9d0dbb55001d7893"
+    },
     "database.aiFill.errors.answer_invalid": {
       "source": "f1a007a00ad6b3c1",
       "output": "69dee2f6bcbbc6bf"
@@ -82750,6 +82790,10 @@
       "source": "465481ce851b1c5a",
       "output": "fac83d9979ed19da"
     },
+    "database.aiFill.openCells": {
+      "source": "df9b037f0eb17f13",
+      "output": "797d4e015205f49d"
+    },
     "database.aiFill.preset": {
       "source": "697cf59a6265909a",
       "output": "90c2d339a9d57c99"
@@ -82837,6 +82881,10 @@
     "database.aiFill.remove": {
       "source": "d2d632557dfa28da",
       "output": "e638287adf19a8cf"
+    },
+    "database.aiFill.retryRun": {
+      "source": "a0f4238e9feb2574",
+      "output": "20b5f4b8bfd56e4f"
     },
     "database.aiFill.save": {
       "source": "f6b2ff39f540eb81",
@@ -108356,6 +108404,10 @@
       "source": "5f29f0aefdb5fe76",
       "output": "3ba75bdc2a5b95ad"
     },
+    "database.aiFill.dismiss": {
+      "source": "042fae8a9e4a74b8",
+      "output": "a710cb328fd47770"
+    },
     "database.aiFill.errors.answer_invalid": {
       "source": "f1a007a00ad6b3c1",
       "output": "5c8e9db476647509"
@@ -108496,6 +108548,10 @@
       "source": "465481ce851b1c5a",
       "output": "0c1b52d7b036ac24"
     },
+    "database.aiFill.openCells": {
+      "source": "df9b037f0eb17f13",
+      "output": "9883c44c5d14c357"
+    },
     "database.aiFill.preset": {
       "source": "697cf59a6265909a",
       "output": "67adf9903ff9cd68"
@@ -108583,6 +108639,10 @@
     "database.aiFill.remove": {
       "source": "d2d632557dfa28da",
       "output": "4ba1e6516e0666c0"
+    },
+    "database.aiFill.retryRun": {
+      "source": "a0f4238e9feb2574",
+      "output": "576434df7a00aeae"
     },
     "database.aiFill.save": {
       "source": "f6b2ff39f540eb81",
@@ -134102,6 +134162,10 @@
       "source": "5f29f0aefdb5fe76",
       "output": "ad82d7a73d3c22e0"
     },
+    "database.aiFill.dismiss": {
+      "source": "042fae8a9e4a74b8",
+      "output": "80d6332fb80aa55f"
+    },
     "database.aiFill.errors.answer_invalid": {
       "source": "f1a007a00ad6b3c1",
       "output": "04f083a4024d6f3f"
@@ -134242,6 +134306,10 @@
       "source": "465481ce851b1c5a",
       "output": "c19ad1bebfcebffd"
     },
+    "database.aiFill.openCells": {
+      "source": "df9b037f0eb17f13",
+      "output": "8d57f5ec6be26df2"
+    },
     "database.aiFill.preset": {
       "source": "697cf59a6265909a",
       "output": "7c3bd97e2b010d50"
@@ -134329,6 +134397,10 @@
     "database.aiFill.remove": {
       "source": "d2d632557dfa28da",
       "output": "6e1babbba18434b9"
+    },
+    "database.aiFill.retryRun": {
+      "source": "a0f4238e9feb2574",
+      "output": "7237b73bc691a25b"
     },
     "database.aiFill.save": {
       "source": "f6b2ff39f540eb81",
@@ -159848,6 +159920,10 @@
       "source": "5f29f0aefdb5fe76",
       "output": "c2c921c95abe8ee8"
     },
+    "database.aiFill.dismiss": {
+      "source": "042fae8a9e4a74b8",
+      "output": "dd680772877e1917"
+    },
     "database.aiFill.errors.answer_invalid": {
       "source": "f1a007a00ad6b3c1",
       "output": "3c0380ba740b49d1"
@@ -159988,6 +160064,10 @@
       "source": "465481ce851b1c5a",
       "output": "678e070ebb96283b"
     },
+    "database.aiFill.openCells": {
+      "source": "df9b037f0eb17f13",
+      "output": "11803bcb9ef9e27d"
+    },
     "database.aiFill.preset": {
       "source": "697cf59a6265909a",
       "output": "a5ab3212dad17406"
@@ -160075,6 +160155,10 @@
     "database.aiFill.remove": {
       "source": "d2d632557dfa28da",
       "output": "30f527de05ebca75"
+    },
+    "database.aiFill.retryRun": {
+      "source": "a0f4238e9feb2574",
+      "output": "b9e10688be012d8b"
     },
     "database.aiFill.save": {
       "source": "f6b2ff39f540eb81",

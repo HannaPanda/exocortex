@@ -438,6 +438,9 @@
       "budget_exceeded": "Le budget a été dépassé.",
       "timed_out": "Le délai imparti pour l’exécution est écoulé.",
       "run_ended": "L’exécution s’est arrêtée prématurément."
-    }
+    },
+    "openCells": "{name} : {count, plural, one {Une cellule n’a pas été remplie.} many {# de cellules n’ont pas été remplies.} other {# cellules n’ont pas été remplies.}}",
+    "retryRun": "Réessayer",
+    "dismiss": "Masquer"
   }
 }

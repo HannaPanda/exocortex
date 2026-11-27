@@ -438,6 +438,9 @@
       "budget_exceeded": "Il budget è stato esaurito.",
       "timed_out": "Il tempo a disposizione per l’esecuzione è scaduto.",
       "run_ended": "L’esecuzione si è interrotta prima."
-    }
+    },
+    "openCells": "{name}: {count, plural, one {Una cella non è stata compilata.} many {# celle non sono state compilate.} other {# celle non sono state compilate.}}",
+    "retryRun": "Riprova",
+    "dismiss": "Ignora"
   }
 }

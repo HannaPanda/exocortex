@@ -36,7 +36,8 @@ import {
 } from '@/lib/api/database-queries';
 
 import { AddPropertyButton } from './add-property-button';
-import { AiCellMark, AiFillProgress, useAiFillControls } from './ai-fill';
+import { AiCellMark, useAiFillControls } from './ai-fill';
+import { AiFillProgress } from './ai-fill-progress';
 import { PropertyCell } from './cells';
 import { PropertyMenu } from './property-menu';
 import { RowHandle, type RowHandleActions } from './row-handle';
