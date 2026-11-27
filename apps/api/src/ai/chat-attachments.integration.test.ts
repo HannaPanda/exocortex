@@ -211,6 +211,14 @@ describe('uploading a chat file', () => {
     expect(storage.objects.has(row.storageKey)).toBe(true);
   });
 
+  it('takes two pictures uploaded at the same moment', async () => {
+    // A paste and a drop arrive together; a shared placeholder key once made
+    // the second one fail on the unique storage key.
+    const conversationId = await createConversation();
+    const both = await Promise.all([upload(conversationId), upload(conversationId)]);
+    expect(new Set(both.map(({ attachment }) => attachment.id)).size).toBe(2);
+  });
+
   it('refuses a file that is not a picture', async () => {
     const conversationId = await createConversation();
     await expect(upload(conversationId, PDF, ownerId, 'brief.pdf')).rejects.toMatchObject({

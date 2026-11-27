@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { type Readable } from 'node:stream';
 
 import { Inject, Injectable } from '@nestjs/common';
@@ -142,6 +143,8 @@ export class AttachmentsService {
       ));
 
     // The row is created first so the object key can embed its identifier.
+    // The placeholder is unique per upload, because `storageKey` is: a shared
+    // one made two uploads at the same moment refuse each other (issue #223).
     const attachment = await this.prisma.attachment.create({
       data: {
         workspaceId: input.workspaceId,
@@ -149,7 +152,7 @@ export class AttachmentsService {
         filename,
         mimeType: detected.mimeType,
         byteSize: input.body.byteLength,
-        storageKey: 'pending',
+        storageKey: `pending:${randomUUID()}`,
         createdById: input.userId,
         conversationId: input.conversationId ?? null,
         ...(extractionEnabled ? { textStatus: 'PENDING' } : {}),
