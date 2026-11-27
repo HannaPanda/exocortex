@@ -83,7 +83,8 @@ What is deliberately still missing is listed under
   tags or the document's date, or its own words), and a batch fills its cells
   from each row's page, values and files, type-checked and marked as the AI's,
   never over a person's value unless asked, paid and counted as a run
-  (ADR-099; for agents and the built-in AI so far)
+  (ADR-099; from a column's menu, a cell, a selection, the palette and
+  the agents' tools)
 - entities, their candidates and page links, in their own workspace-wide screen
 - a knowledge map: every page of a workspace as a glowing point in a 3D room,
   joined by references, similar content nobody linked, entity mentions and the

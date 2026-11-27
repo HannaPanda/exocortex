@@ -603,6 +603,20 @@ The value is an ordinary stored value, never a formula (ADR-041).
   write. Every row answer carries `aiCells` (`aiCellsOfRows` in
   `apps/api/src/databases/ai-fill/ai-cells.ts`): `pending`, `failed` with its
   code, `empty`, or `filled` with the time, for the table to draw.
+- **In the browser.** `apps/web/src/components/database/ai-fill.tsx`.
+  `useAiFillControls` holds the two dialogs the column menu, a cell, the
+  selection bar and the palette all open: the instruction (preset, own words,
+  sources, new options, automatic filling; `aiFillConfigProblems` disables
+  saving) and the confirmation before a batch, whose count is a `dryRun` of
+  the same request in the chosen mode. `AiCellMark` draws a cell's mark in its
+  corner (AI value with time, pending, failed with the reason, nothing found)
+  and offers an empty cell of a configured column on hover; pressing it fills
+  that one cell in `replace_ai`, so it never overwrites a person's value.
+  `AiFillProgress` is the strip above the table for every batch still working,
+  with its cancel; `database.ai_fill.changed` invalidates it and the rows, and
+  it polls every five seconds while a batch is open in case an event is missed.
+  The palette offers "fill column" and, with a selection, "fill selection"
+  (`row-selection-commands.tsx`).
 
 ## Known limitations (deliberate, not bugs)
 

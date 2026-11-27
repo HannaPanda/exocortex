@@ -123,6 +123,7 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     area: 'datenbanken',
     since: '2026-11-27',
     references: ['#237', 'ADR-099'],
+    ui: {},
     tools: [
       'exo_database_property_ai_set',
       'exo_database_property_ai_remove',
