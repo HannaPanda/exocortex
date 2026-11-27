@@ -36,6 +36,21 @@ export const API_ERROR_CODES = [
    */
   'database_files_foreign',
   'database_rows_not_found',
+  /**
+   * An AI instruction that cannot be stored on this column (issue #237):
+   * `details.reason` is one of `AI_FILL_CONFIG_PROBLEMS`.
+   */
+  'database_property_ai_invalid',
+  /** The column has no AI instruction to fill it with (issue #237). */
+  'ai_fill_not_configured',
+  /** AI is switched off here, so no column can be filled (issue #237). */
+  'ai_fill_unavailable',
+  /** More rows than one batch may hold (`ai.fillMaxRowsPerRun`, issue #237). */
+  'ai_fill_too_many_rows',
+  /** The batch is over and cannot be cancelled or written into (issue #237). */
+  'ai_fill_finished',
+  /** A route the worker's own token of that batch calls, and nobody else (issue #237). */
+  'ai_fill_worker_only',
   'collaboration_ticket_invalid',
   'collaboration_ticket_expired',
   'collaboration_read_only',
@@ -347,6 +362,12 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   database_files_target_invalid: 422,
   database_files_foreign: 422,
   database_rows_not_found: 404,
+  database_property_ai_invalid: 422,
+  ai_fill_not_configured: 409,
+  ai_fill_unavailable: 503,
+  ai_fill_too_many_rows: 422,
+  ai_fill_finished: 409,
+  ai_fill_worker_only: 403,
   collaboration_ticket_invalid: 401,
   collaboration_ticket_expired: 401,
   collaboration_read_only: 403,

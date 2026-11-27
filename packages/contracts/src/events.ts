@@ -37,6 +37,7 @@ export const APPLICATION_EVENT_TYPES = [
   'database.property.changed',
   'database.view.changed',
   'database.row.updated',
+  'database.ai_fill.changed',
   'ai.conversation.compacted',
   'ai.conversation.compaction_failed',
   'ai.run.tool_call',
@@ -151,6 +152,16 @@ export const databaseChangedPayloadSchema = z.object({
  */
 export const databaseRowUpdatedPayloadSchema = databaseChangedPayloadSchema.extend({
   rowId: idSchema,
+});
+
+/**
+ * An AI fill of a database column started, moved on or ended (issue #237).
+ * A cell it wrote also arrives as `database.row.updated`; this one is for what
+ * a value write does not say: a cell that failed, and the batch's own state.
+ */
+export const databaseAiFillChangedPayloadSchema = databaseChangedPayloadSchema.extend({
+  runId: idSchema,
+  status: aiRunStatusSchema,
 });
 
 export const aiRunProgressPayloadSchema = z.object({
@@ -561,6 +572,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('database.property.changed', databaseChangedPayloadSchema),
   envelope('database.view.changed', databaseChangedPayloadSchema),
   envelope('database.row.updated', databaseRowUpdatedPayloadSchema),
+  envelope('database.ai_fill.changed', databaseAiFillChangedPayloadSchema),
   envelope('ai.conversation.compacted', aiConversationCompactedPayloadSchema),
   envelope('ai.conversation.compaction_failed', aiConversationCompactionFailedPayloadSchema),
   envelope('ai.run.tool_call', aiRunToolCallPayloadSchema),

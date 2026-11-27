@@ -88,6 +88,12 @@ export const settingsSchema = z.object({
    */
   'ai.visionMaxImagesPerRun': z.number().int().min(0).max(64).default(4),
   /**
+   * Cells one AI fill of a database column may hold (issue #237, ADR-099).
+   * Each is one model call; a column with more rows is filled in several
+   * batches, and the start answer says how many are left.
+   */
+  'ai.fillMaxRowsPerRun': z.number().int().min(1).max(500).default(100),
+  /**
    * Whether a picture on a chat message goes to a model that sees images as
    * the picture itself, on every turn it is in the context (issue #223,
    * ADR-097). Off, every model reads the stored description, which is cheaper
@@ -909,6 +915,7 @@ export const SETTING_SCOPES = {
   'ai.maxToolIterations': 'workspace',
   'ai.visionEnabled': 'workspace',
   'ai.visionMaxImagesPerRun': 'workspace',
+  'ai.fillMaxRowsPerRun': 'workspace',
   'ai.sendImagesToModel': 'workspace',
   'ai.pageContextEnabled': 'workspace',
   'ai.pageContextMaxChars': 'workspace',
@@ -1099,6 +1106,7 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'ai.untrustedContentPolicy',
   'ai.writeMode',
   'ai.visionMaxImagesPerRun',
+  'ai.fillMaxRowsPerRun',
   'ai.pageContextMaxChars',
   'ai.maxPinnedSources',
   'ai.pinnedContextMaxChars',

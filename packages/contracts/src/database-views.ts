@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { databasePropertyAiSchema } from './database-ai-fill';
 import { documentSummarySchema } from './documents';
 import { documentTitleSchema, idSchema, isoDateTimeSchema, paginationSchema } from './primitives';
 
@@ -186,6 +187,11 @@ export const databasePropertySchema = z.object({
   orderKey: z.string(),
   config: z.record(z.string(), z.unknown()).nullable(),
   options: z.array(databasePropertyOptionSchema),
+  /**
+   * The column's AI instruction (issue #237, ADR-099), null when it has none.
+   * Absent where a property is answered by something older than the field.
+   */
+  ai: databasePropertyAiSchema.nullable().optional(),
   createdAt: isoDateTimeSchema,
   updatedAt: isoDateTimeSchema,
 });
@@ -504,6 +510,23 @@ export const databaseRowFileSchema = z.object({
 });
 export type DatabaseRowFile = z.infer<typeof databaseRowFileSchema>;
 
+/**
+ * What an AI fill has to say about one cell (issue #237): its value is a
+ * model's (`filled`, until anybody else writes it), a batch is about to fill it
+ * (`pending`), or the latest attempt failed or found nothing, and nobody wrote
+ * the cell since (`failed`, `empty`).
+ */
+export const databaseRowAiCellSchema = z.object({
+  propertyId: idSchema,
+  state: z.enum(['filled', 'pending', 'failed', 'empty']),
+  runId: idSchema,
+  /** When the value was written or the attempt ended; null while pending. */
+  at: isoDateTimeSchema.nullable(),
+  /** `failed` only: one of `AI_FILL_CELL_ERROR_CODES`. */
+  errorCode: z.string().nullable(),
+});
+export type DatabaseRowAiCell = z.infer<typeof databaseRowAiCellSchema>;
+
 export const databaseRowSchema = z.object({
   document: documentSummarySchema,
   values: z.array(databaseRowPropertyValueSchema),
@@ -512,6 +535,8 @@ export const databaseRowSchema = z.object({
    * them (issue #245). Absent where a row is answered without them.
    */
   files: z.array(databaseRowFileSchema).optional(),
+  /** AI fill marks of this row's cells (issue #237). Absent when there are none. */
+  aiCells: z.array(databaseRowAiCellSchema).optional(),
 });
 export type DatabaseRow = z.infer<typeof databaseRowSchema>;
 

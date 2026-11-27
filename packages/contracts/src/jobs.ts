@@ -29,6 +29,7 @@ export const QUEUE_NAMES = {
   mail: 'mail',
   workflow: 'workflow',
   conversationCompaction: 'conversation-compaction',
+  databaseAiFill: 'database-ai-fill',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -50,6 +51,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.mail,
   QUEUE_NAMES.workflow,
   QUEUE_NAMES.conversationCompaction,
+  QUEUE_NAMES.databaseAiFill,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -692,6 +694,29 @@ export const conversationCompactionJobSchema = jobBase.extend({
 });
 export type ConversationCompactionJob = z.infer<typeof conversationCompactionJobSchema>;
 
+/**
+ * A database column filled by its AI instruction (issue #237, ADR-099).
+ *
+ * - `run` works through one batch the API created: an `ai_run` of kind FILL
+ *   with its cells. The API decided what may be filled; the worker asks the
+ *   model, one cell at a time, and hands every answer back to the API.
+ * - `auto` is a row that was created or whose text changed, in a database
+ *   with a column that fills itself. Debounced per row by the outbox
+ *   dispatcher, and turned into a `run` through the API as the account that
+ *   switched the column on, like an automation runs as its owner.
+ */
+export const databaseAiFillJobSchema = z.discriminatedUnion('kind', [
+  jobBase.extend({ kind: z.literal('run'), runId: idSchema, workspaceId: idSchema }),
+  jobBase.extend({
+    kind: z.literal('auto'),
+    workspaceId: idSchema,
+    databaseId: idSchema,
+    rowId: idSchema,
+    trigger: z.enum(['created', 'changed']),
+  }),
+]);
+export type DatabaseAiFillJob = z.infer<typeof databaseAiFillJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -711,6 +736,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.mail]: mailDeliveryJobSchema,
   [QUEUE_NAMES.workflow]: workflowJobSchema,
   [QUEUE_NAMES.conversationCompaction]: conversationCompactionJobSchema,
+  [QUEUE_NAMES.databaseAiFill]: databaseAiFillJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -732,4 +758,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.mail]: MailDeliveryJob;
   [QUEUE_NAMES.workflow]: WorkflowJob;
   [QUEUE_NAMES.conversationCompaction]: ConversationCompactionJob;
+  [QUEUE_NAMES.databaseAiFill]: DatabaseAiFillJob;
 };

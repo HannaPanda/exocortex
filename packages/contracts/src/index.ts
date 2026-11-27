@@ -21,6 +21,7 @@ export * from './collaboration';
 export * from './comments';
 export * from './container-image';
 export * from './context';
+export * from './database-ai-fill';
 export * from './database-formula';
 export * from './database-relations';
 export * from './database-row-batch';
