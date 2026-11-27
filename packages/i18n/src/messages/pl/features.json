@@ -120,6 +120,16 @@
     },
     "where": "Ustawienia, Edytor. Także w palecie poleceń."
   },
+  "gliederung-beim-ueberfahren": {
+    "title": "Rozwijanie konspektu po najechaniu kursorem",
+    "summary": "Pasek po prawej stronie może automatycznie rozwijać listę nagłówków, gdy tylko zatrzymasz na nim na chwilę kursor myszy, zupełnie bez klikania. To kompromis między wąskim paskiem a przypiętym konspektem.",
+    "details": {
+      "p1": "W sekcji Ustawienia → Edytor włączysz opcję „Rozwiń po najechaniu”. Wtedy lista rozwija się, gdy kursor zatrzyma się na chwilę na pasku, i zamyka się, gdy z niego zjedzie. Po samej liście możesz swobodnie poruszać kursorem – pozostanie otwarta, a kliknięcie nagłówka przeniesie cię w odpowiednie miejsce.",
+      "p2": "Kursor tekstowy pozostaje w tekście podczas rozwijania, więc można pisać dalej bez przerw. Za pomocą klawiatury konspekt otwiera się tak jak dotychczas – klawiszem Enter na pasku, a na telefonie przyciskiem w prawym dolnym rogu. Ten wybór jest przypisany do twojego konta i obowiązuje na każdym urządzeniu.",
+      "p3": "Możesz to przełączać skrótem Strg + K („Rozwijanie konspektu po najechaniu kursorem”). Agenci odczytują i modyfikują to ustawienie za pomocą exo_me_preferences i exo_me_preferences_set, jako outlineHoverExpand (true lub false)."
+    },
+    "where": "Ustawienia, Edytor. Także w palecie poleceń."
+  },
   "seiten-editor": {
     "title": "Pisanie stron wspólnie w tym samym czasie",
     "summary": "Każda strona jest edytorem blokowym, nad którym może jednocześnie pracować kilka osób. Tekst jest zapisywany na bieżąco, nawet przy chwilowej utracie połączenia, a po jego przywróceniu zmiany samoczynnie się synchronizują.",

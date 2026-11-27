@@ -41,6 +41,10 @@
     "dodgeLabel": "S’écarter de la ligne où tu écris",
     "dodgeHint": "Si tu places le curseur sur une ligne que le plan masquerait, il s’écarte vers le haut ou vers le bas tant que tu y écris. Si tu survols le plan avec la souris, il reste en place.",
     "dodgeColumnHint": "Ne s’applique que lorsque le plan se superpose au texte.",
+    "scaleHeading": "Plan dans la marge",
+    "scaleIntro": "Si le plan n’est pas épinglé, une fine échelle apparaît sur le bord droit, avec un trait par titre.",
+    "hoverExpandLabel": "Développer au survol",
+    "hoverExpandHint": "Si la souris s’arrête brièvement sur l’échelle, la liste des titres se déploie sans clic. Elle se referme lorsque la souris s’éloigne. Le curseur reste dans le texte ; avec le clavier ou sur mobile, elle s’ouvre comme d’habitude.",
     "saveFailed": "Impossible d’enregistrer le paramètre. Réessaie dans un instant.",
     "loading": "Chargement des paramètres…",
     "loadError": "Impossible de charger les paramètres"

@@ -120,6 +120,16 @@
     },
     "where": "Impostazioni, Editor. Anche nella tavolozza dei comandi."
   },
+  "gliederung-beim-ueberfahren": {
+    "title": "Espandi la struttura al passaggio del mouse",
+    "summary": "La barra sul bordo destro può aprire automaticamente l’elenco delle intestazioni quando il cursore del mouse vi si sofferma un momento, senza bisogno di fare clic. Una via di mezzo tra la barra sottile e una struttura bloccata.",
+    "details": {
+      "p1": "In Impostazioni → Editor puoi attivare «Espandi al passaggio del mouse». In questo modo l’elenco si apre se il mouse si ferma per un istante sulla barra, e si richiude quando si allontana. Puoi muovere tranquillamente il mouse sopra l’elenco stesso senza che si chiuda, e facendo clic su un’intestazione puoi raggiungerla direttamente.",
+      "p2": "Durante l’apertura il cursore resta nel testo, così puoi continuare a scrivere. Da tastiera puoi aprire la struttura come sempre premendo Invio sulla barra, mentre da smartphone usi il pulsante in basso a destra. Questa preferenza è collegata al tuo account e si applica a qualsiasi dispositivo.",
+      "p3": "Con Ctrl + K puoi attivarla o disattivarla («Espandi la struttura al passaggio del mouse»). Gli agenti leggono e impostano questa preferenza tramite exo_me_preferences ed exo_me_preferences_set, sotto outlineHoverExpand (true o false)."
+    },
+    "where": "Impostazioni, Editor. Anche nella tavolozza dei comandi."
+  },
   "seiten-editor": {
     "title": "Scrivere pagine, a quattro mani in contemporanea",
     "summary": "Ogni pagina è un editor a blocchi a cui più persone possono lavorare contemporaneamente. Il testo viene salvato continuamente, anche in caso di breve disconnessione, e si riconcilia poi automaticamente.",

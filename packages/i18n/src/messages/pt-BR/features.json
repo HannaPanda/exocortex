@@ -120,6 +120,16 @@
     },
     "where": "Configurações, Editor. Também na paleta de comandos."
   },
+  "gliederung-beim-ueberfahren": {
+    "title": "Expandir sumário ao passar o mouse",
+    "summary": "A barra na borda direita pode abrir sua lista de títulos por conta própria assim que o mouse repousar brevemente sobre ela, sem precisar clicar. Um meio-termo entre a barra estreita e um sumário fixado.",
+    "details": {
+      "p1": "Em Configurações → Editor, você ativa „Expandir ao passar o mouse”. A lista se expande quando o mouse para por um instante sobre a barra e se fecha novamente quando ele se afasta. Você pode mover o mouse livremente sobre a lista em si, que ela permanece aberta, e um clique em um título pula direto para lá.",
+      "p2": "O cursor permanece no texto durante a expansão, permitindo continuar escrevendo. Pelo teclado, você abre o sumário como antes usando Enter na barra; no celular, pelo botão no canto inferior direito. A escolha fica salva na sua conta e vale em qualquer dispositivo.",
+      "p3": "Use Strg + K para alternar a opção („Expandir sumário ao passar o mouse”). Agentes leem e definem a configuração via exo_me_preferences e exo_me_preferences_set, como outlineHoverExpand (true ou false)."
+    },
+    "where": "Configurações, Editor. Também na paleta de comandos."
+  },
   "seiten-editor": {
     "title": "Escrever páginas em colaboração simultânea",
     "summary": "Cada página é um editor em blocos que várias pessoas podem editar ao mesmo tempo. O texto é salvo continuamente, mesmo se a conexão cair por instantes, e sincroniza automaticamente depois.",

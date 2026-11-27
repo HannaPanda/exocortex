@@ -93,6 +93,13 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/einstellungen/editor'] },
   }),
   defineFeature({
+    id: 'gliederung-beim-ueberfahren',
+    area: 'seiten',
+    since: '2026-11-27',
+    references: ['#283', '#194'],
+    ui: { path: '/einstellungen/editor' },
+  }),
+  defineFeature({
     id: 'seiten-layout',
     area: 'seiten',
     since: '2026-08-05',

@@ -181,6 +181,12 @@
       "hint": "Vale per il tuo account",
       "keywords": "struttura indice sommario fissare fissata sovrapponi coprire spostare colonna testo spazio"
     },
+    "outlineHoverExpand": {
+      "on": "Espandi la struttura al passaggio del cursore",
+      "off": "Espandi la struttura solo al clic",
+      "hint": "Vale per il tuo account",
+      "keywords": "struttura sommario indice scala espandi passaggio hover mouse cursore apri automatico clic"
+    },
     "contextOpen": "Apri pannello contestuale",
     "contextOpenPlaceholder": "Quale scheda?",
     "contextOpenKeywords": "contesto pannello contestuale scheda tab pannello barra laterale destra",
@@ -241,7 +247,7 @@
       },
       "editorSettings": {
         "label": "Impostazioni editor",
-        "keywords": "editor impostazioni struttura indice sommario fissare sovrapponi trasparenza semitrasparente spostare"
+        "keywords": "editor impostazioni struttura sommario indice fissa sovrapponi trasparenza traslucido sposta espandi passaggio cursore scala"
       },
       "workspaces": {
         "label": "Mostra tutte le aree di lavoro",

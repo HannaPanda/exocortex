@@ -41,6 +41,10 @@
     "dodgeLabel": "Evita la riga in cui stai scrivendo",
     "dodgeHint": "Se posizioni il cursore su una riga che verrebbe coperta dalla struttura, quest’ultima si sposta verso l’alto o verso il basso mentre scrivi lì. Se passi il mouse sopra la struttura, rimane ferma.",
     "dodgeColumnHint": "Ha effetto solo quando la struttura è sovrapposta al testo.",
+    "scaleHeading": "Struttura a lato",
+    "scaleIntro": "Se la struttura non è fissata, sul bordo destro appare una scala sottile, con un trattino per ogni intestazione.",
+    "hoverExpandLabel": "Espandi al passaggio del mouse",
+    "hoverExpandHint": "Se lasci il mouse fermo sulla scala, l’elenco delle intestazioni si espande senza fare clic. Si richiude quando sposti il mouse. Il cursore rimane nel testo; da tastiera e su smartphone si apre come prima.",
     "saveFailed": "Impossibile salvare l’impostazione. Riprova tra poco.",
     "loading": "Caricamento delle impostazioni…",
     "loadError": "Impossibile caricare le impostazioni"

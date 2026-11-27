@@ -41,6 +41,10 @@
     "dodgeLabel": "Der Zeile ausweichen, in der du schreibst",
     "dodgeHint": "Setzt du den Cursor in eine Zeile, die die Gliederung verdecken würde, rückt sie nach oben oder unten weg, solange du dort schreibst. Zeigst du mit der Maus auf die Gliederung, bleibt sie stehen.",
     "dodgeColumnHint": "Wirkt nur, wenn die Gliederung über dem Text liegt.",
+    "scaleHeading": "Gliederung am Rand",
+    "scaleIntro": "Ist die Gliederung nicht angepinnt, steht am rechten Rand eine schmale Skala, ein Strich je Überschrift.",
+    "hoverExpandLabel": "Beim Überfahren aufklappen",
+    "hoverExpandHint": "Ruht die Maus kurz auf der Skala, klappt die Liste der Überschriften auf, ohne Klick. Sie schließt wieder, wenn die Maus weiterzieht. Der Cursor bleibt dabei im Text; mit der Tastatur und auf dem Handy öffnet sie sich wie bisher.",
     "saveFailed": "Die Einstellung konnte nicht gespeichert werden. Versuch es gleich noch einmal.",
     "loading": "Einstellungen werden geladen …",
     "loadError": "Die Einstellungen konnten nicht geladen werden"

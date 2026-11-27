@@ -32,6 +32,14 @@ import {
 import { useOutlineDodge } from './use-outline-dodge';
 import { type OutlineTracking, useOutlineTracking } from './use-outline-tracking';
 
+/**
+ * How long the pointer rests on the scale before the list opens, and how long
+ * it may be away before it closes, in milliseconds (issue #283). Long enough
+ * that a pointer crossing the margin on its way elsewhere opens nothing.
+ */
+const HOVER_OPEN_DELAY = 200;
+const HOVER_CLOSE_DELAY = 250;
+
 /** A per-viewer convenience, so it lives in the browser and nowhere else. */
 const PIN_STORAGE_KEY = 'exocortex.outline.pinned';
 
@@ -180,6 +188,14 @@ export const PageOutline = React.memo(function PageOutline({ editor }: { editor:
         <PopoverTrigger
           aria-label={triggerLabel}
           title={triggerLabel}
+          // Chosen by the reader (issue #283): the scale opens its list as
+          // soon as the pointer rests on it. Opened that way the popover
+          // takes no focus (Base UI leaves the focus manager off for a hover),
+          // so the caret stays in the text; a click or the keyboard opens it
+          // as always. A phone's button has no hover to wait for.
+          openOnHover={pinnedMode.hoverExpand && !compact}
+          delay={HOVER_OPEN_DELAY}
+          closeDelay={HOVER_CLOSE_DELAY}
           render={
             compact ? (
               <button
@@ -236,7 +252,12 @@ function usePinnedMode(
   tracking: OutlineTracking,
   frame: React.RefObject<HTMLElement | null>,
   list: React.RefObject<HTMLElement | null>,
-): { overlay: boolean; covering: boolean; transparency: OutlineTransparency } {
+): {
+  overlay: boolean;
+  covering: boolean;
+  transparency: OutlineTransparency;
+  hoverExpand: boolean;
+} {
   const preferences = useOutlinePreferences();
   const pinned = tracking.wanted && tracking.placement === 'pinned';
   const overlay = preferences.pinned === 'overlay';
@@ -249,7 +270,12 @@ function usePinnedMode(
     list,
     enabled: pinned && covering && preferences.dodge,
   });
-  return { overlay, covering, transparency: preferences.transparency };
+  return {
+    overlay,
+    covering,
+    transparency: preferences.transparency,
+    hoverExpand: preferences.hoverExpand,
+  };
 }
 
 /**

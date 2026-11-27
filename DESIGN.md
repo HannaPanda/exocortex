@@ -790,6 +790,13 @@ because it follows the caret and the scroll position frame by frame; and it
 never moves while the pointer is on it, so a click on a heading cannot find
 the list gone from under it.
 
+The scale may also open its list when the pointer rests on it (200 ms) and
+close it once the pointer has been away for 250 ms, the way Notion's does
+(`outlineHoverExpand`, off by default, issue #283): a middle way between the
+scale and a pinned list for a reader who looks at the outline often. Opened
+by hover, the popover takes no focus, so the caret stays in the text; a
+click, the keyboard and a phone's button open it exactly as before.
+
 Where the margin cannot even hold the scale (a phone, or a narrow
 window with a panel open), it becomes a compact button floating at the bottom
 edge, and that button steps aside while the editor has focus.

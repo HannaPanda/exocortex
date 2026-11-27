@@ -181,6 +181,12 @@
       "hint": "Geldt voor je account",
       "keywords": "overzicht inhoudsopgave vastzetten vastgezet overlappen bedekken wijken kolom tekst verplaatsen ruimte"
     },
+    "outlineHoverExpand": {
+      "on": "Overzicht bij aanwijzen uitvouwen",
+      "off": "Overzicht pas bij klikken uitvouwen",
+      "hint": "Geldt voor je account",
+      "keywords": "overzicht inhoudsopgave schaal uitvouwen aanwijzen hover muis automatisch openen klik"
+    },
     "contextOpen": "Contextpaneel openen",
     "contextOpenPlaceholder": "Welk tabblad?",
     "contextOpenKeywords": "context contextpaneel tabblad tab paneel zijbalk rechts",
@@ -241,7 +247,7 @@
       },
       "editorSettings": {
         "label": "Editor-instellingen",
-        "keywords": "editor instellingen overzicht inhoudsopgave vastzetten overlappen transparantie doorschijnend wijken"
+        "keywords": "editor instellingen overzicht inhoudsopgave vastpinnen overlappen transparantie doorschijnend uitwijken uitvouwen aanwijzen schaal"
       },
       "workspaces": {
         "label": "Alle werkruimten weergeven",

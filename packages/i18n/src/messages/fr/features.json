@@ -120,6 +120,16 @@
     },
     "where": "Paramètres, Éditeur. Également dans la palette de commandes."
   },
+  "gliederung-beim-ueberfahren": {
+    "title": "Déplier le plan au survol",
+    "summary": "L’échelle sur le bord droit peut ouvrir automatiquement sa liste des titres dès que la souris s’y arrête un instant, sans aucun clic. Un juste milieu entre l’échelle étroite et un plan épinglé.",
+    "details": {
+      "p1": "Dans Paramètres → Éditeur, active « Déplier au survol ». La liste se déplie alors lorsque la souris reste un moment sur l’échelle, et se referme dès qu’elle s’en éloigne. Tu peux déplacer la souris sur la liste elle-même sans crainte : elle reste ouverte, et un clic sur un titre y amène directement.",
+      "p2": "Le curseur reste dans le texte lors de l’ouverture, tu peux donc continuer à écrire. Au clavier, tu ouvres le plan comme d’habitude avec Entrée sur l’échelle, et sur mobile avec le bouton en bas à droite. Ce choix est lié à ton compte et s’applique sur chaque appareil.",
+      "p3": "Bascule cette option avec Strg + K (« Déplier le plan au survol »). Les agents lisent et modifient ce paramètre via exo_me_preferences et exo_me_preferences_set, sous le nom outlineHoverExpand (true ou false)."
+    },
+    "where": "Paramètres, Éditeur. Également dans la palette de commandes."
+  },
   "seiten-editor": {
     "title": "Rédiger des pages, à deux en simultané",
     "summary": "Chaque page est un éditeur de blocs que plusieurs personnes peuvent modifier en même temps. Le texte est enregistré en continu, même en cas de brève coupure de connexion, puis synchronisé automatiquement par la suite.",

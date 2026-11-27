@@ -181,6 +181,12 @@
       "hint": "Dotyczy twojego konta",
       "keywords": "spis treści konspekt przypnij przypięty nakładka przesłaniać odsuwanie kolumna tekst przesuń miejsce"
     },
+    "outlineHoverExpand": {
+      "on": "Rozwijaj konspekt po najechaniu kursorem",
+      "off": "Rozwijaj konspekt dopiero po kliknięciu",
+      "hint": "Dotyczy twojego konta",
+      "keywords": "konspekt spis treści skala rozwiń rozwijanie najechanie hover mysz automatycznie otwórz kliknięcie"
+    },
     "contextOpen": "Otwórz panel kontekstowy",
     "contextOpenPlaceholder": "Która zakładka?",
     "contextOpenKeywords": "kontekst panel kontekstowy zakładka tab panel pasek boczny po prawej",
@@ -241,7 +247,7 @@
       },
       "editorSettings": {
         "label": "Ustawienia edytora",
-        "keywords": "edytor ustawienia spis treści konspekt przypnij nakładka przezroczystość prześwitujący odsuwanie"
+        "keywords": "edytor ustawienia konspekt spis treści przypnij nakładka przezroczystość półprzezroczysty omijanie rozwiń najechanie skala"
       },
       "workspaces": {
         "label": "Pokaż wszystkie obszary robocze",

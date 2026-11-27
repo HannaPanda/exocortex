@@ -181,6 +181,12 @@
       "hint": "Applies to your account",
       "keywords": "outline table of contents pin pinned overlay cover shift column text move space"
     },
+    "outlineHoverExpand": {
+      "on": "Expand outline on hover",
+      "off": "Expand outline on click only",
+      "hint": "Applies to your account",
+      "keywords": "outline table of contents toc scale expand hover mouse auto open click"
+    },
     "contextOpen": "Open context panel",
     "contextOpenPlaceholder": "Which tab?",
     "contextOpenKeywords": "context context panel tab tab panel sidebar right",
@@ -241,7 +247,7 @@
       },
       "editorSettings": {
         "label": "Editor settings",
-        "keywords": "editor settings outline table of contents pin overlay transparency translucent shift"
+        "keywords": "editor settings outline table of contents toc pin overlay transparency translucent dodge expand hover scale"
       },
       "workspaces": {
         "label": "Show all workspaces",

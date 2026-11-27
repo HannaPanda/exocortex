@@ -486,6 +486,68 @@ test.describe('page outline stepping aside for the caret', () => {
   });
 });
 
+// Issue #283, third part: the scale may open its list when the pointer rests
+// on it, without a click and without taking the caret out of the text.
+test.describe('page outline opening on hover', () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test.afterEach(async ({ request, baseURL }) => {
+    await request.patch('/api/me/preferences', {
+      data: { outlineHoverExpand: false },
+      headers: { origin: baseURL as string },
+    });
+  });
+
+  test('opens where the reader chose it, and leaves the caret in the text', async ({
+    page,
+    request,
+    baseURL,
+  }) => {
+    const marker = Date.now().toString(36);
+    await importPage(page, `Überfahren ${marker}`, longMarkdown(marker));
+    const rail = page.getByTestId('page-outline-rail');
+    const popover = page.getByTestId('page-outline-popover');
+
+    // Off, the default: resting on the scale opens nothing.
+    await rail.hover();
+    await page.waitForTimeout(700);
+    await expect(popover).toBeHidden();
+
+    await request.patch('/api/me/preferences', {
+      data: { outlineHoverExpand: true },
+      headers: { origin: baseURL as string },
+    });
+    await page.reload();
+    await expect(page.getByTestId('editor-surface')).toBeVisible();
+    const paragraph = page.locator('.ProseMirror p').first();
+    await paragraph.click();
+    await page.keyboard.type(' x');
+    await rail.hover();
+    await expect(popover).toBeVisible();
+    await expect(page.locator('.ProseMirror')).toBeFocused();
+
+    // The list stays open on the way to a heading, and a click jumps.
+    await popover.getByRole('button', { name: `Betrieb ${marker}` }).hover();
+    await expect(popover).toBeVisible();
+    await popover.getByRole('button', { name: `Betrieb ${marker}` }).click();
+    await expect.poll(() => headingOffset(page, `Betrieb ${marker}`)).toBeLessThan(60);
+
+    // Away from it, it closes again.
+    await rail.hover();
+    await expect(popover).toBeVisible();
+    await paragraph.hover();
+    await expect(popover).toBeHidden();
+
+    // The keyboard opens it as before.
+    await rail.focus();
+    await page.keyboard.press('Enter');
+    await expect(popover).toBeVisible();
+    await expect(popover.locator('[aria-current="location"]')).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(rail).toBeFocused();
+  });
+});
+
 test.describe('page outline on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 

@@ -41,6 +41,10 @@
     "dodgeLabel": "De regel ontwijken waarin je typt",
     "dodgeHint": "Plaats je de cursor in een regel die door het overzicht bedekt zou worden, dan schuift het naar boven of beneden weg zolang je daar typt. Wijs je met de muis naar het overzicht, dan blijft het staan.",
     "dodgeColumnHint": "Werkt alleen wanneer het overzicht over de tekst heen ligt.",
+    "scaleHeading": "Overzicht in de marge",
+    "scaleIntro": "Als het overzicht niet is vastgepind, staat er aan de rechterkant een smalle schaal, met één streepje per kop.",
+    "hoverExpandLabel": "Uitvouwen bij aanwijzen",
+    "hoverExpandHint": "Als de muis even op de schaal rust, vouwt de lijst met koppen uit, zonder te klikken. Hij sluit weer zodra de muis weggaat. De cursor blijft gewoon in de tekst; met het toetsenbord en op je telefoon opent het zoals voorheen.",
     "saveFailed": "De instelling kon niet worden opgeslagen. Probeer het zo nog eens.",
     "loading": "Instellingen laden …",
     "loadError": "De instellingen konden niet worden geladen"

@@ -1,6 +1,6 @@
 'use client';
 
-import { Columns2Icon, LayersIcon } from 'lucide-react';
+import { Columns2Icon, LayersIcon, MousePointerClickIcon, PointerIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -18,14 +18,17 @@ const ICON = 'size-4 text-muted-foreground';
  * One command named by what the press does, like the chat's scrolling:
  * "über dem Text liegen" while the text moves aside, "Text ausweichen
  * lassen" while the list lies over it. Offered everywhere, because the
- * choice is the person's and not the open page's. The transparency is a
- * finer choice and lives on the settings page the palette also opens.
+ * choice is the person's and not the open page's. Opening the scale on hover
+ * is a toggle of the same kind. The transparency and stepping aside are
+ * finer choices and live on the settings page the palette also opens.
  */
 export function useOutlinePreferenceCommands(): PaletteCommand[] {
   const t = useTranslations('shell.paletteCommands.outlinePinned');
+  const tHover = useTranslations('shell.paletteCommands.outlineHoverExpand');
   const preferences = useOutlinePreferences();
   const latest = useLatest(preferences);
   const pinned = preferences.pinned;
+  const hoverExpand = preferences.hoverExpand;
 
   return React.useMemo(() => {
     const next = pinned === 'column' ? 'overlay' : 'column';
@@ -40,6 +43,19 @@ export function useOutlinePreferenceCommands(): PaletteCommand[] {
         keywords: keywordsOf(t('keywords')),
         run: () => latest.current.change({ outlinePinned: next }),
       },
+      {
+        id: 'command-outline-hover-expand',
+        group: 'settings',
+        label: hoverExpand ? tHover('off') : tHover('on'),
+        hint: tHover('hint'),
+        icon: hoverExpand ? (
+          <MousePointerClickIcon className={ICON} />
+        ) : (
+          <PointerIcon className={ICON} />
+        ),
+        keywords: keywordsOf(tHover('keywords')),
+        run: () => latest.current.change({ outlineHoverExpand: !hoverExpand }),
+      },
     ];
-  }, [pinned, t, latest]);
+  }, [pinned, hoverExpand, t, tHover, latest]);
 }

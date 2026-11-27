@@ -181,6 +181,12 @@
       "hint": "Aplica-se à sua conta",
       "keywords": "sumário estrutura índice fixar fixado sobrepor cobrir ajustar coluna texto mover espaço"
     },
+    "outlineHoverExpand": {
+      "on": "Expandir estrutura ao passar o cursor",
+      "off": "Expandir estrutura somente ao clicar",
+      "hint": "Aplica-se à sua conta",
+      "keywords": "estrutura sumário índice escala expandir passar cursor hover mouse abrir automaticamente clique"
+    },
     "contextOpen": "Abrir painel de contexto",
     "contextOpenPlaceholder": "Qual aba?",
     "contextOpenKeywords": "contexto painel de contexto aba guia painel barra lateral direita",
@@ -241,7 +247,7 @@
       },
       "editorSettings": {
         "label": "Configurações do editor",
-        "keywords": "editor configurações sumário estrutura índice fixar sobrepor transparência translúcido ajustar"
+        "keywords": "editor configurações estrutura sumário índice fixar sobrepor transparência translúcido desviar expandir passar cursor escala"
       },
       "workspaces": {
         "label": "Mostrar todos os espaços de trabalho",

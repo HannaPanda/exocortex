@@ -120,6 +120,16 @@
     },
     "where": "Einstellungen, Editor. Außerdem in der Befehlspalette."
   },
+  "gliederung-beim-ueberfahren": {
+    "title": "Gliederung beim Überfahren aufklappen",
+    "summary": "Die Skala am rechten Rand kann ihre Liste der Überschriften von selbst öffnen, sobald die Maus kurz auf ihr ruht, ganz ohne Klick. Ein Mittelweg zwischen der schmalen Skala und einer angepinnten Gliederung.",
+    "details": {
+      "p1": "Unter Einstellungen → Editor schaltest du „Beim Überfahren aufklappen“ ein. Dann klappt die Liste auf, wenn die Maus einen Moment auf der Skala bleibt, und schließt wieder, wenn sie weiterzieht. Über die Liste selbst kannst du die Maus ruhig bewegen, sie bleibt offen, und ein Klick auf eine Überschrift springt dorthin.",
+      "p2": "Der Cursor bleibt beim Aufklappen im Text, du kannst also weiterschreiben. Mit der Tastatur öffnest du die Gliederung wie bisher mit Enter auf der Skala, auf dem Handy mit dem Knopf unten rechts. Die Wahl gehört zu deinem Konto und gilt auf jedem Gerät.",
+      "p3": "Mit Strg + K schaltest du es um („Gliederung beim Überfahren aufklappen“). Agenten lesen und setzen die Einstellung über exo_me_preferences und exo_me_preferences_set, als outlineHoverExpand (true oder false)."
+    },
+    "where": "Einstellungen, Editor. Außerdem in der Befehlspalette."
+  },
   "seiten-editor": {
     "title": "Seiten schreiben, zu zweit gleichzeitig",
     "summary": "Jede Seite ist ein Blockeditor, den mehrere Leute gleichzeitig bearbeiten können. Der Text wird laufend gespeichert, auch wenn die Verbindung kurz weg ist, und läuft danach von selbst wieder zusammen.",

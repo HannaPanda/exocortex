@@ -41,6 +41,10 @@
     "dodgeLabel": "Dodge the line you are typing in",
     "dodgeHint": "If you place the cursor on a line that the outline would cover, it moves up or down while you are typing there. If you hover over the outline, it stays put.",
     "dodgeColumnHint": "Only applies when the outline floats over the text.",
+    "scaleHeading": "Margin outline",
+    "scaleIntro": "When the outline is not pinned, a narrow scale appears on the right edge, with one tick per heading.",
+    "hoverExpandLabel": "Expand on hover",
+    "hoverExpandHint": "If the mouse rests briefly on the scale, the list of headings expands without a click. It closes again when the mouse moves away. The cursor stays in the text; using the keyboard or on mobile, it opens as before.",
     "saveFailed": "Could not save setting. Please try again in a moment.",
     "loading": "Loading settings…",
     "loadError": "Could not load settings"

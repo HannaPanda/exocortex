@@ -41,6 +41,10 @@
     "dodgeLabel": "Ustępowanie miejsca wierszowi, w którym piszesz",
     "dodgeHint": "Gdy umieścisz kursor w wierszu, który zasłaniałby konspekt, odsunie się on w górę lub w dół na czas pisania. Po najechaniu kursorem myszy na konspekt pozostaje on w miejscu.",
     "dodgeColumnHint": "Działa tylko wtedy, gdy konspekt leży na tekście.",
+    "scaleHeading": "Spis treści na marginesie",
+    "scaleIntro": "Gdy spis treści nie jest przypięty, przy prawej krawędzi widać wąską skalę z jedną kreską na każdy nagłówek.",
+    "hoverExpandLabel": "Rozwiń po najechaniu kursorem",
+    "hoverExpandHint": "Gdy zatrzymasz kursor na skali, lista nagłówków rozwinie się bez klikania. Zwinie się z powrotem, gdy przesuniesz kursor dalej. Kursor tekstowy pozostaje w tekście; za pomocą klawiatury i na telefonie otwiera się tak jak dotychczas.",
     "saveFailed": "Nie udało się zapisać ustawienia. Spróbuj ponownie za chwilę.",
     "loading": "Wczytywanie ustawień…",
     "loadError": "Nie udało się wczytać ustawień"

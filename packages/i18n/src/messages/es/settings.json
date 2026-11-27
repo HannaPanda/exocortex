@@ -41,6 +41,10 @@
     "dodgeLabel": "Esquivar la línea en la que escribes",
     "dodgeHint": "Si colocas el cursor en una línea que el esquema taparía, este se apartará hacia arriba o hacia abajo mientras escribas ahí. Si pasas el ratón por encima del esquema, se mantendrá en su sitio.",
     "dodgeColumnHint": "Solo funciona cuando el esquema se superpone al texto.",
+    "scaleHeading": "Esquema en el margen",
+    "scaleIntro": "Si el esquema no está fijado, aparece una escala estrecha en el margen derecho, con una línea por cada encabezado.",
+    "hoverExpandLabel": "Desplegar al pasar el cursor",
+    "hoverExpandHint": "Al posar el ratón brevemente sobre la escala, se despliega la lista de encabezados sin necesidad de hacer clic. Se vuelve a cerrar cuando el ratón se mueve. El cursor permanece en el texto; con el teclado y en el móvil se abre como siempre.",
     "saveFailed": "No se ha podido guardar la preferencia. Inténtalo de nuevo en unos instantes.",
     "loading": "Cargando ajustes…",
     "loadError": "No se han podido cargar los ajustes"

@@ -42,7 +42,8 @@ function isOutlineTransparency(value: unknown): value is OutlineTransparency {
 /**
  * How pages behave for this account while it reads and writes (issue #283):
  * for now, how a pinned page outline sits beside the text, and whether a list
- * laid over the text steps aside for the line being written on.
+ * laid over the text steps aside for the line being written on, and whether
+ * the scale opens its list on hover.
  *
  * Selects like the language and chat pages beside it, each with the chosen
  * option explained underneath, because "über dem Text liegen" only says what
@@ -178,6 +179,35 @@ export function EditorSettingsPage() {
               <Label htmlFor="outline-dodge">{t('dodgeLabel')}</Label>
               <p id="outline-dodge-hint" className="max-w-measure text-xs text-muted-foreground">
                 {overlay ? t('dodgeHint') : t('dodgeColumnHint')}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+      {query.isPending || query.isError ? null : (
+        <section className="flex flex-col gap-5" aria-labelledby="editor-scale-heading">
+          <div className="flex flex-col gap-1">
+            <SectionRule as="h2" id="editor-scale-heading">
+              {t('scaleHeading')}
+            </SectionRule>
+            <p className="max-w-measure text-sm text-muted-foreground">{t('scaleIntro')}</p>
+          </div>
+          <div className="flex items-start gap-3">
+            <Switch
+              id="outline-hover-expand"
+              checked={outline.hoverExpand}
+              onCheckedChange={(checked) => change({ outlineHoverExpand: checked })}
+              aria-describedby="outline-hover-expand-hint"
+              data-testid="outline-hover-expand"
+              className="mt-0.5"
+            />
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="outline-hover-expand">{t('hoverExpandLabel')}</Label>
+              <p
+                id="outline-hover-expand-hint"
+                className="max-w-measure text-xs text-muted-foreground"
+              >
+                {t('hoverExpandHint')}
               </p>
             </div>
           </div>

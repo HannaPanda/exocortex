@@ -120,6 +120,16 @@
     },
     "where": "Ajustes, Editor. También en la paleta de comandos."
   },
+  "gliederung-beim-ueberfahren": {
+    "title": "Desplegar el esquema al pasar el cursor",
+    "summary": "La escala del borde derecho puede abrir su lista de encabezados por sí sola en cuanto el ratón se detiene un instante sobre ella, sin hacer clic. Un punto medio entre la escala estrecha y un esquema fijado.",
+    "details": {
+      "p1": "En Ajustes → Editor puedes activar «Desplegar al pasar el cursor». Así, la lista se despliega cuando el ratón se queda un momento sobre la escala y se vuelve a cerrar cuando se aparta. Puedes mover el ratón con calma sobre la propia lista, ya que permanecerá abierta, y al hacer clic en un encabezado saltarás a él.",
+      "p2": "El cursor permanece en el texto mientras se despliega, por lo que puedes seguir escribiendo. Con el teclado, puedes abrir el esquema como siempre pulsando Enter en la escala; en el móvil, con el botón inferior derecho. Esta preferencia está vinculada a tu cuenta y se aplica en cualquier dispositivo.",
+      "p3": "Con Strg + K puedes alternarlo («Desplegar el esquema al pasar el cursor»). Los agentes leen y configuran este ajuste mediante exo_me_preferences y exo_me_preferences_set, como outlineHoverExpand (true o false)."
+    },
+    "where": "Ajustes, Editor. También en la paleta de comandos."
+  },
   "seiten-editor": {
     "title": "Escribir páginas, entre dos a la vez",
     "summary": "Cada página es un editor de bloques que varias personas pueden editar simultáneamente. El texto se guarda continuamente, incluso si la conexión se interrumpe un momento, y después se sincroniza de nuevo por sí solo.",

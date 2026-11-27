@@ -120,6 +120,16 @@
     },
     "where": "Settings, Editor. Also in the command palette."
   },
+  "gliederung-beim-ueberfahren": {
+    "title": "Expand outline on hover",
+    "summary": "The scale on the right edge can automatically open its list of headings as soon as the mouse rests on it briefly, without any clicking. A middle ground between the narrow scale and a pinned outline.",
+    "details": {
+      "p1": "Under Settings → Editor, turn on “Expand on hover”. The list then expands when the mouse lingers on the scale for a moment, and closes again when it moves away. You can move the mouse freely over the list itself—it stays open—and clicking a heading jumps there.",
+      "p2": "The cursor stays in the text while it expands, so you can keep typing. With the keyboard, you open the outline as before by pressing Enter on the scale, and on mobile using the button at the bottom right. The choice belongs to your account and applies across all devices.",
+      "p3": "Toggle it with Ctrl + K (“Expand outline on hover”). Agents read and set the preference via exo_me_preferences and exo_me_preferences_set, as outlineHoverExpand (true or false)."
+    },
+    "where": "Settings, Editor. Also in the command palette."
+  },
   "seiten-editor": {
     "title": "Write pages, collaboratively in real time",
     "summary": "Every page is a block editor that multiple people can edit at the same time. Text is saved continuously, even if the connection briefly drops, and merges back together automatically afterwards.",

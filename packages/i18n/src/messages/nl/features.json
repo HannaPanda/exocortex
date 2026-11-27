@@ -120,6 +120,16 @@
     },
     "where": "Instellingen, Editor. Ook in het opdrachtpalet."
   },
+  "gliederung-beim-ueberfahren": {
+    "title": "Overzicht uitklappen bij aanwijzen",
+    "summary": "De schaal aan de rechterrand kan de lijst met koppen automatisch openen zodra de muis er even op rust, helemaal zonder te klikken. Een tussenweg tussen de smalle schaal en een vastgezet overzicht.",
+    "details": {
+      "p1": "Onder Instellingen → Editor schakel je „Uitklappen bij aanwijzen” in. De lijst klapt dan uit zodra de muis even op de schaal blijft staan, en sluit weer zodra je de muis weghaalt. Je kunt de muis rustig over de lijst zelf bewegen, deze blijft open, en een klik op een kop springt ernaartoe.",
+      "p2": "De cursor blijft bij het uitklappen in de tekst staan, dus je kunt gewoon doorschrijven. Met het toetsenbord open je het overzicht zoals voorheen met Enter op de schaal, op je telefoon met de knop rechtsonder. De instelling hoort bij je account en geldt op elk apparaat.",
+      "p3": "Met Strg + K schakel je het om („Overzicht uitklappen bij aanwijzen”). Agents lezen en wijzigen de instelling via exo_me_preferences en exo_me_preferences_set, als outlineHoverExpand (true of false)."
+    },
+    "where": "Instellingen, Editor. Ook in het opdrachtpalet."
+  },
   "seiten-editor": {
     "title": "Pagina’s schrijven, tegelijkertijd met twee personen",
     "summary": "Elke pagina is een blokiseditor waarin meerdere mensen tegelijkertijd kunnen werken. De tekst wordt doorlopend opgeslagen, ook als de verbinding even wegvalt, en synchroniseert daarna vanzelf weer.",
