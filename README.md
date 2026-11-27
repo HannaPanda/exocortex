@@ -25,6 +25,9 @@ What is deliberately still missing is listed under
   German; the catalogues and gates are in place, and the screens are being
   moved into them area by area, so most of the interface is still German in
   every locale (issue #98, ADR-062)
+- times shown in the reader's zone and on their clock: the language's, or a
+  24- or 12-hour clock chosen per account; stored instants stay UTC and a
+  whole day never moves (issue #255)
 - multiple workspaces with `OWNER` / `ADMIN` / `MEMBER` / `GUEST` roles; adding
   and removing members takes effect in open browser tabs, not only on the next
   request (ADR-029)
