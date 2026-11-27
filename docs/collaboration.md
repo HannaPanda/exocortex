@@ -185,6 +185,7 @@ each process.
 | database down                     | the store hook throws, Hocuspocus keeps the document in memory and retries                                      |
 | API down while the tab rebuilds   | the failed ticket arms the same revive backoff (20 s doubling to 120 s); showing the tab retries at once        |
 | socket dead after sleep or outage | the revive watchdog and showing the tab reopen the socket of the same provider; document and editor stay        |
+| API down while a page is open     | a failed refetch of the page's details keeps the page; only a 4xx (gone, no access) shows the error panel       |
 
 The client side of a reconnect lives in
 `apps/web/src/components/editor/collaboration-connection.ts`. Two rules there

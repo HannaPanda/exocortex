@@ -21,6 +21,7 @@ import { useExportMarkdown } from '@/lib/api/markdown-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import { documentHref } from '@/lib/document-href';
 
+import { replacesPageOnError } from './document-load-failure';
 import { useDocumentSession } from './document-session';
 import { DocumentTitleInput } from './document-title-input';
 import { DocumentTopBar } from './document-top-bar';
@@ -108,7 +109,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
   if (document.isPending || session.isPending) {
     return <LoadingState label={t('loading')} />;
   }
-  if (document.isError) {
+  if (document.isError && replacesPageOnError(document.error, document.data !== undefined)) {
     return (
       <ErrorState
         title={t('unavailableTitle')}
@@ -118,7 +119,10 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
     );
   }
 
+  // A failed refetch keeps the page it already has (see above), so the data is
+  // read rather than assumed; without any there is nothing to show yet.
   const detail = document.data;
+  if (detail === undefined) return <LoadingState label={t('loading')} />;
   const user = session.data?.user;
   const archived = detail.archivedAt !== null;
   const readOnly = archived || detail.access === 'read';
