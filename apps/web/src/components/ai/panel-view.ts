@@ -1,4 +1,8 @@
-import { type AiConversation, type AiConversationMessage } from '@exocortex/contracts';
+import {
+  type AiConversation,
+  type AiConversationMessage,
+  type ChatCommandName,
+} from '@exocortex/contracts';
 
 import { type FinishedRunTrace, type RunTraceStep } from './run-trace';
 import { pendingSegments, type StreamSegments } from './stream-segments';
@@ -66,6 +70,20 @@ export function resolveTranscriptTrace(input: {
   }
   if (input.finished === null) return null;
   return { runId: input.finished.runId, steps: input.finished.steps, live: false };
+}
+
+/** The slash commands that answer with a list in Markdown (issue #300). */
+const LISTING_COMMANDS: ReadonlySet<ChatCommandName> = new Set(['help', 'tools', 'rules']);
+
+/**
+ * Whether a command's answer is something to read and keeps a bubble in the
+ * transcript, rendered as Markdown. Every other command confirms a changed
+ * setting in one line, which belongs in the notice slot. Decided by the
+ * command, not by the text: `/rules` with a single rule is one line long and
+ * still a list (issue #300).
+ */
+export function commandAnswersWithList(command: ChatCommandName): boolean {
+  return LISTING_COMMANDS.has(command);
 }
 
 /**

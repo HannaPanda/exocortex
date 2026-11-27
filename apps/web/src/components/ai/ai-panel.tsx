@@ -32,6 +32,7 @@ import { resolveModelChoice, useModelPreference } from './model-choice';
 import {
   buildCommandNotice,
   buildStreamingMessages,
+  commandAnswersWithList,
   composerBusy,
   describeTranscript,
   liveSelectionOffer,
@@ -363,7 +364,7 @@ function AiPanelBody({
         // something to read, so it keeps a bubble. Everything else confirms a
         // changed setting in one line and belongs in the notice slot, where the
         // next message replaces it instead of stacking below the transcript.
-        if (command.message.includes('\n')) {
+        if (commandAnswersWithList(command.command)) {
           setCommandNotice(buildCommandNotice(conversationId, command.message));
         } else if (command.command !== 'clear' || messages.length === 0) {
           // `/clear` says it in the transcript itself, by way of the boundary

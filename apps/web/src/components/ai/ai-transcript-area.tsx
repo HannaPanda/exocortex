@@ -75,7 +75,8 @@ export function AiTranscriptArea({
     after.push(<ConversationCheckpoints key="checkpoints" conversationId={conversationId} />);
   }
   if (commandNotice !== null) {
-    after.push(<ChatMessage key={commandNotice.id} message={commandNotice} />);
+    // Only a listing command keeps a bubble, and it answers in Markdown (#300).
+    after.push(<ChatMessage key={commandNotice.id} message={commandNotice} markdown />);
   }
 
   return (

@@ -73,6 +73,16 @@ test('begins a chat without a page from the start page and gives it the screen',
   await expect(page.getByTestId('ai-transcript')).toContainText('/clear');
 });
 
+test('shows the answer to /help as a list, one command per item (issue #300)', async ({ page }) => {
+  await startFromHome(page);
+  const answer = page.getByTestId('ai-command-answer');
+  await expect(answer).toBeVisible({ timeout: 30_000 });
+  const items = answer.getByRole('listitem');
+  expect(await items.count()).toBeGreaterThan(5);
+  // The name is set apart from its description, not run into it.
+  await expect(answer.locator('li code').filter({ hasText: /^\/help$/u })).toHaveCount(1);
+});
+
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 

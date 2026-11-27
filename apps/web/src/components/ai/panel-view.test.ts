@@ -5,6 +5,7 @@ import { type AiConversationMessage } from '@exocortex/contracts';
 import {
   buildCommandNotice,
   buildStreamingMessages,
+  commandAnswersWithList,
   describeTranscript,
   liveSelectionOffer,
   resolvePageHandover,
@@ -95,6 +96,20 @@ describe('buildCommandNotice', () => {
       content: '/help …',
       runId: null,
     });
+  });
+});
+
+describe('commandAnswersWithList', () => {
+  it('keeps a bubble for the listing commands, even a one-line answer', () => {
+    expect(commandAnswersWithList('help')).toBe(true);
+    expect(commandAnswersWithList('tools')).toBe(true);
+    expect(commandAnswersWithList('rules')).toBe(true);
+  });
+
+  it('sends a changed setting to the notice slot', () => {
+    expect(commandAnswersWithList('model')).toBe(false);
+    expect(commandAnswersWithList('clear')).toBe(false);
+    expect(commandAnswersWithList('context')).toBe(false);
   });
 });
 

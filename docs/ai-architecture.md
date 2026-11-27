@@ -232,6 +232,12 @@ summaries — is its own `AiConversationMessage` row.
   `/compact`, `/context`, `/rules`, `/tools`, `/help`) are parsed server-side
   (`apps/api/src/ai/chat-commands.ts`) so the side panel, MCP and any future
   client behave identically without reimplementing the command set.
+  `/help`, `/tools` and `/rules` answer in the chat's Markdown subset, one
+  list item per entry with everything a person or the catalogue wrote escaped
+  (`chat-command-runner.ts`); the panel keeps their answer as a bubble rendered
+  like an answer, decided by the command rather than by the text
+  (`commandAnswersWithList`, issue #300). Every other command confirms in one
+  plain line in the notice slot.
 
 ### Finding a conversation again — the `/chats` area
 

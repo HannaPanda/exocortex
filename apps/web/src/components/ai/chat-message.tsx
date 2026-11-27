@@ -18,6 +18,12 @@ export interface ChatMessageProps {
   message: AiConversationMessage;
   /** True while this is the trailing, not-yet-persisted assistant reply. */
   streaming?: boolean;
+  /**
+   * A system bubble whose text is the chat's Markdown subset: the answer of a
+   * listing command (`/help`, `/tools`, `/rules`, issue #300). Short system
+   * hints stay plain text.
+   */
+  markdown?: boolean;
 }
 
 /**
@@ -27,7 +33,7 @@ export interface ChatMessageProps {
  * `chat-markdown.tsx`); a user's own message stays plain text, and a tool
  * result stays monospace -- neither is prose the model formatted.
  */
-export function ChatMessage({ message, streaming = false }: ChatMessageProps) {
+export function ChatMessage({ message, streaming = false, markdown = false }: ChatMessageProps) {
   const t = useTranslations('ai.message');
   // An assistant turn that only calls a tool carries no text (issue #86). The
   // row is persisted because the next request has to repeat it together with
@@ -39,7 +45,7 @@ export function ChatMessage({ message, streaming = false }: ChatMessageProps) {
   // empty and is where the cursor belongs.
   if (message.role === 'assistant' && message.content.length === 0 && !streaming) return null;
 
-  const body = <ChatMessageBody message={message} streaming={streaming} />;
+  const body = <ChatMessageBody message={message} streaming={streaming} markdown={markdown} />;
 
   if (!message.superseded) return body;
 
@@ -51,7 +57,7 @@ export function ChatMessage({ message, streaming = false }: ChatMessageProps) {
   );
 }
 
-function ChatMessageBody({ message, streaming }: ChatMessageProps) {
+function ChatMessageBody({ message, streaming, markdown }: ChatMessageProps) {
   switch (message.role) {
     case 'user':
       return (
@@ -96,7 +102,7 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
       );
 
     case 'system':
-      return <SystemMessage message={message} />;
+      return <SystemMessage message={message} markdown={markdown === true} />;
 
     case 'tool':
       return <ToolMessage message={message} />;
@@ -118,9 +124,26 @@ function RunLink({ runId }: { runId: string }) {
   );
 }
 
-function SystemMessage({ message }: { message: AiConversationMessage }) {
+function SystemMessage({
+  message,
+  markdown,
+}: {
+  message: AiConversationMessage;
+  markdown: boolean;
+}) {
   const t = useTranslations('ai.message');
   const [expanded, setExpanded] = React.useState(!message.isSummary);
+
+  if (markdown && !message.isSummary) {
+    return (
+      <div
+        data-testid="ai-command-answer"
+        className="border-l-2 border-border pl-2 text-xs text-muted-foreground"
+      >
+        <ChatMarkdown content={message.content} />
+      </div>
+    );
+  }
 
   if (!message.isSummary) {
     return (
