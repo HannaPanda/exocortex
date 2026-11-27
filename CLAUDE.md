@@ -935,9 +935,19 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   uploader only), uploaded when added and bound by `attachmentIds` when sent,
   capped by `ai.visionMaxImagesPerRun`. The first run that sees it stores a
   vision description on the row, and every turn reads that text fenced as
-  attachment content, which closes writing like the page's pictures; the loop
-  stays text. Deleting the chat deletes the objects, and an unsent picture is
-  collected after a day.
+  attachment content, which closes writing like the page's pictures unless
+  ADR-096 trusts it; the loop stays text. Deleting the chat deletes the
+  objects, and an unsent picture is collected after a day.
+- ADR-096: a person's own upload, screened clean, does not close writing.
+  `attachmentTrustFor` trusts a file only for the reader who uploaded it, when
+  nobody else corrected it, it was not fetched from the web and its
+  `screening` is `CLEAN`. The screening is one Jev yes/no question per 60,000
+  characters (`screenForAiInstructions`), asked after every extraction, every
+  correction and every chat picture's description, and written on the row; no
+  answer is `FAILED`, which is foreign. The text stays fenced; only the lock
+  goes. The tool runner learns it from the API's `trust` answer
+  (`ownScreenedSource`), never from arguments or text. Page pictures described
+  per run stay foreign.
 
 Full list: `docs/adr/`.
 

@@ -131,7 +131,9 @@ the same describer as the page's pictures, and stores the text on the row, so
 each picture is described once per conversation rather than per turn.
 `loadConversationMessages` then puts a system message before every user
 message with pictures, its descriptions fenced as `attachment` content, and a
-run whose transcript carries one notes untrusted content (ADR-030). The cap
+run whose transcript carries one that is not the requester's own screened
+upload notes untrusted content (ADR-030, ADR-096). Each new description is
+screened right after it is written. The cap
 for one message is `ai.visionMaxImagesPerRun`. A compaction summary is built
 from message text and does not carry the descriptions.
 
@@ -636,7 +638,7 @@ same `exo_*` tool catalogue the external MCP server serves
   (R2); when unset, tools are simply off and the worker logs one warning per
   process instead of per run.
 
-## Foreign content and the trust boundary (ADR-030)
+## Foreign content and the trust boundary (ADR-030, ADR-096)
 
 The external MCP surface asks twice before an irreversible write, and both
 clients behind it ask a human anyway. The built-in loop has neither: it executes
@@ -673,6 +675,22 @@ whoever owns the page. The vision preprocessor is the one path that
 bypasses the tool loop: it describes images out of an uploaded file before the
 first turn, so `ai-run.ts` notes the origin on the runner directly and
 `images.ts` fences the description.
+
+**A person's own file, screened clean, is the exception (ADR-096).**
+`attachmentTrustFor` trusts a file for one reader only: they uploaded it,
+nobody else corrected it, the server did not fetch it from the web, and its
+`screening` is `CLEAN`. The screening (`screenForAiInstructions` in
+`packages/ai/src/injection-screen.ts`) asks the decision model of ADR-089
+whether the text addresses instructions to an AI, per 60,000 characters, once
+after every extraction and correction (`attachment-text`, reason `screen`) and
+once after a chat picture is described; a missing answer is `FAILED` and
+foreign, and the `screen-attachments` sweep catches up on rows from before.
+`GET /api/attachments/:id/text` answers `trust` for the caller,
+`exo_attachment_read_text` copies it into `ownScreenedSource`, and the tool
+runner then fences the text without noting an origin. A file that is the
+person's own but stays foreign carries `attachmentTrustNote` outside the fence,
+so the model can say why it stopped. The open page's pictures, described afresh
+per run, have nothing screened and stay foreign.
 
 A refusal is published as `ai.run.tool_call` with status `refused` — its own
 status rather than `failed`, because the two mean opposite things to whoever is

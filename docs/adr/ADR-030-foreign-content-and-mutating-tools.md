@@ -1,6 +1,6 @@
 # ADR-030: Foreign content closes the door on mutating tools
 
-- Status: accepted
+- Status: accepted, amended by ADR-096 (a person's own upload, screened clean, does not close writing)
 - Date: 2026-09-16
 
 ## Context

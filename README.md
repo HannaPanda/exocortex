@@ -166,6 +166,11 @@ What is deliberately still missing is listed under
   the sent question after a reload, described once by a vision model and
   handed to the assistant as fenced text; deleting the chat deletes them
   (ADR-095)
+- a person's own uploads are theirs to work with: a file somebody uploaded
+  themselves is screened once for instructions addressed to an AI, and when
+  the screening finds nothing, reading it no longer stops that person's AI run
+  from writing; anybody else's file, a web fetch or a finding keeps the lock
+  (ADR-096)
 - tools chosen per run rather than the whole catalogue: the decision model
   Jev picks the tool domains a request needs in any language, the keywords
   take over when it cannot answer within 1.5 seconds, a page with a picture or
