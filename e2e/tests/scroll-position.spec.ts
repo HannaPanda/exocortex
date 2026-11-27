@@ -1,4 +1,4 @@
-import { expect, type Page, test, type WebSocketRoute } from '@playwright/test';
+import { expect, type Locator, type Page, test, type WebSocketRoute } from '@playwright/test';
 
 import { requireSeedCredentials, waitForCollaboration, workspaceIdFrom } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
@@ -11,7 +11,8 @@ import { storageStatePath } from '../support/global-setup';
  * provider and therefore a new editor; the editor unmounted for the spinner
  * and came back at the top. A failed refetch of the page's details swapped
  * the whole page for the error panel, with the same result. Both are measured
- * here at phone width, where Stefan saw it.
+ * here at phone width, where Stefan saw it. And deleting a heading from the
+ * block menu scrolled to wherever the caret had been before the menu opened.
  */
 
 test.use({ storageState: storageStatePath('johanna') });
@@ -167,4 +168,52 @@ test.describe('the reading position (issue #285)', () => {
 
     await expectUnmoved(page, before);
   });
+});
+
+/** Points at a block and opens the menu of the handle beside it. */
+async function openMenuOf(page: Page, block: Locator): Promise<void> {
+  const box = await block.boundingBox();
+  if (box === null) throw new Error('block has no layout');
+  await page.mouse.move(box.x + 30, box.y + box.height / 2, { steps: 6 });
+  const handle = page.getByTestId('block-handle');
+  await expect(handle).toBeVisible();
+  await expect
+    .poll(async () => {
+      const at = await handle.boundingBox();
+      return at === null ? Number.POSITIVE_INFINITY : Math.abs(at.y - box.y);
+    })
+    .toBeLessThan(6);
+  await handle.click();
+  await expect(page.getByTestId('block-delete')).toBeVisible();
+}
+
+test.describe('deleting a heading from the block menu (issue #285)', () => {
+  test.use({ viewport: { width: 1280, height: 800 } });
+
+  // `none`: the caret was never placed, so it stood at the top of the page.
+  // `below`: it was last placed a screen further down.
+  for (const caret of ['none', 'below'] as const) {
+    test(`keeps the view where it was (caret ${caret})`, async ({ page }) => {
+      const { workspaceId, documentId } = await createLongPage(page);
+      await page.goto(`/arbeitsbereich/${workspaceId}/seite/${documentId}`);
+      await waitForCollaboration(page);
+      if (caret === 'below') {
+        const below = page.locator('.exocortex-editor p', { hasText: /^Absatz 30:/ });
+        await below.scrollIntoViewIfNeeded();
+        await below.click();
+      }
+      const heading = page.locator('.exocortex-editor h2', { hasText: /Abschnitt 20\s*$/ });
+      const next = page.locator('.exocortex-editor p', { hasText: /Absatz 20:/ });
+      await heading.scrollIntoViewIfNeeded();
+      const before = await scrollTop(page);
+
+      await openMenuOf(page, heading);
+      await page.getByTestId('block-delete').click();
+      await expect(heading).toHaveCount(0);
+      // The caret lands where the heading stood, and nothing scrolls to it.
+      await page.keyboard.type('X');
+      await expect(next).toContainText(/^XAbsatz 20:/);
+      expect(Math.abs((await scrollTop(page)) - before)).toBeLessThan(4);
+    });
+  }
 });
