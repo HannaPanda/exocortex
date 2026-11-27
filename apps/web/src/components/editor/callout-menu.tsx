@@ -159,9 +159,13 @@ export function CalloutMenu({ editor }: { editor: Editor }) {
       if (!transaction.docChanged) return;
       setOpen((current) => {
         if (current === null) return null;
-        const mapped = transaction.mapping.mapResult(current.pos);
-        if (mapped.deleted) return null;
-        return mapped.pos === current.pos ? current : { ...current, pos: mapped.pos };
+        // Mapped towards the content before it, and judged by what stands
+        // there now: a change that redraws the box itself (a colleague's
+        // edit arriving through Yjs) reads as a deletion of its first
+        // position, although the box is still there.
+        const mapped = transaction.mapping.map(current.pos, -1);
+        if (transaction.doc.nodeAt(mapped)?.type.name !== 'callout') return null;
+        return mapped === current.pos ? current : { ...current, pos: mapped };
       });
     };
     editor.on('transaction', follow);

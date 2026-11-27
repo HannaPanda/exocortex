@@ -238,7 +238,12 @@ export function updateCalloutAt(
 ): boolean {
   const node = tr.doc.nodeAt(pos);
   if (node?.type.name !== 'callout') return false;
-  tr.setNodeMarkup(pos, undefined, calloutAttributes(node.attrs, change));
+  // One attribute step per changed value rather than `setNodeMarkup`: that
+  // replaces the node, and a position mapped across the replacement reads as
+  // deleted, which closed the menu after every change (#306).
+  for (const [key, value] of Object.entries(calloutAttributes(node.attrs, change))) {
+    if (node.attrs[key] !== value) tr.setNodeAttribute(pos, key, value);
+  }
   return true;
 }
 

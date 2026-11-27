@@ -329,6 +329,18 @@ describe('in the editor', () => {
     });
   });
 
+  it('changes attributes without moving any position, so an open menu keeps its box', () => {
+    const instance = mount(doc({ type: 'paragraph' }, legacyCallout('note', null, 'Text')));
+    const pos = instance.state.doc.firstChild?.nodeSize ?? 0;
+    const tr = instance.state.tr;
+    expect(updateCalloutAt(tr, pos, { title: 'Achtung' })).toBe(true);
+    // `setNodeMarkup` would map `pos` as deleted, which closed the menu.
+    const mapped = tr.mapping.mapResult(pos);
+    expect(mapped.deleted).toBe(false);
+    expect(mapped.pos).toBe(pos);
+    expect(tr.doc.nodeAt(pos)?.attrs.title).toBe('Achtung');
+  });
+
   it('announces a press on the symbol with the callout position', () => {
     const instance = mount(doc({ type: 'paragraph' }, legacyCallout('note', null, 'Text')));
     const seen: CalloutEditEventDetail[] = [];
