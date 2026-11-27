@@ -44,7 +44,9 @@ function rowById(page: Page, rowId: string) {
 }
 
 async function openByArrow(page: Page, rowId: string): Promise<void> {
-  await rowById(page, rowId).hover();
+  // The pinned title cell, not the middle of the row: with the panel open the
+  // middle of a wide row lies under it.
+  await rowById(page, rowId).locator('td').first().hover();
   await rowById(page, rowId).getByTestId('open-row-peek').click();
 }
 
@@ -69,7 +71,7 @@ test.describe('a row in the side panel (issue #239)', () => {
     const chosen = rowIds.get('Eintrag 03') as string;
 
     // A selection made before opening the panel survives it.
-    await rowById(page, chosen).hover();
+    await rowById(page, chosen).locator('td').first().hover();
     await rowById(page, chosen).getByTestId('row-select').click();
     await expect(page.getByTestId('selection-count')).toHaveText('1 ausgewählt');
 
@@ -193,8 +195,9 @@ test.describe('a row in the side panel (issue #239)', () => {
   });
 
   test('takes the whole page area on a phone', async ({ page, baseURL }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
+    // Made at desktop width, where the sidebar's "new" button is in reach.
     const { rowIds } = await databaseWithRows(page, baseURL, ['Unterwegs']);
+    await page.setViewportSize({ width: 390, height: 844 });
     await openByArrow(page, rowIds.get('Unterwegs') as string);
     const peek = page.getByTestId('row-peek');
     await expect(peek.getByTestId('document-title')).toHaveValue('Unterwegs', { timeout: 15_000 });
