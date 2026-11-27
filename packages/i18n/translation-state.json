@@ -2580,9 +2580,21 @@
       "source": "0fb684c2b0a9ed15",
       "output": "4c955d9c880b3eb4"
     },
+    "ai.composer.attach": {
+      "source": "c0065fe86ed28d84",
+      "output": "2eacc5e02758c0b0"
+    },
+    "ai.composer.attachHint": {
+      "source": "0d79dfe3341a958c",
+      "output": "21404b960ca2ffab"
+    },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "b269dc4e81a528a4"
+    },
+    "ai.composer.dropHint": {
+      "source": "8ccf0a79b7ec2555",
+      "output": "616d40b8948dee51"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -2627,6 +2639,38 @@
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "d88d7cf224068c3c"
+    },
+    "ai.context.file": {
+      "source": "cb13cedc9bd4eed5",
+      "output": "12adc5e219dd72d0"
+    },
+    "ai.context.fileFailed": {
+      "source": "2a4f1068e2a1564d",
+      "output": "9c459012b30a9bfd"
+    },
+    "ai.context.fileFailedPlain": {
+      "source": "ed66c3b9d3593c5d",
+      "output": "323e3faa20c975ba"
+    },
+    "ai.context.fileNotImage": {
+      "source": "fec2f9889a74a419",
+      "output": "614f3ce62b7f511b"
+    },
+    "ai.context.fileOnce": {
+      "source": "b340d46f03ab93ae",
+      "output": "4e982002f0f151c0"
+    },
+    "ai.context.fileRemove": {
+      "source": "ff3f6cce4f95a42f",
+      "output": "3eb5a1aa5c9a6f73"
+    },
+    "ai.context.fileTooMany": {
+      "source": "5fd9ad4ff054a130",
+      "output": "8c9cdd7be47fc7f1"
+    },
+    "ai.context.fileUploading": {
+      "source": "acd6d63d30c9e84c",
+      "output": "84a44734688a9dfd"
     },
     "ai.context.kinds.DATABASE_VIEW": {
       "source": "aba45759ab64746c",
@@ -2747,6 +2791,18 @@
     "ai.conversations.save": {
       "source": "f6b2ff39f540eb81",
       "output": "1509f561f2416598"
+    },
+    "ai.message.attachmentDescribed": {
+      "source": "a141ffa2127afb22",
+      "output": "7485b0ab3bcc6eb9"
+    },
+    "ai.message.attachmentNotDescribed": {
+      "source": "c7a1a727a974523f",
+      "output": "d5c6984ad9681b74"
+    },
+    "ai.message.attachmentOpen": {
+      "source": "26186c4406d2bbb7",
+      "output": "421bafd099e6c227"
     },
     "ai.message.copiedMarkdown": {
       "source": "408b1a50e736227a",
@@ -9771,6 +9827,14 @@
     "errors.codes.agent_profile_name_taken": {
       "source": "f818af3f010a1908",
       "output": "8473d5145f04e04e"
+    },
+    "errors.codes.ai_chat_attachment_invalid": {
+      "source": "5cbabf098c524031",
+      "output": "0e37e89933855a9d"
+    },
+    "errors.codes.ai_chat_attachments_limit": {
+      "source": "6f4ccccd531fbcba",
+      "output": "c54dac382f348ad1"
     },
     "errors.codes.ai_conversation_compacting": {
       "source": "8826115c8d5dbccf",
@@ -26974,9 +27038,21 @@
       "source": "0fb684c2b0a9ed15",
       "output": "1a103e3a0eea961c"
     },
+    "ai.composer.attach": {
+      "source": "c0065fe86ed28d84",
+      "output": "2dd0ec0a4e08f1ed"
+    },
+    "ai.composer.attachHint": {
+      "source": "0d79dfe3341a958c",
+      "output": "3e0dc7fd2f8bd08f"
+    },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "4b8731e4eac25e37"
+    },
+    "ai.composer.dropHint": {
+      "source": "8ccf0a79b7ec2555",
+      "output": "e18e81b32d5b3029"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -27021,6 +27097,38 @@
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "eedf5b67e165f42e"
+    },
+    "ai.context.file": {
+      "source": "cb13cedc9bd4eed5",
+      "output": "1002c5461e2274a1"
+    },
+    "ai.context.fileFailed": {
+      "source": "2a4f1068e2a1564d",
+      "output": "8b80baf8f47ae696"
+    },
+    "ai.context.fileFailedPlain": {
+      "source": "ed66c3b9d3593c5d",
+      "output": "f5772f31863d2843"
+    },
+    "ai.context.fileNotImage": {
+      "source": "fec2f9889a74a419",
+      "output": "1742db6a9ad1d9e6"
+    },
+    "ai.context.fileOnce": {
+      "source": "b340d46f03ab93ae",
+      "output": "584392251fc541e0"
+    },
+    "ai.context.fileRemove": {
+      "source": "ff3f6cce4f95a42f",
+      "output": "2ffab447f1de9ae3"
+    },
+    "ai.context.fileTooMany": {
+      "source": "5fd9ad4ff054a130",
+      "output": "111fb6b01361d6e8"
+    },
+    "ai.context.fileUploading": {
+      "source": "acd6d63d30c9e84c",
+      "output": "3b17c4ff0b2efef1"
     },
     "ai.context.kinds.DATABASE_VIEW": {
       "source": "aba45759ab64746c",
@@ -27141,6 +27249,18 @@
     "ai.conversations.save": {
       "source": "f6b2ff39f540eb81",
       "output": "13e51a210f45ed1b"
+    },
+    "ai.message.attachmentDescribed": {
+      "source": "a141ffa2127afb22",
+      "output": "5052c8774b319452"
+    },
+    "ai.message.attachmentNotDescribed": {
+      "source": "c7a1a727a974523f",
+      "output": "eddbf32a41b5464e"
+    },
+    "ai.message.attachmentOpen": {
+      "source": "26186c4406d2bbb7",
+      "output": "3235c005b8d8f722"
     },
     "ai.message.copiedMarkdown": {
       "source": "408b1a50e736227a",
@@ -34165,6 +34285,14 @@
     "errors.codes.agent_profile_name_taken": {
       "source": "f818af3f010a1908",
       "output": "07fee0cab4d60c4a"
+    },
+    "errors.codes.ai_chat_attachment_invalid": {
+      "source": "5cbabf098c524031",
+      "output": "554cfe901f10a527"
+    },
+    "errors.codes.ai_chat_attachments_limit": {
+      "source": "6f4ccccd531fbcba",
+      "output": "6705fabf9a6ecb85"
     },
     "errors.codes.ai_conversation_compacting": {
       "source": "8826115c8d5dbccf",
@@ -51368,9 +51496,21 @@
       "source": "0fb684c2b0a9ed15",
       "output": "f26ff4df70d088f8"
     },
+    "ai.composer.attach": {
+      "source": "c0065fe86ed28d84",
+      "output": "275aae25d99adca6"
+    },
+    "ai.composer.attachHint": {
+      "source": "0d79dfe3341a958c",
+      "output": "4ee2a01a9f69c31e"
+    },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "0e3118a24b9ff7bd"
+    },
+    "ai.composer.dropHint": {
+      "source": "8ccf0a79b7ec2555",
+      "output": "f71ab0978632031d"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -51415,6 +51555,38 @@
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "35707e01401b7410"
+    },
+    "ai.context.file": {
+      "source": "cb13cedc9bd4eed5",
+      "output": "c94d39e1ea63fd4d"
+    },
+    "ai.context.fileFailed": {
+      "source": "2a4f1068e2a1564d",
+      "output": "2cb071b878168afd"
+    },
+    "ai.context.fileFailedPlain": {
+      "source": "ed66c3b9d3593c5d",
+      "output": "fbfb1a753a74e117"
+    },
+    "ai.context.fileNotImage": {
+      "source": "fec2f9889a74a419",
+      "output": "232b55b54ff35493"
+    },
+    "ai.context.fileOnce": {
+      "source": "b340d46f03ab93ae",
+      "output": "cd90734add82921f"
+    },
+    "ai.context.fileRemove": {
+      "source": "ff3f6cce4f95a42f",
+      "output": "08e5489ec72ef219"
+    },
+    "ai.context.fileTooMany": {
+      "source": "5fd9ad4ff054a130",
+      "output": "cd861ef2d0618dc8"
+    },
+    "ai.context.fileUploading": {
+      "source": "acd6d63d30c9e84c",
+      "output": "0adfc59740762de3"
     },
     "ai.context.kinds.DATABASE_VIEW": {
       "source": "aba45759ab64746c",
@@ -51535,6 +51707,18 @@
     "ai.conversations.save": {
       "source": "f6b2ff39f540eb81",
       "output": "71dc74873e23107d"
+    },
+    "ai.message.attachmentDescribed": {
+      "source": "a141ffa2127afb22",
+      "output": "9be5bc1d3c3976e7"
+    },
+    "ai.message.attachmentNotDescribed": {
+      "source": "c7a1a727a974523f",
+      "output": "dcfffa9aba96d312"
+    },
+    "ai.message.attachmentOpen": {
+      "source": "26186c4406d2bbb7",
+      "output": "40a44069821e6a9b"
     },
     "ai.message.copiedMarkdown": {
       "source": "408b1a50e736227a",
@@ -58559,6 +58743,14 @@
     "errors.codes.agent_profile_name_taken": {
       "source": "f818af3f010a1908",
       "output": "ea42be393606522d"
+    },
+    "errors.codes.ai_chat_attachment_invalid": {
+      "source": "5cbabf098c524031",
+      "output": "0d2da9111ad69a42"
+    },
+    "errors.codes.ai_chat_attachments_limit": {
+      "source": "6f4ccccd531fbcba",
+      "output": "20333592cdf4a1ca"
     },
     "errors.codes.ai_conversation_compacting": {
       "source": "8826115c8d5dbccf",
@@ -75762,9 +75954,21 @@
       "source": "0fb684c2b0a9ed15",
       "output": "230cc45b0300adcf"
     },
+    "ai.composer.attach": {
+      "source": "c0065fe86ed28d84",
+      "output": "a32883e96d943b09"
+    },
+    "ai.composer.attachHint": {
+      "source": "0d79dfe3341a958c",
+      "output": "8bb8fb2d8d0c26bf"
+    },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "3c6824c3a8cf45a5"
+    },
+    "ai.composer.dropHint": {
+      "source": "8ccf0a79b7ec2555",
+      "output": "e0af715f4bfbd012"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -75809,6 +76013,38 @@
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "a2b3c593dc612b49"
+    },
+    "ai.context.file": {
+      "source": "cb13cedc9bd4eed5",
+      "output": "2302199d1fd930a6"
+    },
+    "ai.context.fileFailed": {
+      "source": "2a4f1068e2a1564d",
+      "output": "9af44a535cdeb1e8"
+    },
+    "ai.context.fileFailedPlain": {
+      "source": "ed66c3b9d3593c5d",
+      "output": "b14692364b8689bd"
+    },
+    "ai.context.fileNotImage": {
+      "source": "fec2f9889a74a419",
+      "output": "2bb67e09244570d3"
+    },
+    "ai.context.fileOnce": {
+      "source": "b340d46f03ab93ae",
+      "output": "1bd0d6d3a161c7e1"
+    },
+    "ai.context.fileRemove": {
+      "source": "ff3f6cce4f95a42f",
+      "output": "e7ca0ffaf192c6a7"
+    },
+    "ai.context.fileTooMany": {
+      "source": "5fd9ad4ff054a130",
+      "output": "c83ec9f88003cb5a"
+    },
+    "ai.context.fileUploading": {
+      "source": "acd6d63d30c9e84c",
+      "output": "ede9d0ab8fbd910f"
     },
     "ai.context.kinds.DATABASE_VIEW": {
       "source": "aba45759ab64746c",
@@ -75929,6 +76165,18 @@
     "ai.conversations.save": {
       "source": "f6b2ff39f540eb81",
       "output": "c5997e85ae513c07"
+    },
+    "ai.message.attachmentDescribed": {
+      "source": "a141ffa2127afb22",
+      "output": "a80daa1525e64b19"
+    },
+    "ai.message.attachmentNotDescribed": {
+      "source": "c7a1a727a974523f",
+      "output": "3db72c85faf0e8e4"
+    },
+    "ai.message.attachmentOpen": {
+      "source": "26186c4406d2bbb7",
+      "output": "da5768ce731a9c42"
     },
     "ai.message.copiedMarkdown": {
       "source": "408b1a50e736227a",
@@ -82953,6 +83201,14 @@
     "errors.codes.agent_profile_name_taken": {
       "source": "f818af3f010a1908",
       "output": "181655b02952071f"
+    },
+    "errors.codes.ai_chat_attachment_invalid": {
+      "source": "5cbabf098c524031",
+      "output": "14cc9ad5071dfbe2"
+    },
+    "errors.codes.ai_chat_attachments_limit": {
+      "source": "6f4ccccd531fbcba",
+      "output": "f892e08697bc0962"
     },
     "errors.codes.ai_conversation_compacting": {
       "source": "8826115c8d5dbccf",
@@ -100156,9 +100412,21 @@
       "source": "0fb684c2b0a9ed15",
       "output": "7079ea21c56e956c"
     },
+    "ai.composer.attach": {
+      "source": "c0065fe86ed28d84",
+      "output": "52819bffc1aab869"
+    },
+    "ai.composer.attachHint": {
+      "source": "0d79dfe3341a958c",
+      "output": "5943a78b16d24325"
+    },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "03c18f778e60cca4"
+    },
+    "ai.composer.dropHint": {
+      "source": "8ccf0a79b7ec2555",
+      "output": "3a72ba25793f240c"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -100203,6 +100471,38 @@
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "3758245c9e9e67f5"
+    },
+    "ai.context.file": {
+      "source": "cb13cedc9bd4eed5",
+      "output": "e9b008db959f753c"
+    },
+    "ai.context.fileFailed": {
+      "source": "2a4f1068e2a1564d",
+      "output": "a8fbfc924534c0fe"
+    },
+    "ai.context.fileFailedPlain": {
+      "source": "ed66c3b9d3593c5d",
+      "output": "276a6e6b48bb8735"
+    },
+    "ai.context.fileNotImage": {
+      "source": "fec2f9889a74a419",
+      "output": "b78f1b709c241b27"
+    },
+    "ai.context.fileOnce": {
+      "source": "b340d46f03ab93ae",
+      "output": "ee21116a2981e0a2"
+    },
+    "ai.context.fileRemove": {
+      "source": "ff3f6cce4f95a42f",
+      "output": "b8e63e02d16a6cfc"
+    },
+    "ai.context.fileTooMany": {
+      "source": "5fd9ad4ff054a130",
+      "output": "51dc65d70c0c06ea"
+    },
+    "ai.context.fileUploading": {
+      "source": "acd6d63d30c9e84c",
+      "output": "5e9ed63555564437"
     },
     "ai.context.kinds.DATABASE_VIEW": {
       "source": "aba45759ab64746c",
@@ -100323,6 +100623,18 @@
     "ai.conversations.save": {
       "source": "f6b2ff39f540eb81",
       "output": "3caa6d88a258af55"
+    },
+    "ai.message.attachmentDescribed": {
+      "source": "a141ffa2127afb22",
+      "output": "36bd57f1dc933b36"
+    },
+    "ai.message.attachmentNotDescribed": {
+      "source": "c7a1a727a974523f",
+      "output": "6336eb454031347e"
+    },
+    "ai.message.attachmentOpen": {
+      "source": "26186c4406d2bbb7",
+      "output": "94fae5d4ef45b3d5"
     },
     "ai.message.copiedMarkdown": {
       "source": "408b1a50e736227a",
@@ -107347,6 +107659,14 @@
     "errors.codes.agent_profile_name_taken": {
       "source": "f818af3f010a1908",
       "output": "7d35036ff034dd65"
+    },
+    "errors.codes.ai_chat_attachment_invalid": {
+      "source": "5cbabf098c524031",
+      "output": "38f86675bbdd2b6e"
+    },
+    "errors.codes.ai_chat_attachments_limit": {
+      "source": "6f4ccccd531fbcba",
+      "output": "4dbe5ad9f04633ef"
     },
     "errors.codes.ai_conversation_compacting": {
       "source": "8826115c8d5dbccf",
@@ -124550,9 +124870,21 @@
       "source": "0fb684c2b0a9ed15",
       "output": "e6209c9da76bd59c"
     },
+    "ai.composer.attach": {
+      "source": "c0065fe86ed28d84",
+      "output": "99bb43c732ccccda"
+    },
+    "ai.composer.attachHint": {
+      "source": "0d79dfe3341a958c",
+      "output": "61a7e270145701cd"
+    },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "0c785ba70ffd2a53"
+    },
+    "ai.composer.dropHint": {
+      "source": "8ccf0a79b7ec2555",
+      "output": "f24e9cc3f1b9a76d"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -124597,6 +124929,38 @@
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "47a4b4da76c68fc3"
+    },
+    "ai.context.file": {
+      "source": "cb13cedc9bd4eed5",
+      "output": "9a7646451c5b67f9"
+    },
+    "ai.context.fileFailed": {
+      "source": "2a4f1068e2a1564d",
+      "output": "f6731cbb27910730"
+    },
+    "ai.context.fileFailedPlain": {
+      "source": "ed66c3b9d3593c5d",
+      "output": "327c018c29d60519"
+    },
+    "ai.context.fileNotImage": {
+      "source": "fec2f9889a74a419",
+      "output": "57e6a1227ded78cb"
+    },
+    "ai.context.fileOnce": {
+      "source": "b340d46f03ab93ae",
+      "output": "cad971ec8a9a65b4"
+    },
+    "ai.context.fileRemove": {
+      "source": "ff3f6cce4f95a42f",
+      "output": "9fcc78d1d2ea5810"
+    },
+    "ai.context.fileTooMany": {
+      "source": "5fd9ad4ff054a130",
+      "output": "8c49a01e571217cf"
+    },
+    "ai.context.fileUploading": {
+      "source": "acd6d63d30c9e84c",
+      "output": "8b1513176070a2b9"
     },
     "ai.context.kinds.DATABASE_VIEW": {
       "source": "aba45759ab64746c",
@@ -124717,6 +125081,18 @@
     "ai.conversations.save": {
       "source": "f6b2ff39f540eb81",
       "output": "b6a0c0c469c5b62d"
+    },
+    "ai.message.attachmentDescribed": {
+      "source": "a141ffa2127afb22",
+      "output": "78ec09ca11f14adf"
+    },
+    "ai.message.attachmentNotDescribed": {
+      "source": "c7a1a727a974523f",
+      "output": "f1ddcd1b915087dc"
+    },
+    "ai.message.attachmentOpen": {
+      "source": "26186c4406d2bbb7",
+      "output": "677aa145adc5be65"
     },
     "ai.message.copiedMarkdown": {
       "source": "408b1a50e736227a",
@@ -131741,6 +132117,14 @@
     "errors.codes.agent_profile_name_taken": {
       "source": "f818af3f010a1908",
       "output": "985dffd9566b4a84"
+    },
+    "errors.codes.ai_chat_attachment_invalid": {
+      "source": "5cbabf098c524031",
+      "output": "87d5da3d50351203"
+    },
+    "errors.codes.ai_chat_attachments_limit": {
+      "source": "6f4ccccd531fbcba",
+      "output": "b33ab32629b52016"
     },
     "errors.codes.ai_conversation_compacting": {
       "source": "8826115c8d5dbccf",
@@ -148944,9 +149328,21 @@
       "source": "0fb684c2b0a9ed15",
       "output": "5f3cc359bb05eaaf"
     },
+    "ai.composer.attach": {
+      "source": "c0065fe86ed28d84",
+      "output": "8252257748b7a69b"
+    },
+    "ai.composer.attachHint": {
+      "source": "0d79dfe3341a958c",
+      "output": "9e0793751cd92e58"
+    },
     "ai.composer.commandsLabel": {
       "source": "23a3b7b2229a8971",
       "output": "4b8731e4eac25e37"
+    },
+    "ai.composer.dropHint": {
+      "source": "8ccf0a79b7ec2555",
+      "output": "a2230670cc281d32"
     },
     "ai.composer.label": {
       "source": "9c9eb1e4efd33169",
@@ -148991,6 +149387,38 @@
     "ai.context.embed": {
       "source": "192bb27bcaacf6f8",
       "output": "f315c5cfab27f581"
+    },
+    "ai.context.file": {
+      "source": "cb13cedc9bd4eed5",
+      "output": "f6436818f74c54a1"
+    },
+    "ai.context.fileFailed": {
+      "source": "2a4f1068e2a1564d",
+      "output": "f6e8b82a8fee6828"
+    },
+    "ai.context.fileFailedPlain": {
+      "source": "ed66c3b9d3593c5d",
+      "output": "86ed2aa2d9123abf"
+    },
+    "ai.context.fileNotImage": {
+      "source": "fec2f9889a74a419",
+      "output": "4c861c451b429c03"
+    },
+    "ai.context.fileOnce": {
+      "source": "b340d46f03ab93ae",
+      "output": "92e6637b58842a20"
+    },
+    "ai.context.fileRemove": {
+      "source": "ff3f6cce4f95a42f",
+      "output": "ae86f89c43115700"
+    },
+    "ai.context.fileTooMany": {
+      "source": "5fd9ad4ff054a130",
+      "output": "78041125cc286ebf"
+    },
+    "ai.context.fileUploading": {
+      "source": "acd6d63d30c9e84c",
+      "output": "05c72d79de05106a"
     },
     "ai.context.kinds.DATABASE_VIEW": {
       "source": "aba45759ab64746c",
@@ -149111,6 +149539,18 @@
     "ai.conversations.save": {
       "source": "f6b2ff39f540eb81",
       "output": "aef7cd5b2081351d"
+    },
+    "ai.message.attachmentDescribed": {
+      "source": "a141ffa2127afb22",
+      "output": "3489f55ae46acfc0"
+    },
+    "ai.message.attachmentNotDescribed": {
+      "source": "c7a1a727a974523f",
+      "output": "02cb0cb93b8df068"
+    },
+    "ai.message.attachmentOpen": {
+      "source": "26186c4406d2bbb7",
+      "output": "65dfe2b9f09fbcfe"
     },
     "ai.message.copiedMarkdown": {
       "source": "408b1a50e736227a",
@@ -156135,6 +156575,14 @@
     "errors.codes.agent_profile_name_taken": {
       "source": "f818af3f010a1908",
       "output": "95fb2f5b2f407832"
+    },
+    "errors.codes.ai_chat_attachment_invalid": {
+      "source": "5cbabf098c524031",
+      "output": "7c072126ac02f76c"
+    },
+    "errors.codes.ai_chat_attachments_limit": {
+      "source": "6f4ccccd531fbcba",
+      "output": "af202654d943b17a"
     },
     "errors.codes.ai_conversation_compacting": {
       "source": "8826115c8d5dbccf",
