@@ -37,7 +37,9 @@
     "copiedTooltip": "Copiato",
     "attachmentOpen": "Visualizza l’immagine {name} a schermo intero",
     "attachmentDescribed": "L’IA ha ricevuto questa descrizione dell’immagine: {description}",
-    "attachmentNotDescribed": "{name} non ha ancora una descrizione. L’IA conosce solo il nome del file."
+    "attachmentNotDescribed": "{name} non ha ancora una descrizione. L’IA conosce solo il nome del file.",
+    "attachmentFlagged": "Durante il controllo, l’immagine è stata segnalata perché sembra contenere istruzioni per un’IA. Dopo averla letta, l’IA non può apportare modifiche in questa esecuzione.",
+    "attachmentUnscreened": "Impossibile verificare se l’immagine contiene istruzioni per un’IA. Dopo averla letta, l’IA non può apportare modifiche in questa esecuzione."
   },
   "composer": {
     "label": "Messaggio per l’IA",

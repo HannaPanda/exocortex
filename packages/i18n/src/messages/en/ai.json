@@ -37,7 +37,9 @@
     "copiedTooltip": "Copied",
     "attachmentOpen": "View image {name} large",
     "attachmentDescribed": "The AI received this description of the image: {description}",
-    "attachmentNotDescribed": "{name} is not described yet. The AI only knows the filename."
+    "attachmentNotDescribed": "{name} is not described yet. The AI only knows the filename.",
+    "attachmentFlagged": "The image was flagged during review because it appears to contain instructions for an AI. After reading it, the AI is not allowed to make changes during this run.",
+    "attachmentUnscreened": "The image could not be checked for instructions to an AI. After reading it, the AI is not allowed to make changes during this run."
   },
   "composer": {
     "label": "Message to AI",

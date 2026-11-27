@@ -37,7 +37,9 @@
     "copiedTooltip": "Copiado",
     "attachmentOpen": "Ver imagem {name} em tamanho grande",
     "attachmentDescribed": "A IA recebeu esta descrição da imagem: {description}",
-    "attachmentNotDescribed": "{name} ainda não tem descrição. A IA só conhece o nome do arquivo."
+    "attachmentNotDescribed": "{name} ainda não tem descrição. A IA só conhece o nome do arquivo.",
+    "attachmentFlagged": "Durante a verificação, a imagem chamou a atenção por parecer conter instruções para uma IA. Após lê-la, a IA não poderá alterar nada nesta execução.",
+    "attachmentUnscreened": "Não foi possível verificar se a imagem contém instruções para uma IA. Após lê-la, a IA não poderá alterar nada nesta execução."
   },
   "composer": {
     "label": "Mensagem para a IA",

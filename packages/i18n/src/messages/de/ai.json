@@ -37,7 +37,9 @@
     "copiedTooltip": "Kopiert",
     "attachmentOpen": "Bild {name} groß ansehen",
     "attachmentDescribed": "Die KI hat das Bild so beschrieben bekommen: {description}",
-    "attachmentNotDescribed": "{name} ist noch nicht beschrieben. Die KI kennt nur den Dateinamen."
+    "attachmentNotDescribed": "{name} ist noch nicht beschrieben. Die KI kennt nur den Dateinamen.",
+    "attachmentFlagged": "Bei der Prüfung fiel das Bild auf, weil es Anweisungen an eine KI zu enthalten scheint. Nach dem Lesen darf die KI in diesem Lauf nichts verändern.",
+    "attachmentUnscreened": "Das Bild konnte nicht auf Anweisungen an eine KI geprüft werden. Nach dem Lesen darf die KI in diesem Lauf nichts verändern."
   },
   "composer": {
     "label": "Nachricht an die KI",

@@ -37,7 +37,9 @@
     "copiedTooltip": "Skopiowano",
     "attachmentOpen": "Zobacz powiększony obraz {name}",
     "attachmentDescribed": "Sztuczna inteligencja otrzymała taki opis obrazu: {description}",
-    "attachmentNotDescribed": "Obraz {name} nie ma jeszcze opisu. Sztuczna inteligencja zna tylko nazwę pliku."
+    "attachmentNotDescribed": "Obraz {name} nie ma jeszcze opisu. Sztuczna inteligencja zna tylko nazwę pliku.",
+    "attachmentFlagged": "Podczas sprawdzania obraz zwrócił uwagę, ponieważ wydaje się zawierać instrukcje dla AI. Po jego odczytaniu AI nie może w tym uruchomieniu niczego zmieniać.",
+    "attachmentUnscreened": "Nie udało się sprawdzić obrazu pod kątem instrukcji dla AI. Po jego odczytaniu AI nie może w tym uruchomieniu niczego zmieniać."
   },
   "composer": {
     "label": "Wiadomość do AI",

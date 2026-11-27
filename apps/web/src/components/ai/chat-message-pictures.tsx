@@ -46,6 +46,9 @@ export function ChatMessagePictures({ attachments }: { attachments: readonly AiC
                 {attachment.description === null
                   ? t('attachmentNotDescribed', { name: attachment.filename })
                   : t('attachmentDescribed', { description: attachment.description })}
+                {attachment.description === null ? null : (
+                  <ScreeningNote screening={attachment.screening} />
+                )}
               </TooltipContent>
             </Tooltip>
           );
@@ -53,5 +56,20 @@ export function ChatMessagePictures({ attachments }: { attachments: readonly AiC
       </div>
       <ImageLightbox image={open} onClose={() => setOpen(null)} />
     </>
+  );
+}
+
+/**
+ * Why reading this picture stops the assistant from changing anything
+ * (ADR-096): a finding, or a check that could not be made. A clean picture
+ * needs no sentence.
+ */
+function ScreeningNote({ screening }: { screening: AiChatAttachment['screening'] }) {
+  const t = useTranslations('ai.message');
+  if (screening === 'clean') return null;
+  return (
+    <span className="mt-1 block" data-testid="ai-question-picture-screening">
+      {t(screening === 'flagged' ? 'attachmentFlagged' : 'attachmentUnscreened')}
+    </span>
   );
 }

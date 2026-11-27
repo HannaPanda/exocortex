@@ -96,6 +96,7 @@
     "toolResult": "{chars} tekens resultaat",
     "toolTruncated": "ingekort",
     "toolUntrusted": "Externe inhoud",
+    "toolOwnScreened": "Eigen bestand, gecontroleerd",
     "toolRepeated": "Herhaling",
     "toolPaused": "onderbreekt de run",
     "toolFailureCode": "Reden {code}",

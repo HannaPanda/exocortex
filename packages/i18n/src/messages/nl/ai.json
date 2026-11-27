@@ -37,7 +37,9 @@
     "copiedTooltip": "Gekopieerd",
     "attachmentOpen": "Afbeelding {name} groot bekijken",
     "attachmentDescribed": "De AI heeft de afbeelding zo beschreven gekregen: {description}",
-    "attachmentNotDescribed": "{name} is nog niet beschreven. De AI kent alleen de bestandsnaam."
+    "attachmentNotDescribed": "{name} is nog niet beschreven. De AI kent alleen de bestandsnaam.",
+    "attachmentFlagged": "Tijdens de controle viel de afbeelding op, omdat deze instructies voor een AI lijkt te bevatten. Na het lezen mag de AI tijdens deze sessie niets meer wijzigen.",
+    "attachmentUnscreened": "De afbeelding kon niet worden gecontroleerd op instructies voor een AI. Na het lezen mag de AI tijdens deze sessie niets meer wijzigen."
   },
   "composer": {
     "label": "Bericht aan de AI",

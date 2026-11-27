@@ -95,6 +95,7 @@ function toolLine(
         : [t('toolResult', { chars: format.count(entry.resultChars) })]),
       ...(entry.resultTruncated ? [t('toolTruncated')] : []),
       ...(entry.untrustedOrigin === null ? [] : [t('toolUntrusted')]),
+      ...(entry.ownScreenedSource === true ? [t('toolOwnScreened')] : []),
       ...(entry.repeated ? [t('toolRepeated')] : []),
       ...(entry.pausedRun ? [t('toolPaused')] : []),
       ...(entry.failureCode === null || entry.failureCode === undefined

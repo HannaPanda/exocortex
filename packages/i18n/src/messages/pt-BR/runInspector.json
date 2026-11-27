@@ -96,6 +96,7 @@
     "toolResult": "{chars} caracteres de resultado",
     "toolTruncated": "encurtado",
     "toolUntrusted": "Conteúdo externo",
+    "toolOwnScreened": "Arquivo próprio, verificado",
     "toolRepeated": "Repetição",
     "toolPaused": "pausa a execução",
     "toolFailureCode": "Motivo {code}",

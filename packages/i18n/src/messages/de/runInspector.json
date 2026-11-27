@@ -96,6 +96,7 @@
     "toolResult": "{chars} Zeichen Ergebnis",
     "toolTruncated": "gekürzt",
     "toolUntrusted": "Fremdinhalt",
+    "toolOwnScreened": "Eigene Datei, geprüft",
     "toolRepeated": "Wiederholung",
     "toolPaused": "pausiert den Lauf",
     "toolFailureCode": "Grund {code}",
