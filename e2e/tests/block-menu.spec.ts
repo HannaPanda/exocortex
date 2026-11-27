@@ -228,12 +228,16 @@ test.describe('the block menu', () => {
     await expect(textBlock(page, 'Aufgabe drei')).toBeVisible({ timeout: 30_000 });
     await caretAtEndOf(page, textBlock(page, 'Oben'));
 
-    const topLevel = (text: string, tag = 'p'): Locator =>
-      page.locator(`.exocortex-editor .ProseMirror > ${tag}`, {
+    const topLevel = (text: string): Locator =>
+      page.locator('.exocortex-editor .ProseMirror > p', {
         hasText: new RegExp(`^${text}$`),
       });
     const listItem = (text: string): Locator =>
       page.locator('.exocortex-editor li p', { hasText: new RegExp(`^${text}$`) });
+    // The task list is a `ul` too.
+    const bulletLists = page.locator(
+      '.exocortex-editor .ProseMirror > ul:not([data-type="taskList"])',
+    );
     async function turnInto(text: string, entry: string): Promise<void> {
       await openMenuOf(page, textBlock(page, text));
       await page.getByTestId('block-turn-into').click();
@@ -246,12 +250,12 @@ test.describe('the block menu', () => {
     await turnInto('Zwei', 'paragraph');
     await expect(topLevel('Zwei')).toHaveCount(1);
     await expect(listItem('Zwei')).toHaveCount(0);
-    await expect(page.locator('.exocortex-editor .ProseMirror > ul')).toHaveCount(3);
+    await expect(bulletLists).toHaveCount(3);
     await expect(listItem('Unter')).toHaveCount(1);
     await expect(page.getByTestId('selection-toolbar')).toBeHidden();
     await page.keyboard.press('Control+z');
     await expect(listItem('Zwei')).toHaveCount(1);
-    await expect(page.locator('.exocortex-editor .ProseMirror > ul')).toHaveCount(2);
+    await expect(bulletLists).toHaveCount(1);
 
     // The first and the last item; the caret ends after the line's text.
     await turnInto('Eins', 'paragraph');
@@ -273,7 +277,9 @@ test.describe('the block menu', () => {
 
     // Conversions that did nothing on a list item before, or hit its sub-item.
     await turnInto('Zwei', 'heading-2');
-    await expect(topLevel('Zwei', 'h2')).toHaveCount(1);
+    // A heading carries its fold toggle beside the text, so no exact match.
+    await expect(page.locator('.exocortex-editor h2', { hasText: 'Zwei' })).toHaveCount(1);
+    await expect(page.locator('.exocortex-editor li h2')).toHaveCount(0);
     await expect(listItem('Unter')).toHaveCount(1);
     await turnInto('Drei', 'blockquote');
     await expect(
