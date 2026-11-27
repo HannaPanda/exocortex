@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { reviveTimer } from './revive-timer';
+import { reviveRebuilds, reviveTimer } from './revive-timer';
 
 describe('reviveTimer', () => {
   beforeEach(() => {
@@ -55,5 +55,17 @@ describe('reviveTimer', () => {
     timer.cancel();
     await vi.advanceTimersByTimeAsync(200_000);
     expect(rebuild).not.toHaveBeenCalled();
+  });
+});
+
+describe('reviveRebuilds', () => {
+  it('reopens the socket for every state a new socket can change (issue #285)', () => {
+    // Rebuilding would remount the editor and put the reader at the top.
+    expect(reviveRebuilds('disconnected', false)).toBe(false);
+    expect(reviveRebuilds('connecting', false)).toBe(false);
+  });
+
+  it('rebuilds from the ticket up when an open socket was refused', () => {
+    expect(reviveRebuilds('connected', false)).toBe(true);
   });
 });

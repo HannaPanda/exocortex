@@ -13,8 +13,10 @@ import type { ConnectionDetailValue } from '@/lib/connection-log';
  * disconnected for eight minutes without one further attempt reaching the
  * server. Only F5 brought it back.
  *
- * Rebuilding is cheap and lossless: the Yjs document merges rather than
- * replaces, and the offline copy carries whatever was typed in the meantime.
+ * Reviving is cheap and lossless: once a provider exists it only opens the
+ * socket again and keeps the document, its offline copy and the editor on it
+ * (`reviveRebuilds`, issue #285); before that it builds the connection from
+ * the ticket up, and the offline copy carries whatever was typed meanwhile.
  */
 const REVIVE_DELAY_MS = 20_000;
 
@@ -57,4 +59,22 @@ export function reviveTimer(
       rebuild();
     },
   };
+}
+
+/**
+ * Whether reviving a connection has to build it again from the ticket up,
+ * rather than only opening its socket again (issue #285).
+ *
+ * Only an open socket whose ticket was refused: a new socket would carry the
+ * same refusal, and the rebuild is what asks for a ticket in a way that can
+ * end in the error state (a withdrawn grant, ADR-029). Every other unusable
+ * state is a socket that is closed or still trying, and reopening it keeps the
+ * document and the editor on it -- a rebuild remounts the editor, and the
+ * reader lands at the top of the page.
+ */
+export function reviveRebuilds(
+  socket: 'connected' | 'connecting' | 'disconnected',
+  authenticated: boolean,
+): boolean {
+  return socket === 'connected' && !authenticated;
 }

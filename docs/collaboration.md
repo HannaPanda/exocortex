@@ -184,6 +184,7 @@ each process.
 | collaboration server down         | the editor keeps working on the IndexedDB copy, the badge shows "Verbindung unterbrochen", the provider retries |
 | database down                     | the store hook throws, Hocuspocus keeps the document in memory and retries                                      |
 | API down while the tab rebuilds   | the failed ticket arms the same revive backoff (20 s doubling to 120 s); showing the tab retries at once        |
+| socket dead after sleep or outage | the revive watchdog and showing the tab reopen the socket of the same provider; document and editor stay        |
 
 The client side of a reconnect lives in
 `apps/web/src/components/editor/collaboration-connection.ts`. Two rules there
@@ -195,3 +196,15 @@ provider (a failed ticket) arms the revive timer, or the tab waits for F5.
 Firefox shares 200 WebSocket slots across every site, and a socket waiting in
 its per-host connect queue holds one, so a client that leaks sockets during an
 outage harms other tabs, not only its own.
+
+A revival never replaces a connection that has a provider (issue #285). It
+used to call `retry()`, which built a new `Y.Doc`, a new provider and with them
+a new editor: the editor unmounted for the spinner and came back at the top of
+the page, which is where a reader landed after unlocking a phone or after any
+outage long enough for the watchdog. Now `provider.connect()` restarts the
+socket's retry loop and the ticket is asked for again on the next open, so the
+editor, the scroll position and the caret stay. `reviveRebuilds` names the one
+exception: an open socket whose ticket was refused still rebuilds from the
+ticket up, because a withdrawn grant has to end in the error state. A full
+rebuild is otherwise left to the retry button and to a discarded offline copy
+(ADR-085).

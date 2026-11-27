@@ -20,7 +20,7 @@ import { type ConnectionDetailValue, logConnection } from '@/lib/connection-log'
 import { onWakeSignals, type WakeReason } from '@/lib/wake-signals';
 
 import { retireProvider } from './retire-provider';
-import { reviveTimer } from './revive-timer';
+import { reviveRebuilds, reviveTimer } from './revive-timer';
 
 /**
  * How long a burst of typing has to be quiet before it counts as settled.
@@ -196,6 +196,55 @@ function offlineCopyDiscarder(
   };
 }
 
+/** The socket's state as the hook tracks it; see `live` in the effect. */
+interface SocketState {
+  socket: 'connected' | 'connecting' | 'disconnected';
+  authenticated: boolean;
+}
+
+/** The provider's status, narrowed to the three states the hook tells apart. */
+function socketStatusOf(status: string): SocketState['socket'] {
+  return status === 'connected'
+    ? 'connected'
+    : status === 'connecting'
+      ? 'connecting'
+      : 'disconnected';
+}
+
+/**
+ * Revives a connection without replacing it (issue #285).
+ *
+ * A revival used to be the full rebuild: a fresh ticket, a fresh `Y.Doc`, a
+ * fresh provider -- and therefore a fresh editor. The editor unmounted for the
+ * spinner, the page collapsed to its title, and the new editor came up at the
+ * top of the page. That was the jump a reader saw after unlocking the phone
+ * (the socket died while it slept, and showing the tab revived it) and after
+ * every outage long enough for the watchdog.
+ *
+ * Nothing a revival is for needs a new document: the ticket is asked for again
+ * on every socket open (`ticketSource`), and `provider.connect()` restarts the
+ * socket's retry loop, which is what a refused handshake had ended. So the
+ * document, its offline copy and the editor on it stay, and only the socket is
+ * opened again. `reviveRebuilds` names the one state that still takes the full
+ * rebuild.
+ */
+function connectionReviver(
+  provider: HocuspocusProvider,
+  state: () => SocketState,
+  rebuild: () => void,
+): () => void {
+  return () => {
+    const { socket, authenticated } = state();
+    if (reviveRebuilds(socket, authenticated)) {
+      record('revive.rebuild', { socket, authenticated });
+      rebuild();
+      return;
+    }
+    record('revive.reconnect', { socket });
+    void provider.connect();
+  };
+}
+
 /** The three objects one open document is made of. */
 export interface Connection {
   provider: HocuspocusProvider;
@@ -331,8 +380,10 @@ export function useCollaborationConnection({
     let stopSaveIndicator: (() => void) | undefined;
     // Watchdog for a connection that never came back; cleared on unmount.
     // No `disposed` check in the rebuild: the cleanup cancels the timer, and
-    // `now()` is only reached from a handler that checks it first.
-    const revive = reviveTimer(reviveCount, retry, record);
+    // `now()` is only reached from a handler that checks it first. Without a
+    // provider a revival is the rebuild; with one, `connectionReviver`.
+    let reviveAction: () => void = retry;
+    const revive = reviveTimer(reviveCount, () => reviveAction(), record);
 
     /**
      * What a wake signal should do, once there is a connection to do it to.
@@ -433,7 +484,7 @@ export function useCollaborationConnection({
        * tracked, and only both together count as live — which is also what
        * decides whether a local edit is still pending.
        */
-      let socketStatus: 'connected' | 'connecting' | 'disconnected' = 'connecting';
+      let socketStatus: SocketState['socket'] = 'connecting';
       let authenticated = false;
       const live = (): boolean => socketStatus === 'connected' && authenticated;
       /**
@@ -483,12 +534,7 @@ export function useCollaborationConnection({
         },
         onStatus: ({ status }) => {
           record('status', { status });
-          socketStatus =
-            status === 'connected'
-              ? 'connected'
-              : status === 'connecting'
-                ? 'connecting'
-                : 'disconnected';
+          socketStatus = socketStatusOf(status);
           // Every new socket re-authenticates; until it has, the document is not
           // usable even though the socket may already be open.
           if (socketStatus !== 'connected') authenticated = false;
@@ -518,6 +564,8 @@ export function useCollaborationConnection({
         },
       });
 
+      const socketState = (): SocketState => ({ socket: socketStatus, authenticated });
+      reviveAction = connectionReviver(provider, socketState, retry);
       stopSaveIndicator = attachSaveIndicator(ydoc, provider, live, update);
       attachPresence(provider, { id: userId, name: userName }, update, unknownUser);
 
@@ -526,13 +574,11 @@ export function useCollaborationConnection({
       armRevive();
 
       /**
-       * Coming back to the tab is a fresh signal, not another failure.
-       *
-       * The backoff above grows to two minutes, which is the right pace for a
-       * page nobody is looking at but the wrong one for the moment someone
-       * returns to it and finds the header saying "getrennt". A connection that
-       * is merely `connecting` is left alone: tearing down an attempt that is
-       * still in flight would replace one wait with another.
+       * Coming back to the tab is a fresh signal, not another failure: the
+       * backoff above suits a page nobody is looking at, not someone who
+       * returns to "getrennt" in the header. A connection that is merely
+       * `connecting` is left alone, because restarting an attempt still in
+       * flight would replace one wait with another.
        */
       onWake = (reason: WakeReason): void => {
         record('wake', { reason, socket: socketStatus, authenticated, disposed });
