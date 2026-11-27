@@ -774,7 +774,7 @@ column the list lies on nothing and stays flat, exactly as in its column;
 where it would cover text it becomes a floating surface, the popover's own
 (`popover`, `border-strong`, `shadow-md`, radius `lg`), so it reads as lying
 on the page. The covering list may let the text through at two strengths
-(`opacity-75`, `opacity-45`, whole-panel opacity and never a blur, the
+(`opacity-85`, `opacity-60`, whole-panel opacity and never a blur, the
 No-Glass Rule); it returns to full strength under the pointer and with the
 keyboard focus in it, and the fade is a plain transition that
 `prefers-reduced-motion` drops. Whether a window can pin is the same width

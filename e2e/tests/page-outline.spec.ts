@@ -369,11 +369,11 @@ test.describe('page outline laid over the text', () => {
 
     // Let through at rest, whole under the pointer and with the keyboard in it.
     await page.locator('.exocortex-page-title').hover();
-    await expect(pinned).toHaveCSS('opacity', '0.45');
+    await expect(pinned).toHaveCSS('opacity', '0.6');
     await pinned.hover();
     await expect(pinned).toHaveCSS('opacity', '1');
     await page.locator('.exocortex-page-title').hover();
-    await expect(pinned).toHaveCSS('opacity', '0.45');
+    await expect(pinned).toHaveCSS('opacity', '0.6');
     await page.getByTestId('page-outline-pin').focus();
     await page.keyboard.press('Tab');
     await expect(pinned.getByTestId('page-outline-entry').first()).toBeFocused();

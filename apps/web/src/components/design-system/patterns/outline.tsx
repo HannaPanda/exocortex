@@ -132,7 +132,7 @@ export function PageOutlinePattern() {
         id="seitengliederung-ueber-dem-text"
         title="Angepinnt über dem Text"
         source="apps/web/src/components/editor/page-outline/outline-view.tsx"
-        note="Die Wahl der Person (Einstellungen → Editor, Issue #283): der Text bleibt stehen, die Liste liegt darüber. Nur wo sie wirklich Text verdeckt, wird sie zur schwebenden Fläche mit der Hülle des Popovers. Durchscheinend heißt Deckkraft der ganzen Fläche (75 % oder 45 %), nie Unschärfe; unter dem Zeiger und mit Tastaturfokus darin ist sie wieder voll da, und unter prefers-reduced-motion springt sie ohne Übergang."
+        note="Die Wahl der Person (Einstellungen → Editor, Issue #283): der Text bleibt stehen, die Liste liegt darüber. Nur wo sie wirklich Text verdeckt, wird sie zur schwebenden Fläche mit der Hülle des Popovers. Durchscheinend heißt Deckkraft der ganzen Fläche (85 % oder 60 %), nie Unschärfe; unter dem Zeiger und mit Tastaturfokus darin ist sie wieder voll da, und unter prefers-reduced-motion springt sie ohne Übergang."
       >
         <DsStates>
           {(['none', 'light', 'strong'] as const).map((transparency) => (

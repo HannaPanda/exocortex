@@ -110,8 +110,8 @@ export function OutlineRail({
  */
 const TRANSPARENCY_CLASS: Record<OutlineTransparency, string | null> = {
   none: null,
-  light: 'opacity-75',
-  strong: 'opacity-45',
+  light: 'opacity-85',
+  strong: 'opacity-60',
 };
 
 /**
