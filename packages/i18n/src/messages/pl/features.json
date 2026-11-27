@@ -514,6 +514,16 @@
     },
     "where": "Administracja, Ustawienia, sekcja AI."
   },
+  "bilder-im-chat": {
+    "title": "Dołączanie obrazów do wiadomości na czacie",
+    "summary": "Zrzut ekranu lub zdjęcie trafia do AI bezpośrednio z twoim pytaniem: wklej je, przeciągnij do okna AI albo wybierz za pomocą ikony obrazu. Przed wysłaniem zobaczysz małą miniaturkę i możesz je usunąć.",
+    "details": {
+      "p1": "Wklej obraz za pomocą Strg + V w pole wprowadzania, przeciągnij go do okna AI albo wybierz za pomocą ikony obrazu obok przycisku wysyłania. Pojawi się jako podgląd nad polem wprowadzania i zostanie wysłany z następną wiadomością; krzyżykiem możesz go wcześniej usunąć. Wiadomość może składać się z samych obrazów. Na czacie obsługiwane są formaty PNG, JPEG, WebP, GIF i AVIF, o rozmiarze dozwolonym dla każdego innego załącznika i w liczbie, jaką dany przebieg jest w stanie opisać.",
+      "p2": "AI nie otrzymuje samego obrazu, lecz opis wygenerowany przez model wizyjny. Powstaje on raz, podczas pierwszego przebiegu po wysłaniu, i obowiązuje potem w całym czacie. Po najechaniu kursorem na obraz w twoim pytaniu zobaczysz, czego AI się o nim dowiedziała; kliknięcie powiększa obraz. Obrazy pozostają przy swojej wiadomości, również po ponownym załadowaniu.",
+      "p3": "Obrazy należą do czatu: widzi je tylko osoba, która je przesłała, a trwałe usunięcie czatu usuwa je wraz z nim. Obraz, który nigdy nie został wysłany, znika po jednym dniu. Podobnie jak obrazy na stronie, opis liczy się jako tekst zewnętrzny, po którym przebieg nie może już niczego zmieniać, dopóki włączona jest blokada zapisu dla treści zewnętrznych."
+    },
+    "where": "W panelu AI: za pomocą ikony obrazu obok przycisku wysyłania, wklejając w pole wprowadzania lub przeciągając do niego."
+  },
   "ki-regeln": {
     "title": "Stałe instrukcje jako strona reguł",
     "summary": "Stronę można zadeklarować jako regułę: albo obowiązuje zawsze i trafia do promptu systemowego, albo określa tylko frazę wyzwalającą i jest doładowywana w razie potrzeby. Dzięki temu wytyczne pozostają tam, gdzie każdy może je przeczytać i zmienić, zamiast w konfiguracji.",

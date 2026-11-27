@@ -514,6 +514,16 @@
     },
     "where": "Administration, Settings, AI section."
   },
+  "bilder-im-chat": {
+    "title": "Attaching images to a chat message",
+    "summary": "Send a screenshot or photo directly with your question to the AI: paste it, drag it into the AI window, or pick it via the image icon. You will see a small thumbnail preview before sending and can remove it at any time.",
+    "details": {
+      "p1": "Paste an image into the input field with Strg + V, drag it onto the AI window, or choose it using the image icon next to the send button. It appears as a preview above the input field and is sent with your next message; click the cross to remove it beforehand. A message can also consist entirely of images. The chat supports PNG, JPEG, WebP, GIF, and AVIF, up to the maximum size allowed for any other attachment, and as many as a single run can describe.",
+      "p2": "The AI does not receive the image itself, but rather a description provided by a vision model. This is generated once, during the first run after sending, and then remains valid for the entire chat. Hovering over the image in your prompt shows what the AI learned about it; clicking it opens the image in full size. The images remain attached to their message, even after reloading.",
+      "p3": "The images belong to the chat: only the person who uploaded them can view them, and permanently deleting the chat deletes them as well. An image that was never sent disappears after one day. Just like images on a page, the description counts as external text, after which a run is not allowed to make further changes as long as the write lock for external content is turned on."
+    },
+    "where": "In the AI pane, via the image icon next to the send button, by pasting into the input field, or by dragging it in."
+  },
   "ki-regeln": {
     "title": "Persistent instructions as a rule page",
     "summary": "A page can be declared a rule: either it always applies and sits in the system prompt, or it only names its trigger sentence and is loaded on demand. That way, guidelines stay where anyone can read and change them, instead of in a configuration.",

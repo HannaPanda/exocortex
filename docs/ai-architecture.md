@@ -118,6 +118,23 @@ run. `ai.visionEnabled: false` turns this off entirely; see "Vision
 companions" below for how the companion _model_ is now chosen per run rather
 than fixed to `OPENROUTER_VISION_MODEL`.
 
+### Pictures on a chat message
+
+A picture pasted, dropped or chosen in the composer (issue #223, ADR-095) is
+an `Attachment` with `conversationId` set and no page, uploaded through
+`POST /api/ai/conversations/:id/attachments` and bound to the user message by
+`attachmentIds` when it is sent (`apps/api/src/ai/chat-attachments.service.ts`).
+Before a run builds its prompt, `describeChatAttachments`
+(`apps/worker/src/processors/ai-run/chat-attachments.ts`) describes the
+pictures on messages still in the context that have no description yet, with
+the same describer as the page's pictures, and stores the text on the row, so
+each picture is described once per conversation rather than per turn.
+`loadConversationMessages` then puts a system message before every user
+message with pictures, its descriptions fenced as `attachment` content, and a
+run whose transcript carries one notes untrusted content (ADR-030). The cap
+for one message is `ai.visionMaxImagesPerRun`. A compaction summary is built
+from message text and does not carry the descriptions.
+
 ### Pictures a tool returns
 
 `exo_attachment_read_image` answers an MCP client with an `image` content

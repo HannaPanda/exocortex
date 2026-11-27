@@ -514,6 +514,16 @@
     },
     "where": "Beheer, Instellingen, sectie AI."
   },
+  "bilder-im-chat": {
+    "title": "Afbeeldingen bijvoegen aan een chatbericht",
+    "summary": "Een screenshot of foto gaat direct met je vraag mee naar de AI: plakken, naar het AI-venster slepen of via het afbeeldingspictogram selecteren. Vóór het verzenden zie je een kleine voorvertoning en kun je de afbeelding weer verwijderen.",
+    "details": {
+      "p1": "Plak een afbeelding met Strg + V in het invoerveld, sleep deze naar het AI-venster of kies hem via het afbeeldingspictogram naast de verzendknop. De afbeelding verschijnt als voorvertoning boven het invoerveld en wordt met het volgende bericht meegestuurd; met het kruisje haal je hem vooraf weer weg. Een bericht mag ook alleen uit afbeeldingen bestaan. In de chat werken PNG, JPEG, WebP, GIF en AVIF, net zo groot als elke andere bijlage mag zijn, en zo veel als een run aan afbeeldingen beschrijft.",
+      "p2": "De AI krijgt niet de afbeelding zelf, maar een beschrijving van een beeldmodel. Die wordt eenmalig gegenereerd, tijdens de eerste run na het verzenden, en geldt vervolgens voor de hele chat. Beweeg je over de afbeelding in je vraag, dan zie je wat de AI erover te weten is gekomen; een klik opent hem groot. De afbeeldingen blijven aan hun bericht gekoppeld, ook na het herladen.",
+      "p3": "De afbeeldingen horen bij de chat: alleen degene die ze heeft geüpload kan ze zien, en wie de chat definitief verwijdert, verwijdert ze ook. Een afbeelding die nooit is verzonden, verdwijnt na één dag. Net als afbeeldingen op een pagina geldt de beschrijving als externe tekst, waarna een run niets meer mag wijzigen zolang de schrijfbeveiliging voor externe inhoud is ingeschakeld."
+    },
+    "where": "In het AI-gedeelte, via het afbeeldingspictogram naast de verzendknop, door in het invoerveld te plakken of door naar binnen te slepen."
+  },
   "ki-regeln": {
     "title": "Permanente instructies als regelpagina",
     "summary": "Een pagina kan tot regel worden verklaard: hij geldt altijd en staat in de systeemprompt, of hij noemt alleen zijn triggerzin en wordt naar behoefte ingeladen. Zo blijven richtlijnen daar waar iedereen ze kan lezen en wijzigen, in plaats van in een configuratie.",

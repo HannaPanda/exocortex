@@ -514,6 +514,16 @@
     },
     "where": "Amministrazione, Impostazioni, sezione IA."
   },
+  "bilder-im-chat": {
+    "title": "Allegare immagini a un messaggio di chat",
+    "summary": "Invia uno screenshot o una foto direttamente con la tua domanda all’IA: incolla, trascina nella finestra dell’IA o seleziona tramite l’icona dell’immagine. Prima dell’invio puoi visualizzarne un’anteprima e rimuoverla se necessario.",
+    "details": {
+      "p1": "Incolla un’immagine con Strg + V nel campo di inserimento, trascinala nella finestra dell’IA o selezionala tramite l’icona dell’immagine accanto al pulsante di invio. Apparirà come anteprima sopra il campo di inserimento e verrà inviata con il messaggio successivo; puoi rimuoverla prima dell’invio usando la crocetta. Un messaggio può anche essere composto solo da immagini. Nella chat sono supportati PNG, JPEG, WebP, GIF e AVIF, con le stesse dimensioni massime di qualsiasi altro allegato e nel numero massimo descrivibile in una singola esecuzione.",
+      "p2": "L’IA non riceve l’immagine vera e propria, ma una descrizione generata da un modello visivo. Questa viene creata una sola volta, durante la prima esecuzione dopo l’invio, e rimane valida per l’intera chat. Passando il cursore sull’immagine nella tua domanda puoi vedere cosa ha appreso l’IA; un clic la apre a schermo intero. Le immagini rimangono collegate al rispettivo messaggio, anche dopo aver ricaricato la pagina.",
+      "p3": "Le immagini appartengono alla chat: può visualizzarle solo chi le ha caricate, ed eliminare definitivamente la chat cancella anche loro. Un’immagine mai inviata scompare dopo un giorno. Come per le immagini su una pagina, la descrizione è considerata testo esterno: un’esecuzione non può apportare modifiche dopo di essa se il blocco di scrittura per contenuti esterni è attivo."
+    },
+    "where": "Nell’area dell’IA, tramite l’icona dell’immagine accanto al pulsante di invio, incollando nel campo di inserimento o trascinando all’interno."
+  },
   "ki-regeln": {
     "title": "Istruzioni persistenti sotto forma di pagina di regole",
     "summary": "Una pagina può essere dichiarata come regola: può essere sempre attiva e presente nel prompt di sistema, oppure indicare solo la propria frase di innesco per essere caricata al bisogno. Così le direttive restano dove chiunque può leggerle e modificarle, anziché in un file di configurazione.",

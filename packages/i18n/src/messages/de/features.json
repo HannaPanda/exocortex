@@ -514,6 +514,16 @@
     },
     "where": "Verwaltung, Einstellungen, Abschnitt KI."
   },
+  "bilder-im-chat": {
+    "title": "Bilder an eine Chat-Nachricht hängen",
+    "summary": "Ein Screenshot oder Foto geht direkt mit deiner Frage an die KI: einfügen, ins KI-Fenster ziehen oder über das Bildsymbol auswählen. Vor dem Senden siehst du es als kleines Vorschaubild und kannst es wieder entfernen.",
+    "details": {
+      "p1": "Füg ein Bild mit Strg + V ins Eingabefeld ein, zieh es auf das KI-Fenster oder wähl es über das Bildsymbol neben dem Senden-Knopf aus. Es erscheint als Vorschau über dem Eingabefeld und geht mit der nächsten Nachricht mit; mit dem Kreuz nimmst du es vorher wieder weg. Eine Nachricht darf auch nur aus Bildern bestehen. Im Chat gehen PNG, JPEG, WebP, GIF und AVIF, so groß wie jeder andere Anhang sein darf, und so viele, wie ein Lauf Bilder beschreibt.",
+      "p2": "Die KI bekommt nicht das Bild selbst, sondern eine Beschreibung von einem Bildmodell. Die entsteht einmal, beim ersten Lauf nach dem Senden, und gilt dann für den ganzen Chat. Fährst du über das Bild in deiner Frage, siehst du, was die KI darüber erfahren hat; ein Klick öffnet es groß. Die Bilder bleiben an ihrer Nachricht, auch nach dem Neuladen.",
+      "p3": "Die Bilder gehören zum Chat: sehen kann sie nur, wer sie hochgeladen hat, und wer den Chat endgültig löscht, löscht sie mit. Ein Bild, das nie abgeschickt wurde, verschwindet nach einem Tag. Wie Bilder auf einer Seite zählt die Beschreibung als fremder Text, nach dem ein Lauf nichts mehr ändern darf, solange die Schreibsperre für fremde Inhalte eingeschaltet ist."
+    },
+    "where": "Im KI-Bereich, über das Bildsymbol neben dem Senden-Knopf, per Einfügen ins Eingabefeld oder durch Hineinziehen."
+  },
   "ki-regeln": {
     "title": "Dauerhafte Anweisungen als Regelseite",
     "summary": "Eine Seite lässt sich zur Regel erklären: entweder gilt sie immer und steht im Systemprompt, oder sie nennt nur ihren Auslösersatz und wird bei Bedarf nachgeladen. So bleiben Vorgaben dort, wo sie jeder lesen und ändern kann, statt in einer Konfiguration.",

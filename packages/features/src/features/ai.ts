@@ -110,6 +110,14 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     settings: ['ai.visionEnabled', 'ai.visionMaxImagesPerRun'],
   }),
   defineFeature({
+    id: 'bilder-im-chat',
+    area: 'ki',
+    since: '2026-11-27',
+    references: ['#223', 'ADR-095', 'ADR-030'],
+    ui: {},
+    settings: ['ai.visionMaxImagesPerRun'],
+  }),
+  defineFeature({
     id: 'web-recherche',
     area: 'ki',
     since: '2026-09-18',

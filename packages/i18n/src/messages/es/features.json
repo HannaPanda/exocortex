@@ -514,6 +514,16 @@
     },
     "where": "Administración, Ajustes, sección IA."
   },
+  "bilder-im-chat": {
+    "title": "Adjuntar imágenes a un mensaje de chat",
+    "summary": "Envía una captura de pantalla o una foto directamente con tu pregunta a la IA: pégala, arrástrala a la ventana de la IA o selecciónala mediante el icono de imagen. Antes de enviarla, la verás como una miniatura y podrás quitarla.",
+    "details": {
+      "p1": "Pega una imagen con Strg + V en el campo de entrada, arrástrala a la ventana de la IA o selecciónala mediante el icono de imagen junto al botón de enviar. Aparecerá como una vista previa sobre el campo de entrada y se enviará con el siguiente mensaje; con la cruz puedes quitarla antes. Un mensaje también puede contener solo imágenes. En el chat se admiten PNG, JPEG, WebP, GIF y AVIF, con el tamaño máximo permitido para cualquier otro adjunto, y tantas imágenes como describa una ejecución.",
+      "p2": "La IA no recibe la imagen en sí, sino una descripción generada por un modelo de visión. Esta se genera una sola vez, en la primera ejecución tras el envío, y se utiliza durante todo el chat. Si pasas el cursor sobre la imagen de tu pregunta, verás lo que la IA ha averiguado sobre ella; al hacer clic se abre en grande. Las imágenes permanecen vinculadas a su mensaje, incluso tras recargar.",
+      "p3": "Las imágenes pertenecen al chat: solo quien las subió puede verlas y, si se elimina el chat definitivamente, se eliminan con él. Una imagen que nunca se llegó a enviar desaparece después de un día. Al igual que las imágenes en una página, la descripción cuenta como texto externo, tras el cual una ejecución no puede modificar nada mientras el bloqueo de escritura para contenido externo esté activado."
+    },
+    "where": "En el panel de la IA, mediante el icono de imagen junto al botón de enviar, pegando en el campo de entrada o arrastrando hacia dentro."
+  },
   "ki-regeln": {
     "title": "Instrucciones permanentes como página de reglas",
     "summary": "Una página puede declararse como regla: o bien se aplica siempre y figura en el prompt de sistema, o bien indica solo su frase desencadenante y se carga bajo demanda. Así las directrices permanecen donde cualquiera puede leerlas y editarlas, en lugar de en una configuración.",

@@ -12288,6 +12288,30 @@
       "source": "af26927d5433b140",
       "output": "58e55afd839361c8"
     },
+    "features.bilder-im-chat.details.p1": {
+      "source": "206e9fed93e4fabb",
+      "output": "1452fbbfacc6462e"
+    },
+    "features.bilder-im-chat.details.p2": {
+      "source": "4d30f65de5639f67",
+      "output": "9cc005a1f164db7d"
+    },
+    "features.bilder-im-chat.details.p3": {
+      "source": "4e0d3b2a102de806",
+      "output": "841ffa0090f07f6c"
+    },
+    "features.bilder-im-chat.summary": {
+      "source": "f38412b8c66ce465",
+      "output": "b00670691aced45a"
+    },
+    "features.bilder-im-chat.title": {
+      "source": "258d691d7fda58cd",
+      "output": "1192bd0f267a4cd0"
+    },
+    "features.bilder-im-chat.where": {
+      "source": "675f58dd54672ac0",
+      "output": "88e6a67426912716"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "df444ce4aa138ad6"
@@ -36745,6 +36769,30 @@
     "features.bild-vergroessern.where": {
       "source": "af26927d5433b140",
       "output": "fda04ffb20b48130"
+    },
+    "features.bilder-im-chat.details.p1": {
+      "source": "206e9fed93e4fabb",
+      "output": "8d671526ea770efe"
+    },
+    "features.bilder-im-chat.details.p2": {
+      "source": "4d30f65de5639f67",
+      "output": "b1fef014ac4517fb"
+    },
+    "features.bilder-im-chat.details.p3": {
+      "source": "4e0d3b2a102de806",
+      "output": "65ba3db091512902"
+    },
+    "features.bilder-im-chat.summary": {
+      "source": "f38412b8c66ce465",
+      "output": "b14b4c50a6137ef1"
+    },
+    "features.bilder-im-chat.title": {
+      "source": "258d691d7fda58cd",
+      "output": "0f2b0475b15469fd"
+    },
+    "features.bilder-im-chat.where": {
+      "source": "675f58dd54672ac0",
+      "output": "5d4e9cf016e269e3"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
@@ -61204,6 +61252,30 @@
       "source": "af26927d5433b140",
       "output": "22103b9a1ee5c175"
     },
+    "features.bilder-im-chat.details.p1": {
+      "source": "206e9fed93e4fabb",
+      "output": "59fc873c2f43aa6e"
+    },
+    "features.bilder-im-chat.details.p2": {
+      "source": "4d30f65de5639f67",
+      "output": "680720ff157be67e"
+    },
+    "features.bilder-im-chat.details.p3": {
+      "source": "4e0d3b2a102de806",
+      "output": "8501d0c09848022a"
+    },
+    "features.bilder-im-chat.summary": {
+      "source": "f38412b8c66ce465",
+      "output": "c646052770fb714d"
+    },
+    "features.bilder-im-chat.title": {
+      "source": "258d691d7fda58cd",
+      "output": "c660c91b396c3998"
+    },
+    "features.bilder-im-chat.where": {
+      "source": "675f58dd54672ac0",
+      "output": "c98bce7c85d030ef"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "1f7cfe3415d6d61f"
@@ -85661,6 +85733,30 @@
     "features.bild-vergroessern.where": {
       "source": "af26927d5433b140",
       "output": "3190d484f8b08637"
+    },
+    "features.bilder-im-chat.details.p1": {
+      "source": "206e9fed93e4fabb",
+      "output": "2bcf26702545a172"
+    },
+    "features.bilder-im-chat.details.p2": {
+      "source": "4d30f65de5639f67",
+      "output": "a29e03ec396a0eb4"
+    },
+    "features.bilder-im-chat.details.p3": {
+      "source": "4e0d3b2a102de806",
+      "output": "4e6b123fb0d02c04"
+    },
+    "features.bilder-im-chat.summary": {
+      "source": "f38412b8c66ce465",
+      "output": "f528322c94bb3830"
+    },
+    "features.bilder-im-chat.title": {
+      "source": "258d691d7fda58cd",
+      "output": "48602f250cb1526d"
+    },
+    "features.bilder-im-chat.where": {
+      "source": "675f58dd54672ac0",
+      "output": "6dcd0edb89da0803"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
@@ -110120,6 +110216,30 @@
       "source": "af26927d5433b140",
       "output": "cbfc5fb94fc3c226"
     },
+    "features.bilder-im-chat.details.p1": {
+      "source": "206e9fed93e4fabb",
+      "output": "9ca5ea2c799ddb47"
+    },
+    "features.bilder-im-chat.details.p2": {
+      "source": "4d30f65de5639f67",
+      "output": "ce6d0c2fb3496e61"
+    },
+    "features.bilder-im-chat.details.p3": {
+      "source": "4e0d3b2a102de806",
+      "output": "53ce6bc7f3e686be"
+    },
+    "features.bilder-im-chat.summary": {
+      "source": "f38412b8c66ce465",
+      "output": "eb69d166d44aadb1"
+    },
+    "features.bilder-im-chat.title": {
+      "source": "258d691d7fda58cd",
+      "output": "7a95cb9346c910fe"
+    },
+    "features.bilder-im-chat.where": {
+      "source": "675f58dd54672ac0",
+      "output": "1716567004c062fe"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "feefed24ce762d60"
@@ -134578,6 +134698,30 @@
       "source": "af26927d5433b140",
       "output": "90aa0bd79242383b"
     },
+    "features.bilder-im-chat.details.p1": {
+      "source": "206e9fed93e4fabb",
+      "output": "fe4ac2a00eeb1731"
+    },
+    "features.bilder-im-chat.details.p2": {
+      "source": "4d30f65de5639f67",
+      "output": "26f159d07455dd48"
+    },
+    "features.bilder-im-chat.details.p3": {
+      "source": "4e0d3b2a102de806",
+      "output": "d725f10528d5376b"
+    },
+    "features.bilder-im-chat.summary": {
+      "source": "f38412b8c66ce465",
+      "output": "3c52871b30333dba"
+    },
+    "features.bilder-im-chat.title": {
+      "source": "258d691d7fda58cd",
+      "output": "a661075249001bb1"
+    },
+    "features.bilder-im-chat.where": {
+      "source": "675f58dd54672ac0",
+      "output": "4a68446661c855fa"
+    },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",
       "output": "91fa4922ee725e18"
@@ -159035,6 +159179,30 @@
     "features.bild-vergroessern.where": {
       "source": "af26927d5433b140",
       "output": "60304a7d44c28cdb"
+    },
+    "features.bilder-im-chat.details.p1": {
+      "source": "206e9fed93e4fabb",
+      "output": "9722f67aa09f074f"
+    },
+    "features.bilder-im-chat.details.p2": {
+      "source": "4d30f65de5639f67",
+      "output": "ba913b1805b76a55"
+    },
+    "features.bilder-im-chat.details.p3": {
+      "source": "4e0d3b2a102de806",
+      "output": "0f7b5f148df7c91e"
+    },
+    "features.bilder-im-chat.summary": {
+      "source": "f38412b8c66ce465",
+      "output": "c7793da5358e0b5a"
+    },
+    "features.bilder-im-chat.title": {
+      "source": "258d691d7fda58cd",
+      "output": "e62a357d3f4014eb"
+    },
+    "features.bilder-im-chat.where": {
+      "source": "675f58dd54672ac0",
+      "output": "7a58ee60eec7b3af"
     },
     "features.bilder-verstehen.details.p1": {
       "source": "af9c7eac59b36dc2",

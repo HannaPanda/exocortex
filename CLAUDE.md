@@ -930,6 +930,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   (`POST /api/ai/runs/:id/revert`) is the browser's and the requester's only.
   The pulse names the page of the latest tool call; there is still no editing
   state (ADR-065).
+- ADR-095: a chat picture is an ordinary `Attachment` owned by its
+  conversation (`conversationId`, cascade, never on a page, readable by its
+  uploader only), uploaded when added and bound by `attachmentIds` when sent,
+  capped by `ai.visionMaxImagesPerRun`. The first run that sees it stores a
+  vision description on the row, and every turn reads that text fenced as
+  attachment content, which closes writing like the page's pictures; the loop
+  stays text. Deleting the chat deletes the objects, and an unsent picture is
+  collected after a day.
 
 Full list: `docs/adr/`.
 

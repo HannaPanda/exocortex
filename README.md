@@ -162,6 +162,10 @@ What is deliberately still missing is listed under
 - an AI side panel with conversations, tool calling, page context, vision
   preprocessing and reasoning levels, against OpenRouter models configured in
   the admin area or the deterministic mock provider offline
+- pictures in the chat: pasted, dropped or chosen in the composer, shown on
+  the sent question after a reload, described once by a vision model and
+  handed to the assistant as fenced text; deleting the chat deletes them
+  (ADR-095)
 - tools chosen per run rather than the whole catalogue: the decision model
   Jev picks the tool domains a request needs in any language, the keywords
   take over when it cannot answer within 1.5 seconds, a page with a picture or

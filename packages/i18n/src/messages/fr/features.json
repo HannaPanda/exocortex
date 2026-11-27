@@ -514,6 +514,16 @@
     },
     "where": "Administration, Paramètres, section IA."
   },
+  "bilder-im-chat": {
+    "title": "Joindre des images à un message de chat",
+    "summary": "Une capture d’écran ou une photo part directement avec ta question à l’IA : colle-la, glisse-la dans la fenêtre de l’IA ou sélectionne-la via l’icône d’image. Avant l’envoi, tu la vois sous forme de petite miniature et peux la retirer.",
+    "details": {
+      "p1": "Colle une image avec Strg + V dans le champ de saisie, glisse-la sur la fenêtre de l’IA ou choisis-la avec l’icône d’image à côté du bouton d’envoi. Elle apparaît sous forme d’aperçu au-dessus du champ de saisie et part avec le prochain message ; la croix permet de la retirer avant. Un message peut aussi n’être composé que d’images. Le chat accepte les formats PNG, JPEG, WebP, GIF et AVIF, dans la limite de taille des pièces jointes habituelles, et autant qu’une exécution peut en décrire.",
+      "p2": "L’IA ne reçoit pas l’image elle-même, mais une description générée par un modèle de vision. Celle-ci est créée une seule fois, lors de la première exécution après l’envoi, et reste valable pour tout le chat. En survolant l’image dans ta question, tu vois ce que l’IA en a appris ; un clic l’ouvre en grand. Les images restent associées à leur message, même après avoir rechargé la page.",
+      "p3": "Les images appartiennent au chat : seule la personne qui les a téléversées peut les voir, et supprimer définitivement le chat les supprime aussi. Une image qui n’a jamais été envoyée disparaît au bout d’un jour. Comme les images sur une page, la description compte comme du texte externe après lequel une exécution ne peut plus rien modifier tant que le verrouillage d’écriture pour les contenus externes est activé."
+    },
+    "where": "Dans l’espace IA, via l’icône d’image à côté du bouton d’envoi, en collant dans le champ de saisie ou par glisser-déposer."
+  },
   "ki-regeln": {
     "title": "Instructions permanentes sous forme de page de règles",
     "summary": "Une page peut être déclarée comme règle : soit elle s’applique toujours et figure dans le prompt système, soit elle n’indique que sa phrase de déclenchement et se charge à la demande. Les consignes restent ainsi là où tout le monde peut les lire et les modifier, plutôt que dans une configuration.",

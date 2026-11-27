@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-310 routes are reachable from at least one client; 178 from all three.
+312 routes are reachable from at least one client; 178 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -31,6 +31,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/ai/conversations/:x` | ✓ | · | · | — |
 | `DELETE /api/ai/conversations/:x/permanent` | ✓ | · | · | — |
 | `DELETE /api/ai/conversations/:x/sources/:x` | ✓ | · | · | — |
+| `DELETE /api/attachments/:x` | ✓ | · | · | — |
 | `DELETE /api/automations/:x` | ✓ | ✓ | ✓ | `exo_automation_delete` |
 | `DELETE /api/changesets/:x` | · | ✓ | ✓ | `exo_changeset_discard` |
 | `DELETE /api/changesets/:x/changes/:x` | · | ✓ | ✓ | `exo_changeset_remove_change` |
@@ -222,6 +223,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/agent-profiles/:x/duplicate` | ✓ | · | ✓ | `exo_agent_profile_duplicate` |
 | `POST /api/agent-sessions/:x/revert` | ✓ | · | · | — |
 | `POST /api/ai/conversations` | ✓ | · | · | — |
+| `POST /api/ai/conversations/:x/attachments` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/compact` | · | · | ✓ | `exo_chat_compact` |
 | `POST /api/ai/conversations/:x/messages` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/sources` | ✓ | · | · | — |
@@ -337,7 +339,7 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-78 of them. Each is covered by a documented exemption; the reasons
+80 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -345,6 +347,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `DELETE /api/ai/conversations/:x`
 - `DELETE /api/ai/conversations/:x/permanent`
 - `DELETE /api/ai/conversations/:x/sources/:x`
+- `DELETE /api/attachments/:x`
 - `DELETE /api/eval-cases/:x` (reachable from MCP)
 - `DELETE /api/eval-runs/:x` (reachable from MCP)
 - `DELETE /api/me/api-tokens/:x`
@@ -389,6 +392,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/agent-profiles/:x/duplicate` (reachable from MCP)
 - `POST /api/agent-sessions/:x/revert`
 - `POST /api/ai/conversations`
+- `POST /api/ai/conversations/:x/attachments`
 - `POST /api/ai/conversations/:x/messages`
 - `POST /api/ai/conversations/:x/sources`
 - `POST /api/ai/conversations/:x/to-page`
