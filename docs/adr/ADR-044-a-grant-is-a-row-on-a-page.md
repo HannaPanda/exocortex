@@ -169,3 +169,20 @@ addendum has only its hash, so its address can never be shown again; the
 contract says so with `tokenSealed: false`, and the browser offers a fresh link
 with the same scope beside it, leaving the old one live until somebody
 withdraws it. A deployment without the key keeps the old behaviour, hash only.
+
+## Addendum 2026-11-28: a grant can be walked as a tree
+
+Until now the tree and link resolution were membership questions
+(`requireScopedRole`), so the recipient of a `SUBTREE` grant held every page
+below the shared one and had no way to find them except a link on the page.
+Issue #327 widens exactly those two readers through `requireScopedReach`: a
+member is answered as before, a non-member with live grants in the workspace
+gets the pages those grants reach, `SUBTREE` resolved against the hierarchy on
+the request, `PAGE_ONLY` as the page alone, narrowed by a confined credential
+as everywhere. The role is `GUEST` whatever a grant allows, the trash is left
+out, and nothing above a shared page or beside it is in the set, so the tree's
+roots are the shared pages themselves and a branch asked for above a grant is
+refused like an unknown page. Search, settings and every other workspace
+question stay a member's: a set of pages is safe to hand over because it is
+cut at the grant, a full-text answer would have to be cut the same way and
+is not.

@@ -316,8 +316,10 @@ route anyway.
 consulted only by `WorkspaceAccessService`. Under a confinement, `findRole` and
 `requireRole` refuse outright (`token_scope_exceeded`): a route that answers
 about a whole workspace has no answer that stays inside one branch. The readers
-that _can_ narrow opt in — `requireScopedRole` for search, the tree, link
-resolution, the trash and filing suggestions, `requireRoleAnchoredAt` for
+that _can_ narrow opt in — `requireScopedRole` for search, the trash and
+filing suggestions, `requireScopedReach` for the tree and link resolution
+(which also answer a non-member with exactly the pages their grants reach,
+cut at the grant, issue #327), `requireRoleAnchoredAt` for
 creating under a parent or uploading onto a page, `visibleDocumentIds` for
 backlinks and related pages. A new workspace-wide route therefore costs a
 confined token a refusal, never a leak.
@@ -335,8 +337,8 @@ well as a narrowing; the collaboration server's re-authorization sweep already
 re-reads `findDocumentContext`, so a missed message costs at most 30 seconds.
 The grantee's own browser hears of it too (issue #232): the gateway sends
 `exocortex.grants.changed` with nothing but the workspace id to each of their
-sockets, and the navigation reads `GET /api/me/shares` again, so a withdrawn
-page leaves "Mit mir geteilt" while it is open.
+sockets, and the navigation reads `GET /api/me/shares` and every unfolded
+branch again, so a withdrawn page leaves "Mit mir geteilt" while it is open.
 
 **The built-in AI on a shared page is the reader again** (issue #234,
 [ADR-092](adr/ADR-092-a-shared-page-is-context-for-the-readers-own-chat.md)).

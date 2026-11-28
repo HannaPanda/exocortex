@@ -494,6 +494,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   consulted only there: `findRole` and `requireRole` fail closed for a confined
   credential, and the readers that can narrow opt in through
   `requireScopedRole`, `requireRoleAnchoredAt` and `visibleDocumentIds`.
+  The tree and link resolution also answer a non-member through
+  `requireScopedReach`: exactly the pages their grants reach, cut at the
+  grant, never above it or beside it (issue #327).
 - ADR-045: a transclusion stores a reference and no content, so the same
   paragraph is indexed once however many pages show it. A heading addresses its
   whole section; the fragment is read at read time through one route that runs

@@ -1005,9 +1005,19 @@
     "details": {
       "p1": "In ciascuna delle tue aree di lavoro, sotto l’albero delle pagine, dopo la ricerca e la mappa della conoscenza, si trova la sezione «Condivisi con me». Ogni voce indica la pagina condivisa e, sotto di essa, da chi proviene e da quale area di lavoro. Un clic la apre sotto /geteilt. Se nulla è stato condiviso con te, la sezione non compare affatto, evitando così di rimanere vuota in ogni barra laterale.",
       "p2": "All’interno di una pagina condivisa non ti trovi in nessuna delle tue aree di lavoro; per questo motivo, invece dell’albero delle pagine, la barra laterale mostra l’elenco delle pagine condivise con te e, sotto di esse, le tue aree di lavoro. Da lì puoi passare con un clic alla condivisione successiva o tornare alla tua area. Nella tavolozza dei comandi (Strg+K), «Apri condivisi con me» porta alle stesse pagine.",
-      "p3": "Viene mostrata solo la pagina condivisa, mai le pagine di livello superiore e mai i loro titoli. Se qualcuno revoca una condivisione, la voce scompare immediatamente dalla tua barra laterale, anche se è aperta in quel momento. Le pagine nel cestino dell’area di lavoro altrui non compaiono nella barra laterale, ma solo nell’elenco completo sotto «Condivisioni»."
+      "p3": "Viene mostrata la pagina condivisa e, nel caso di una condivisione con sottopagine, le pagine sottostanti, mai quelle sovrastanti né i loro titoli. Se qualcuno revoca una condivisione, la voce scompare immediatamente dalla tua barra laterale, anche se è aperta in quel momento. Le pagine nel cestino dell’area di lavoro altrui non compaiono nella barra laterale, ma solo nell’elenco completo sotto «Condivisioni»."
     },
     "where": "La barra laterale, sezione «Condivisi con me» sotto l’albero delle pagine; su una pagina condivisa, l’intera barra laterale. Nella tavolozza dei comandi, «Apri condivisi con me»."
+  },
+  "unterseiten-einer-freigabe": {
+    "title": "Espandere le sottopagine di una condivisione",
+    "summary": "Se qualcuno ha condiviso con te una pagina con tutte le relative sottopagine, puoi espanderla nella barra laterale come una struttura ad albero e raggiungere qualsiasi sottopagina in due clic. I link e le menzioni a queste sottopagine rimangono nella visualizzazione condivisa.",
+    "details": {
+      "p1": "Sotto «Condivisi con me», una condivisione con sottopagine presenta una freccia. Un clic su di essa mostra le pagine sottostanti, mentre un clic su una di esse la apre sotto /geteilt. Se apri una pagina condivisa, la barra laterale espande automaticamente il percorso per raggiungerla. Una condivisione limitata a una singola pagina non ha alcuna freccia, poiché non c’è nulla al di sotto per te.",
+      "p2": "L’albero inizia sempre dalla pagina condivisa. Ciò che si trova sopra o accanto non fa parte della condivisione e non compare da nessuna parte, nemmeno come titolo. Un link a una pagina, una menzione o un link a una sezione verso una pagina all’interno della condivisione ti fa proseguire nella visualizzazione condivisa; un link a una pagina esterna mostra solo che non ti è accessibile.",
+      "p3": "L’appartenenza di una pagina alla condivisione viene verificata rispetto alla gerarchia delle pagine a ogni consultazione. Se qualcuno sposta una sottopagina fuori dal ramo condiviso, questa diventa immediatamente inaccessibile per te. Se qualcuno revoca la condivisione, questa scompare insieme al suo albero dalla tua barra laterale, anche mentre è aperta. Tramite MCP, exo_page_tree legge lo stesso ramo usando l’ID dell’area di lavoro e la pagina condivisa come parentId."
+    },
+    "where": "La barra laterale, sezione «Condivisi con me»: la freccia davanti a una condivisione con sottopagine. Su una pagina condivisa, l’intera barra laterale."
   },
   "von-mir-geteilt": {
     "title": "Tutto ciò che ho condiviso, in un unico posto",

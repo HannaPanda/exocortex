@@ -120,6 +120,14 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/geteilt', '/geteilt/:x'] },
   }),
   defineFeature({
+    id: 'unterseiten-einer-freigabe',
+    area: 'veroeffentlichen',
+    since: '2026-11-28',
+    references: ['#327', 'ADR-044'],
+    ui: {},
+    claims: { screens: ['/geteilt/:x'] },
+  }),
+  defineFeature({
     id: 'von-mir-geteilt',
     area: 'veroeffentlichen',
     since: '2026-09-24',

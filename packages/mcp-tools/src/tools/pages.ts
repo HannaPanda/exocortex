@@ -82,7 +82,10 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
     'vollständige Liste: um sicher zu wissen, was unter einer Seite hängt, ruf das Tool mit ' +
     'deren parentId auf. Eine Datenbank steht mit ihrer Zeilenzahl statt mit ihren Zeilen da; ' +
     'die Zeilen liest exo_database_query, oder dieses Tool mit der Datenbank als parentId ' +
-    '(rows: "include" listet sie überall mit).',
+    '(rows: "include" listet sie überall mit). Wer kein Mitglied ist, aber Seiten des ' +
+    'Workspace geteilt bekam (exo_shared_with_me), sieht genau die Seiten seiner Freigaben: ' +
+    'bei einer Freigabe mit allem darunter den Zweig ab der geteilten Seite, nie etwas darüber ' +
+    'oder daneben.',
   inputSchema: z.object({ workspaceId: idSchema }).extend(documentTreeRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   domain: 'core',

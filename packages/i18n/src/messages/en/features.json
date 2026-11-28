@@ -1005,9 +1005,19 @@
     "details": {
       "p1": "In each of your workspaces, below the page tree, after search and the knowledge map, you will find the “Shared with me” section. Each entry displays the shared page and, below it, who shared it and from which workspace. Clicking it opens the page under /geteilt. If nothing has been shared with you, the section is omitted entirely so it does not sit empty in every sidebar.",
       "p2": "On a shared page itself, you are not inside any of your workspaces, so the sidebar there shows the list of pages shared with you instead of a page tree, followed by your own workspaces. From there, you can switch to the next share or back to your own workspace with a single click. In the command palette (Strg+K), “Open shared with me” leads to the same pages.",
-      "p3": "Only the page that was shared is shown, never the pages above it and never their titles. If someone revokes a share, the entry disappears from your sidebar immediately, even if it is currently open. Pages in the other workspace’s trash do not appear in the sidebar, only in the full list under “Shares”."
+      "p3": "What is shown is the page that was shared, and for a share with subpages, the pages beneath it—never the pages above it and never their titles. If someone revokes a share, the entry disappears immediately from your sidebar, even if it is currently open. Pages in the other workspace’s trash do not appear in the sidebar, only in the full list under “Shares”."
     },
     "where": "The sidebar, “Shared with me” section below the page tree; on a shared page, the entire sidebar. In the command palette, “Open shared with me”."
+  },
+  "unterseiten-einer-freigabe": {
+    "title": "Expand subpages of a share",
+    "summary": "If someone shared a page with all its subpages with you, you can expand it in the sidebar like a page tree and reach any subpage in two clicks. Links and mentions pointing to these subpages stay within the shared view.",
+    "details": {
+      "p1": "Under “Shared with me”, a share with subpages displays an arrow. Clicking it reveals the pages underneath, and clicking one of them opens it under /geteilt. When you open a shared page, the sidebar automatically expands the path leading there. A share for just a single page has no arrow, because there is nothing beneath it for you.",
+      "p2": "The tree always starts at the shared page. Whatever lies above it or next to it is not part of the share and appears nowhere, not even as a title. A page link, a mention, or a heading link to a page within the share takes you further within the shared view; a link to a page outside it merely shows that it is not accessible to you.",
+      "p3": "Whether a page belongs to the share is checked against the page hierarchy on every request. If someone moves a subpage out of the shared branch, it immediately becomes inaccessible to you. If someone revokes the share, it and its tree disappear from your sidebar, even while open. Via MCP, exo_page_tree reads the same branch using the workspace ID and the shared page as parentId."
+    },
+    "where": "The sidebar, “Shared with me” section: the arrow next to a share with subpages. On a shared page, the entire sidebar."
   },
   "von-mir-geteilt": {
     "title": "Everything I have shared, in one place",

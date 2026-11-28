@@ -1005,9 +1005,19 @@
     "details": {
       "p1": "W każdym z twoich obszarów roboczych pod drzewem stron, za wyszukiwarką i mapą wiedzy, znajduje się sekcja „Udostępnione dla mnie”. Każdy wpis wskazuje udostępnioną stronę, a poniżej – od kogo pochodzi i z jakiego obszaru roboczego. Kliknięcie otwiera ją pod /geteilt. Jeśli nic ci nie udostępniono, sekcja ta w ogóle się nie wyświetla, aby nie zajmować pustego miejsca na każdym pasku bocznym.",
       "p2": "Na samej udostępnionej stronie nie znajdujesz się w żadnym ze swoich obszarów roboczych, dlatego pasek boczny zamiast drzewa stron pokazuje listę stron udostępnionych dla ciebie, a pod nią twoje własne obszary robocze. Stamtąd jednym kliknięciem przejdziesz do kolejnego udostępnienia lub z powrotem do swojego obszaru. W palecie poleceń (Strg+K) opcja „Otwórz udostępnione dla mnie” prowadzi do tych samych stron.",
-      "p3": "Pokazywana jest wyłącznie ta strona, która została udostępniona – nigdy strony nadrzędne ani ich tytuły. Jeśli ktoś cofnie udostępnienie, wpis natychmiast znika z twojego paska bocznego, nawet jeśli jest on akurat otwarty. Strony znajdujące się w koszu cudzego obszaru roboczego nie pojawiają się na pasku bocznym, a jedynie na pełnej liście w sekcji „Udostępnienia”."
+      "p3": "Pokazywana jest strona, która została udostępniona, a w przypadku udostępnienia z podstronami także strony znajdujące się pod nią – nigdy strony nadrzędne ani ich tytuły. Jeśli ktoś wycofa udostępnienie, wpis natychmiast znika z twojego paska bocznego, nawet jeśli jest on akurat otwarty. Strony znajdujące się w koszu cudzego obszaru roboczego nie pojawiają się na pasku bocznym, a jedynie na pełnej liście w sekcji „Udostępnienia”."
     },
     "where": "Pasek boczny, sekcja „Udostępnione dla mnie” pod drzewem stron; na udostępnionej stronie cały pasek boczny. W palecie poleceń opcja „Otwórz udostępnione dla mnie”."
+  },
+  "unterseiten-einer-freigabe": {
+    "title": "Rozwijanie podstron udostępnienia",
+    "summary": "Jeśli ktoś udostępni ci stronę wraz ze wszystkimi podstronami, możesz rozwinąć ją na pasku bocznym jak drzewo stron i dotrzeć do każdej podstrony dwoma kliknięciami. Linki i wzmianki o tych podstronach pozostają w widoku udostępnionym.",
+    "details": {
+      "p1": "W sekcji „Udostępnione dla mnie” udostępnienie z podstronami ma strzałkę. Kliknięcie jej pokazuje strony poniżej, a kliknięcie jednej z nich otwiera ją pod adresem /geteilt. Gdy otwierasz udostępnioną stronę, pasek boczny sam rozwija ścieżkę do niej. Udostępnienie obejmujące tylko pojedynczą stronę nie ma strzałki, ponieważ pod nią nic dla ciebie nie ma.",
+      "p2": "Drzewo zaczyna się zawsze od udostępnionej strony. To, co znajduje się wyżej lub obok, nie należy do udostępnienia i nigdzie się nie pojawia, nawet jako tytuł. Link do strony, wzmianka lub link do sekcji prowadzący do strony w ramach udostępnienia kieruje cię dalej w widoku udostępnionym; link do strony poza nim informuje jedynie o braku dostępu.",
+      "p3": "To, czy strona należy do udostępnienia, jest sprawdzane w hierarchii stron przy każdym wywołaniu. Jeśli ktoś przeniesie podstronę poza udostępnioną gałąź, natychmiast traci się do niej dostęp. Jeśli ktoś wycofa udostępnienie, znika ono wraz z drzewem z twojego paska bocznego, nawet w trakcie przeglądania. Poprzez MCP narzędzie exo_page_tree odczytuje tę samą gałąź za pomocą identyfikatora obszaru roboczego i udostępnionej strony jako parentId."
+    },
+    "where": "Pasek boczny, sekcja „Udostępnione dla mnie”: strzałka przed udostępnieniem z podstronami. Na udostępnionej stronie cały pasek boczny."
   },
   "von-mir-geteilt": {
     "title": "Wszystko, co udostępniono przeze mnie, w jednym miejscu",

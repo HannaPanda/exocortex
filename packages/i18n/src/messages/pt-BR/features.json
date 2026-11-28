@@ -1005,9 +1005,19 @@
     "details": {
       "p1": "Em cada um dos seus espaços de trabalho, a seção „Compartilhadas comigo” fica abaixo da árvore de páginas, depois da busca e do mapa de conhecimento. Cada entrada mostra a página compartilhada e, logo abaixo, quem a compartilhou e de qual espaço de trabalho. Um clique a abre em /geteilt. Se nada tiver sido compartilhado com você, a seção simplesmente não aparece, para não ficar vazia em todas as barras laterais.",
       "p2": "Na própria página compartilhada, você não está em nenhum dos seus espaços de trabalho; por isso, a barra lateral mostra, em vez de uma árvore de páginas, a lista das páginas compartilhadas com você e, abaixo dela, os seus próprios espaços de trabalho. De lá, você chega com um clique ao próximo compartilhamento ou de volta ao seu espaço. Na paleta de comandos (Strg+K), a opção „Abrir compartilhadas comigo” leva a essas mesmas páginas.",
-      "p3": "Apenas a página compartilhada é mostrada, nunca as páginas acima dela e nunca os títulos delas. Se alguém revogar um compartilhamento, a entrada desaparece na hora da sua barra lateral, mesmo se ela estiver aberta no momento. Páginas na lixeira do outro espaço de trabalho não aparecem na barra lateral, apenas na lista completa em „Compartilhamentos”."
+      "p3": "É mostrada a página que foi compartilhada e, no caso de um compartilhamento com subpáginas, as páginas abaixo dela, nunca as páginas acima e nunca seus títulos. Se alguém revogar um compartilhamento, o item desaparece imediatamente da sua barra lateral, mesmo se ela estiver aberta no momento. Páginas na lixeira do outro espaço de trabalho não aparecem na barra lateral, apenas na lista completa em „Compartilhamentos”."
     },
     "where": "Na barra lateral, na seção „Compartilhadas comigo” abaixo da árvore de páginas; em uma página compartilhada, na barra lateral inteira. Na paleta de comandos, em „Abrir compartilhadas comigo”."
+  },
+  "unterseiten-einer-freigabe": {
+    "title": "Expandir subpáginas de um compartilhamento",
+    "summary": "Se alguém compartilhou uma página com todas as subpáginas com você, expanda-a na barra lateral como uma árvore de páginas e chegue a qualquer subpágina com dois cliques. Links e menções a essas subpáginas permanecem na visualização compartilhada.",
+    "details": {
+      "p1": "Em „Compartilhado comigo”, um compartilhamento com subpáginas tem uma seta. Um clique nela mostra as páginas abaixo; um clique em uma delas a abre em /geteilt. Se você abrir uma página compartilhada, a barra lateral expande automaticamente o caminho até ela. Um compartilhamento de apenas uma página individual não tem seta, pois não há nada abaixo dela para você.",
+      "p2": "A árvore sempre começa na página compartilhada. O que estiver acima e ao lado não faz parte do compartilhamento e não aparece em lugar nenhum, nem mesmo como título. Um link de página, menção ou link de seção para uma página dentro do compartilhamento leva você adiante na visualização compartilhada; um link para uma página fora apenas mostra que ela não está acessível para você.",
+      "p3": "Se uma página pertence ao compartilhamento é verificado novamente em relação à hierarquia de páginas a cada acesso. Se alguém mover uma subpágina para fora do ramo compartilhado, ela se tornará imediatamente inacessível para você. Se alguém revogar o compartilhamento, ele desaparecerá com toda a árvore da sua barra lateral, mesmo enquanto estiver aberto. Via MCP, exo_page_tree lê o mesmo ramo usando o identificador do espaço de trabalho e a página compartilhada como parentId."
+    },
+    "where": "A barra lateral, seção „Compartilhado comigo”: a seta na frente de um compartilhamento com subpáginas. Em uma página compartilhada, toda a barra lateral."
   },
   "von-mir-geteilt": {
     "title": "Tudo o que compartilhei em um só lugar",

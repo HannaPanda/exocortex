@@ -188,7 +188,9 @@ export const sharedWithMeTool: AnyToolDefinition = defineTool({
   description:
     'Listet Seiten, die andere mit diesem Konto geteilt haben, über alle Arbeitsbereiche ' +
     'hinweg. Diese Seiten tauchen in keinem Seitenbaum auf, weil das Konto dort kein Mitglied ' +
-    'ist; nur diese Liste führt zu ihnen.',
+    'ist; nur diese Liste führt zu ihnen. Was unter einer Freigabe mit allem darunter hängt, ' +
+    'liest exo_page_tree mit der workspaceId und der Seite als parentId; es nennt nur Seiten ' +
+    'innerhalb der Freigabe.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
   domain: 'shares',
@@ -205,7 +207,7 @@ export const sharedWithMeTool: AnyToolDefinition = defineTool({
     const lines = result.shares.map((share) => {
       const right = share.permission === 'WRITE' ? 'lesen und schreiben' : 'lesen';
       const reach = share.scope === 'SUBTREE' ? ' (mit allem darunter)' : '';
-      return `- ${share.document.title} (id: ${share.document.id}) aus „${share.workspaceName}", von ${share.sharedByName}, ${right}${reach}`;
+      return `- ${share.document.title} (id: ${share.document.id}) aus „${share.workspaceName}" (workspaceId: ${share.workspaceId}), von ${share.sharedByName}, ${right}${reach}`;
     });
     return { text: lines.join('\n'), data: result };
   },

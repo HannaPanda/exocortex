@@ -38,6 +38,12 @@ checklist rather than a paragraph. Pick the one that fits and the rest follows.
 3. **The route is about a whole workspace and can narrow its answer** (a search,
    a tree, a list). Use `requireScopedRole(workspaceId, userId)` and filter by
    `documentIds` — hits, counts _and_ paths, because a path is a list of titles.
+   A route whose whole answer is a set of pages (the tree, link resolution)
+   may use `requireScopedReach` instead: it answers a member exactly like
+   `requireScopedRole`, and a non-member with page grants with the pages those
+   grants reach, `SUBTREE` resolved live, `PAGE_ONLY` as the page alone
+   (`throughGrants: true`, role `GUEST`). Never for a search or anything that
+   reads text out of the workspace: that stays the member's (issue #327).
 4. **The route is about a whole workspace and cannot narrow** (settings, members,
    automations, anything administrative). Use `requireRole` or `findRole` and do
    nothing else. Both refuse a confined credential with `token_scope_exceeded`,
@@ -165,6 +171,19 @@ Two things to keep in mind when changing this feature:
   every socket of the grantee, subscribed or not, because a grantee is in no
   workspace room the ordinary drop could reach. A grant that simply expires
   sends nothing and leaves on the next read (returning to the tab reads again).
+- **A `SUBTREE` grant unfolds like a tree, and starts at the grant** (issue
+  #327). The entry carries a chevron; unfolded, it reads the branch through
+  the ordinary `GET /api/workspaces/:id/documents/tree?parentId=<shared page>`,
+  which for a recipient answers through `requireScopedReach`: the pages below
+  the shared page, never one above it or beside it, and no trash. `PAGE_ONLY`
+  has no chevron and its branch would be empty anyway. Opening a shared page
+  unfolds the way to it from its breadcrumb, which the API already cuts at the
+  grant. On `/geteilt/<id>` every page link (editor links, mentions, section
+  links, the breadcrumb, the overview, backlinks, database rows) is built by
+  `useDocumentHrefs()` from `lib/document-href-context.tsx` and leads to
+  `/geteilt/<id>`, so a click on a page of the same share stays in the shared
+  view; a link to a page outside it gets the same refusal there as anywhere.
+  `exocortex.grants.changed` also drops the cached branches.
 - **A shared row names its people, and lists nobody else.** A row answer
   carries the names of the accounts its Person and created-by cells name
   (`people`, issue #314), so a guest reads the same names a member does. The

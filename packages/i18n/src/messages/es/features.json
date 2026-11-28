@@ -1005,9 +1005,19 @@
     "details": {
       "p1": "En cada uno de tus espacios de trabajo, debajo del árbol de páginas y tras la búsqueda y el mapa de conocimiento, se encuentra la sección «Compartido conmigo». Cada entrada muestra la página compartida y, justo debajo, quién la comparte y de qué espacio de trabajo procede. Con un clic se abre en /geteilt. Si nadie ha compartido nada contigo, la sección no aparece en absoluto, para que no quede vacía en cada barra lateral.",
       "p2": "Al estar dentro de una página compartida, no te encuentras en ninguno de tus espacios de trabajo; por eso, la barra lateral muestra allí la lista de páginas compartidas contigo en lugar de un árbol de páginas, y debajo tus propios espacios de trabajo. Desde ahí puedes saltar con un clic al siguiente contenido compartido o volver a tu espacio. En la paleta de comandos (Strg+K), la acción «Abrir compartido conmigo» te lleva a estas mismas páginas.",
-      "p3": "Solo se muestra la página que se ha compartido, nunca las páginas superiores ni sus títulos. Si alguien retira el acceso compartido, la entrada desaparece al instante de tu barra lateral, incluso si está abierta en ese momento. Las páginas en la papelera del espacio de trabajo ajeno no aparecen en la barra lateral, solo en la lista completa bajo «Uso compartido»."
+      "p3": "Se muestra la página compartida y, en un uso compartido con subpáginas, las páginas que cuelgan de ella; nunca las páginas superiores ni sus títulos. Si alguien retira el uso compartido, la entrada desaparece al instante de tu barra lateral, incluso si está abierta en ese momento. Las páginas en la papelera del espacio de trabajo ajeno no aparecen en la barra lateral, solo en la lista completa bajo «Compartido»."
     },
     "where": "En la barra lateral, en la sección «Compartido conmigo» bajo el árbol de páginas; al estar en una página compartida, ocupa toda la barra lateral. En la paleta de comandos, con «Abrir compartido conmigo»."
+  },
+  "unterseiten-einer-freigabe": {
+    "title": "Desplegar subpáginas de un elemento compartido",
+    "summary": "Si alguien te ha compartido una página con todas sus subpáginas, puedes desplegarla en la barra lateral como un árbol de páginas y acceder a cualquier subpágina con dos clics. Los enlaces y menciones a estas subpáginas se mantienen dentro de la vista compartida.",
+    "details": {
+      "p1": "En «Compartido conmigo», un elemento compartido con subpáginas muestra una flecha. Un clic en ella revela las páginas inferiores, y un clic en cualquiera de ellas la abre bajo /geteilt. Si abres una página compartida, la barra lateral despliega automáticamente la ruta hasta ella. Un uso compartido de una sola página no tiene flecha, ya que no hay nada por debajo para ti.",
+      "p2": "El árbol empieza siempre en la página compartida. Lo que esté por encima o al lado no forma parte del uso compartido y no aparece en ningún sitio, ni siquiera como título. Un enlace a una página, una mención o un enlace a una sección dentro del uso compartido te lleva a ella en la vista compartida; un enlace a una página externa solo muestra que no tienes acceso a ella.",
+      "p3": "Cada vez que se accede a una página, se comprueba de nuevo en la jerarquía si forma parte del uso compartido. Si alguien mueve una subpágina fuera de la rama compartida, dejará de estar disponible para ti de inmediato. Si alguien retira el uso compartido, desaparecerá junto con su árbol de tu barra lateral, incluso mientras esté abierta. Mediante MCP, exo_page_tree lee la misma rama usando el identificador del espacio de trabajo y la página compartida como parentId."
+    },
+    "where": "La barra lateral, sección «Compartido conmigo»: la flecha delante de un elemento compartido con subpáginas. En una página compartida, toda la barra lateral."
   },
   "von-mir-geteilt": {
     "title": "Todo lo compartido por mí en un solo lugar",

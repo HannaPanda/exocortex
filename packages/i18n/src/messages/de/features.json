@@ -1005,9 +1005,19 @@
     "details": {
       "p1": "In jedem deiner Arbeitsbereiche steht unter dem Seitenbaum, nach Suche und Wissenskarte, der Abschnitt „Mit mir geteilt“. Jeder Eintrag nennt die geteilte Seite und darunter, von wem sie kommt und aus welchem Arbeitsbereich. Ein Klick öffnet sie unter /geteilt. Ist nichts mit dir geteilt, fehlt der Abschnitt ganz, damit er nicht in jeder Seitenleiste leer herumsteht.",
       "p2": "Auf einer geteilten Seite selbst bist du in keinem deiner Arbeitsbereiche, deshalb zeigt die Seitenleiste dort statt eines Seitenbaums die Liste der mit dir geteilten Seiten und darunter deine eigenen Arbeitsbereiche. Von dort kommst du mit einem Klick zur nächsten Freigabe oder zurück in deinen Bereich. In der Befehlspalette (Strg+K) führt „Mit mir geteilt öffnen“ zu denselben Seiten.",
-      "p3": "Gezeigt wird nur die Seite, die geteilt wurde, nie die Seiten darüber und nie ihre Titel. Zieht jemand eine Freigabe zurück, verschwindet der Eintrag sofort aus deiner Seitenleiste, auch wenn sie gerade offen ist. Seiten im Papierkorb des fremden Arbeitsbereichs stehen nicht in der Seitenleiste, nur in der vollständigen Liste unter „Freigaben“."
+      "p3": "Gezeigt wird die Seite, die geteilt wurde, und bei einer Freigabe mit Unterseiten die Seiten darunter, nie die Seiten darüber und nie ihre Titel. Zieht jemand eine Freigabe zurück, verschwindet der Eintrag sofort aus deiner Seitenleiste, auch wenn sie gerade offen ist. Seiten im Papierkorb des fremden Arbeitsbereichs stehen nicht in der Seitenleiste, nur in der vollständigen Liste unter „Freigaben“."
     },
     "where": "Die Seitenleiste, Abschnitt „Mit mir geteilt“ unter dem Seitenbaum; auf einer geteilten Seite die ganze Seitenleiste. In der Befehlspalette „Mit mir geteilt öffnen“."
+  },
+  "unterseiten-einer-freigabe": {
+    "title": "Unterseiten einer Freigabe aufklappen",
+    "summary": "Hat dir jemand eine Seite mit allen Unterseiten geteilt, klappst du sie in der Seitenleiste auf wie einen Seitenbaum und kommst mit zwei Klicks zu jeder Unterseite. Links und Erwähnungen auf diese Unterseiten bleiben in der geteilten Ansicht.",
+    "details": {
+      "p1": "Unter „Mit mir geteilt“ trägt eine Freigabe mit Unterseiten einen Pfeil. Ein Klick darauf zeigt die Seiten darunter, ein Klick auf eine von ihnen öffnet sie unter /geteilt. Öffnest du eine geteilte Seite, klappt die Seitenleiste den Weg dorthin von selbst auf. Eine Freigabe nur für eine einzelne Seite hat keinen Pfeil, weil es darunter für dich nichts gibt.",
+      "p2": "Der Baum beginnt immer bei der geteilten Seite. Was darüber liegt und was daneben liegt, gehört nicht zur Freigabe und taucht nirgends auf, auch nicht als Titel. Ein Seitenlink, eine Erwähnung oder ein Abschnittslink auf eine Seite innerhalb der Freigabe führt dich in der geteilten Ansicht weiter; ein Link auf eine Seite außerhalb zeigt nur, dass sie dir nicht zugänglich ist.",
+      "p3": "Ob eine Seite zur Freigabe gehört, wird bei jedem Aufruf neu gegen die Seitenhierarchie geprüft. Verschiebt jemand eine Unterseite aus dem geteilten Zweig heraus, ist sie für dich sofort nicht mehr erreichbar. Zieht jemand die Freigabe zurück, verschwindet sie samt Baum aus deiner Seitenleiste, auch während sie offen ist. Über MCP liest exo_page_tree mit der Arbeitsbereichs-Kennung und der geteilten Seite als parentId denselben Zweig."
+    },
+    "where": "Die Seitenleiste, Abschnitt „Mit mir geteilt“: der Pfeil vor einer Freigabe mit Unterseiten. Auf einer geteilten Seite die ganze Seitenleiste."
   },
   "von-mir-geteilt": {
     "title": "Alles, was ich geteilt habe, an einer Stelle",

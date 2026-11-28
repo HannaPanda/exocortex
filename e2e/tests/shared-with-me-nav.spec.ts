@@ -80,6 +80,9 @@ test.describe('shared with me in the navigation', () => {
     // Where it came from, and nothing about what it sits under.
     await expect(section).not.toContainText(parentTitle);
 
+    // A page shared on its own has nothing to unfold.
+    await expect(entry.getByTestId('shared-with-me-toggle')).toHaveCount(0);
+
     await entry.getByRole('link').click();
     await page.waitForURL(`**/geteilt/${documentId}`);
 
@@ -100,5 +103,76 @@ test.describe('shared with me in the navigation', () => {
     await expect(sidebar.getByTestId(`shared-with-me-${documentId}`)).toHaveCount(0, {
       timeout: 20_000,
     });
+  });
+
+  test('unfolds a shared branch, stays in the shared view, and folds it away when withdrawn', async ({
+    page,
+  }) => {
+    const suffix = Date.now().toString(36);
+    const aboveTitle = `Darüber ${suffix}`;
+    const besideTitle = `Daneben ${suffix}`;
+    const rootTitle = `Zweig ${suffix}`;
+    const childTitle = `Kind ${suffix}`;
+    const grandchildTitle = `Enkel ${suffix}`;
+    const aboveId = await createDocument(aboveTitle);
+    await createDocument(besideTitle, aboveId);
+    const rootId = await createDocument(rootTitle, aboveId);
+    const childId = await createDocument(childTitle, rootId);
+    const grandchildId = await createDocument(grandchildTitle, childId);
+    const written = await sharer.post(`${origin}/api/documents/${rootId}/content`, {
+      headers: { origin },
+      data: { markdown: `Weiter zu [[${childTitle}]].`, mode: 'replace' },
+    });
+    expect(written.ok(), await written.text()).toBe(true);
+    const shareId = await shareWithStefan(rootId, 'SUBTREE');
+
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[^/]+$/);
+    const sidebar = page.getByTestId('sidebar');
+    const entry = sidebar.getByTestId(`shared-with-me-${rootId}`);
+    await expect(entry).toContainText(rootTitle);
+
+    // Two clicks from the sidebar to a page below the shared one.
+    await entry.getByTestId('shared-with-me-toggle').first().click();
+    const child = entry.getByTestId(`shared-branch-${childId}`);
+    await expect(child).toContainText(childTitle);
+    await child.getByRole('link', { name: childTitle }).click();
+    await page.waitForURL(`**/geteilt/${childId}`);
+
+    // The shared view draws the branch from the shared page down, with the
+    // open page marked and the way to it unfolded; nothing above or beside.
+    const branchEntry = sidebar.getByTestId(`shared-with-me-${rootId}`);
+    await expect(
+      branchEntry.getByTestId(`shared-branch-${childId}`).getByRole('link', { name: childTitle }),
+    ).toHaveAttribute('aria-current', 'page');
+    await expect(branchEntry.getByTestId(`shared-branch-${grandchildId}`)).toContainText(
+      grandchildTitle,
+    );
+    await expect(sidebar).not.toContainText(aboveTitle);
+    await expect(sidebar).not.toContainText(besideTitle);
+    await expect(page.locator('body')).not.toContainText(aboveTitle);
+
+    // A link on the shared page to a page of the same share stays in the
+    // shared view.
+    await page.goto(`/geteilt/${rootId}`);
+    const link = page.getByTestId('editor-surface').getByRole('link', { name: childTitle });
+    await expect(link).toHaveAttribute('href', `/geteilt/${childId}`);
+    await link.click();
+    await page.waitForURL(`**/geteilt/${childId}`);
+
+    // Withdrawn while open: the entry and its branch leave without a reload,
+    // and the branch is no longer answered.
+    const revoked = await sharer.delete(`${origin}/api/shares/${shareId}`, {
+      headers: { origin },
+    });
+    expect(revoked.ok(), await revoked.text()).toBe(true);
+    await expect(sidebar.getByTestId(`shared-with-me-${rootId}`)).toHaveCount(0, {
+      timeout: 20_000,
+    });
+    await expect(sidebar.getByTestId(`shared-branch-${childId}`)).toHaveCount(0);
+    const tree = await page.request.get(
+      `/api/workspaces/${workspaceId}/documents/tree?parentId=${rootId}`,
+    );
+    expect(tree.status()).toBe(403);
   });
 });

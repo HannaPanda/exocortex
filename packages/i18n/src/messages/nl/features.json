@@ -1005,9 +1005,19 @@
     "details": {
       "p1": "In elk van je werkruimtes staat onder de paginaboom, na zoeken en de kenniskaart, het gedeelte „Met mij gedeeld”. Elk item toont de gedeelde pagina en daaronder van wie deze afkomstig is en uit welke werkruimte. Eén klik opent de pagina onder /geteilt. Als er niets met je is gedeeld, ontbreekt het gedeelte helemaal, zodat het niet leeg in elke zijbalk blijft staan.",
       "p2": "Op een gedeelde pagina zelf bevind je je in geen van je werkruimtes; daarom toont de zijbalk daar in plaats van een paginaboom de lijst met pagina’s die met jou zijn gedeeld en daaronder je eigen werkruimtes. Van daaruit ga je met één klik naar de volgende deling of terug naar je eigen omgeving. In het opdrachtpalet (Strg+K) leidt „Met mij gedeeld openen” naar dezelfde pagina’s.",
-      "p3": "Alleen de pagina die is gedeeld wordt getoond, nooit de bovenliggende pagina’s en nooit hun titels. Als iemand een deling intrekt, verdwijnt het item meteen uit je zijbalk, zelfs als deze op dat moment openstaat. Pagina’s in de prullenbak van de andere werkruimte staan niet in de zijbalk, maar alleen in de volledige lijst onder „Delingen”."
+      "p3": "Er wordt de pagina getoond die is gedeeld, en bij een deling met subpagina’s de pagina’s daaronder, nooit de pagina’s daarboven en nooit hun titels. Trekt iemand een deling in, dan verdwijnt het item meteen uit je zijbalk, zelfs als deze op dat moment geopend is. Pagina’s in de prullenbak van de andere werkruimte staan niet in de zijbalk, alleen in de volledige lijst onder „Delingen”."
     },
     "where": "De zijbalk, gedeelte „Met mij gedeeld” onder de paginaboom; op een gedeelde pagina de hele zijbalk. In het opdrachtpalet „Met mij gedeeld openen”."
+  },
+  "unterseiten-einer-freigabe": {
+    "title": "Subpagina’s van een deling uitklappen",
+    "summary": "Heeft iemand een pagina inclusief alle subpagina’s met je gedeeld, dan klap je deze in de zijbalk uit als een paginaboom en bereik je elke subpagina met twee klikken. Links en vermeldingen naar deze subpagina’s blijven in de gedeelde weergave.",
+    "details": {
+      "p1": "Onder „Gedeeld met mij” heeft een deling met subpagina’s een pijl. Een klik daarop toont de pagina’s daaronder, een klik op een van die pagina’s opent deze onder /geteilt. Open je een gedeelde pagina, dan klapt de zijbalk het pad ernaartoe automatisch uit. Een deling van slechts een enkele pagina heeft geen pijl, omdat er voor jou niets onder ligt.",
+      "p2": "De boom begint altijd bij de gedeelde pagina. Wat erboven ligt en wat ernaast ligt, hoort niet bij de deling en verschijnt nergens, ook niet als titel. Een paginalink, vermelding of sectielink naar een pagina binnen de deling brengt je verder in de gedeelde weergave; een link naar een pagina daarbuiten laat alleen zien dat deze niet voor jou toegankelijk is.",
+      "p3": "Of een pagina bij de deling hoort, wordt bij elk bezoek opnieuw gecontroleerd aan de hand van de paginahiërarchie. Verplaatst iemand een subpagina uit de gedeelde vertakking, dan is deze voor jou meteen niet meer bereikbaar. Trekt iemand de deling in, dan verdwijnt deze inclusief boom uit je zijbalk, zelfs als hij op dat moment openstaat. Via MCP leest exo_page_tree met de werkruimte-ID en de gedeelde pagina als parentId dezelfde vertakking."
+    },
+    "where": "De zijbalk, sectie „Gedeeld met mij”: de pijl voor een deling met subpagina’s. Op een gedeelde pagina de hele zijbalk."
   },
   "von-mir-geteilt": {
     "title": "Alles wat ik heb gedeeld op één plek",

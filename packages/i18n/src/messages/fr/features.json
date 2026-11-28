@@ -1005,9 +1005,19 @@
     "details": {
       "p1": "Dans chacun de tes espaces de travail, la section « Partagé avec moi » se trouve sous l’arborescence des pages, après la recherche et la carte de connaissances. Chaque entrée indique la page partagée et, en dessous, qui l’a partagée ainsi que l’espace de travail d’origine. Un clic l’ouvre sous /geteilt. Si rien n’est partagé avec toi, la section n’apparaît pas du tout afin de ne pas encombrer inutilement chaque barre latérale.",
       "p2": "Sur une page partagée elle-même, tu ne te trouves dans aucun de tes espaces de travail ; c’est pourquoi la barre latérale y affiche la liste des pages partagées avec toi à la place de l’arborescence des pages, et tes propres espaces de travail en dessous. De là, un simple clic te mène au partage suivant ou te ramène dans ton espace. Dans la palette de commandes (Strg+K), « Ouvrir Partagé avec moi » mène aux mêmes pages.",
-      "p3": "Seule la page qui a été partagée s’affiche, jamais les pages situées au-dessus ni leurs titres. Si quelqu’un révoque un partage, l’entrée disparaît immédiatement de ta barre latérale, même si celle-ci est ouverte à ce moment-là. Les pages placées dans la corbeille de l’autre espace de travail n’apparaissent pas dans la barre latérale, mais uniquement dans la liste complète sous « Partages »."
+      "p3": "La page partagée s’affiche et, pour un partage avec des sous-pages, les pages situées en dessous, jamais les pages situées au-dessus ni leurs titres. Si quelqu’un retire un partage, l’entrée disparaît immédiatement de ta barre latérale, même si elle est actuellement ouverte. Les pages situées dans la corbeille de l’autre espace de travail n’apparaissent pas dans la barre latérale, mais uniquement dans la liste complète sous « Partages »."
     },
     "where": "La barre latérale, section « Partagé avec moi » sous l’arborescence des pages ; sur une page partagée, toute la barre latérale. Dans la palette de commandes, « Ouvrir Partagé avec moi »."
+  },
+  "unterseiten-einer-freigabe": {
+    "title": "Développer les sous-pages d’un partage",
+    "summary": "Si quelqu’un a partagé une page avec toutes ses sous-pages, tu peux la développer dans la barre latérale comme une arborescence de pages et accéder à chaque sous-page en deux clics. Les liens et mentions vers ces sous-pages restent dans la vue partagée.",
+    "details": {
+      "p1": "Sous « Partagé avec moi », un partage avec des sous-pages porte une flèche. Un clic dessus affiche les pages situées en dessous, un clic sur l’une d’elles l’ouvre sous /geteilt. Si tu ouvres une page partagée, la barre latérale développe automatiquement le chemin jusqu’à elle. Un partage limité à une seule page n’a pas de flèche, car il n’y a rien d’accessible pour toi en dessous.",
+      "p2": "L’arborescence commence toujours par la page partagée. Ce qui se trouve au-dessus et à côté ne fait pas partie du partage et n’apparaît nulle part, pas même sous forme de titre. Un lien de page, une mention ou un lien de section vers une page au sein du partage te permet de continuer dans la vue partagée ; un lien vers une page située en dehors t’indique seulement qu’elle ne t’est pas accessible.",
+      "p3": "L’appartenance d’une page au partage est revérifiée par rapport à la hiérarchie des pages à chaque consultation. Si quelqu’un déplace une sous-page hors de la branche partagée, elle ne t’est plus immédiatement accessible. Si quelqu’un révoque le partage, elle disparaît de ta barre latérale avec toute son arborescence, même pendant que tu la consultes. Via MCP, exo_page_tree lit la même branche avec l’identifiant de l’espace de travail et la page partagée comme parentId."
+    },
+    "where": "La barre latérale, section « Partagé avec moi » : la flèche devant un partage avec des sous-pages. Sur une page partagée, toute la barre latérale."
   },
   "von-mir-geteilt": {
     "title": "Tout ce que j’ai partagé, au même endroit",
