@@ -36,6 +36,7 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
 
 import {
   HOW_TO_LINK_A_SECTION,
+  HOW_TO_PLACE_A_TABLE_OF_CONTENTS,
   PAGE_EDIT_TOOLS,
   WHERE_THE_REVISION_COMES_FROM,
 } from './page-edits.js';
@@ -366,8 +367,7 @@ const WRITE_MARKDOWN_DESCRIPTION =
   'mit diesem Titel, sodass der Verweis ein späteres Umbenennen dieser Seite übersteht. ' +
   'Ein Titel, den es noch nicht gibt, bleibt als unaufgelöster Verweis stehen und bietet in ' +
   'der Oberfläche an, die Seite anzulegen. ' +
-  HOW_TO_LINK_A_SECTION +
-  ' ' +
+  `${HOW_TO_LINK_A_SECTION} ${HOW_TO_PLACE_A_TABLE_OF_CONTENTS} ` +
   // The callout's notation (issue #306): an agent writes the same box a
   // person makes, symbol and colour included.
   'Ein Hinweiskasten ist ein Zitat mit Kopfzeile: "> [!warning] ⚠️ Achtung", der Inhalt in ' +

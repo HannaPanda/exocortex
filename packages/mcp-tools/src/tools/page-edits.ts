@@ -64,6 +64,14 @@ export const HOW_TO_LINK_A_SECTION =
   'Text der Überschrift ableiten oder erfinden. [[#Überschrift]] ist hier kein Abschnittslink, ' +
   'sondern ein Verweis auf eine Seite dieses Namens, und bleibt unaufgelöst.';
 
+/**
+ * How an agent places the table of contents (issue #228): a marker, because
+ * its entries are derived from the headings and a written-out list goes stale.
+ */
+export const HOW_TO_PLACE_A_TABLE_OF_CONTENTS =
+  'Ein Inhaltsverzeichnis ist die Zeile ":::toc" mit einer Zeile ":::" darunter; es zeigt die ' +
+  'Überschriften der Seite und folgt ihnen von selbst, also keine Einträge hineinschreiben.';
+
 /** The one sentence that says where the addresses come from. */
 const WHERE_BLOCK_IDS_COME_FROM =
   'Blockkennungen kommen aus exo_page_block_read (ohne blockId listet es alle Blöcke der Seite) ' +
