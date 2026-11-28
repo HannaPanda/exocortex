@@ -208,11 +208,20 @@ test.describe('room past the end of the page on a phone (issue #281)', () => {
         visualViewport: object;
         innerHeight: number;
       };
-      Object.defineProperty(browser.visualViewport, 'height', {
+      const viewport = browser.visualViewport as {
+        dispatchEvent: (event: unknown) => void;
+      };
+      Object.defineProperty(viewport, 'height', {
         configurable: true,
         get: () => browser.innerHeight - keyboard,
       });
+      const { Event } = globalThis as unknown as { Event: new (type: string) => unknown };
+      viewport.dispatchEvent(new Event('resize'));
     }, KEYBOARD);
+    // The space past the end grows by what the keyboard covers.
+    await expect
+      .poll(async () => (await geometry(page)).padding)
+      .toBeGreaterThan(PHONE.height / 2 - 80 + KEYBOARD - 20);
     const start = await geometry(page);
     expect(start.visualBottom).toBe(PHONE.height - KEYBOARD);
     // The line being written in sits right above the keyboard.

@@ -186,10 +186,15 @@
      padding, so a click into it is a click below the last block and opens
      that line. Screen only: a printed page ends with its text. A page that is
      only read keeps its length, as the trailing line does, and a
-     transclusion's editor is not the canvas. */
+     transclusion's editor is not the canvas. On a phone the on-screen
+     keyboard covers the bottom of the page without shortening it, so the
+     space grows by what it covers (`--keyboard-inset`, set by the editor). */
   @media screen {
     .exocortex-editor .ProseMirror.exocortex-editor-canvas[contenteditable='true'] {
-      padding-block-end: max(calc(var(--spacing) * 3 + 1lh), calc(50dvh - 5rem));
+      padding-block-end: max(
+        calc(var(--spacing) * 3 + 1lh),
+        calc(50dvh - 5rem + var(--keyboard-inset, 0px))
+      );
     }
   }
 

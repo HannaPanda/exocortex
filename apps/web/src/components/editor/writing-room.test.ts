@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { buildEditorExtensions } from '@exocortex/editor';
 
-import { bottomRoom, WritingRoom } from './writing-room';
+import { bottomRoom, coveredBelow, WritingRoom } from './writing-room';
 
 /**
  * Issue #281: the line being written in stays off the bottom edge, and on a
@@ -37,6 +37,15 @@ describe('bottomRoom', () => {
 
   it('never asks for more than half of what is still visible', () => {
     expect(bottomRoom({ top: 0, bottom: 844 }, { top: 0, bottom: 60 })).toBe(784 + 30);
+  });
+});
+
+describe('coveredBelow', () => {
+  it('is what the keyboard hides of the scroller, and nothing without one', () => {
+    expect(coveredBelow({ top: 48, bottom: 844 }, { top: 0, bottom: 500 })).toBe(344);
+    expect(coveredBelow({ top: 48, bottom: 844 }, { top: 0, bottom: 844 })).toBe(0);
+    // A scroller that ends above the visual viewport's bottom: nothing hidden.
+    expect(coveredBelow({ top: 48, bottom: 400 }, { top: 0, bottom: 500 })).toBe(0);
   });
 });
 

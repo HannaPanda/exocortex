@@ -540,7 +540,10 @@ screen`), so a printed page ends with its text; a page that is only read
   on-screen keyboard: it shrinks only the visual viewport, so without it a
   line made with `Enter` was scrolled into view behind the keyboard. The value
   is a getter on the prop object, read each time ProseMirror scrolls, so no
-  listener and no scroll code of our own is involved.
+  scroll code of our own is involved. The space past the end grows by the
+  same covered part (`--keyboard-inset` on the editor, set on a resize of the
+  visual viewport), because half a phone screen is less than the keyboard and
+  the air above it together.
 
 Covered by `writing-room.test.ts` and `e2e/tests/writing-room.spec.ts`
 (desktop, print, an archived page, and a phone with a simulated keyboard).

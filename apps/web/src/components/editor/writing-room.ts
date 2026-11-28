@@ -26,7 +26,9 @@ import { type EditorView } from '@tiptap/pm/view';
  * on-screen keyboard covers the bottom of the page without making the scroll
  * container any shorter (only the visual viewport shrinks), so the part it
  * covers is added to the margin. Without that a new line made with `Enter`
- * would be scrolled into view behind the keyboard.
+ * would be scrolled into view behind the keyboard. The same amount is added
+ * to the space past the end (`--keyboard-inset`), because half a phone screen
+ * is less than the keyboard and the air above it together.
  */
 export const writingRoomKey = new PluginKey('writingRoom');
 
@@ -43,6 +45,17 @@ export interface VerticalSpan {
   bottom: number;
 }
 
+/** The custom property the space past the end grows by (`globals.css`). */
+export const KEYBOARD_INSET_PROPERTY = '--keyboard-inset';
+
+/**
+ * How much of the bottom of the scroll container the visual viewport does not
+ * show: the on-screen keyboard. All values in client pixels.
+ */
+export function coveredBelow(scroller: VerticalSpan, visual: VerticalSpan): number {
+  return Math.max(0, Math.round(scroller.bottom - Math.min(scroller.bottom, visual.bottom)));
+}
+
 /**
  * How far above the bottom edge of the scroll container the caret is kept:
  * the part of the container the visual viewport does not show (the on-screen
@@ -51,7 +64,7 @@ export interface VerticalSpan {
 export function bottomRoom(scroller: VerticalSpan, visual: VerticalSpan): number {
   const visibleBottom = Math.min(scroller.bottom, visual.bottom);
   const visibleTop = Math.max(scroller.top, visual.top);
-  const covered = Math.max(0, scroller.bottom - visibleBottom);
+  const covered = coveredBelow(scroller, visual);
   const visible = Math.max(0, visibleBottom - visibleTop);
   const comfort = Math.min(COMFORT_MAX_PX, Math.max(COMFORT_MIN_PX, visible * COMFORT_SHARE));
   // Never more than half of what is visible: with nothing left to show the
@@ -62,10 +75,11 @@ export function bottomRoom(scroller: VerticalSpan, visual: VerticalSpan): number
   );
 }
 
-function measuredRoom(view: EditorView): number {
-  if (view.isDestroyed) return DEFAULT_MARGIN_PX;
+/** The scroll container and the visual viewport, measured now. */
+function measure(view: EditorView): { scroller: VerticalSpan; visual: VerticalSpan } | null {
+  if (view.isDestroyed) return null;
   const scroller = view.dom.closest<HTMLElement>('.exocortex-page-scroll');
-  if (scroller === null) return DEFAULT_MARGIN_PX;
+  if (scroller === null) return null;
   const rect = scroller.getBoundingClientRect();
   // Absent rather than null where it is not implemented (jsdom among them).
   const viewport = window.visualViewport;
@@ -73,7 +87,12 @@ function measuredRoom(view: EditorView): number {
     viewport == null
       ? { top: 0, bottom: window.innerHeight }
       : { top: viewport.offsetTop, bottom: viewport.offsetTop + viewport.height };
-  return bottomRoom({ top: rect.top, bottom: rect.bottom }, visual);
+  return { scroller: { top: rect.top, bottom: rect.bottom }, visual };
+}
+
+function measuredRoom(view: EditorView): number {
+  const measured = measure(view);
+  return measured === null ? DEFAULT_MARGIN_PX : bottomRoom(measured.scroller, measured.visual);
 }
 
 export const WritingRoom = Extension.create({
@@ -106,9 +125,37 @@ export const WritingRoom = Extension.create({
         key: writingRoomKey,
         view: (editorView) => {
           view = editorView;
+          // The space past the end grows by what the keyboard covers, or the
+          // view would run out of page before the caret is clear of it. Set
+          // as a custom property on the editor, which no ProseMirror prop
+          // styles; measured once per frame at most, and only on a change of
+          // the visual viewport or the window.
+          let frame: number | null = null;
+          let inset = 0;
+          const apply = (): void => {
+            frame = null;
+            const measured = measure(editorView);
+            const next = measured === null ? 0 : coveredBelow(measured.scroller, measured.visual);
+            if (next === inset) return;
+            inset = next;
+            if (next === 0) editorView.dom.style.removeProperty(KEYBOARD_INSET_PROPERTY);
+            else editorView.dom.style.setProperty(KEYBOARD_INSET_PROPERTY, `${String(next)}px`);
+          };
+          const schedule = (): void => {
+            if (frame === null) frame = window.requestAnimationFrame(apply);
+          };
+          const viewport = window.visualViewport;
+          viewport?.addEventListener('resize', schedule);
+          viewport?.addEventListener('scroll', schedule);
+          window.addEventListener('resize', schedule);
           return {
             destroy: () => {
               view = null;
+              if (frame !== null) window.cancelAnimationFrame(frame);
+              viewport?.removeEventListener('resize', schedule);
+              viewport?.removeEventListener('scroll', schedule);
+              window.removeEventListener('resize', schedule);
+              editorView.dom.style.removeProperty(KEYBOARD_INSET_PROPERTY);
             },
           };
         },
