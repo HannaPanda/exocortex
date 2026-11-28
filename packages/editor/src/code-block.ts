@@ -1,3 +1,4 @@
+import { type Command, InputRule } from '@tiptap/core';
 import { CodeBlock } from '@tiptap/extension-code-block';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import css from 'highlight.js/lib/languages/css';
@@ -19,8 +20,10 @@ import xml from 'highlight.js/lib/languages/xml';
 import yaml from 'highlight.js/lib/languages/yaml';
 import { createLowlight } from 'lowlight';
 
+import { placeCodeBlock, planCodeBlock } from './code-block-placement';
 import { looksLikeSession, shellScript, terminalSession } from './code-grammars';
 import { codeHighlightPlugin, type HighlightSpan } from './code-highlight';
+import { isListItemNode } from './list-split';
 
 /**
  * Syntax highlighting for code blocks.
@@ -175,6 +178,16 @@ export function highlightSpans(code: string, language: unknown): readonly Highli
 }
 
 /**
+ * A fence (```, optionally with a language, or ~~~) typed at the start of a
+ * line. Upstream's rule only matched at the start of a text block and only
+ * where that block may turn into a code block, so it never fired in a list
+ * item, nor on a fresh line after `Umschalt+Enter` (issue #318). Here the line
+ * may also start after a line break, and the code block goes where
+ * `placeCodeBlock` puts it.
+ */
+const CODE_FENCE = /(?:```|~~~)([a-z]+)?[\s\n]$/;
+
+/**
  * The code block, replacing the plain one from `@tiptap/extension-code-block`.
  *
  * `exitOnTripleEnter` is off and `exitOnArrowDown` is on: in a code block an empty
@@ -186,6 +199,89 @@ export function highlightSpans(code: string, language: unknown): readonly Highli
  * block without one and kept stale colours after a language change (#317).
  */
 export const ExocortexCodeBlock = CodeBlock.extend({
+  /**
+   * `setCodeBlock` and `toggleCodeBlock` (the catalog's "Codeblock", the slash
+   * menu, `Mod-Alt-c`) go through `placeCodeBlock`, so a list item's text
+   * stays in its item (issue #318). Where the rule has nothing to say (the
+   * caret already in a code block, a selection over several blocks) upstream's
+   * command runs as before, which also toggles a code block back.
+   */
+  addCommands() {
+    const parent = this.parent?.() ?? {};
+    const placeOr =
+      (fallback: (attrs: { language: string } | undefined) => Command) =>
+      (attributes?: { language: string }): Command =>
+      (props) => {
+        const { tr, dispatch } = props;
+        const attrs = attributes ?? null;
+        if (dispatch === undefined) {
+          if (planCodeBlock(tr.doc, tr.selection, this.type, attrs) !== null) return true;
+        } else if (placeCodeBlock(tr, this.type, attrs)) {
+          return true;
+        }
+        return fallback(attributes)(props);
+      };
+    return {
+      ...parent,
+      setCodeBlock: placeOr(
+        (attributes) =>
+          ({ commands }) =>
+            commands.setNode(this.name, attributes),
+      ),
+      toggleCodeBlock: placeOr(
+        (attributes) =>
+          ({ commands }) =>
+            commands.toggleNode(this.name, 'paragraph', attributes),
+      ),
+    };
+  },
+
+  addInputRules() {
+    return [
+      new InputRule({
+        find: CODE_FENCE,
+        handler: ({ state, range, match }) => {
+          const $start = state.doc.resolve(range.from);
+          const atLineStart =
+            $start.parentOffset === 0 || $start.nodeBefore?.type.spec.linebreakReplacement === true;
+          if (!atLineStart || $start.parent.type === this.type) return null;
+          const { tr } = state;
+          tr.delete(range.from, range.to);
+          const language = match[1];
+          if (!placeCodeBlock(tr, this.type, language === undefined ? null : { language })) {
+            return null;
+          }
+          return undefined;
+        },
+      }),
+    ];
+  },
+
+  addKeyboardShortcuts() {
+    const parent = this.parent?.() ?? {};
+    return {
+      ...parent,
+      /**
+       * An empty code block inside a list item becomes an empty line of that
+       * item again. Upstream's `clearNodes` lifted it out of every list around
+       * it, which split the list a code block had just been placed in.
+       */
+      Backspace: (props) => {
+        const { empty, $anchor } = this.editor.state.selection;
+        if (
+          empty &&
+          $anchor.parent.type === this.type &&
+          $anchor.parent.content.size === 0 &&
+          $anchor.depth > 1 &&
+          isListItemNode($anchor.node(-1))
+        ) {
+          return this.editor.commands.setNode('paragraph');
+        }
+        return parent.Backspace?.(props) ?? false;
+      },
+    };
+  },
+
   addProseMirrorPlugins() {
     return [
       ...(this.parent?.() ?? []),

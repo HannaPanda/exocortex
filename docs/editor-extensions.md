@@ -514,6 +514,47 @@ made and left empty stays, as one made with `Enter` would. Covered by
 `trailing-paragraph.test.ts` (including that opening a page writes nothing to
 the Yjs state) and `e2e/tests/editor.spec.ts`.
 
+## Where a new code block goes
+
+The catalog's "Codeblock" (slash menu, selection toolbar), `Mod-Alt-c` and a
+fence typed at the start of a line (` ``` `, ` ```ts `, `~~~`) all
+go through `placeCodeBlock` (`code-block-placement.ts`, issue #318), wired in
+by overriding `setCodeBlock`, `toggleCodeBlock` and the input rule in
+`code-block.ts`. Upstream ended every one of them in `setBlockType` on the
+text block holding the caret. A list item's first paragraph cannot change
+type, so Tiptap's `setNode` lifted it out of every list first (`clearNodes`):
+the item's text went into the code, the list was split around it, a nested
+sibling lost its indentation, and an item with sub-items changed nothing.
+`Umschalt+Enter` for a fresh line under an item's text is still the same
+paragraph, which is how "the text above came along". The fence never fired
+in a list item or after a line break at all. The rule now, as Notion keeps it:
+
+- **An empty line becomes the block.** An empty paragraph turns into it where
+  it stands. An empty list item is replaced by it (`liftListItemOut`): the
+  list splits around it, a numbered second half starts again at one, and
+  sub-items the empty item held stay a list directly underneath. A sub-item
+  is replaced inside its parent item, so the block keeps the indentation. An
+  empty line after `Umschalt+Enter` leaves its paragraph together with its
+  line break, and the block stands where the line stood: under the text, or
+  between the two halves when the line was in the middle.
+- **Text stays where it is.** With the caret on a list item's text, a new,
+  empty block goes directly under that text, inside the same item and before
+  its sub-items. A free text block (a paragraph, a heading, a second
+  paragraph in an item) still turns into the block, text and all: nothing has
+  to move for that.
+- **A selection becomes code, and only the selection.** Inside one text block
+  the selected text is cut out into the block; the text before stays, the
+  text after follows the block as a block of its own. A selection of a list
+  item's whole text replaces the item, which is also what "Umwandeln in" in
+  the handle's menu does (issue #284). A selection over several blocks, and
+  the command inside a code block (back to a paragraph), are upstream's.
+- **Backspace in an empty code block inside a list item** makes it an empty
+  line of that item again; upstream's `clearNodes` lifted it out of the list.
+
+The change is planned on a transaction of its own and copied over only when
+it worked, so it is one dispatch and `Strg+Z` takes it back in one step.
+Covered by `code-block-placement.test.ts` and `e2e/tests/editor.spec.ts`.
+
 ## Code highlighting
 
 A code block stores only its language's name (`language` attribute, the word
