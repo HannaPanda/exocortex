@@ -995,11 +995,11 @@ describe('message catalogues (check-i18n.mjs)', () => {
 
   it('goes red when a locale lacks a key German has', () => {
     editJson(english, (value) => {
-      delete value.language?.title;
+      delete value.language?.legend;
     });
     const result = gate('check-i18n.mjs');
     expect(result.status).not.toBe(0);
-    expect(result.output).toContain('en/settings.json language.title: missing');
+    expect(result.output).toContain('en/settings.json language.legend: missing');
   });
 
   it('goes red when a translation drops an ICU argument', () => {
@@ -1013,7 +1013,7 @@ describe('message catalogues (check-i18n.mjs)', () => {
 
   it('goes red when the German changed and nobody translated again', () => {
     editJson(german, (value) => {
-      if (value.language !== undefined) value.language.title = 'Sprache der Oberfläche';
+      if (value.language !== undefined) value.language.legend = 'Sprache der Bedienoberfläche';
     });
     const result = gate('check-i18n.mjs');
     expect(result.status).not.toBe(0);
@@ -1022,10 +1022,10 @@ describe('message catalogues (check-i18n.mjs)', () => {
 
   it('goes red when a translation was edited by hand and the German moved on', () => {
     editJson(english, (value) => {
-      if (value.language !== undefined) value.language.title = 'Interface language';
+      if (value.language !== undefined) value.language.legend = 'Interface language';
     });
     editJson(german, (value) => {
-      if (value.language !== undefined) value.language.title = 'Sprache der Oberfläche';
+      if (value.language !== undefined) value.language.legend = 'Sprache der Bedienoberfläche';
     });
     const result = gate('check-i18n.mjs');
     expect(result.status).not.toBe(0);
@@ -1135,7 +1135,7 @@ describe('message keys in use (check-i18n-keys.mjs)', () => {
         '',
         'export async function Probe(flag: boolean) {',
         "  const tx = await getTranslations({ locale: 'de', namespace: 'settings' });",
-        "  return [tx.rich('gateProbeRich', {}), tx(flag ? 'language.title' : 'gateProbeElse')];",
+        "  return [tx.rich('gateProbeRich', {}), tx(flag ? 'language.legend' : 'gateProbeElse')];",
         '}',
         '',
       ].join('\n'),
@@ -1144,7 +1144,7 @@ describe('message keys in use (check-i18n-keys.mjs)', () => {
     expect(result.status).not.toBe(0);
     expect(result.output).toContain(`${probe}:5: tx.rich('gateProbeRich')`);
     expect(result.output).toContain("'settings.gateProbeElse' is not in the German catalogue");
-    expect(result.output).not.toContain("'settings.language.title'");
+    expect(result.output).not.toContain("'settings.language.legend'");
   });
 
   it('does not guess at a key built at run time or a translator handed elsewhere', () => {
@@ -1240,7 +1240,7 @@ describe('memory limit around heavy steps (memory-scope.sh)', () => {
 });
 
 describe('inline text ratchet (check-i18n-literals.mjs)', () => {
-  const screen = 'apps/web/src/components/settings/language-page.tsx';
+  const screen = 'apps/web/src/components/settings/language-settings.tsx';
 
   it('is green on the repository as it stands', () => {
     expect(gate('check-i18n-literals.mjs').status).toBe(0);
@@ -1276,6 +1276,16 @@ describe('inline text ratchet (check-i18n-literals.mjs)', () => {
       (source) => `${source}\nexport const probe = '/einstellungen/benachrichtigungen';\n`,
     );
     expect(gate('check-i18n-literals.mjs').status).toBe(0);
+  });
+
+  it('does not count the name of a query parameter, which is an address too', () => {
+    editFile(screen, (source) => `${source}\nexport const PROBE_PARAM = 'einstellungen';\n`);
+    expect(gate('check-i18n-literals.mjs').status).toBe(0);
+  });
+
+  it('still counts the same word when it is not declared as a parameter', () => {
+    editFile(screen, (source) => `${source}\nexport const probe = 'Einstellungen';\n`);
+    expect(gate('check-i18n-literals.mjs').status).not.toBe(0);
   });
 
   it('watches the node views packages/editor draws by hand', () => {
