@@ -147,6 +147,15 @@ test.describe('design system decisions', () => {
     await expect(commented).toHaveCSS('border-left-width', '0px');
     await expect(commented.locator('.exocortex-comment-count')).toContainText('2');
     await expect(section.locator('.exocortex-transclusion')).toHaveCSS('border-left-width', '1px');
+    // The caret's block (#238): a line apart from the text, not a border on it.
+    const active = section.locator('.exocortex-active-block-marker');
+    await expect(active).toHaveCSS('width', '2px');
+    await expect(active).toHaveCSS('opacity', '1');
+    const gap = await active.evaluate((line) => {
+      const text = line.nextElementSibling?.getBoundingClientRect();
+      return text === undefined ? null : text.left - line.getBoundingClientRect().right;
+    });
+    expect(gap).toBe(20);
   });
 
   test('draws one focus ring and no outline', async ({ page }) => {

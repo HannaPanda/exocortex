@@ -185,6 +185,8 @@ const PARAGRAPH_BEFORE =
   'Die erste Messreihe lief an drei aufeinanderfolgenden Tagen, jeweils um neun Uhr, im selben Raum.';
 const PARAGRAPH_COMMENTED =
   'Die zweite Messreihe wurde verworfen, weil die Raumtemperatur über 24 Grad lag und die Waage bei Wärme messbar abdriftet.';
+const PARAGRAPH_ACTIVE =
+  'Die dritte Messreihe steht noch aus; sie läuft, sobald das Prüfgewicht aus der Kalibrierung zurück ist.';
 const TRANSCLUDED =
   'Vor jeder Messung wird die Waage mit dem 100-Gramm-Prüfgewicht kalibriert. Weicht die Anzeige um mehr als 0,02 Gramm ab, wird die Messung nicht begonnen.';
 
@@ -198,7 +200,7 @@ export function MarkedBlocksPattern() {
     <DsSection
       id="markierte-bloecke"
       title="Markierte Blöcke"
-      lead="Der Editor markiert ohne linke Akzentränder. Ein kommentierter Block trägt eine leichte Warnfläche und rechts die Zahl seiner offenen Kommentare, ein eingebetteter Abschnitt denselben schlichten Rahmen wie eine eingebettete Datenbank."
+      lead="Der Editor markiert ohne linke Akzentränder. Ein kommentierter Block trägt eine leichte Warnfläche und rechts die Zahl seiner offenen Kommentare, ein eingebetteter Abschnitt denselben schlichten Rahmen wie eine eingebettete Datenbank. Der Block mit dem Cursor bekommt nur einen feinen Strich im linken Rand, abgesetzt vom Text."
     >
       <DsExample
         id="block-kommentiert"
@@ -215,6 +217,26 @@ export function MarkedBlocksPattern() {
             </span>
             {PARAGRAPH_COMMENTED}
           </p>
+        </div>
+      </DsExample>
+
+      <DsExample
+        id="block-mit-cursor"
+        title="Block mit dem Cursor"
+        source="apps/web/src/components/editor/active-block-marker.ts"
+        note="Nur solange der Editor den Fokus hat. Der Strich ist so hoch wie der innerste Textblock mit dem Cursor und steht immer gleich weit links vom Text, zwischen der Aufklapp-Spur einer Überschrift und dem Griff. Er springt von Block zu Block; nur Erscheinen und Verschwinden blenden kurz."
+      >
+        <div className="exocortex-editor max-w-measure pl-8">
+          <p>{PARAGRAPH_BEFORE}</p>
+          <div className="relative mt-3">
+            <span
+              className="exocortex-active-block-marker"
+              data-visible="true"
+              aria-hidden
+              style={{ top: 0, bottom: 0 }}
+            />
+            <p className="my-0">{PARAGRAPH_ACTIVE}</p>
+          </div>
         </div>
       </DsExample>
 
