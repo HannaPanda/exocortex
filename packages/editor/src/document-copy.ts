@@ -1,4 +1,9 @@
-import { ADDRESSABLE_BLOCK_TYPES, BLOCK_ID_ATTRIBUTE, createBlockId } from './block-id';
+import {
+  ADDRESSABLE_BLOCK_TYPES,
+  BLOCK_ID_ATTRIBUTE,
+  createBlockId,
+  isValidBlockId,
+} from './block-id';
 import { type ProseMirrorDocument, type ProseMirrorNode } from './contract';
 
 /**
@@ -72,4 +77,31 @@ export function copyDocumentForNewPage(source: ProseMirrorDocument): DocumentCop
     attachmentIds: [...attachmentIds],
     embeddedDatabaseIds: [...embeddedDatabaseIds],
   };
+}
+
+/**
+ * For each attachment a page shows, the block that shows it (issue #280).
+ *
+ * The search projection carries an attachment's text behind the page's own
+ * (issue #101), and a word found in a PDF is best located at the PDF block on
+ * the page rather than nowhere. The innermost addressable block wins, and the
+ * first one when a file is shown twice. A file that no block shows is simply
+ * absent: the hit then names the attachment and no block, never a wrong one.
+ */
+export function blocksShowingAttachments(document: ProseMirrorDocument): Map<string, string> {
+  const shown = new Map<string, string>();
+  const walk = (node: ProseMirrorNode, nearest: string | null): void => {
+    const own: unknown = node.attrs?.[BLOCK_ID_ATTRIBUTE];
+    const blockId = isValidBlockId(own) ? own : nearest;
+    for (const value of Object.values(node.attrs ?? {})) {
+      if (typeof value !== 'string' || blockId === null) continue;
+      for (const match of value.matchAll(ATTACHMENT_URL_PATTERN)) {
+        const id = match[1];
+        if (id !== undefined && !shown.has(id)) shown.set(id, blockId);
+      }
+    }
+    for (const child of node.content ?? []) walk(child, blockId);
+  };
+  walk(document, null);
+  return shown;
 }

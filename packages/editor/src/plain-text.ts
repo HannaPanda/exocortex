@@ -71,6 +71,146 @@ export function plainTextHeadingAnchors(document: ProseMirrorDocument): PlainTex
   return anchors;
 }
 
+/**
+ * One place in the plain text a hit can be attributed to (issue #280): a
+ * top-level block, or a point of a list. A hit at some offset belongs to the
+ * last unit that starts at or before it.
+ */
+export interface PlainTextBlockUnit {
+  /** Character offset (UTF-16, like every JavaScript index) into the text. */
+  offset: number;
+  /**
+   * The block to read the hit with. A list point without an identifier of
+   * its own falls back to the nearest block around it that has one; `null`
+   * when nothing up to the top level carries one.
+   */
+  blockId: string | null;
+  /** Index into `headings` of the section the unit sits in, `-1` for none. */
+  heading: number;
+}
+
+export interface PlainTextBlockMap {
+  /** The plain text the offsets index: exactly what `serializePlainText` returns. */
+  text: string;
+  /** In ascending order of `offset`, no two at the same offset. */
+  units: PlainTextBlockUnit[];
+  /** The top-level headings, as `plainTextHeadingAnchors` names them. */
+  headings: { blockId: string | null; path: string[] }[];
+}
+
+/** The containers whose children are list points. */
+const LIST_TYPES = new Set(['bulletList', 'orderedList', 'taskList']);
+const LIST_ITEM_TYPES = new Set(['listItem', 'taskItem']);
+
+/**
+ * Which block every stretch of the plain text came out of (issue #280).
+ *
+ * A keyword hit is a position in the text the search index holds, and until
+ * this existed nothing could say which block that position belonged to: the
+ * search named the page, and a reader looking for a word in the second of two
+ * long lists read the first one and gave up. So the indexer stores this beside
+ * the text, once per save, and a search only looks a position up in it.
+ *
+ * Top-level blocks are units, and so is every point of a list at any depth,
+ * because since #274 a list point is addressable on its own and a long list
+ * is exactly where "the block" is too coarse an answer. Other containers (a
+ * table, a toggle, columns) stay one unit: the block that holds the words is
+ * still named, never a wrong one. A child is only placed when the container's
+ * text really is its children joined line by line; a node whose plain-text
+ * adapter adds anything of its own keeps its children unplaced rather than
+ * placed at a guessed offset.
+ */
+export function plainTextBlockMap(document: ProseMirrorDocument): PlainTextBlockMap {
+  const render = createRenderer();
+  const parts = renderParts(document, render);
+  const units: PlainTextBlockUnit[] = [];
+  const headings: PlainTextBlockMap['headings'] = [];
+  const open: { level: number; title: string }[] = [];
+  let section = -1;
+
+  const push = (offset: number, blockId: string | null): void => {
+    const last = units[units.length - 1];
+    // A list starts where its first point starts; the inner unit is the answer.
+    if (last !== undefined && last.offset === offset) units.pop();
+    units.push({ offset, blockId, heading: section });
+  };
+
+  const walkList = (list: ProseMirrorNode, text: string, base: number, outer: string | null) => {
+    for (const placed of placeChildren(list, text, render) ?? []) {
+      const itemId = blockIdOf(placed.node) ?? outer;
+      push(base + placed.start, itemId);
+      if (LIST_ITEM_TYPES.has(placed.node.type)) {
+        walkItem(placed.node, placed.text, base + placed.start, itemId);
+      }
+    }
+  };
+
+  const walkItem = (item: ProseMirrorNode, text: string, base: number, itemId: string | null) => {
+    let resumes = false;
+    for (const placed of placeChildren(item, text, render) ?? []) {
+      if (LIST_TYPES.has(placed.node.type)) {
+        walkList(placed.node, placed.text, base + placed.start, itemId);
+        resumes = true;
+      } else if (resumes) {
+        // Text of the point after its nested list is the point's again.
+        push(base + placed.start, itemId);
+        resumes = false;
+      }
+    }
+  };
+
+  let at = 0;
+  for (const part of parts) {
+    const level = headingLevel(part.node);
+    const title = part.text.replace(/\s+/g, ' ').trim();
+    if (level !== null && title.length > 0) {
+      while (open.length > 0 && (open[open.length - 1]?.level ?? 0) >= level) open.pop();
+      headings.push({ blockId: blockIdOf(part.node), path: [...open.map((e) => e.title), title] });
+      open.push({ level, title });
+      section = headings.length - 1;
+    }
+    const own = blockIdOf(part.node);
+    push(at, own);
+    if (LIST_TYPES.has(part.node.type)) walkList(part.node, part.text, at, own);
+    at += part.text.length + 1;
+  }
+
+  const cleaned = cleanUp(
+    parts.map((part) => part.text).join('\n'),
+    units.map((unit) => unit.offset),
+  );
+  // A cleanup can move two units onto one offset; the later one is the answer.
+  const shifted: PlainTextBlockUnit[] = [];
+  units.forEach((unit, index) => {
+    const offset = cleaned.offsets[index] ?? 0;
+    if (shifted[shifted.length - 1]?.offset === offset) shifted.pop();
+    shifted.push({ ...unit, offset });
+  });
+  return { text: cleaned.text, units: shifted, headings };
+}
+
+/**
+ * The children of a container with where each starts in its text, or `null`
+ * when the text is not simply those children joined by line breaks.
+ */
+function placeChildren(
+  node: ProseMirrorNode,
+  text: string,
+  render: RenderNode,
+): { node: ProseMirrorNode; text: string; start: number }[] | null {
+  if (INLINE_CONTAINER_TYPES.has(node.type)) return null;
+  const rendered = (node.content ?? [])
+    .map((child) => ({ node: child, text: render(child) }))
+    .filter((child) => child.text.length > 0);
+  if (rendered.map((child) => child.text).join('\n') !== text) return null;
+  let at = 0;
+  return rendered.map((child) => {
+    const start = at;
+    at += child.text.length + 1;
+    return { ...child, start };
+  });
+}
+
 /** Collects every stable block identifier present in a document. */
 export function collectBlockIds(document: ProseMirrorDocument): string[] {
   const ids: string[] = [];
@@ -99,8 +239,20 @@ interface PlainTextPart {
   text: string;
 }
 
+type RenderNode = (node: ProseMirrorNode) => string;
+
 /** One rendered string per top-level block, the empty ones dropped. */
-function renderParts(document: ProseMirrorDocument): PlainTextPart[] {
+function renderParts(
+  document: ProseMirrorDocument,
+  renderNode: RenderNode = createRenderer(),
+): PlainTextPart[] {
+  return (document.content ?? [])
+    .map((node) => ({ node, text: renderNode(node) }))
+    .filter((part) => part.text.trim().length > 0);
+}
+
+/** The one function every block's plain text comes out of. */
+function createRenderer(): RenderNode {
   const registry = buildPlainTextRegistry();
 
   const renderChildren = (node: ProseMirrorNode): string => {
@@ -125,9 +277,7 @@ function renderParts(document: ProseMirrorDocument): PlainTextPart[] {
     return renderChildren(node);
   };
 
-  return (document.content ?? [])
-    .map((node) => ({ node, text: renderNode(node) }))
-    .filter((part) => part.text.trim().length > 0);
+  return renderNode;
 }
 
 /**
@@ -139,13 +289,25 @@ function renderParts(document: ProseMirrorDocument): PlainTextPart[] {
  * same edits rather than recomputed from the result.
  */
 function assemble(parts: readonly PlainTextPart[]): { text: string; offsets: number[] } {
-  let text = parts.map((part) => part.text).join('\n');
-  let offsets: number[] = [];
+  const offsets: number[] = [];
   let at = 0;
   for (const part of parts) {
     offsets.push(at);
     at += part.text.length + 1;
   }
+  return cleanUp(parts.map((part) => part.text).join('\n'), offsets);
+}
+
+/**
+ * The joined text after the cleanups, with offsets into it carried along.
+ * `rawOffsets` index the text before the cleanups and must be ascending.
+ */
+function cleanUp(
+  rawText: string,
+  rawOffsets: readonly number[],
+): { text: string; offsets: number[] } {
+  let text = rawText;
+  let offsets = [...rawOffsets];
 
   for (const [pattern, replacement] of CLEANUPS) {
     offsets = shiftOffsets(text, offsets, pattern, replacement);
