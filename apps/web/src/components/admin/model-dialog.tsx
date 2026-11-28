@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -35,6 +35,8 @@ import {
 } from '@exocortex/ui';
 
 import { ProviderRoutingEditor } from '@/components/ai/provider-routing-editor';
+import { INVALID_MONEY_TEXT, MoneyTextInput } from '@/components/money-input';
+import { WithUnit } from '@/components/with-unit';
 import {
   useAdminSettings,
   useAiModelEndpoints,
@@ -43,7 +45,6 @@ import {
 } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
-import { microUsdFromText, usdInputText } from '@/lib/money';
 
 const REASONING_ORDER: readonly AiReasoningLevel[] = [
   'none',
@@ -79,9 +80,12 @@ interface ModelFormState {
   supportsVision: boolean;
   supportsTools: boolean;
   reasoningLevels: AiReasoningLevel[];
-  /** Dollars per million tokens, as typed; stored as micro-dollars (issue #167). */
-  inputUsdPerMTok: string;
-  outputUsdPerMTok: string;
+  /**
+   * Micro-dollars per million tokens as text (issue #167); the field shows and
+   * reads dollars (`MoneyTextInput`). Empty is a free model.
+   */
+  inputMicroUsdPerMTok: string;
+  outputMicroUsdPerMTok: string;
   visionCompanionSlug: string;
   enabled: boolean;
   sortOrder: string;
@@ -111,8 +115,8 @@ function emptyForm(): ModelFormState {
     supportsVision: false,
     supportsTools: false,
     reasoningLevels: ['none'],
-    inputUsdPerMTok: '',
-    outputUsdPerMTok: '',
+    inputMicroUsdPerMTok: '',
+    outputMicroUsdPerMTok: '',
     visionCompanionSlug: NO_COMPANION,
     enabled: true,
     sortOrder: '100',
@@ -121,7 +125,7 @@ function emptyForm(): ModelFormState {
   };
 }
 
-function formFromModel(model: AiModel, locale: string): ModelFormState {
+function formFromModel(model: AiModel): ModelFormState {
   return {
     slug: model.slug,
     provider: isModelProvider(model.provider) ? model.provider : 'openrouter',
@@ -132,8 +136,8 @@ function formFromModel(model: AiModel, locale: string): ModelFormState {
     supportsVision: model.supportsVision,
     supportsTools: model.supportsTools,
     reasoningLevels: model.reasoningLevels.length > 0 ? [...model.reasoningLevels] : ['none'],
-    inputUsdPerMTok: usdInputText(model.inputMicroUsdPerMTok, locale),
-    outputUsdPerMTok: usdInputText(model.outputMicroUsdPerMTok, locale),
+    inputMicroUsdPerMTok: String(model.inputMicroUsdPerMTok),
+    outputMicroUsdPerMTok: String(model.outputMicroUsdPerMTok),
     visionCompanionSlug: model.visionCompanionSlug ?? NO_COMPANION,
     enabled: model.enabled,
     sortOrder: String(model.sortOrder),
@@ -268,6 +272,35 @@ function ProviderRoutingField({
   );
 }
 
+/**
+ * A price per million tokens (issue #203): typed in dollars through the money
+ * field every other price uses (#167), stored as micro-dollars, and followed
+ * by what it is a price for. The label says it too, for a screen reader.
+ */
+function PriceField({
+  id,
+  label,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (text: string) => void;
+}) {
+  const t = useTranslations('admin.modelDialog');
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <WithUnit unit={t('fields.priceUnit')}>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <MoneyTextInput id={id} value={value} allowEmpty onChange={onChange} />
+        </div>
+      </WithUnit>
+    </div>
+  );
+}
+
 interface ModelDialogFormProps {
   model?: AiModel;
   models: AiModel[];
@@ -276,9 +309,8 @@ interface ModelDialogFormProps {
 
 function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) {
   const isEdit = model !== undefined;
-  const locale = useLocale();
   const [form, setForm] = React.useState<ModelFormState>(() =>
-    model !== undefined ? formFromModel(model, locale) : emptyForm(),
+    model !== undefined ? formFromModel(model) : emptyForm(),
   );
   const [fieldErrors, setFieldErrors] = React.useState<FieldErrorKey[]>([]);
   const t = useTranslations('admin.modelDialog');
@@ -300,11 +332,12 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
       errors.push('contextWindowPositive');
     }
     // An empty price is a free model, as it always was; anything else has to
-    // be an exact dollar amount, never rounded on its way to micro-dollars.
+    // be an exact dollar amount, which the field refuses to hand over until
+    // it is one, so a half-typed price is never saved as free.
     const priceOf = (text: string): number | null =>
-      text.trim().length === 0 ? 0 : microUsdFromText(text);
-    const inputPrice = priceOf(form.inputUsdPerMTok);
-    const outputPrice = priceOf(form.outputUsdPerMTok);
+      text === INVALID_MONEY_TEXT ? null : text.trim().length === 0 ? 0 : Number(text);
+    const inputPrice = priceOf(form.inputMicroUsdPerMTok);
+    const outputPrice = priceOf(form.outputMicroUsdPerMTok);
     if (inputPrice === null) {
       errors.push('inputPriceNumber');
     }
@@ -423,26 +456,32 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="model-context">{t('fields.contextWindow')}</Label>
-            <Input
-              id="model-context"
-              type="number"
-              value={form.contextWindowTokens}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, contextWindowTokens: event.target.value }))
-              }
-            />
+            <WithUnit unit={t('fields.tokenUnit')}>
+              <Input
+                id="model-context"
+                type="number"
+                className="min-w-0 flex-1"
+                value={form.contextWindowTokens}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, contextWindowTokens: event.target.value }))
+                }
+              />
+            </WithUnit>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="model-max-output">{t('fields.maxOutput')}</Label>
-            <Input
-              id="model-max-output"
-              type="number"
-              placeholder={t('fields.maxOutputPlaceholder')}
-              value={form.maxOutputTokens}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, maxOutputTokens: event.target.value }))
-              }
-            />
+            <WithUnit unit={t('fields.tokenUnit')}>
+              <Input
+                id="model-max-output"
+                type="number"
+                className="min-w-0 flex-1"
+                placeholder={t('fields.maxOutputPlaceholder')}
+                value={form.maxOutputTokens}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, maxOutputTokens: event.target.value }))
+                }
+              />
+            </WithUnit>
           </div>
         </div>
 
@@ -496,32 +535,18 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-input-price">{t('fields.inputPrice')}</Label>
-            <Input
-              id="model-input-price"
-              type="text"
-              inputMode="decimal"
-              autoComplete="off"
-              value={form.inputUsdPerMTok}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, inputUsdPerMTok: event.target.value }))
-              }
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="model-output-price">{t('fields.outputPrice')}</Label>
-            <Input
-              id="model-output-price"
-              type="text"
-              inputMode="decimal"
-              autoComplete="off"
-              value={form.outputUsdPerMTok}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, outputUsdPerMTok: event.target.value }))
-              }
-            />
-          </div>
+          <PriceField
+            id="model-input-price"
+            label={t('fields.inputPrice')}
+            value={form.inputMicroUsdPerMTok}
+            onChange={(text) => setForm((prev) => ({ ...prev, inputMicroUsdPerMTok: text }))}
+          />
+          <PriceField
+            id="model-output-price"
+            label={t('fields.outputPrice')}
+            value={form.outputMicroUsdPerMTok}
+            onChange={(text) => setForm((prev) => ({ ...prev, outputMicroUsdPerMTok: text }))}
+          />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
