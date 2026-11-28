@@ -44,7 +44,9 @@ export function AppHeader({ className, ...props }: React.ComponentPropsWithoutRe
   );
 }
 
-export function AppBody({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+// With its ref: the shell measures the row to know how wide the context panel
+// may become (issue #246).
+export function AppBody({ className, ...props }: React.ComponentProps<'div'>) {
   return <div className={cn('flex min-h-0 flex-1', className)} {...props} />;
 }
 
@@ -110,6 +112,13 @@ export interface ResizablePanelProps extends React.ComponentPropsWithoutRef<'div
   /** Which edge carries the drag handle. */
   handle: 'right' | 'left';
   label: string;
+  /** Double-click on the handle: back to the panel's own default width. */
+  onReset?: () => void;
+  /** The handle's hover hint, for a handle whose double-click does something. */
+  handleTitle?: string;
+  /** Extra classes for the handle, e.g. a grip wider than its line. */
+  handleClassName?: string;
+  handleTestId?: string;
 }
 
 export function ResizablePanel({
@@ -119,6 +128,10 @@ export function ResizablePanel({
   maxWidth = 560,
   handle,
   label,
+  onReset,
+  handleTitle,
+  handleClassName,
+  handleTestId,
   className,
   children,
   ...props
@@ -137,8 +150,11 @@ export function ResizablePanel({
         maxWidth={maxWidth}
         edge={handle}
         label={label}
+        title={handleTitle}
+        onReset={onReset}
+        data-testid={handleTestId}
         // Inset: the panel clips, and an outset ring would be cut off.
-        className="focus-visible:ring-inset"
+        className={cn('focus-visible:ring-inset', handleClassName)}
       />
     </div>
   );

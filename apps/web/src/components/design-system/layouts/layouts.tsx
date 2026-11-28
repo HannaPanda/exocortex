@@ -166,6 +166,7 @@ export function ShellLayout() {
               <ResizablePanel
                 width={sidebarWidth}
                 onWidthChange={setSidebarWidth}
+                onReset={() => setSidebarWidth(240)}
                 handle="right"
                 minWidth={200}
                 maxWidth={420}
@@ -184,6 +185,7 @@ export function ShellLayout() {
               <ResizablePanel
                 width={contextWidth}
                 onWidthChange={setContextWidth}
+                onReset={() => setContextWidth(260)}
                 handle="left"
                 minWidth={260}
                 maxWidth={520}
