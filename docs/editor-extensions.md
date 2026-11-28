@@ -282,21 +282,45 @@ the undo history and an HTML round trip.
 
 ## Select all, one block at a time
 
-`Strg+A` widens step by step (`scoped-select-all.ts`, issue #261): the first
-press selects the text of the innermost code block, table cell, table header,
-callout or quote the caret is in, the next press the block around it, and only
-then does Tiptap's own `selectAll` take the page. Before this, `Strg+A` in a
-code block selected the whole page and the next keystroke replaced it. A plain
-paragraph is not a scope, so `Strg+A` in running text still means the page.
+`Strg+A` widens step by step, the way it does in Notion (`scoped-select-all.ts`,
+issues #261 and #263). The first press selects the text of the text block the
+caret is in: a paragraph, a heading, a list item's or a task's line, a toggle's
+summary, a code block, also when it is empty. Every further press selects the
+next block around it that holds more text: a list item together with the items
+nested under it, a toggle with summary and content, a column, a callout, a
+quote, a table cell or table header. Only when nothing narrower is left does
+Tiptap's own `selectAll` take the page. Before #261 a code block gave the first
+press to the page, so the next keystroke replaced it; before #263 a paragraph,
+heading or list item did the same.
+
+Three rules decide what a press does:
+
+- A step counts as taken when the selection already covers the block's text,
+  whoever selected it, so text selected with the mouse is a step done.
+- A step that would select exactly what is selected already (a list item
+  without nested items covers the same text as its line, a callout holding one
+  paragraph the same as that paragraph) is passed over, so every press visibly
+  widens.
+- A closed toggle is passed over: it shows only its summary, and widening into
+  the hidden content would select text nobody sees. The page step still takes
+  it, as before.
+
+The whole list is deliberately not a step (it is not one in Notion either), and
+the steps are text selections, so typing, cutting, copying, pasting and the undo
+history act on them through the editor's ordinary paths; copying a list item
+with its nested items puts list markup on the clipboard. Mobile keyboards have
+no `Strg+A`, so nothing changes there.
 
 The extension is behaviour only and has no schema; it sits in the registry
 (`scoped-select-all`) so every editor built from `buildEditorExtensions()` has
 it, and it runs ahead of the core keymap by priority. An empty block covers no
-text, so the plugin remembers which block the last press selected; otherwise the
-first press in an empty code block would fall through to the page. Adding a node
-to `SELECT_ALL_SCOPE_NODES` is the whole change for a new block with text of
-its own. Covered by `scoped-select-all.test.ts` and, for cutting and the Yjs
-undo, by the browser test in `e2e/tests/editor.spec.ts`.
+text, so the plugin remembers that the last press set the selection; otherwise
+the first press in an empty block would fall through to the page, and an empty
+list item would keep selecting itself and its line in turn. Every text block is
+a step without being listed; a new container with text of its own is added to
+`SELECT_ALL_SCOPE_NODES`, and that is the whole change. Covered by
+`scoped-select-all.test.ts` and, for the native selection, cutting, copying and
+the Yjs undo, by the browser tests in `e2e/tests/editor.spec.ts`.
 
 ## Selecting with Shift and the arrow keys
 
