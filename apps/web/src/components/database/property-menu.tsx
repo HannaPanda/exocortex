@@ -53,6 +53,7 @@ import {
 } from '@/lib/api/database-queries';
 
 import { type AiFillControls } from './ai-fill';
+import { ColumnFitItem } from './column-fit-item';
 import { type ColumnSortControls, ColumnSortIndicator, ColumnSortItems } from './column-sort';
 import {
   isPropertyConfigComplete,
@@ -88,6 +89,8 @@ interface PropertyMenuProps {
   ai?: AiFillControls;
   /** The view's order, sortable from the header (issue #296). */
   sort: ColumnSortControls;
+  /** Fits the column to its content (issue #277); absent where the width is not editable. */
+  onFitWidth?: () => void;
 }
 
 /** Column header: name, icon-labelled type, and the manage/delete menu. */
@@ -100,6 +103,7 @@ export function PropertyMenu({
   readOnly,
   ai,
   sort,
+  onFitWidth,
 }: PropertyMenuProps) {
   const t = useTranslations('database.propertyMenu');
   const typeLabel = usePropertyTypeLabel();
@@ -176,6 +180,9 @@ export function PropertyMenu({
           >
             <ArrowRightIcon /> {t('moveRight')}
           </DropdownMenuItem>
+          {onFitWidth === undefined ? null : (
+            <ColumnFitItem columnKey={property.id} onFit={onFitWidth} />
+          )}
           {hasOptions ? (
             <DropdownMenuItem onClick={() => setManagingOptions(true)}>
               <SettingsIcon /> {t('manageOptions')}

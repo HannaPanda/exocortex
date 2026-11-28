@@ -116,6 +116,8 @@
     "loadFailed": "Não foi possível carregar as linhas",
     "nameColumn": "Nome",
     "resizeColumn": "Redimensionar coluna {name}",
+    "resizeHint": "Arraste para alterar a largura, clique duas vezes ou pressione Enter para ajustá-la ao conteúdo",
+    "fitWidth": "Ajustar largura ao conteúdo",
     "openRow": "Abrir na barra lateral",
     "newRow": "Nova linha",
     "emptyTitle": "Nenhuma linha ainda",

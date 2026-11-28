@@ -383,7 +383,8 @@
     "details": {
       "p1": "Acima do banco de dados há uma barra de abas. Cada aba é uma visualização salva com tipo, filtro, ordenação e seleção de colunas próprios. \"Tudo\", \"Vence esta semana\", \"Por status\", \"Concluído\": quatro abas nas mesmas linhas, em vez de um filtro que você precisaria reconfigurar toda vez.",
       "p2": "A tabela é a visualização de trabalho com edição direta na célula. O quadro agrupa por uma coluna de seleção, e arrastar entre as colunas altera o valor. A galeria mostra cartões com imagem de capa, ideal para conteúdo visual. O calendário organiza por uma coluna de data.",
-      "p3": "Uma visualização pertence ao banco de dados, não a você, portanto todas as pessoas no espaço veem as mesmas abas. É possível reordenar as visualizações, e um agente pode criá-las e alterá-las pelas ferramentas, o que é prático quando uma análise precisa de uma visão própria."
+      "p3": "Uma visualização pertence ao banco de dados, não a você, portanto todas as pessoas no espaço veem as mesmas abas. É possível reordenar as visualizações, e um agente pode criá-las e alterá-las pelas ferramentas, o que é prático quando uma análise precisa de uma visão própria.",
+      "p4": "Na tabela, você arrasta a borda direita do cabeçalho de uma coluna para deixá-la mais larga ou mais estreita. Um clique duplo nessa borda ajusta a largura conforme o conteúdo mais largo, incluindo o cabeçalho, assim como em uma planilha; a medição considera o que a tabela já carregou. Pelo teclado, selecione a borda com a tecla Tab, use as teclas de seta para alterar a largura e Enter para ajustá-la. No menu do cabeçalho da coluna, a mesma opção aparece como „Ajustar largura ao conteúdo“. Essa largura pertence à visualização, assim como uma ajustada manualmente."
     },
     "where": "A barra de abas acima de um banco de dados."
   },

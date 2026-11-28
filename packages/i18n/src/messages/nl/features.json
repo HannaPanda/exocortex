@@ -383,7 +383,8 @@
     "details": {
       "p1": "Boven de database staat een tabbladenbalk. Elk tabblad is een opgeslagen weergave met een eigen type, eigen filter, eigen sortering en eigen kolomselectie. \"Alles\", \"Deze week vervallend\", \"Op status\", \"Voltooid\": vier tabbladen op dezelfde rijen, in plaats van een filter dat je telkens opnieuw instelt.",
       "p2": "De tabel is de werkweergave met rechtstreeks bewerken in de cel. Het bord groepeert op een selectiekolom, en slepen tussen de kolommen wijzigt de waarde. De galerij toont kaarten met omslagafbeelding, ideaal voor alles wat visueel is. De kalender ordent op een datumkolom.",
-      "p3": "Een weergave hoort bij de database, niet bij jou, dus alle leden zien dezelfde tabbladen. Weergaven kunnen van volgorde worden veranderd, en een agent kan ze via de tools aanmaken en wijzigen, wat praktisch is wanneer een analyse een eigen overzicht nodig heeft."
+      "p3": "Een weergave hoort bij de database, niet bij jou, dus alle leden zien dezelfde tabbladen. Weergaven kunnen van volgorde worden veranderd, en een agent kan ze via de tools aanmaken en wijzigen, wat praktisch is wanneer een analyse een eigen overzicht nodig heeft.",
+      "p4": "In de tabel sleep je een kolom aan de rechterrand van de kolomkop breder of smaller. Een dubbelklik op deze rand maakt hem net zo breed als de breedste inhoud, inclusief de kop, net zoals in een spreadsheet; gemeten wordt wat de tabel geladen heeft. Met het toetsenbord selecteer je de rand met de Tab-toets, de pijltjestoetsen wijzigen de breedte en Enter past deze aan. In het menu van de kolomkop staat hetzelfde als „Breedte aanpassen aan inhoud”. De breedte hoort bij de weergave, net als een handmatig versleepte breedte."
     },
     "where": "De tabbladenbalk boven een database."
   },

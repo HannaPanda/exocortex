@@ -383,7 +383,8 @@
     "details": {
       "p1": "Über der Datenbank liegt eine Reiterleiste. Jeder Reiter ist eine gespeicherte Ansicht mit eigenem Typ, eigenem Filter, eigener Sortierung und eigener Spaltenauswahl. \"Alles\", \"Diese Woche fällig\", \"Nach Status\", \"Erledigt\": vier Reiter auf denselben Zeilen, statt eines Filters, den du jedes Mal neu einstellst.",
       "p2": "Die Tabelle ist die Arbeitsansicht mit direktem Bearbeiten in der Zelle. Das Board gruppiert nach einer Auswahlspalte, und Ziehen zwischen den Spalten ändert den Wert. Die Galerie zeigt Karten mit Titelbild, gut für alles Visuelle. Der Kalender ordnet nach einer Datumsspalte.",
-      "p3": "Eine Ansicht gehört zur Datenbank, nicht zu dir, also sehen alle Mitglieder dieselben Reiter. Ansichten lassen sich umsortieren, und ein Agent kann sie über die Werkzeuge anlegen und ändern, was praktisch ist, wenn eine Auswertung eine eigene Sicht braucht."
+      "p3": "Eine Ansicht gehört zur Datenbank, nicht zu dir, also sehen alle Mitglieder dieselben Reiter. Ansichten lassen sich umsortieren, und ein Agent kann sie über die Werkzeuge anlegen und ändern, was praktisch ist, wenn eine Auswertung eine eigene Sicht braucht.",
+      "p4": "In der Tabelle ziehst du eine Spalte am rechten Rand ihres Kopfs breiter oder schmaler. Ein Doppelklick auf diesen Rand macht sie so breit wie ihr breitester Inhalt, den Kopf eingeschlossen, wie in einer Tabellenkalkulation; gemessen wird, was die Tabelle geladen hat. Mit der Tastatur wählst du den Rand mit der Tabulatortaste, die Pfeiltasten ändern die Breite und Enter passt sie an. Im Menü des Spaltenkopfs steht dasselbe als „Breite an Inhalt anpassen“. Die Breite gehört zur Ansicht, wie eine gezogene."
     },
     "where": "Die Reiterleiste über einer Datenbank."
   },

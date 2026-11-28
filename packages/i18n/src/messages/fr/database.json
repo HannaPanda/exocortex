@@ -116,6 +116,8 @@
     "loadFailed": "Lignes non chargées",
     "nameColumn": "Nom",
     "resizeColumn": "Ajuster la largeur de la colonne {name}",
+    "resizeHint": "Fais glisser pour modifier la largeur, double-clique ou appuie sur Entrée pour l’ajuster au contenu",
+    "fitWidth": "Ajuster la largeur au contenu",
     "openRow": "Ouvrir dans le panneau latéral",
     "newRow": "Nouvelle ligne",
     "emptyTitle": "Pas encore de lignes",

@@ -383,7 +383,8 @@
     "details": {
       "p1": "Une barre d’onglets se trouve au-dessus de la base de données. Chaque onglet est une vue enregistrée avec son propre type, son filtre, son tri et sa sélection de colonnes. « Tout », « À échéance cette semaine », « Par statut », « Terminé » : quatre onglets sur les mêmes lignes, au lieu d’un filtre que tu devrais reconfigurer à chaque fois.",
       "p2": "Le tableau est la vue de travail avec édition directe dans la cellule. Le tableau Kanban regroupe par colonne de sélection, et glisser-déposer entre les colonnes modifie la valeur. La galerie affiche des cartes avec image de couverture, idéale pour le contenu visuel. Le calendrier organise selon une colonne de date.",
-      "p3": "Une vue appartient à la base de données, pas à toi ; tous les membres voient donc les mêmes onglets. Les vues peuvent être réorganisées, et un agent peut les créer et les modifier via les outils, ce qui est pratique lorsqu’une analyse a besoin de sa propre perspective."
+      "p3": "Une vue appartient à la base de données, pas à toi ; tous les membres voient donc les mêmes onglets. Les vues peuvent être réorganisées, et un agent peut les créer et les modifier via les outils, ce qui est pratique lorsqu’une analyse a besoin de sa propre perspective.",
+      "p4": "Dans le tableau, fais glisser une colonne par le bord droit de son en-tête pour l’élargir ou la rétrécir. Un double-clic sur ce bord ajuste sa largeur à son contenu le plus large, en-tête compris, comme dans un tableur ; la mesure prend en compte ce que le tableau a chargé. Au clavier, sélectionne le bord avec la touche Tab, les touches fléchées modifient la largeur et Entrée l’ajuste automatiquement. Dans le menu de l’en-tête de colonne, la même action apparaît sous l’intitulé « Ajuster la largeur au contenu ». La largeur fait partie de la vue, tout comme une largeur ajustée manuellement."
     },
     "where": "La barre d’onglets au-dessus d’une base de données."
   },

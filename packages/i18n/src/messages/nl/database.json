@@ -116,6 +116,8 @@
     "loadFailed": "Rijen niet geladen",
     "nameColumn": "Naam",
     "resizeColumn": "Kolom {name} breder of smaller slepen",
+    "resizeHint": "Sleep om de breedte te wijzigen, dubbelklik of druk op Enter om deze aan te passen aan de inhoud",
+    "fitWidth": "Breedte aanpassen aan inhoud",
     "openRow": "In zijbalk openen",
     "newRow": "Nieuwe rij",
     "emptyTitle": "Nog geen rijen",

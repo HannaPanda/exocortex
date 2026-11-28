@@ -116,6 +116,8 @@
     "loadFailed": "Zeilen nicht geladen",
     "nameColumn": "Name",
     "resizeColumn": "Spalte {name} breiter oder schmaler ziehen",
+    "resizeHint": "Ziehen ändert die Breite, ein Doppelklick oder Enter passt sie an den Inhalt an",
+    "fitWidth": "Breite an Inhalt anpassen",
     "openRow": "In der Seitenleiste öffnen",
     "newRow": "Neue Zeile",
     "emptyTitle": "Noch keine Zeilen",

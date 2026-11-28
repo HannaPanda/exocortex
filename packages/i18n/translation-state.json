@@ -6764,6 +6764,10 @@
       "source": "ca07196489b17872",
       "output": "33bcb7a31f051f16"
     },
+    "database.table.fitWidth": {
+      "source": "248f29f5cd7ee46b",
+      "output": "fcca363617a54356"
+    },
     "database.table.loadFailed": {
       "source": "d2af4dfc82055270",
       "output": "d2c372d7815296b5"
@@ -6787,6 +6791,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "99893d5ee8ae886a"
+    },
+    "database.table.resizeHint": {
+      "source": "03bf588e5b27c47d",
+      "output": "ed7ed647a6bbf291"
     },
     "database.table.selectAll": {
       "source": "9df12afccb399a97",
@@ -13551,6 +13559,10 @@
     "features.datenbank-ansichten.details.p3": {
       "source": "0586e886a32da7ba",
       "output": "a737c103b840068e"
+    },
+    "features.datenbank-ansichten.details.p4": {
+      "source": "c61e739af66ee853",
+      "output": "2d755be306ce469f"
     },
     "features.datenbank-ansichten.summary": {
       "source": "8ae9f10ffc140c7f",
@@ -33258,6 +33270,10 @@
       "source": "ca07196489b17872",
       "output": "451009e1420b811c"
     },
+    "database.table.fitWidth": {
+      "source": "248f29f5cd7ee46b",
+      "output": "9961864e5c2549c7"
+    },
     "database.table.loadFailed": {
       "source": "d2af4dfc82055270",
       "output": "6c1f4632e6607f9e"
@@ -33281,6 +33297,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "f80a81903edccf79"
+    },
+    "database.table.resizeHint": {
+      "source": "03bf588e5b27c47d",
+      "output": "837489401c99d4ec"
     },
     "database.table.selectAll": {
       "source": "9df12afccb399a97",
@@ -40045,6 +40065,10 @@
     "features.datenbank-ansichten.details.p3": {
       "source": "0586e886a32da7ba",
       "output": "f036f808bf3c1611"
+    },
+    "features.datenbank-ansichten.details.p4": {
+      "source": "c61e739af66ee853",
+      "output": "0791ec9a9fcadf30"
     },
     "features.datenbank-ansichten.summary": {
       "source": "8ae9f10ffc140c7f",
@@ -59752,6 +59776,10 @@
       "source": "ca07196489b17872",
       "output": "efdb5be76676988c"
     },
+    "database.table.fitWidth": {
+      "source": "248f29f5cd7ee46b",
+      "output": "08b1a13d2c135fb1"
+    },
     "database.table.loadFailed": {
       "source": "d2af4dfc82055270",
       "output": "cfb8e87ce8ca0142"
@@ -59775,6 +59803,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "e4a0749dad1aa469"
+    },
+    "database.table.resizeHint": {
+      "source": "03bf588e5b27c47d",
+      "output": "290d925570227f9e"
     },
     "database.table.selectAll": {
       "source": "9df12afccb399a97",
@@ -66539,6 +66571,10 @@
     "features.datenbank-ansichten.details.p3": {
       "source": "0586e886a32da7ba",
       "output": "9996b19d9505acb9"
+    },
+    "features.datenbank-ansichten.details.p4": {
+      "source": "c61e739af66ee853",
+      "output": "f9eca343450621de"
     },
     "features.datenbank-ansichten.summary": {
       "source": "8ae9f10ffc140c7f",
@@ -86246,6 +86282,10 @@
       "source": "ca07196489b17872",
       "output": "d613834d35673695"
     },
+    "database.table.fitWidth": {
+      "source": "248f29f5cd7ee46b",
+      "output": "709c13ac34d73216"
+    },
     "database.table.loadFailed": {
       "source": "d2af4dfc82055270",
       "output": "f05e29f72945fe2b"
@@ -86269,6 +86309,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "8a811b2dc4386234"
+    },
+    "database.table.resizeHint": {
+      "source": "03bf588e5b27c47d",
+      "output": "a3b1eaaeb643711c"
     },
     "database.table.selectAll": {
       "source": "9df12afccb399a97",
@@ -93033,6 +93077,10 @@
     "features.datenbank-ansichten.details.p3": {
       "source": "0586e886a32da7ba",
       "output": "bc33d7a9454297b0"
+    },
+    "features.datenbank-ansichten.details.p4": {
+      "source": "c61e739af66ee853",
+      "output": "be7f83c03196ee1b"
     },
     "features.datenbank-ansichten.summary": {
       "source": "8ae9f10ffc140c7f",
@@ -112740,6 +112788,10 @@
       "source": "ca07196489b17872",
       "output": "cf6611aef768e081"
     },
+    "database.table.fitWidth": {
+      "source": "248f29f5cd7ee46b",
+      "output": "e741db3aa1c34cb8"
+    },
     "database.table.loadFailed": {
       "source": "d2af4dfc82055270",
       "output": "4424a061b58cec2a"
@@ -112763,6 +112815,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "ef6bfbca4e55ec89"
+    },
+    "database.table.resizeHint": {
+      "source": "03bf588e5b27c47d",
+      "output": "e6555e5897a9a0d4"
     },
     "database.table.selectAll": {
       "source": "9df12afccb399a97",
@@ -119527,6 +119583,10 @@
     "features.datenbank-ansichten.details.p3": {
       "source": "0586e886a32da7ba",
       "output": "1f21ba3dcd313648"
+    },
+    "features.datenbank-ansichten.details.p4": {
+      "source": "c61e739af66ee853",
+      "output": "8b0644540f322e82"
     },
     "features.datenbank-ansichten.summary": {
       "source": "8ae9f10ffc140c7f",
@@ -139234,6 +139294,10 @@
       "source": "ca07196489b17872",
       "output": "aba91ec71c1ef42a"
     },
+    "database.table.fitWidth": {
+      "source": "248f29f5cd7ee46b",
+      "output": "32718fec40169ca8"
+    },
     "database.table.loadFailed": {
       "source": "d2af4dfc82055270",
       "output": "9bee7616be55d136"
@@ -139257,6 +139321,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "d8dda462cd6421e3"
+    },
+    "database.table.resizeHint": {
+      "source": "03bf588e5b27c47d",
+      "output": "5d0e3b950a23fb2a"
     },
     "database.table.selectAll": {
       "source": "9df12afccb399a97",
@@ -146021,6 +146089,10 @@
     "features.datenbank-ansichten.details.p3": {
       "source": "0586e886a32da7ba",
       "output": "d62df5c4c5fad259"
+    },
+    "features.datenbank-ansichten.details.p4": {
+      "source": "c61e739af66ee853",
+      "output": "66f999280457a64d"
     },
     "features.datenbank-ansichten.summary": {
       "source": "8ae9f10ffc140c7f",
@@ -165728,6 +165800,10 @@
       "source": "ca07196489b17872",
       "output": "693b3b6b82071202"
     },
+    "database.table.fitWidth": {
+      "source": "248f29f5cd7ee46b",
+      "output": "68e75fee7ab64170"
+    },
     "database.table.loadFailed": {
       "source": "d2af4dfc82055270",
       "output": "8ddc34abc243977b"
@@ -165751,6 +165827,10 @@
     "database.table.resizeColumn": {
       "source": "54a1ad67225d1283",
       "output": "4111c41807355abd"
+    },
+    "database.table.resizeHint": {
+      "source": "03bf588e5b27c47d",
+      "output": "25d8727907cb0bb5"
     },
     "database.table.selectAll": {
       "source": "9df12afccb399a97",
@@ -172515,6 +172595,10 @@
     "features.datenbank-ansichten.details.p3": {
       "source": "0586e886a32da7ba",
       "output": "675876eb0ec4a126"
+    },
+    "features.datenbank-ansichten.details.p4": {
+      "source": "c61e739af66ee853",
+      "output": "6e644b319c6c4009"
     },
     "features.datenbank-ansichten.summary": {
       "source": "8ae9f10ffc140c7f",

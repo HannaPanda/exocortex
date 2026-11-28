@@ -383,7 +383,8 @@
     "details": {
       "p1": "Nad bazą danych znajduje się pasek zakładek. Każda zakładka to zapisany widok o własnym typie, filtrze, sortowaniu i wyborze kolumn. „Wszystko”, „Do zrobienia w tym tygodniu”, „Według statusu”, „Zakończone”: cztery zakładki dla tych samych wierszy, zamiast filtra ustawianego za każdym razem od nowa.",
       "p2": "Tabela to widok roboczy z bezpośrednią edycją w komórce. Tablica grupuje według kolumny wyboru, a przeciąganie między kolumnami zmienia wartość. Galeria prezentuje karty ze zdjęciem poglądowym, świetne do materiałów wizualnych. Kalendarz porządkuje według kolumny z datą.",
-      "p3": "Widok należy do bazy danych, a nie do ciebie, więc wszyscy członkowie widzą te same zakładki. Widoki można przestawiać, a agent może je tworzyć i modyfikować przez narzędzia, co przydaje się, gdy analiza wymaga osobnego widoku."
+      "p3": "Widok należy do bazy danych, a nie do ciebie, więc wszyscy członkowie widzą te same zakładki. Widoki można przestawiać, a agent może je tworzyć i modyfikować przez narzędzia, co przydaje się, gdy analiza wymaga osobnego widoku.",
+      "p4": "W tabeli możesz rozszerzyć lub zwęzić kolumnę, przeciągając prawą krawędź jej nagłówka. Dwukrotne kliknięcie tej krawędzi dopasowuje jej szerokość do najszerszej zawartości, łącznie z nagłówkiem – tak jak w arkuszu kalkulacyjnym; pomiar uwzględnia to, co tabela już załadowała. Przy użyciu klawiatury wybierasz krawędź klawiszem Tab, klawisze strzałek zmieniają szerokość, a Enter ją dopasowuje. W menu nagłówka kolumny ta sama opcja nosi nazwę „Dopasuj szerokość do zawartości”. Szerokość jest przypisana do widoku, tak samo jak ta ustawiona ręcznie."
     },
     "where": "Pasek zakładek nad bazą danych."
   },

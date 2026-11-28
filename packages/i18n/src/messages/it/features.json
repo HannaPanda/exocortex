@@ -383,7 +383,8 @@
     "details": {
       "p1": "Sopra il database c’è una barra di schede. Ogni scheda è una vista salvata con tipo, filtro, ordinamento e selezione di colonne propri. «Tutto», «In scadenza questa settimana», «Per stato», «Completato»: quattro schede sugli stessi record, invece di dover reimpostare un filtro ogni volta.",
       "p2": "La tabella è la vista di lavoro con modifica diretta nella cella. La bacheca raggruppa in base a una colonna di selezione, e trascinando gli elementi tra le colonne se ne modifica il valore. La galleria mostra schede con un’immagine di copertina, ottima per i contenuti visivi. Il calendario ordina in base a una colonna data.",
-      "p3": "Una vista appartiene al database, non a te, quindi tutti i membri vedono le stesse schede. Le viste possono essere riordinate, e un agente può crearle e modificarle tramite gli strumenti, il che è comodo quando un’analisi richiede una visualizzazione dedicata."
+      "p3": "Una vista appartiene al database, non a te, quindi tutti i membri vedono le stesse schede. Le viste possono essere riordinate, e un agente può crearle e modificarle tramite gli strumenti, il che è comodo quando un’analisi richiede una visualizzazione dedicata.",
+      "p4": "Nella tabella puoi trascinare il bordo destro dell’intestazione di una colonna per allargarla o restringerla. Facendo doppio clic su questo bordo la adatti alla larghezza del suo contenuto più ampio, intestazione inclusa, proprio come in un foglio di calcolo; la misura si basa su ciò che la tabella ha caricato. Con la tastiera selezioni il bordo con il tasto Tab, i tasti freccia ne modificano la larghezza e Invio la adatta. Nel menu dell’intestazione di colonna trovi la stessa opzione come «Adatta larghezza al contenuto». La larghezza appartiene alla vista, esattamente come una modificata trascinando."
     },
     "where": "La barra delle schede sopra un database."
   },

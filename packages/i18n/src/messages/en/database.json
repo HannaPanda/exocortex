@@ -116,6 +116,8 @@
     "loadFailed": "Failed to load rows",
     "nameColumn": "Name",
     "resizeColumn": "Drag column {name} wider or narrower",
+    "resizeHint": "Drag to change the width, double-click or Enter to fit content",
+    "fitWidth": "Fit width to content",
     "openRow": "Open in side peek",
     "newRow": "New row",
     "emptyTitle": "No rows yet",

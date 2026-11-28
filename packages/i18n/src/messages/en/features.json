@@ -383,7 +383,8 @@
     "details": {
       "p1": "Above the database sits a tab bar. Each tab is a saved view with its own type, filter, sort order, and column selection. “All”, “Due this week”, “By status”, “Done”: four tabs over the same rows, instead of a filter you have to set anew every time.",
       "p2": "The table is the working view with direct editing in the cell. The board groups by a select column, and dragging between columns changes the value. The gallery displays cards with a cover image, great for anything visual. The calendar organizes by a date column.",
-      "p3": "A view belongs to the database, not to you, so all members see the same tabs. Views can be reordered, and an agent can create and modify them using tools, which comes in handy when an analysis needs its own perspective."
+      "p3": "A view belongs to the database, not to you, so all members see the same tabs. Views can be reordered, and an agent can create and modify them using tools, which comes in handy when an analysis needs its own perspective.",
+      "p4": "In the table, drag a column’s right header edge to make it wider or narrower. Double-clicking this edge fits it to its widest content, including the header, just like in a spreadsheet; it measures whatever the table has loaded. With the keyboard, select the edge using the Tab key, the arrow keys adjust the width, and Enter fits it. In the column header menu, the same action appears as “Fit width to content”. The width belongs to the view, just like a manually dragged one."
     },
     "where": "The tab bar above a database."
   },

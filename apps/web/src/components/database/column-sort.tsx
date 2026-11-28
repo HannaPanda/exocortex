@@ -8,9 +8,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@exocortex/ui';
 
+import { ColumnFitItem } from './column-fit-item';
 import { sortByColumn, sortOf, withoutColumn } from './sort-rules';
 
 /**
@@ -97,19 +99,22 @@ export function ColumnSortItems({
 
 /**
  * The name column's header. It has no property behind it, so nothing to
- * rename, configure or delete; sorting by the row's name is all its menu
- * offers. Read-only, it is the plain label with the indicator beside it.
+ * rename, configure or delete; sorting by the row's name and fitting the
+ * column to the names (issue #277) are all its menu offers. Read-only, it is
+ * the plain label with the indicator beside it.
  */
 export function TitleColumnHeader({
   label,
   columnKey,
   controls,
   readOnly,
+  onFitWidth,
 }: {
   label: string;
   columnKey: string;
   controls: ColumnSortControls;
   readOnly: boolean;
+  onFitWidth?: () => void;
 }) {
   if (readOnly) {
     return (
@@ -138,6 +143,12 @@ export function TitleColumnHeader({
       />
       <DropdownMenuContent align="start">
         <ColumnSortItems controls={controls} columnKey={columnKey} />
+        {onFitWidth === undefined ? null : (
+          <>
+            <DropdownMenuSeparator />
+            <ColumnFitItem columnKey={columnKey} onFit={onFitWidth} />
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

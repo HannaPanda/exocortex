@@ -247,6 +247,21 @@ handles in the header, all read through
 | `rowHeight`         | `short`/`medium`/`tall` = 1/3/6 lines per cell. A clamp, never a data limit: the full value is always reachable in the cell overlay and in the row's page header (also in the side panel).                        |
 | `visibleProperties` | Which columns are shown, and in which order. A property **missing** from the list counts as visible, so a newly created property appears without the view having to be updated.                                   |
 
+A column's width is dragged at the divider on the right edge of its header,
+and fitted to its content by a double-click on that divider, Enter on it, or
+"Breite an Inhalt anpassen" in the column menu (issue #277). The fit is
+`column-fit.ts`: every header and body cell carries `data-column-key`, each
+cell's content is laid out once more at `max-content` inside the cell (so a
+wrapping title counts as one line, a list of chips as one row), the cell's
+padding and a visible AI mark (`data-cell-mark`) are added, and the widest
+result is clamped to `DATABASE_COLUMN_MIN_WIDTH`..`DATABASE_COLUMN_MAX_WIDTH`
+and stored in `columnWidths` like a dragged width. It measures the rows the
+table has loaded, the view's first page, and not rows it never fetched. Note
+that the double-click differs from the panel dividers (`ResizeHandle`), where
+it resets to the default width: a column follows the spreadsheet convention.
+Agents set the same field through `exo_database_view_update`; the fit itself
+needs a rendered table and is a gesture, not a capability of its own.
+
 Moving a column one step is in the column header menu ("Nach links" / "Nach
 rechts"), and it writes to one of two places, which is the part worth knowing:
 a view that already has a `visibleProperties` list of its own is rewritten in

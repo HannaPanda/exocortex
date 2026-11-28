@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
+  DATABASE_COLUMN_MAX_WIDTH,
+  DATABASE_COLUMN_MIN_WIDTH,
   DATABASE_TITLE_COLUMN_KEY,
   type DatabaseProperty,
   type DatabaseRow,
@@ -41,6 +43,7 @@ import { AddPropertyButton } from './add-property-button';
 import { AiCellMark, useAiFillControls } from './ai-fill';
 import { AiFillProgress } from './ai-fill-progress';
 import { PropertyCell } from './cells';
+import { COLUMN_KEY_ATTRIBUTE, fittedColumnWidth, measureColumnCells } from './column-fit';
 import { type ColumnSortControls, TitleColumnHeader } from './column-sort';
 import { PropertyMenu } from './property-menu';
 import { RowHandle, type RowHandleActions } from './row-handle';
@@ -178,6 +181,20 @@ export function TableView({
     });
   };
 
+  /**
+   * A column as wide as its widest content (issue #277), stored like a
+   * dragged width. Reached by a double-click on the column's divider, Enter on
+   * the focused divider, and the column menu. Unlike a panel's divider, whose
+   * double-click goes back to the default width, a column's follows the
+   * spreadsheet convention: it fits.
+   */
+  const tableRef = React.useRef<HTMLTableElement>(null);
+  const fitWidth = (key: string): void => {
+    const table = tableRef.current;
+    if (table === null) return;
+    commitWidth(key, fittedColumnWidth(measureColumnCells(table, key)));
+  };
+
   if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label={t('loading')} />;
   if (rowsQuery.isError) {
     return <ErrorState title={t('loadFailed')} onRetry={() => void rowsQuery.refetch()} />;
@@ -210,6 +227,7 @@ export function TableView({
           sideways. */}
       <div className="min-h-0 flex-1 overflow-auto" data-testid="table-scroll">
         <Table
+          ref={tableRef}
           containerClassName="overflow-visible"
           // `border-separate` so the sticky header and title column paint their
           // own borders: with `border-collapse` a shared border belongs to the
@@ -228,6 +246,7 @@ export function TableView({
             <TableRow className="hover:bg-transparent">
               <TableHead
                 className={cn('group/head sticky top-0 left-0 z-30 bg-background', CELL_LINES)}
+                {...{ [COLUMN_KEY_ATTRIBUTE]: DATABASE_TITLE_COLUMN_KEY }}
               >
                 <div className="flex items-center justify-between gap-1">
                   {readOnly ? null : (
@@ -248,13 +267,16 @@ export function TableView({
                     columnKey={DATABASE_TITLE_COLUMN_KEY}
                     controls={sort}
                     readOnly={readOnly}
+                    onFitWidth={() => fitWidth(DATABASE_TITLE_COLUMN_KEY)}
                   />
                   {readOnly ? null : (
                     <ColumnResizeHandle
                       width={widthOf(DATABASE_TITLE_COLUMN_KEY)}
                       label={t('resizeColumn', { name: t('nameColumn') })}
+                      hint={t('resizeHint')}
                       onDrag={(width) => setDraggedWidth({ key: DATABASE_TITLE_COLUMN_KEY, width })}
                       onCommit={(width) => commitWidth(DATABASE_TITLE_COLUMN_KEY, width)}
+                      onFit={() => fitWidth(DATABASE_TITLE_COLUMN_KEY)}
                     />
                   )}
                 </div>
@@ -263,6 +285,7 @@ export function TableView({
                 <TableHead
                   key={property.id}
                   className={cn('group/head sticky top-0 z-20 bg-background', CELL_LINES)}
+                  {...{ [COLUMN_KEY_ATTRIBUTE]: property.id }}
                 >
                   <div className="flex items-center justify-between gap-1">
                     <PropertyMenu
@@ -274,13 +297,16 @@ export function TableView({
                       readOnly={readOnly}
                       ai={ai}
                       sort={sort}
+                      onFitWidth={() => fitWidth(property.id)}
                     />
                     {readOnly ? null : (
                       <ColumnResizeHandle
                         width={widthOf(property.id)}
                         label={t('resizeColumn', { name: property.name })}
+                        hint={t('resizeHint')}
                         onDrag={(width) => setDraggedWidth({ key: property.id, width })}
                         onCommit={(width) => commitWidth(property.id, width)}
+                        onFit={() => fitWidth(property.id)}
                       />
                     )}
                   </div>
@@ -307,6 +333,7 @@ export function TableView({
                     CELL_LINES,
                     PINNED_ROW_TINT,
                   )}
+                  {...{ [COLUMN_KEY_ATTRIBUTE]: DATABASE_TITLE_COLUMN_KEY }}
                 >
                   <div className="flex min-h-8 items-start gap-1 px-1.5 py-1.5">
                     <RowControls
@@ -355,6 +382,7 @@ export function TableView({
                     <TableCell
                       key={property.id}
                       className={cn('group/cell relative p-0 align-top', CELL_LINES)}
+                      {...{ [COLUMN_KEY_ATTRIBUTE]: property.id }}
                     >
                       <AiCellMark
                         row={row}
@@ -458,24 +486,40 @@ interface ColumnResizeHandleProps {
   width: number;
   /** The whole accessible name, naming the column and what dragging does. */
   label: string;
+  /** Hover hint and description: what a double-click and Enter do. */
+  hint: string;
   onDrag: (width: number) => void;
   onCommit: (width: number) => void;
+  /** Double-click or Enter: as wide as the column's content (issue #277). */
+  onFit: () => void;
 }
 
 /**
  * Drag handle on the right edge of a header cell.
  *
  * Uses pointer capture so the drag survives the pointer leaving the 6px
- * handle, and keeps the arrow keys working for anyone who cannot drag: the
- * handle is a real button, not a bare `div`.
+ * handle, and keeps the keyboard working for anyone who cannot drag: the
+ * handle is a real button, not a bare `div`. The keys are the shared
+ * `ResizeHandle`'s (arrows, Shift for a bigger step, Home and End for the
+ * limits); Enter, the key a button answers to, fits the column, as a
+ * double-click does.
  */
-function ColumnResizeHandle({ width, label, onDrag, onCommit }: ColumnResizeHandleProps) {
+function ColumnResizeHandle({
+  width,
+  label,
+  hint,
+  onDrag,
+  onCommit,
+  onFit,
+}: ColumnResizeHandleProps) {
   const dragRef = React.useRef<{ startX: number; startWidth: number } | null>(null);
 
   return (
     <button
       type="button"
       aria-label={label}
+      aria-description={hint}
+      title={hint}
       data-testid="column-resize"
       className={cn(
         'absolute inset-y-0 -right-px z-10 w-1.5 cursor-col-resize touch-none rounded-full',
@@ -499,10 +543,22 @@ function ColumnResizeHandle({ width, label, onDrag, onCommit }: ColumnResizeHand
         event.currentTarget.releasePointerCapture(event.pointerId);
         onCommit(clampColumnWidth(drag.startWidth + (event.clientX - drag.startX)));
       }}
+      onDoubleClick={onFit}
       onKeyDown={(event) => {
         const step = event.shiftKey ? 40 : 8;
-        if (event.key === 'ArrowLeft') onCommit(clampColumnWidth(width - step));
-        if (event.key === 'ArrowRight') onCommit(clampColumnWidth(width + step));
+        const set = (next: number): void => {
+          // The table scrolls sideways, and an arrow key would scroll it too.
+          event.preventDefault();
+          onCommit(clampColumnWidth(next));
+        };
+        if (event.key === 'ArrowLeft') set(width - step);
+        if (event.key === 'ArrowRight') set(width + step);
+        if (event.key === 'Home') set(DATABASE_COLUMN_MIN_WIDTH);
+        if (event.key === 'End') set(DATABASE_COLUMN_MAX_WIDTH);
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          onFit();
+        }
       }}
     />
   );

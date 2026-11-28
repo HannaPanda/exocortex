@@ -116,6 +116,8 @@
     "loadFailed": "Nie udało się wczytać wierszy",
     "nameColumn": "Nazwa",
     "resizeColumn": "Przeciągnij, aby zmienić szerokość kolumny {name}",
+    "resizeHint": "Przeciągnij, aby zmienić szerokość. Podwójne kliknięcie lub Enter dopasowuje ją do zawartości",
+    "fitWidth": "Dopasuj szerokość do zawartości",
     "openRow": "Otwórz na pasku bocznym",
     "newRow": "Nowy wiersz",
     "emptyTitle": "Nie ma jeszcze wierszy",

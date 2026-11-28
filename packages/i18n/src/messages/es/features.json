@@ -383,7 +383,8 @@
     "details": {
       "p1": "Encima de la base de datos hay una barra de pestañas. Cada pestaña es una vista guardada con su propio tipo, filtro, ordenación y selección de columnas. «Todo», «Vence esta semana», «Por estado», «Completadas»: cuatro pestañas sobre las mismas filas, en lugar de un filtro que tengas que reconfigurar cada vez.",
       "p2": "La tabla es la vista de trabajo con edición directa en la celda. El tablero agrupa por una columna de selección, y arrastrar entre columnas cambia el valor. La galería muestra tarjetas con imagen de portada, ideal para contenido visual. El calendario ordena según una columna de fecha.",
-      "p3": "Una vista pertenece a la base de datos, no a ti, por lo que todos los miembros ven las mismas pestañas. Las vistas se pueden reordenar, y un agente puede crearlas y modificarlas a través de las herramientas, lo que resulta muy práctico cuando un análisis necesita su propia perspectiva."
+      "p3": "Una vista pertenece a la base de datos, no a ti, por lo que todos los miembros ven las mismas pestañas. Las vistas se pueden reordenar, y un agente puede crearlas y modificarlas a través de las herramientas, lo que resulta muy práctico cuando un análisis necesita su propia perspectiva.",
+      "p4": "En la tabla, arrastra una columna por el borde derecho de su encabezado para hacerla más ancha o más estrecha. Hacer doble clic en ese borde la ajusta al ancho de su contenido más ancho, incluido el encabezado, como en una hoja de cálculo; se mide lo que la tabla haya cargado. Con el teclado, selecciona el borde con el tabulador, las teclas de flecha cambian el ancho y Enter lo ajusta. En el menú del encabezado de columna aparece lo mismo como «Ajustar ancho al contenido». El ancho pertenece a la vista, igual que uno arrastrado."
     },
     "where": "La barra de pestañas encima de una base de datos."
   },

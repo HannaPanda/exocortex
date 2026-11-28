@@ -116,6 +116,8 @@
     "loadFailed": "Error al cargar las filas",
     "nameColumn": "Nombre",
     "resizeColumn": "Ajustar el ancho de la columna {name}",
+    "resizeHint": "Arrastra para cambiar el ancho; haz doble clic o pulsa Intro para ajustarlo al contenido",
+    "fitWidth": "Ajustar ancho al contenido",
     "openRow": "Abrir en la barra lateral",
     "newRow": "Nueva fila",
     "emptyTitle": "Aún no hay filas",

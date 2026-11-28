@@ -57,6 +57,8 @@ import {
 } from '@/lib/api/database-ai-fill-queries';
 import { useFormatter } from '@/lib/formatter';
 
+import { CELL_MARK_ATTRIBUTE } from './column-fit';
+
 /**
  * The AI fill of database columns in the browser (issue #237, ADR-099): the
  * dialog that gives a column its instruction, the dialog that fills a column
@@ -527,6 +529,7 @@ export function AiCellMark({
             aria-label={again ? `${label} ${t('fillAgain')}` : label}
             data-testid={`ai-cell-${row.document.id}-${property.id}`}
             data-state={mark?.state ?? 'offer'}
+            {...{ [CELL_MARK_ATTRIBUTE]: '' }}
             disabled={!retry}
             onClick={(event) => {
               event.stopPropagation();

@@ -116,6 +116,8 @@
     "loadFailed": "Impossibile caricare le righe",
     "nameColumn": "Nome",
     "resizeColumn": "Trascina per ridimensionare la colonna {name}",
+    "resizeHint": "Trascina per modificare la larghezza, fai doppio clic o premi Invio per adattarla al contenuto",
+    "fitWidth": "Adatta la larghezza al contenuto",
     "openRow": "Apri nella barra laterale",
     "newRow": "Nuova riga",
     "emptyTitle": "Ancora nessuna riga",
