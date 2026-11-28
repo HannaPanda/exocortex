@@ -595,10 +595,9 @@ export const pageGenerateCoverTool: AnyToolDefinition = defineTool({
     'Lässt die KI ein Titelbild für eine Seite malen und setzt es. Das Bild entsteht im ' +
     'Hintergrund und ist nicht sofort fertig: der Aufruf bestätigt nur den Auftrag. ' +
     'Braucht ein eingerichtetes Bildmodell, sonst antwortet die API mit ai_image_unavailable. ' +
-    'Bezahlt wird es vom Arbeitsbereich der Seite, wenn du dort Mitglied bist; auf einer Seite, ' +
-    'die nur mit dir geteilt ist, von deinem eigenen Arbeitsbereich (im KI-Chat dem des Chats, ' +
-    'sonst dem ersten in deiner Reihenfolge). Ohne eigenen Arbeitsbereich antwortet die API dort ' +
-    'mit ai_image_no_own_workspace.',
+    'Es zahlt der Arbeitsbereich der Seite; auf einer nur geteilten Seite dein eigener (im Chat ' +
+    'der des Chats, sonst dein erster; ohne einen: ai_image_no_own_workspace). Geteilt geht es ' +
+    'nur, wenn die Seite samt allem darunter zum Bearbeiten freigegeben ist.',
   inputSchema: pageGenerateCoverInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'appearance',

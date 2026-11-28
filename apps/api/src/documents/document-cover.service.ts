@@ -1,6 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { assertPolicy, canEditDocument, WorkspaceAccessService } from '@exocortex/auth';
+import {
+  assertPolicy,
+  canEditDocument,
+  canUploadFile,
+  WorkspaceAccessService,
+} from '@exocortex/auth';
 import {
   type DocumentSummary,
   type GenerateDocumentCoverResponse,
@@ -108,6 +113,19 @@ export class DocumentCoverService {
   }): Promise<GenerateDocumentCoverResponse> {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canEditDocument(context.role, context.document));
+    // The finished picture is installed through the ordinary upload above,
+    // which asks more than editing does: a grant on this page alone does not
+    // carry a file onto it (ADR-044, `requireRoleAnchoredAt`). Asked here, so
+    // nobody pays for a picture that could never be set (issue #264).
+    assertPolicy(
+      canUploadFile(
+        await this.access.requireRoleAnchoredAt(
+          context.workspaceId,
+          input.userId,
+          input.documentId,
+        ),
+      ),
+    );
 
     // Who pays: the page's workspace for a member, the reader's own for
     // somebody who reached the page through a share (issue #264).

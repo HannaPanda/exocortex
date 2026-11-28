@@ -103,7 +103,11 @@ Three decisions of issue #264 (ADR-092's addendum) belong here too:
   a share: the asking run's workspace (from the signed run id), otherwise the
   reader's first own workspace, and never the page's workspace
   (`resolveCoverPayer`, ADR-090's addendum). A reader with no workspace of
-  their own gets `ai_image_no_own_workspace`. Members pay as before.
+  their own gets `ai_image_no_own_workspace`. Members pay as before. Installing
+  the picture is an upload onto the page, and `requireRoleAnchoredAt` lets a
+  grant carry a file only when it is a `WRITE` grant on the branch; the cover
+  route asks that before it queues anything, so a `PAGE_ONLY` grant is refused
+  up front instead of paying for a picture that could not be set.
 - **A database shares its rows, even as "only this page".** See the paragraph
   after the access checklist above.
 

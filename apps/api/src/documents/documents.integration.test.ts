@@ -823,7 +823,9 @@ describe('generating a cover', () => {
           documentId: sharedPageId,
           kind: 'USER',
           permission: 'WRITE',
-          scope: 'PAGE_ONLY',
+          // The branch, because installing the cover is an upload onto the
+          // page, which a grant on the page alone does not carry (ADR-044).
+          scope: 'SUBTREE',
           granteeId: outsiderId,
           createdById: ownerId,
         },
@@ -832,6 +834,31 @@ describe('generating a cover', () => {
 
     afterAll(async () => {
       await prisma.workspace.deleteMany({ where: { id: { in: [readerFirstId, readerSecondId] } } });
+    });
+
+    it('refuses before anything is paid when the grant could not install the cover', async () => {
+      const pageOnlyId = await createPage('Nur diese Seite geteilt');
+      await prisma.documentShare.create({
+        data: {
+          workspaceId,
+          documentId: pageOnlyId,
+          kind: 'USER',
+          permission: 'WRITE',
+          scope: 'PAGE_ONLY',
+          granteeId: outsiderId,
+          createdById: ownerId,
+        },
+      });
+
+      await expect(
+        coverService(enabled).requestGeneration({
+          documentId: pageOnlyId,
+          userId: outsiderId,
+          prompt: 'Ein Leuchtturm',
+          correlationId,
+        }),
+      ).rejects.toBeInstanceOf(AuthorizationError);
+      expect(await queuedJobFor(pageOnlyId)).toBeUndefined();
     });
 
     it("bills the reader's first own workspace when no run asks", async () => {

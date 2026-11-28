@@ -132,7 +132,10 @@ asked, and the page's workspace does not pay for somebody else's picture. A
 member, and the page's owner, pay on the page's workspace exactly as before.
 The decision lives in `resolveCoverPayer`
 (`apps/api/src/documents/cover-payer.ts`) and travels to the worker as the
-job's `billingWorkspaceId`.
+job's `billingWorkspaceId`. Because the finished picture is installed as an
+upload onto the page, which ADR-044 grants a share holder only with `WRITE`
+on the branch, the request is refused before anything is drawn when the
+grant could not carry it; a `PAGE_ONLY` grant cannot set a cover today.
 
 ## Alternatives considered
 
