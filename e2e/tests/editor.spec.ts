@@ -872,6 +872,96 @@ test.describe('editor', () => {
   });
 
   /**
+   * Issue #319: removing the empty lines above a code block from its first
+   * character broke the block as soon as the last line was gone; its lines
+   * leaked into the paragraph above, or into the last point of a list. The
+   * rule (one key removes at most one empty line, nothing ever joins a code
+   * block) is unit-tested in `code-block-edges.test.ts`; what only a browser
+   * proves is the real keys, the real caret and the Yjs undo.
+   */
+  test('Backspace and Delete next to a code block never break it apart', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Code-Kante ${Date.now().toString(36)}`);
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: {
+        markdown:
+          'Oben\n\n```\nzeile1\nzeile2\n```\n\n- Alpha\n- Beta\n\n```\nlisten1\nlisten2\n```\n',
+        mode: 'replace',
+      },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    await page.reload();
+    const surface = page.getByTestId('editor-surface');
+    const top = surface.locator(':scope > p', { hasText: /^Oben/ });
+    const code = surface.locator(':scope > pre');
+    const first = code.filter({ hasText: 'zeile1' });
+    const second = code.filter({ hasText: 'listen1' });
+    const lines = surface.locator(':scope > p');
+    const beta = surface.locator('li p', { hasText: /^Beta/ });
+    await expect(second).toBeVisible({ timeout: 30_000 });
+    await waitForCollaboration(page);
+
+    // Two empty lines under "Oben", made with the keyboard.
+    await top.click();
+    await page.keyboard.press('End');
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
+    await expect(lines).toHaveCount(3);
+    await page.waitForTimeout(800);
+
+    // From the first character of the code: each press removes one empty
+    // line, the block moves up and stays whole. Apart, so each is a step.
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Backspace');
+    await expect(lines).toHaveCount(2);
+    await page.waitForTimeout(800);
+    await page.keyboard.press('Backspace');
+    await expect(lines).toHaveCount(1);
+    await expect(code).toHaveCount(2);
+    await page.waitForTimeout(800);
+
+    // No empty line left: the caret goes up to "Oben", nothing joins.
+    await page.keyboard.press('Backspace');
+    await expect(code).toHaveCount(2);
+    await expect(top).toHaveText('Oben');
+    await page.keyboard.type('!');
+    await expect(top).toHaveText('Oben!');
+    await expect(first).toHaveText(/^zeile1\s*zeile2$/);
+    // Delete at the end of the line above leaves the code where it is.
+    await page.keyboard.press('Delete');
+    await expect(top).toHaveText('Oben!');
+    await expect(code).toHaveCount(2);
+
+    // After a list: the caret goes to the end of the last point.
+    await page.waitForTimeout(800);
+    await beta.click();
+    await page.keyboard.press('End');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Backspace');
+    await page.keyboard.type('?');
+    await expect(beta).toHaveText('Beta?');
+    await expect(second).toHaveText(/^listen1\s*listen2$/);
+    await page.keyboard.press('Delete');
+    await expect(beta).toHaveText('Beta?');
+    await expect(code).toHaveCount(2);
+
+    // One undo per step: the second empty line comes back on its own.
+    await page.waitForTimeout(800);
+    await page.keyboard.press('Control+z');
+    await expect(beta).toHaveText('Beta');
+    await page.waitForTimeout(800);
+    await page.keyboard.press('Control+z');
+    await expect(top).toHaveText('Oben');
+    await page.waitForTimeout(800);
+    await page.keyboard.press('Control+z');
+    await expect(lines).toHaveCount(2);
+    await expect(code).toHaveCount(2);
+  });
+
+  /**
    * Issue #227: the hint stands in the one empty line being written in, set
    * apart from text, and nowhere else. The rules are unit-tested in
    * `packages/editor`; what only a browser proves is the real focus, the real
