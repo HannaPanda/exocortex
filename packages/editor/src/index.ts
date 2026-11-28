@@ -30,6 +30,7 @@ export * from './line-placeholder';
 export * from './link-target';
 export * from './list-continuation';
 export * from './list-split';
+export * from './list-sort';
 export * from './markdown';
 export * from './mathematics';
 export * from './media';
