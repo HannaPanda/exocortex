@@ -369,11 +369,12 @@
   },
   "datenbank-einbettung": {
     "title": "Baza danych wewnątrz strony",
-    "summary": "Istniejącą bazę danych można osadzić jako blok na innej stronie, korzystając z określonego widoku. Dzięki temu tabela znajduje się dokładnie tam, gdzie odnosi się do niej tekst, a nie pod osobnym linkiem.",
+    "summary": "Bazę danych można osadzić jako blok na innej stronie z określonym widokiem: istniejącym lub nowo utworzonym na bieżąco. Dzięki temu tabela znajduje się dokładnie tam, gdzie tekst o niej mówi, zamiast ukrywać się pod linkiem.",
     "details": {
       "p1": "W edytorze wpisz „/” i wybierz osadzenie, a następnie wskaż bazę danych i widok, który ma się pojawić. Blok wyświetla te same dane co sama baza danych – nie jest to kopia: cokolwiek zmienisz w osadzeniu, zmienia się natychmiast wszędzie.",
       "p2": "Jest to przydatne wszędzie tam, gdzie tekst i lista tworzą całość. Na stronie projektu otwarte zadania znajdują się bezpośrednio pod opisem, przefiltrowane przez widok, bez konieczności przechodzenia między dwiema stronami.",
-      "p3": "Ponieważ widok wybiera się przy osadzaniu, ta sama baza danych może w różnych miejscach wyglądać zupełnie inaczej: tu jako tablica według statusu, tam jako lista najbliższych terminów."
+      "p3": "Ponieważ widok wybiera się przy osadzaniu, ta sama baza danych może w różnych miejscach wyglądać zupełnie inaczej: tu jako tablica według statusu, tam jako lista najbliższych terminów.",
+      "p4": "Jeśli baza danych jeszcze nie istnieje, utworzysz ją w tym samym oknie: wpisz nazwę w polu wyszukiwania i wybierz na dole „Nowa baza danych”. Powstanie ona jako podstrona strony, na której się znajduje, i zostanie natychmiast osadzona. Jeśli zamiast tego zamkniesz okno, nic nie zostanie utworzone. Agent robi to samo w dwóch krokach: exo_database_create ze stroną jako stroną nadrzędną, a następnie blok „:::database-embed” z nazwą bazy danych na stronie."
     },
     "where": "W edytorze wpisz „/” i wybierz Osadź bazę danych."
   },

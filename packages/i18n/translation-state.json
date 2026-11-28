@@ -10256,9 +10256,25 @@
       "source": "f7ff1178af202f6f",
       "output": "19766ed6ccb2f4a3"
     },
+    "editor.prompt.createDatabase": {
+      "source": "9e6c41cfaf2734fb",
+      "output": "be7552014e0ce463"
+    },
+    "editor.prompt.createDatabaseFailed": {
+      "source": "afce24885a1a2aff",
+      "output": "e19dcf853267a36e"
+    },
+    "editor.prompt.createDatabaseNamed": {
+      "source": "035b8cfa2bfe1579",
+      "output": "c84e3857943ab813"
+    },
+    "editor.prompt.creatingDatabase": {
+      "source": "d109780a08a5d8d4",
+      "output": "c79ed9492e3c1719"
+    },
     "editor.prompt.database.description": {
-      "source": "48238430266a6649",
-      "output": "4317ccbc98844e95"
+      "source": "2a2917f3e7012b4f",
+      "output": "bf438717088b2802"
     },
     "editor.prompt.database.placeholder": {
       "source": "47340dfe9a561fc1",
@@ -10301,8 +10317,8 @@
       "output": "8ccc2fecf34898bd"
     },
     "editor.prompt.noDatabaseDescription": {
-      "source": "9c66d2ee53bd0c99",
-      "output": "51bf366797ef8799"
+      "source": "6d1b48f908a6a2de",
+      "output": "2b0b607aecbbf2cc"
     },
     "editor.prompt.noDatabaseTitle": {
       "source": "af08e0898971696f",
@@ -13716,9 +13732,13 @@
       "source": "9bf962046e2f5616",
       "output": "1ae5654938efdce7"
     },
+    "features.datenbank-einbettung.details.p4": {
+      "source": "31510b74e45deb92",
+      "output": "0f1a645255a600f3"
+    },
     "features.datenbank-einbettung.summary": {
-      "source": "7f6cf25f02d250be",
-      "output": "883cc34d45bc5c9b"
+      "source": "e364a83f7260778f",
+      "output": "e0313d10a00a763d"
     },
     "features.datenbank-einbettung.title": {
       "source": "b909c563b917bccc",
@@ -36838,9 +36858,25 @@
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
     },
+    "editor.prompt.createDatabase": {
+      "source": "9e6c41cfaf2734fb",
+      "output": "38e66a9f29853fef"
+    },
+    "editor.prompt.createDatabaseFailed": {
+      "source": "afce24885a1a2aff",
+      "output": "81787e8b8a38b185"
+    },
+    "editor.prompt.createDatabaseNamed": {
+      "source": "035b8cfa2bfe1579",
+      "output": "89f9c0c484ad7890"
+    },
+    "editor.prompt.creatingDatabase": {
+      "source": "d109780a08a5d8d4",
+      "output": "7b5825e6fdd079cb"
+    },
     "editor.prompt.database.description": {
-      "source": "48238430266a6649",
-      "output": "9bdc07d2a4c4d013"
+      "source": "2a2917f3e7012b4f",
+      "output": "934be7e68687a9aa"
     },
     "editor.prompt.database.placeholder": {
       "source": "47340dfe9a561fc1",
@@ -36883,8 +36919,8 @@
       "output": "beffd0805ec8f084"
     },
     "editor.prompt.noDatabaseDescription": {
-      "source": "9c66d2ee53bd0c99",
-      "output": "66843dd7585fbccd"
+      "source": "6d1b48f908a6a2de",
+      "output": "26fd103f6b85f7eb"
     },
     "editor.prompt.noDatabaseTitle": {
       "source": "af08e0898971696f",
@@ -40298,9 +40334,13 @@
       "source": "9bf962046e2f5616",
       "output": "41197e5597758240"
     },
+    "features.datenbank-einbettung.details.p4": {
+      "source": "31510b74e45deb92",
+      "output": "f7cb2cbc598946cd"
+    },
     "features.datenbank-einbettung.summary": {
-      "source": "7f6cf25f02d250be",
-      "output": "8fcfc6ae4cda2a4d"
+      "source": "e364a83f7260778f",
+      "output": "61df8142e75469ee"
     },
     "features.datenbank-einbettung.title": {
       "source": "b909c563b917bccc",
@@ -63420,9 +63460,25 @@
       "source": "f7ff1178af202f6f",
       "output": "46ad3916f6a09798"
     },
+    "editor.prompt.createDatabase": {
+      "source": "9e6c41cfaf2734fb",
+      "output": "7bc06a6c63e2429f"
+    },
+    "editor.prompt.createDatabaseFailed": {
+      "source": "afce24885a1a2aff",
+      "output": "ddf894dc1b93b635"
+    },
+    "editor.prompt.createDatabaseNamed": {
+      "source": "035b8cfa2bfe1579",
+      "output": "ecd8915d0622e694"
+    },
+    "editor.prompt.creatingDatabase": {
+      "source": "d109780a08a5d8d4",
+      "output": "6d46dea01526450b"
+    },
     "editor.prompt.database.description": {
-      "source": "48238430266a6649",
-      "output": "b5826bfed0c1fa38"
+      "source": "2a2917f3e7012b4f",
+      "output": "0d9bb11ad63afdfb"
     },
     "editor.prompt.database.placeholder": {
       "source": "47340dfe9a561fc1",
@@ -63465,8 +63521,8 @@
       "output": "190371d903464959"
     },
     "editor.prompt.noDatabaseDescription": {
-      "source": "9c66d2ee53bd0c99",
-      "output": "9fc4e912296d5abf"
+      "source": "6d1b48f908a6a2de",
+      "output": "1db5449597915b20"
     },
     "editor.prompt.noDatabaseTitle": {
       "source": "af08e0898971696f",
@@ -66880,9 +66936,13 @@
       "source": "9bf962046e2f5616",
       "output": "a85c423fbf6535d8"
     },
+    "features.datenbank-einbettung.details.p4": {
+      "source": "31510b74e45deb92",
+      "output": "b1ce6ff81ce8f657"
+    },
     "features.datenbank-einbettung.summary": {
-      "source": "7f6cf25f02d250be",
-      "output": "d2032d4cf9338340"
+      "source": "e364a83f7260778f",
+      "output": "0384ebdc3ec2e986"
     },
     "features.datenbank-einbettung.title": {
       "source": "b909c563b917bccc",
@@ -90002,9 +90062,25 @@
       "source": "f7ff1178af202f6f",
       "output": "18c9d912a21072dd"
     },
+    "editor.prompt.createDatabase": {
+      "source": "9e6c41cfaf2734fb",
+      "output": "dde79d44eaa11534"
+    },
+    "editor.prompt.createDatabaseFailed": {
+      "source": "afce24885a1a2aff",
+      "output": "c21d670f8569960e"
+    },
+    "editor.prompt.createDatabaseNamed": {
+      "source": "035b8cfa2bfe1579",
+      "output": "102cf3d177795f55"
+    },
+    "editor.prompt.creatingDatabase": {
+      "source": "d109780a08a5d8d4",
+      "output": "58fc2801bf3b7a15"
+    },
     "editor.prompt.database.description": {
-      "source": "48238430266a6649",
-      "output": "7704f67fb90a8af5"
+      "source": "2a2917f3e7012b4f",
+      "output": "a414deacd19049ae"
     },
     "editor.prompt.database.placeholder": {
       "source": "47340dfe9a561fc1",
@@ -90047,8 +90123,8 @@
       "output": "6e70cc10bbce8425"
     },
     "editor.prompt.noDatabaseDescription": {
-      "source": "9c66d2ee53bd0c99",
-      "output": "f06cd1d14107ed26"
+      "source": "6d1b48f908a6a2de",
+      "output": "67407a83f17a2546"
     },
     "editor.prompt.noDatabaseTitle": {
       "source": "af08e0898971696f",
@@ -93462,9 +93538,13 @@
       "source": "9bf962046e2f5616",
       "output": "bd7bd312448c2ce8"
     },
+    "features.datenbank-einbettung.details.p4": {
+      "source": "31510b74e45deb92",
+      "output": "b2c37835e8cbe3d3"
+    },
     "features.datenbank-einbettung.summary": {
-      "source": "7f6cf25f02d250be",
-      "output": "b9d203733feb75a0"
+      "source": "e364a83f7260778f",
+      "output": "6b74a5d5cf82fe28"
     },
     "features.datenbank-einbettung.title": {
       "source": "b909c563b917bccc",
@@ -116584,9 +116664,25 @@
       "source": "f7ff1178af202f6f",
       "output": "c6a8d25fe37a7cc5"
     },
+    "editor.prompt.createDatabase": {
+      "source": "9e6c41cfaf2734fb",
+      "output": "2f40e30cf97199eb"
+    },
+    "editor.prompt.createDatabaseFailed": {
+      "source": "afce24885a1a2aff",
+      "output": "60062b30c74d08e2"
+    },
+    "editor.prompt.createDatabaseNamed": {
+      "source": "035b8cfa2bfe1579",
+      "output": "a3093de44a61c1cf"
+    },
+    "editor.prompt.creatingDatabase": {
+      "source": "d109780a08a5d8d4",
+      "output": "18300a16e331fe0f"
+    },
     "editor.prompt.database.description": {
-      "source": "48238430266a6649",
-      "output": "21e28c92053b7069"
+      "source": "2a2917f3e7012b4f",
+      "output": "8fb513b900826377"
     },
     "editor.prompt.database.placeholder": {
       "source": "47340dfe9a561fc1",
@@ -116629,8 +116725,8 @@
       "output": "669d94d894e903f0"
     },
     "editor.prompt.noDatabaseDescription": {
-      "source": "9c66d2ee53bd0c99",
-      "output": "b18425c254e750e1"
+      "source": "6d1b48f908a6a2de",
+      "output": "922824ac43113bfb"
     },
     "editor.prompt.noDatabaseTitle": {
       "source": "af08e0898971696f",
@@ -120044,9 +120140,13 @@
       "source": "9bf962046e2f5616",
       "output": "8b87644198fdfa33"
     },
+    "features.datenbank-einbettung.details.p4": {
+      "source": "31510b74e45deb92",
+      "output": "52468faccacad976"
+    },
     "features.datenbank-einbettung.summary": {
-      "source": "7f6cf25f02d250be",
-      "output": "19f69b776297e26c"
+      "source": "e364a83f7260778f",
+      "output": "3f98d285b938b373"
     },
     "features.datenbank-einbettung.title": {
       "source": "b909c563b917bccc",
@@ -143166,9 +143266,25 @@
       "source": "f7ff1178af202f6f",
       "output": "49285f0029725b67"
     },
+    "editor.prompt.createDatabase": {
+      "source": "9e6c41cfaf2734fb",
+      "output": "f82e2e01d81aa796"
+    },
+    "editor.prompt.createDatabaseFailed": {
+      "source": "afce24885a1a2aff",
+      "output": "aa1022b98a5ff87c"
+    },
+    "editor.prompt.createDatabaseNamed": {
+      "source": "035b8cfa2bfe1579",
+      "output": "63b1b6985fa267d8"
+    },
+    "editor.prompt.creatingDatabase": {
+      "source": "d109780a08a5d8d4",
+      "output": "45ae5464937fdaab"
+    },
     "editor.prompt.database.description": {
-      "source": "48238430266a6649",
-      "output": "c507e2e6b4b3ac8e"
+      "source": "2a2917f3e7012b4f",
+      "output": "f7935c73e8132784"
     },
     "editor.prompt.database.placeholder": {
       "source": "47340dfe9a561fc1",
@@ -143211,8 +143327,8 @@
       "output": "9ced2241f8f81b4f"
     },
     "editor.prompt.noDatabaseDescription": {
-      "source": "9c66d2ee53bd0c99",
-      "output": "fc3192d2271b346f"
+      "source": "6d1b48f908a6a2de",
+      "output": "8742a679c04ec988"
     },
     "editor.prompt.noDatabaseTitle": {
       "source": "af08e0898971696f",
@@ -146626,9 +146742,13 @@
       "source": "9bf962046e2f5616",
       "output": "c9aee265a2d04127"
     },
+    "features.datenbank-einbettung.details.p4": {
+      "source": "31510b74e45deb92",
+      "output": "ae75a87d577d3d60"
+    },
     "features.datenbank-einbettung.summary": {
-      "source": "7f6cf25f02d250be",
-      "output": "756b1fe4cdfb8a5c"
+      "source": "e364a83f7260778f",
+      "output": "6ed8bfbbee40f863"
     },
     "features.datenbank-einbettung.title": {
       "source": "b909c563b917bccc",
@@ -169748,9 +169868,25 @@
       "source": "f7ff1178af202f6f",
       "output": "bb9dbb406dcbd524"
     },
+    "editor.prompt.createDatabase": {
+      "source": "9e6c41cfaf2734fb",
+      "output": "2514c78f1e200023"
+    },
+    "editor.prompt.createDatabaseFailed": {
+      "source": "afce24885a1a2aff",
+      "output": "dbfaae92dcab93e5"
+    },
+    "editor.prompt.createDatabaseNamed": {
+      "source": "035b8cfa2bfe1579",
+      "output": "aa1247263b5cc019"
+    },
+    "editor.prompt.creatingDatabase": {
+      "source": "d109780a08a5d8d4",
+      "output": "c2bfeb573530a4e2"
+    },
     "editor.prompt.database.description": {
-      "source": "48238430266a6649",
-      "output": "68da6b24bd301a21"
+      "source": "2a2917f3e7012b4f",
+      "output": "a5a5591d13019535"
     },
     "editor.prompt.database.placeholder": {
       "source": "47340dfe9a561fc1",
@@ -169793,8 +169929,8 @@
       "output": "8128e9ae9d9adbe5"
     },
     "editor.prompt.noDatabaseDescription": {
-      "source": "9c66d2ee53bd0c99",
-      "output": "8974eb15e9baca9a"
+      "source": "6d1b48f908a6a2de",
+      "output": "a9cdfdd3fbdf8e4e"
     },
     "editor.prompt.noDatabaseTitle": {
       "source": "af08e0898971696f",
@@ -173208,9 +173344,13 @@
       "source": "9bf962046e2f5616",
       "output": "46003b2ac0f20b76"
     },
+    "features.datenbank-einbettung.details.p4": {
+      "source": "31510b74e45deb92",
+      "output": "e6640453f9cf9b41"
+    },
     "features.datenbank-einbettung.summary": {
-      "source": "7f6cf25f02d250be",
-      "output": "29af028d87dd3241"
+      "source": "e364a83f7260778f",
+      "output": "9be419a5fe040586"
     },
     "features.datenbank-einbettung.title": {
       "source": "b909c563b917bccc",

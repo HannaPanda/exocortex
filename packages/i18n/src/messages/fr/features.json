@@ -369,11 +369,12 @@
   },
   "datenbank-einbettung": {
     "title": "Une base de données au cœur d’une page",
-    "summary": "Une base de données existante peut être intégrée comme bloc dans une autre page, avec une vue précise. Ainsi, le tableau se trouve là où le texte en parle, plutôt que derrière un lien.",
+    "summary": "Une base de données peut être intégrée sous forme de bloc dans une autre page, avec une vue spécifique : une vue existante ou une vue que tu crées à cette occasion. Ainsi, le tableau se trouve directement là où le texte en parle, au lieu d’être masqué derrière un lien.",
     "details": {
       "p1": "Dans l’éditeur, tape « / » et choisis l’intégration, puis la base de données et la vue qui doit y apparaître. Le bloc affiche les mêmes données que la base de données elle-même, il ne s’agit donc pas d’une copie : ce que tu modifies dans l’intégration est immédiatement modifié partout.",
       "p2": "C’est utile partout où un texte et une liste doivent être réunis. Sur une page de projet, les tâches en cours de ce projet se trouvent directement sous la description, filtrées par la vue, sans que personne n’ait à naviguer sans cesse entre deux pages.",
-      "p3": "Comme la vue est choisie à l’intégration, la même base de données peut avoir une allure très différente selon les endroits : ici sous forme de tableau Kanban par statut, là sous forme de liste des prochains rendez-vous."
+      "p3": "Comme la vue est choisie à l’intégration, la même base de données peut avoir une allure très différente selon les endroits : ici sous forme de tableau Kanban par statut, là sous forme de liste des prochains rendez-vous.",
+      "p4": "Si la base de données n’existe pas encore, tu peux la créer dans la même fenêtre : saisis son nom dans le champ de recherche et sélectionne « Nouvelle base de données » en bas. Elle sera créée en tant que sous-page de la page où elle se trouve et sera immédiatement intégrée. Si tu fermes la fenêtre à la place, rien n’est créé. Un agent effectue la même opération en deux étapes : exo_database_create avec la page comme page parente, puis un bloc « :::database-embed » avec le nom de la base de données dans la page."
     },
     "where": "Taper « / » dans l’éditeur et choisir Intégrer une base de données."
   },

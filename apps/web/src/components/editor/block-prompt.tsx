@@ -1,5 +1,6 @@
 'use client';
 
+import { PlusIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -26,7 +27,7 @@ import {
 import { DocumentIcon } from '@/components/document/document-icon';
 import { uploadAttachment } from '@/lib/api/attachment-queries';
 import { ApiError } from '@/lib/api/client';
-import { useDocumentTree } from '@/lib/api/document-queries';
+import { useCreateDocument, useDocumentTree } from '@/lib/api/document-queries';
 import { useSavedQueries } from '@/lib/api/saved-query-queries';
 
 /**
@@ -106,9 +107,12 @@ export function useBlockPrompt({
   documentId,
 }: UseBlockPromptOptions): BlockPromptController {
   const t = useTranslations('editor.prompt');
+  const tTree = useTranslations('shell.pageTree');
   const [pending, setPending] = React.useState<PendingPrompt | null>(null);
   const [value, setValue] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
+  const [createError, setCreateError] = React.useState<string | null>(null);
+  const createDocument = useCreateDocument(workspaceId);
   const fileInput = React.useRef<HTMLInputElement | null>(null);
   const fileResolve = React.useRef<((value: string | null) => void) | null>(null);
   const isPicker = pending !== null && PICKER_KINDS.has(pending.kind);
@@ -165,6 +169,7 @@ export function useBlockPrompt({
 
       return new Promise<string | null>((resolve) => {
         setValue(initialValue ?? '');
+        setCreateError(null);
         setPending({ kind, resolve });
       });
     },
@@ -190,6 +195,31 @@ export function useBlockPrompt({
   const finish = (result: string | null): void => {
     pending?.resolve(result);
     setPending(null);
+  };
+
+  /**
+   * Makes a new database and answers with it, as if it had been picked
+   * (issue #226). Nothing exists before this click, so dismissing the dialog
+   * leaves the workspace as it was; and while the request runs the dialog
+   * cannot be dismissed, or a database would appear that nothing embeds.
+   *
+   * It becomes a child of the page it is embedded in (ADR-011: a database is
+   * a document, so it has a place in the tree), which is where somebody
+   * looking for it next to its embed will find it. The search text is its
+   * name, because that is what the person just typed while looking for it.
+   */
+  const createDatabase = (): void => {
+    if (pending?.kind !== 'database' || createDocument.isPending) return;
+    const typed = value.trim();
+    setCreateError(null);
+    createDocument
+      .mutateAsync({
+        title: typed.length > 0 ? typed : tTree('untitledDatabase'),
+        type: 'COLLECTION',
+        parentId: documentId,
+      })
+      .then((created) => finish(JSON.stringify({ documentId: created.id, title: created.title })))
+      .catch(() => setCreateError(t('createDatabaseFailed')));
   };
 
   /** Picks an existing page or database: the answer carries the identity. */
@@ -247,7 +277,12 @@ export function useBlockPrompt({
         onChoose={choose}
         onChooseSavedQuery={chooseSavedQuery}
         onSubmit={submit}
-        onCancel={() => finish(null)}
+        onCancel={() => {
+          if (!createDocument.isPending) finish(null);
+        }}
+        onCreateDatabase={createDatabase}
+        creatingDatabase={createDocument.isPending}
+        createDatabaseError={createError}
       />
     </>
   );
@@ -370,6 +405,42 @@ function SavedQueryPickerList({
   );
 }
 
+/**
+ * The database picker's way to a new database (issue #226).
+ *
+ * A footer action rather than a last row in the list: below a long list a row
+ * would scroll out of sight, and the issue was exactly that this way in could
+ * not be seen. It says the name the database will get.
+ */
+function CreateDatabaseButton({
+  name,
+  creating,
+  onCreate,
+}: {
+  name: string;
+  creating: boolean;
+  onCreate: () => void;
+}) {
+  const t = useTranslations('editor.prompt');
+  return (
+    <Button
+      data-testid="database-prompt-create"
+      onClick={onCreate}
+      disabled={creating}
+      className="min-w-0"
+    >
+      <PlusIcon aria-hidden />
+      <span className="truncate">
+        {creating
+          ? t('creatingDatabase')
+          : name.length > 0
+            ? t('createDatabaseNamed', { title: name })
+            : t('createDatabase')}
+      </span>
+    </Button>
+  );
+}
+
 /** The dialog half of `useBlockPrompt`: one input, optionally a picker below it. */
 function BlockPromptDialog({
   pending,
@@ -383,6 +454,9 @@ function BlockPromptDialog({
   onChooseSavedQuery,
   onSubmit,
   onCancel,
+  onCreateDatabase,
+  creatingDatabase,
+  createDatabaseError,
 }: {
   pending: PendingPrompt | null;
   value: string;
@@ -395,6 +469,9 @@ function BlockPromptDialog({
   onChooseSavedQuery: (entry: SavedQuery) => void;
   onSubmit: () => void;
   onCancel: () => void;
+  onCreateDatabase: () => void;
+  creatingDatabase: boolean;
+  createDatabaseError: string | null;
 }) {
   const t = useTranslations('editor.prompt');
   const copy = pending === null ? null : PROMPT_COPY_KEY[pending.kind];
@@ -464,11 +541,23 @@ function BlockPromptDialog({
               />
             )
           ) : null}
+          {createDatabaseError === null ? null : (
+            <p className="text-xs text-destructive-text" role="alert">
+              {createDatabaseError}
+            </p>
+          )}
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={onCancel}>
+          <Button variant="ghost" onClick={onCancel} disabled={creatingDatabase}>
             {t('cancel')}
           </Button>
+          {pending?.kind === 'database' ? (
+            <CreateDatabaseButton
+              name={value.trim()}
+              creating={creatingDatabase}
+              onCreate={onCreateDatabase}
+            />
+          ) : null}
           {pending?.kind === 'database' || pending?.kind === 'saved-query' ? null : (
             <Button data-testid="block-prompt-submit" onClick={onSubmit}>
               {t('insert')}

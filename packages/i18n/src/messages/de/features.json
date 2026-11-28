@@ -369,11 +369,12 @@
   },
   "datenbank-einbettung": {
     "title": "Eine Datenbank mitten in einer Seite",
-    "summary": "Eine vorhandene Datenbank lässt sich als Block in eine andere Seite einbetten, mit einer bestimmten Ansicht. Damit steht die Tabelle dort, wo der Text über sie spricht, statt hinter einem Link.",
+    "summary": "Eine Datenbank lässt sich als Block in eine andere Seite einbetten, mit einer bestimmten Ansicht: eine vorhandene oder eine, die du dabei gleich neu anlegst. Damit steht die Tabelle dort, wo der Text über sie spricht, statt hinter einem Link.",
     "details": {
       "p1": "Im Editor tippst du \"/\" und wählst die Einbettung, danach die Datenbank und die Ansicht, die dort erscheinen soll. Der Block zeigt dieselben Daten wie die Datenbank selbst, also keine Kopie: was du in der Einbettung änderst, ist sofort überall geändert.",
       "p2": "Nützlich ist das überall dort, wo ein Text und eine Liste zusammengehören. Auf einer Projektseite stehen die offenen Aufgaben dieses Projekts direkt unter der Beschreibung, gefiltert über die Ansicht, statt dass jemand zwischen zwei Seiten hin und her springt.",
-      "p3": "Weil die Ansicht mitgewählt wird, kann dieselbe Datenbank an mehreren Stellen ganz unterschiedlich aussehen: hier als Board nach Status, dort als Liste der nächsten Termine."
+      "p3": "Weil die Ansicht mitgewählt wird, kann dieselbe Datenbank an mehreren Stellen ganz unterschiedlich aussehen: hier als Board nach Status, dort als Liste der nächsten Termine.",
+      "p4": "Gibt es die Datenbank noch nicht, legst du sie im selben Fenster an: Namen ins Suchfeld tippen und unten „Neue Datenbank“ wählen. Sie entsteht als Unterseite der Seite, in der sie steht, und ist sofort eingebettet. Schließt du das Fenster stattdessen, wird nichts angelegt. Ein Agent macht dasselbe in zwei Schritten: exo_database_create mit der Seite als Elternseite, dann ein Block „:::database-embed“ mit dem Namen der Datenbank in der Seite."
     },
     "where": "Im Editor \"/\" tippen und Datenbank einbetten wählen."
   },

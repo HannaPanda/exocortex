@@ -194,7 +194,7 @@
     },
     "database": {
       "title": "Database insluiten",
-      "description": "Kies een bestaande database uit deze werkruimte.",
+      "description": "Kies een bestaande database uit deze werkruimte of maak een nieuwe aan. Een nieuwe database wordt aangemaakt als subpagina van deze pagina en krijgt de naam die je hierboven opgeeft.",
       "placeholder": "Database zoeken …"
     },
     "savedQuery": {
@@ -206,7 +206,11 @@
     "noPageTitle": "Geen pagina gevonden",
     "noPageDescription": "Typ een titel om te linken naar een pagina die nog niet bestaat.",
     "noDatabaseTitle": "Geen database gevonden",
-    "noDatabaseDescription": "Maak eerst een database aan in deze werkruimte.",
+    "noDatabaseDescription": "Er past geen database bij je zoekopdracht, of er is er nog geen. Hieronder maak je een nieuwe aan.",
+    "createDatabase": "Nieuwe database",
+    "createDatabaseNamed": "Nieuwe database „{title}”",
+    "creatingDatabase": "Aanmaken…",
+    "createDatabaseFailed": "De database kon niet worden aangemaakt. Er is niets ingesloten.",
     "linkNewTitle": "“{title}” koppelen als nog niet aangemaakte pagina",
     "noSavedQueryTitle": "Geen opgeslagen zoekopdracht gevonden",
     "noSavedQueryDescription": "In het zoekgedeelte kun je een zoekopdracht samenstellen en opslaan; daarna verschijnt deze hier.",

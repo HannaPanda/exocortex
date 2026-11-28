@@ -194,7 +194,7 @@
     },
     "database": {
       "title": "Osadź bazę danych",
-      "description": "Wybierz istniejącą bazę danych z tego obszaru roboczego.",
+      "description": "Wybierz istniejącą bazę danych z tego obszaru roboczego lub utwórz nową. Nowa baza danych powstanie jako podstrona tej strony i otrzyma nazwę wpisaną powyżej.",
       "placeholder": "Szukaj bazy danych…"
     },
     "savedQuery": {
@@ -206,7 +206,11 @@
     "noPageTitle": "Nie znaleziono strony",
     "noPageDescription": "Wpisz tytuł, aby utworzyć odnośnik do jeszcze nieutworzonej strony.",
     "noDatabaseTitle": "Nie znaleziono bazy danych",
-    "noDatabaseDescription": "Utwórz najpierw bazę danych w tym obszarze roboczym.",
+    "noDatabaseDescription": "Żadna baza danych nie pasuje do wyszukiwania lub jeszcze żadnej nie ma. Poniżej możesz utworzyć nową.",
+    "createDatabase": "Nowa baza danych",
+    "createDatabaseNamed": "Nowa baza danych „{title}”",
+    "creatingDatabase": "Tworzenie…",
+    "createDatabaseFailed": "Nie udało się utworzyć bazy danych. Nic nie zostało osadzone.",
     "linkNewTitle": "„{title}” jako jeszcze nieutworzona strona (utwórz odnośnik)",
     "noSavedQueryTitle": "Nie znaleziono zapisanego wyszukiwania",
     "noSavedQueryDescription": "W widoku wyszukiwania możesz utworzyć i zapisać wyszukiwanie; wtedy pojawi się ono tutaj.",

@@ -99,6 +99,7 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     id: 'datenbank-einbettung',
     area: 'datenbanken',
     since: '2026-08-05',
+    references: ['#226'],
     ui: {},
   }),
   defineFeature({

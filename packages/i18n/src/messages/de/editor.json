@@ -194,7 +194,7 @@
     },
     "database": {
       "title": "Datenbank einbetten",
-      "description": "Wähle eine bestehende Datenbank aus diesem Arbeitsbereich.",
+      "description": "Wähle eine bestehende Datenbank aus diesem Arbeitsbereich oder lege eine neue an. Eine neue Datenbank entsteht als Unterseite dieser Seite und heißt so, wie du sie oben nennst.",
       "placeholder": "Datenbank suchen …"
     },
     "savedQuery": {
@@ -206,7 +206,11 @@
     "noPageTitle": "Keine Seite gefunden",
     "noPageDescription": "Tippe einen Titel, um einen Verweis auf eine noch nicht angelegte Seite zu setzen.",
     "noDatabaseTitle": "Keine Datenbank gefunden",
-    "noDatabaseDescription": "Lege zuerst eine Datenbank in diesem Arbeitsbereich an.",
+    "noDatabaseDescription": "Keine Datenbank passt zur Suche, oder es gibt noch keine. Unten legst du eine neue an.",
+    "createDatabase": "Neue Datenbank",
+    "createDatabaseNamed": "Neue Datenbank „{title}“",
+    "creatingDatabase": "Wird angelegt …",
+    "createDatabaseFailed": "Die Datenbank konnte nicht angelegt werden. Eingebettet wurde nichts.",
     "linkNewTitle": "„{title}“ als noch nicht angelegte Seite verknüpfen",
     "noSavedQueryTitle": "Keine gespeicherte Suche gefunden",
     "noSavedQueryDescription": "Im Suchbereich lässt sich eine Suche zusammenstellen und speichern; danach steht sie hier.",

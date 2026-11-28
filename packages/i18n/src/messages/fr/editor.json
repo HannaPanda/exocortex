@@ -194,7 +194,7 @@
     },
     "database": {
       "title": "Intégrer une base de données",
-      "description": "Choisis une base de données existante dans cet espace de travail.",
+      "description": "Choisis une base de données existante dans cet espace de travail ou crées-en une nouvelle. Une nouvelle base de données sera créée comme sous-page de cette page et portera le nom que tu indiques ci-dessus.",
       "placeholder": "Rechercher une base de données…"
     },
     "savedQuery": {
@@ -206,7 +206,11 @@
     "noPageTitle": "Aucune page trouvée",
     "noPageDescription": "Saisis un titre pour créer un lien vers une page pas encore créée.",
     "noDatabaseTitle": "Aucune base de données trouvée",
-    "noDatabaseDescription": "Crée d’abord une base de données dans cet espace de travail.",
+    "noDatabaseDescription": "Aucune base de données ne correspond à la recherche, ou il n’en existe pas encore. Crées-en une nouvelle ci-dessous.",
+    "createDatabase": "Nouvelle base de données",
+    "createDatabaseNamed": "Nouvelle base de données « {title} »",
+    "creatingDatabase": "Création en cours…",
+    "createDatabaseFailed": "Impossible de créer la base de données. Rien n’a été intégré.",
     "linkNewTitle": "Lier « {title} » comme page pas encore créée",
     "noSavedQueryTitle": "Aucune recherche enregistrée trouvée",
     "noSavedQueryDescription": "Dans la section de recherche, tu peux configurer et enregistrer une recherche ; elle apparaîtra ensuite ici.",

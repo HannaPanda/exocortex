@@ -194,7 +194,7 @@
     },
     "database": {
       "title": "Incorporar banco de dados",
-      "description": "Escolha um banco de dados existente deste espaço de trabalho.",
+      "description": "Escolha um banco de dados existente deste espaço de trabalho ou crie um novo. Um novo banco de dados é criado como uma subpágina desta página e terá o nome que você definir acima.",
       "placeholder": "Buscar banco de dados…"
     },
     "savedQuery": {
@@ -206,7 +206,11 @@
     "noPageTitle": "Nenhuma página encontrada",
     "noPageDescription": "Digite um título para criar um link para uma página ainda não criada.",
     "noDatabaseTitle": "Nenhum banco de dados encontrado",
-    "noDatabaseDescription": "Primeiro, crie um banco de dados neste espaço de trabalho.",
+    "noDatabaseDescription": "Nenhum banco de dados corresponde à busca ou ainda não existe nenhum. Crie um novo abaixo.",
+    "createDatabase": "Novo banco de dados",
+    "createDatabaseNamed": "Novo banco de dados “{title}”",
+    "creatingDatabase": "Criando…",
+    "createDatabaseFailed": "Não foi possível criar o banco de dados. Nada foi incorporado.",
     "linkNewTitle": "Vincular “{title}” como página ainda não criada",
     "noSavedQueryTitle": "Nenhuma busca salva encontrada",
     "noSavedQueryDescription": "Na área de busca, você pode criar e salvar uma busca; depois ela aparecerá aqui.",

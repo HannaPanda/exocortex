@@ -16,6 +16,14 @@ test.beforeAll(() => {
   requireSeedCredentials();
 });
 
+interface TreeNode {
+  id: string;
+  title: string;
+  type: string;
+  parentId: string | null;
+  children: TreeNode[];
+}
+
 test.describe('databases', () => {
   test('creates a database, adds properties, rows, a filter and a sort', async ({ page }) => {
     await page.goto('/arbeitsbereich');
@@ -421,6 +429,73 @@ test.describe('databases', () => {
     await embed.getByRole('link', { name: 'In eigener Seite öffnen' }).click();
     await page.waitForURL(new RegExp(`/seite/${databaseId}$`), { timeout: 15_000 });
     await expect(page.getByTestId('database-shell')).toBeVisible({ timeout: 15_000 });
+  });
+
+  /**
+   * Issue #226: the embed picker makes a new database too. Dismissing it
+   * creates nothing; confirming creates the database under this page, named
+   * after the search text, and embeds it in one go.
+   */
+  test('creates a new database from the embed picker, and nothing when dismissed', async ({
+    page,
+  }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const workspaceId = /\/arbeitsbereich\/([a-z0-9]+)/.exec(page.url())?.[1] ?? '';
+
+    const pageId = await createPage(page, `Mit neuer Datenbank ${Date.now().toString(36)}`);
+    const databaseTitle = `Neu eingebettet ${Date.now().toString(36)}`;
+    const databasesNamed = async (): Promise<{ id: string; parentId: string | null }[]> => {
+      const response = await page.request.get(`/api/workspaces/${workspaceId}/documents/tree`);
+      expect(response.ok()).toBe(true);
+      const found: { id: string; parentId: string | null }[] = [];
+      const walk = (nodes: TreeNode[]): void => {
+        for (const node of nodes) {
+          if (node.type === 'COLLECTION' && node.title === databaseTitle) {
+            found.push({ id: node.id, parentId: node.parentId });
+          }
+          walk(node.children);
+        }
+      };
+      walk(((await response.json()) as { nodes: TreeNode[] }).nodes);
+      return found;
+    };
+
+    const openPicker = async (): Promise<void> => {
+      await page.getByTestId('editor-surface').click();
+      await page.keyboard.type('/datenbank');
+      await expect(page.getByTestId('slash-option-database-embed')).toBeVisible({
+        timeout: 15_000,
+      });
+      await page.keyboard.press('Enter');
+      await page.getByPlaceholder('Datenbank suchen …').fill(databaseTitle);
+    };
+
+    // Dismissed: no database, no embed.
+    await openPicker();
+    await expect(page.getByTestId('database-prompt-create')).toContainText(databaseTitle);
+    await page.getByRole('dialog').getByRole('button', { name: 'Abbrechen' }).click();
+    await expect(page.getByTestId('database-prompt-create')).toBeHidden();
+    await expect(page.locator('.exocortex-database-embed')).toHaveCount(0);
+    expect(await databasesNamed()).toEqual([]);
+
+    // Confirmed: one database under this page, embedded at once.
+    await openPicker();
+    await page.getByTestId('database-prompt-create').click();
+    const embed = page.locator('.exocortex-database-embed');
+    await expect(embed).toBeVisible({ timeout: 15_000 });
+    await expect(embed).toContainText(databaseTitle);
+    await expect(embed.getByTestId('database-shell')).toBeVisible({ timeout: 15_000 });
+    await expect.poll(databasesNamed, { timeout: 15_000 }).toHaveLength(1);
+    expect((await databasesNamed())[0]?.parentId).toBe(pageId);
+
+    // The existing list still works in the same dialog: the new database is in it.
+    const [created] = await databasesNamed();
+    await embed.getByRole('button', { name: 'Datenbank wechseln' }).click();
+    await page.getByPlaceholder('Datenbank suchen …').fill(databaseTitle);
+    await expect(page.getByTestId(`database-prompt-option-${created?.id ?? ''}`)).toBeVisible();
+    await page.getByRole('dialog').getByRole('button', { name: 'Abbrechen' }).click();
+    expect(await databasesNamed()).toHaveLength(1);
   });
 
   /**

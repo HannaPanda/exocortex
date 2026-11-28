@@ -369,11 +369,12 @@
   },
   "datenbank-einbettung": {
     "title": "Un database incorporato in una pagina",
-    "summary": "Un database esistente può essere incorporato come blocco in un’altra pagina, con una vista specifica. In questo modo la tabella si trova direttamente dove il testo ne parla, invece che dietro un link.",
+    "summary": "Un database può essere incorporato come blocco in un’altra pagina, con una vista specifica: una già esistente oppure una che crei al momento. In questo modo la tabella si trova esattamente dove il testo ne parla, anziché dietro a un link.",
     "details": {
       "p1": "Nell’editor digiti «/» e selezioni l’incorporamento, quindi il database e la vista che deve apparire lì. Il blocco mostra gli stessi dati del database originale, non una copia: qualsiasi modifica apportata nell’incorporamento si riflette immediatamente ovunque.",
       "p2": "È utile ovunque un testo e un elenco debbano stare insieme. Nella pagina di un progetto, le attività aperte di quel progetto compaiono direttamente sotto la descrizione, filtrate tramite la vista, senza dover saltare continuamente da una pagina all’altra.",
-      "p3": "Poiché la vista viene scelta contestualmente, lo stesso database può avere aspetti completamente diversi in più punti: qui come bacheca per stato, lì come elenco delle prossime scadenze."
+      "p3": "Poiché la vista viene scelta contestualmente, lo stesso database può avere aspetti completamente diversi in più punti: qui come bacheca per stato, lì come elenco delle prossime scadenze.",
+      "p4": "Se il database non esiste ancora, puoi crearlo nella stessa finestra: digita il nome nel campo di ricerca e seleziona „Nuovo database“ in basso. Verrà creato come sottopagina della pagina in cui si trova e sarà subito incorporato. Se invece chiudi la finestra, non verrà creato nulla. Un agente fa la stessa cosa in due passaggi: exo_database_create con la pagina come pagina genitore, poi un blocco „:::database-embed“ con il nome del database nella pagina."
     },
     "where": "Digita «/» nell’editor e scegli di incorporare un database."
   },

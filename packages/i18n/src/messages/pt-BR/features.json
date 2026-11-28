@@ -369,11 +369,12 @@
   },
   "datenbank-einbettung": {
     "title": "Um banco de dados no meio de uma página",
-    "summary": "Um banco de dados existente pode ser incorporado como um bloco em outra página, com uma visualização específica. Assim, a tabela fica onde o texto fala sobre ela, em vez de ficar atrás de um link.",
+    "summary": "Um banco de dados pode ser incorporado como um bloco em outra página, com uma visualização específica: uma existente ou uma que você cria na mesma hora. Assim, a tabela fica exatamente onde o texto fala sobre ela, em vez de ficar atrás de um link.",
     "details": {
       "p1": "No editor, você digita \"/\" e escolhe a incorporação, depois o banco de dados e a visualização que deve aparecer ali. O bloco mostra os mesmos dados do próprio banco de dados, ou seja, não é uma cópia: o que você altera na incorporação muda imediatamente em todos os lugares.",
       "p2": "Isso é útil em qualquer lugar onde um texto e uma lista pertencem um ao outro. Em uma página de projeto, as tarefas abertas desse projeto ficam logo abaixo da descrição, filtradas pela visualização, em vez de alguém ter que ficar pulando entre duas páginas.",
-      "p3": "Como a visualização é escolhida junto, o mesmo banco de dados pode ter aparências completamente diferentes em vários lugares: aqui como quadro por status, ali como lista dos próximos compromissos."
+      "p3": "Como a visualização é escolhida junto, o mesmo banco de dados pode ter aparências completamente diferentes em vários lugares: aqui como quadro por status, ali como lista dos próximos compromissos.",
+      "p4": "Se o banco de dados ainda não existir, você pode criá-lo na mesma janela: digite o nome no campo de busca e escolha „Novo banco de dados“ abaixo. Ele é criado como uma subpágina da página onde está inserido e fica incorporado imediatamente. Se fechar a janela, nada será criado. Um agente faz o mesmo em dois passos: exo_database_create com a página como página-mãe e, em seguida, um bloco „:::database-embed“ com o nome do banco de dados na página."
     },
     "where": "Digitar \"/\" no editor e escolher incorporar banco de dados."
   },

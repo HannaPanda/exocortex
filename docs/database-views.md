@@ -487,6 +487,22 @@ and forcing the whole page to `full` just for one embed would stretch the prose
 around it. See `Document.layout` in `docs/architecture.md` for the page widths
 themselves.
 
+The picker is also where a new database comes from (issue #226): "Neue
+Datenbank" in its footer creates a `COLLECTION` as a child of the page being
+edited, named after whatever is in the search field ("Unbenannte Datenbank"
+when it is empty), and answers with it exactly as if it had been picked.
+Nothing is created before that click, so dismissing the dialog has no effect,
+and while the request runs the dialog cannot be dismissed, so a database never
+appears without the embed it was made for. A refused create (a share that
+reaches only this page, say) is said inside the dialog and embeds nothing.
+
+An agent does the same in two calls: `exo_database_create` with the page as
+`parentId`, then a write carrying `:::database-embed <Titel>` followed by a
+line `:::`. The Markdown import binds that title to a database of the
+workspace (`bindPageLinkIdentities` with its `databaseLookup`, answered by
+`PageIdentityIndex.databaseFor`), never to an ordinary page that happens to
+share the name; the export writes the title the database carries now.
+
 ## Entities: a database whose rows are things in the world
 
 The entity layer (issue #47) adds no model. An entity is a row in an ordinary
@@ -766,10 +782,12 @@ The value is an ordinary stored value, never a formula (ADR-041).
   delete-and-recreate; there is no coercion path for existing values.
 - **Pagination degrades to offset-based once a view sorts or filters.** See
   ADR-011's consequences section.
-- **A database embed's Markdown export/import loses the reference.** Markdown
-  is interchange-only (ADR-007) and never carries internal ids, so the
-  `:::database-embed` container round-trips only the database's title, and
-  re-importing such a file produces an embed with no database picked yet.
-  `pageLink` used to share this limitation and no longer does: the import path
-  binds `[[Titel]]` back to a document (`bindPageLinkIdentities`, issue #14).
-  The same treatment would work here and has simply not been built.
+- **A database embed's Markdown round-trip keeps the database, not the view.**
+  Markdown is interchange-only (ADR-007) and never carries internal ids, so
+  the `:::database-embed` container carries only the database's title. Since
+  issue #226 the import binds that title back to a database of the workspace
+  (the newest live one of that name), the way `[[Titel]]` binds to a page
+  (issue #14); a title no database carries leaves the embed unpicked. The
+  pinned `viewId` is not written at all, so a re-imported embed shows the
+  database's first view, and a whole-page append onto a page that already
+  holds an embed is still refused (`document_content_lossy`) for that reason.

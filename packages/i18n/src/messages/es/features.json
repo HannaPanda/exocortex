@@ -369,11 +369,12 @@
   },
   "datenbank-einbettung": {
     "title": "Una base de datos en medio de una página",
-    "summary": "Puedes incrustar una base de datos existente como bloque dentro de otra página, con una vista específica. Así, la tabla se sitúa allí donde el texto habla de ella, en lugar de estar tras un enlace.",
+    "summary": "Una base de datos se puede incrustar como un bloque en otra página, con una vista determinada: una existente o una que crees al mismo tiempo. Así, la tabla queda justo donde el texto habla de ella, en lugar de estar tras un enlace.",
     "details": {
       "p1": "En el editor escribes «/» y eliges la opción de incrustar, luego seleccionas la base de datos y la vista que debe aparecer allí. El bloque muestra los mismos datos que la propia base de datos, no una copia: lo que cambies en la incrustación se actualiza de inmediato en todas partes.",
       "p2": "Resulta útil allí donde un texto y una lista van de la mano. En la página de un proyecto, las tareas pendientes de ese proyecto aparecen justo debajo de la descripción, filtradas a través de la vista, sin tener que saltar entre dos páginas.",
-      "p3": "Al elegir también la vista, la misma base de datos puede tener un aspecto muy diferente en distintos lugares: aquí como un tablero por estado, allí como una lista de las próximas fechas."
+      "p3": "Al elegir también la vista, la misma base de datos puede tener un aspecto muy diferente en distintos lugares: aquí como un tablero por estado, allí como una lista de las próximas fechas.",
+      "p4": "Si la base de datos aún no existe, puedes crearla en la misma ventana: escribe el nombre en el campo de búsqueda y selecciona «Nueva base de datos» abajo. Se creará como subpágina de la página donde se encuentra y quedará incrustada de inmediato. Si en su lugar cierras la ventana, no se creará nada. Un agente hace lo mismo en dos pasos: exo_database_create con la página como página superior, y luego un bloque «:::database-embed» con el nombre de la base de datos en la página."
     },
     "where": "Escribe «/» en el editor y elige incrustar base de datos."
   },

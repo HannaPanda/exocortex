@@ -194,7 +194,7 @@
     },
     "database": {
       "title": "Incorpora database",
-      "description": "Scegli un database esistente da quest’area di lavoro.",
+      "description": "Scegli un database esistente da questa area di lavoro o creane uno nuovo. Il nuovo database verrà creato come sottopagina di questa pagina e avrà il nome che indichi qui sopra.",
       "placeholder": "Cerca database …"
     },
     "savedQuery": {
@@ -206,7 +206,11 @@
     "noPageTitle": "Nessuna pagina trovata",
     "noPageDescription": "Digita un titolo per creare un collegamento a una pagina non ancora creata.",
     "noDatabaseTitle": "Nessun database trovato",
-    "noDatabaseDescription": "Crea prima un database in questa area di lavoro.",
+    "noDatabaseDescription": "Nessun database corrisponde alla ricerca, oppure non ne esistono ancora. Puoi crearne uno nuovo qui sotto.",
+    "createDatabase": "Nuovo database",
+    "createDatabaseNamed": "Nuovo database «{title}»",
+    "creatingDatabase": "Creazione in corso…",
+    "createDatabaseFailed": "Impossibile creare il database. Non è stato incorporato nulla.",
     "linkNewTitle": "Collega “{title}” come pagina non ancora creata",
     "noSavedQueryTitle": "Nessuna ricerca salvata trovata",
     "noSavedQueryDescription": "Nell’area di ricerca puoi comporre e salvare una ricerca; sarà poi disponibile qui.",

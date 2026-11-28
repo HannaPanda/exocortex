@@ -194,7 +194,7 @@
     },
     "database": {
       "title": "Embed database",
-      "description": "Choose an existing database from this workspace.",
+      "description": "Choose an existing database from this workspace or create a new one. A new database is created as a subpage of this page and named whatever you call it above.",
       "placeholder": "Search database…"
     },
     "savedQuery": {
@@ -206,7 +206,11 @@
     "noPageTitle": "No page found",
     "noPageDescription": "Type a title to link to a page that hasn’t been created yet.",
     "noDatabaseTitle": "No database found",
-    "noDatabaseDescription": "First create a database in this workspace.",
+    "noDatabaseDescription": "No database matches the search, or none exists yet. You can create a new one below.",
+    "createDatabase": "New database",
+    "createDatabaseNamed": "New database “{title}”",
+    "creatingDatabase": "Creating…",
+    "createDatabaseFailed": "Could not create the database. Nothing was embedded.",
     "linkNewTitle": "Link “{title}” as a page that hasn’t been created yet",
     "noSavedQueryTitle": "No saved query found",
     "noSavedQueryDescription": "You can assemble and save a search in the search area; it will then appear here.",

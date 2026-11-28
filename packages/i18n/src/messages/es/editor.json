@@ -194,7 +194,7 @@
     },
     "database": {
       "title": "Incrustar base de datos",
-      "description": "Elige una base de datos existente de este espacio de trabajo.",
+      "description": "Elige una base de datos existente de este espacio de trabajo o crea una nueva. Se creará como subpágina de esta página y tendrá el nombre que le des arriba.",
       "placeholder": "Buscar base de datos…"
     },
     "savedQuery": {
@@ -206,7 +206,11 @@
     "noPageTitle": "No se ha encontrado ninguna página",
     "noPageDescription": "Escribe un título para enlazar a una página que aún no existe.",
     "noDatabaseTitle": "No se ha encontrado ninguna base de datos",
-    "noDatabaseDescription": "Crea primero una base de datos en este espacio de trabajo.",
+    "noDatabaseDescription": "Ninguna base de datos coincide con la búsqueda o todavía no hay ninguna. Puedes crear una nueva abajo.",
+    "createDatabase": "Nueva base de datos",
+    "createDatabaseNamed": "Nueva base de datos «{title}»",
+    "creatingDatabase": "Creando…",
+    "createDatabaseFailed": "No se pudo crear la base de datos. No se ha incrustado nada.",
     "linkNewTitle": "Enlazar «{title}» como página aún no creada",
     "noSavedQueryTitle": "No se ha encontrado ninguna búsqueda guardada",
     "noSavedQueryDescription": "En la sección de búsqueda puedes configurar y guardar una búsqueda; después aparecerá aquí.",
