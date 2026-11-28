@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-325 routes are reachable from at least one client; 191 from all three.
+326 routes are reachable from at least one client; 191 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -237,6 +237,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/ai/conversations/:x/compact` | · | · | ✓ | `exo_chat_compact` |
 | `POST /api/ai/conversations/:x/messages` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/sources` | ✓ | · | · | — |
+| `POST /api/ai/conversations/:x/title-suggestion` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/to-page` | ✓ | · | · | — |
 | `POST /api/ai/runs/:x/cancel` | ✓ | · | ✓ | `exo_ai_run_cancel` |
 | `POST /api/ai/runs/:x/eval-case` | ✓ | · | ✓ | `exo_eval_case_from_run` |
@@ -352,7 +353,7 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-80 of them. Each is covered by a documented exemption; the reasons
+81 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -408,6 +409,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/ai/conversations/:x/attachments`
 - `POST /api/ai/conversations/:x/messages`
 - `POST /api/ai/conversations/:x/sources`
+- `POST /api/ai/conversations/:x/title-suggestion`
 - `POST /api/ai/conversations/:x/to-page`
 - `POST /api/ai/runs/:x/cancel` (reachable from MCP)
 - `POST /api/ai/runs/:x/eval-case` (reachable from MCP)
@@ -473,4 +475,4 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 ---
 
-Counted against 58 documented route exemptions.
+Counted against 59 documented route exemptions.

@@ -47,6 +47,13 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ui: {},
   }),
   defineFeature({
+    id: 'chat-titel-vorschlagen',
+    area: 'ki',
+    since: '2026-11-28',
+    references: ['#233'],
+    ui: { path: '/chats' },
+  }),
+  defineFeature({
     id: 'markierung-an-ki',
     area: 'ki',
     since: '2026-11-26',

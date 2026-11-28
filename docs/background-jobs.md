@@ -24,6 +24,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `mail`                     | share notifications (#103) and stopped automations (#107) out of the outbox, the comment digests (#106), `EMAIL_SELF` rules (#104)                                                       | `createMailDeliveryProcessor`           | real (one SMTP hop, 5 attempts over ~8 min; a 5xx fails unrecoverably; issue #102)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `workflow`                 | `POST /api/workflows/:id/runs`, outbox dispatch (debounced event triggers), the runtime itself, `sweep-workflow-runs`                                                                    | `createWorkflowProcessor`               | real (advance, execute, resume, start-event; one transition per job, issue #161, ADR-076)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `conversation-compaction`  | `/compact`, `POST /api/ai/conversations/:id/compact` (`exo_chat_compact`)                                                                                                                | `createConversationCompactionProcessor` | real (one summariser call per request, the key a run would use; one attempt, the outcome is written onto the conversation; ADR-093)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `conversation-title`       | `POST /api/ai/conversations/:id/title-suggestion` (the rename dialog's button), which waits for the answer                                                                               | `createConversationTitleProcessor`      | real (one short model call, the key a run would use; one attempt, returns the suggestion and writes nothing; issue #233)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `database-ai-fill`         | `POST /api/documents/:id/ai-fills` and `POST /api/ai-fills/:id/retry` (`exo_database_ai_fill_start`, `exo_database_ai_fill_retry`); the outbox dispatcher for a column that fills itself | `createDatabaseAiFillProcessor`         | real (one batch of an AI column, an `ai_run` of kind FILL on the workspace key; one model call per cell, every answer handed back to the API; one attempt, the batch settles its own cells; ADR-099)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
@@ -277,6 +278,31 @@ publishes `ai.conversation.compacted`, anything else
 `ai.conversation.compaction_failed`. A job lost on the way needs no sweep: past
 the lease every reader sees `abandoned` and the conversation takes messages
 again.
+
+### `conversation-title`: a title suggested on request
+
+`conversationTitleJobSchema`: `{ correlationId, conversationId, workspaceId,
+userId, model, provider }`. Queued by `POST /api/ai/conversations/:id/title-suggestion`,
+the button in the rename dialog (issue #233), with the model the next message
+would run on. The one queue a request waits on: the API adds the job through
+`QueueRegistry.enqueueAndWait`, which opens the queue's event stream first and
+waits up to `TITLE_SUGGESTION_TIMEOUT_MS` (30 s) for the return value. The work
+still happens in the worker, because only the worker reads a workspace's own
+key (ADR-090, ADR-091); the request handler only waits. A timeout answers
+`timed_out` and withdraws a job that has not started yet.
+
+`createConversationTitleProcessor`
+(`apps/worker/src/processors/conversation-title.ts`, concurrency 2, one
+attempt) reads the conversation's USER and ASSISTANT messages, never tool
+results, summaries or the text of attached files (ADR-030), and builds an
+excerpt of at most 6 000 characters: the first message, then as many of the
+newest as fit, each cut at 800. It resolves provider and key through
+`providerFor` like a compaction, and the model too: `ai.compactionModelSlug`
+when set, the conversation's model otherwise. No `ai_run` row is written, as
+for a compaction. It returns an `AiConversationTitleSuggestion`
+(`suggested` with a title of at most 60 characters, or `failed` with
+`nothing_to_name`, `provider_failed` or `key_unreadable`) and stores nothing:
+the title changes only when the person saves it through the ordinary rename.
 
 ### `database-ai-fill`: a column filled by its AI instruction
 
@@ -1082,6 +1108,12 @@ processors against the real PostgreSQL and Redis:
   message however small the context, an empty summary retires nothing, an
   unreadable key sends nothing and says so, and an expired request is left
   alone
+- `titleTranscript`, `cleanSuggestedTitle` and the `conversation-title`
+  processor (`conversation-title.test.ts`): the excerpt keeps the first and
+  the newest messages within its budget, a model's lead-in, quotes and full
+  stop are removed, only the person's and the assistant's messages are read,
+  and an empty conversation, an unreadable key and a failing model each come
+  back as a reason rather than a throw
 - attachment text extraction: `NOT_APPLICABLE` for a non-PDF, `FAILED` with a
   clear reason when no extractor is configured
 - references: all three notations are extracted on materialization, a second

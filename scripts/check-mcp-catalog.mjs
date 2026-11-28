@@ -140,6 +140,11 @@ const EXEMPT = [
       'Renames a conversation, switches its model, archives it. Settings of the panel the caller is talking through.',
   },
   {
+    route: 'POST /api/ai/conversations/:x/title-suggestion',
+    reason:
+      'Suggests a title for the rename dialog (issue #233) and stores nothing. It only serves the rename above, which is exempt, so a tool would hand an agent a title it cannot apply. And an agent is itself a model: `exo_chat_read` gives it the transcript to name, without paying a second model for the same words.',
+  },
+  {
     route: 'DELETE /api/ai/conversations/:x',
     reason: 'Archives a conversation. Same reason: the agent is inside one.',
   },

@@ -984,6 +984,35 @@ does not ask ADR-032's question:
 The built-in AI has no tool for it: it always acts inside a run of its own
 conversation, and that run holds the conversation against the request.
 
+## A suggested title
+
+A new conversation is named after the first words of its first message
+(`deriveTitle` in `ConversationsService.postMessage`, only while the title is
+still the placeholder), without a model. Anything after that is the person's:
+the rename dialog has a button that asks for a title from the conversation
+itself (issue #233), `POST /api/ai/conversations/:id/title-suggestion`.
+
+- The request waits for the `conversation-title` job
+  (`suggestConversationTitle`, `apps/api/src/ai/conversation-title.ts`)
+  instead of answering at once, because a suggestion is a few words the
+  dialog shows immediately; the call itself runs in the worker, which alone
+  reads a workspace's own key (ADR-090, ADR-091).
+- The model is the one a compaction would use: `ai.compactionModelSlug`, or
+  the model the next message would run on. Naming a conversation is
+  summarising it, and the summary model is the cheap one a deployment
+  configures for that. No `ai_run` row is written, as for a compaction.
+- The model reads only the person's messages and the assistant's answers,
+  from the start and the newest end of the conversation, never tool results
+  or attachment text (ADR-030).
+- Nothing is stored. The suggestion lands in the dialog's field, selected and
+  editable, and only the ordinary rename (`PATCH`) changes the title. There is
+  deliberately no automatic re-titling, so a title somebody chose is never
+  replaced.
+- Not in the tool catalogue: renaming is exempt there (it is a setting of the
+  panel the caller talks through), so a suggestion would be a title an agent
+  cannot apply, and an agent is a model that can name a transcript it reads
+  with `exo_chat_read` itself.
+
 ## Vision companions
 
 A companion model is chosen per run, not fixed at the deployment level
