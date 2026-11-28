@@ -527,6 +527,31 @@
     margin: 0;
   }
 
+  /*
+   * A ticked task steps back (issue #253): its text takes the muted ink and its
+   * own line is struck through. `--muted-foreground` still clears 5.6:1 on the
+   * page and 4.7:1 on a card, so a done task stays readable rather than faded
+   * out, and the state itself is the checkbox's, which a screen reader already
+   * announces -- the colour is a second signal, never the only one.
+   *
+   * Everything nested under a done task belongs to it and is quieter too, but
+   * a sub-task keeps its own state: an open one under a ticked parent gets the
+   * full ink back, because it is still work. Only the task's own text is
+   * struck: a line-through on the container would run through every
+   * descendant and could not be taken back by an open sub-task.
+   */
+  .exocortex-editor ul[data-type='taskList'] li[data-checked='true'] > div {
+    @apply text-muted-foreground;
+  }
+
+  .exocortex-editor li[data-checked='true'] li[data-checked='false'] > div {
+    @apply text-foreground;
+  }
+
+  .exocortex-editor ul[data-type='taskList'] li[data-checked='true'] > div > p {
+    @apply line-through decoration-muted-foreground;
+  }
+
   /* Same cascade caveat as the headings: `.ProseMirror` is needed for `my-8` to
      beat the generic sibling gap. */
   .exocortex-editor .ProseMirror hr {
