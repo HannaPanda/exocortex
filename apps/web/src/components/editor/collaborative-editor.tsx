@@ -629,10 +629,11 @@ function EditorChrome({
 }: EditorChromeProps) {
   /*
    * Mention sources, both from data the shell already holds so that typing `@`
-   * costs no request: the page tree from the cache, and the people who are in this
-   * document right now from the presence state.
+   * costs no request: the sidebar's page tree from the cache, and the people
+   * who are in this document right now from the presence state. The tree names
+   * no database rows (issue #221); the menu asks the search for those.
    */
-  const tree = useDocumentTree(workspaceId);
+  const tree = useDocumentTree(workspaceId, { rows: 'count' });
   const { state: session } = useDocumentSession();
   const mentionPages = React.useMemo(() => flattenTree(tree.data?.nodes ?? []), [tree.data]);
   const mentionUsers = React.useMemo(
@@ -727,6 +728,7 @@ function EditorChrome({
       <MentionMenu
         editor={editor}
         keyboard={mentionKeyboard}
+        workspaceId={workspaceId}
         pages={mentionPages}
         users={mentionUsers}
       />

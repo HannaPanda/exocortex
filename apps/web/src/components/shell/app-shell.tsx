@@ -5,6 +5,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
+import { type DocumentSummary, type DocumentTreeResponse } from '@exocortex/contracts';
 import {
   AppBody,
   AppMain,
@@ -58,6 +59,7 @@ import {
 import { SharedNavigation } from './shared-with-me-nav';
 import { Topbar } from './topbar';
 import { TrashSheet } from './trash-sheet';
+import { applyRowEvent, type TreeEvent } from './tree-row-events';
 import { useChatScreen } from './use-chat-screen';
 
 /** How long realtime tree events are gathered before the tree is read again. */
@@ -207,25 +209,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     if (workspaceId !== null) subscribe(workspaceId);
   }, [subscribe, workspaceId]);
 
-  const invalidateTree = useGatheredTreeRefresh(workspaceId);
-
-  /**
-   * A page changed as a whole: refresh the tree *and* that page itself.
-   *
-   * The tree alone is not enough. These events also arrive for a change nobody
-   * in this browser made — the built-in AI setting a cover it just drew, an MCP
-   * client renaming a page, another person archiving one — and the open page
-   * would go on showing the stale properties until someone reloaded it.
-   */
-  const invalidateDocument = React.useCallback(
-    (event: { payload: { document: { id: string } } }) => {
-      invalidateTree();
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.document(event.payload.document.id),
-      });
-    },
-    [invalidateTree, queryClient],
-  );
+  useDocumentTreeRealtime(workspaceId);
 
   // A rename or slug change (this browser's own, another member's, or an MCP
   // client's) affects the switcher list and, if open, the settings page.
@@ -233,11 +217,6 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     void queryClient.invalidateQueries({ queryKey: queryKeys.workspaces });
     void queryClient.invalidateQueries({ queryKey: queryKeys.workspaceDetail(event.workspaceId) });
   });
-  useRealtimeEvent('document.created', invalidateTree);
-  useRealtimeEvent('document.updated', invalidateDocument);
-  useRealtimeEvent('document.moved', invalidateTree);
-  useRealtimeEvent('document.archived', invalidateDocument);
-  useRealtimeEvent('document.restored', invalidateDocument);
   useRealtimeEvent('document.materialized', (event) => {
     void queryClient.invalidateQueries({
       queryKey: queryKeys.document(event.payload.documentId),
@@ -550,30 +529,98 @@ function ContextArea({
 }
 
 /**
- * Tree-changing events invalidate the tree query for every browser session,
- * gathered into one refetch per `TREE_REFRESH_GATHER_MS` (issue #221). An
- * agent filling a database sends several events a second, and each one used
- * to refetch the whole tree in every open tab. This browser's own changes do
- * not wait: their mutations invalidate the tree themselves.
+ * The page events, as the tree and the open page hear them.
+ *
+ * A page changed as a whole refreshes the tree *and* that page itself. The tree
+ * alone is not enough. These events also arrive for a change nobody in this
+ * browser made — the built-in AI setting a cover it just drew, an MCP client
+ * renaming a page, another person archiving one — and the open page would go
+ * on showing the stale properties until someone reloaded it.
  */
-function useGatheredTreeRefresh(workspaceId: string | null): () => void {
+function useDocumentTreeRealtime(workspaceId: string | null): void {
   const queryClient = useQueryClient();
-  const pending = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onTreeEvent = useTreeEvents(workspaceId);
+  const onDocumentEvent = React.useCallback(
+    (kind: 'updated' | 'archived' | 'restored', document: DocumentSummary) => {
+      onTreeEvent({ kind, document });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.document(document.id) });
+    },
+    [onTreeEvent, queryClient],
+  );
+  useRealtimeEvent('document.created', (event) =>
+    onTreeEvent({ kind: 'created', document: event.payload.document }),
+  );
+  useRealtimeEvent('document.updated', (event) =>
+    onDocumentEvent('updated', event.payload.document),
+  );
+  useRealtimeEvent('document.moved', (event) =>
+    onTreeEvent({
+      kind: 'moved',
+      document: event.payload.document,
+      previousParentId: event.payload.previousParentId,
+    }),
+  );
+  useRealtimeEvent('document.archived', (event) =>
+    onDocumentEvent('archived', event.payload.document),
+  );
+  useRealtimeEvent('document.restored', (event) =>
+    onDocumentEvent('restored', event.payload.document),
+  );
+}
+
+/**
+ * What a tree-changing event does to this browser's cached trees (issue #221).
+ *
+ * An event about a database row the sidebar does not show is applied to the
+ * sidebar's tree on the spot: its database's row count moves, and nothing is
+ * fetched (`applyRowEvent`). Every other event refetches the trees, gathered
+ * into one refetch per `TREE_REFRESH_GATHER_MS`, because an agent filling a
+ * database sends several events a second and each one used to refetch the
+ * whole tree in every open tab. Either way the full tree (only fetched while a
+ * page picker is open) and the resolved references are re-read in that same
+ * gathered refetch: both name rows. This browser's own changes do not wait:
+ * their mutations invalidate the tree themselves.
+ */
+function useTreeEvents(workspaceId: string | null): (event: TreeEvent) => void {
+  const queryClient = useQueryClient();
+  const pending = React.useRef<{ timer: ReturnType<typeof setTimeout>; all: boolean } | null>(null);
   // A refresh still gathering belongs to the workspace it was gathered for.
   React.useEffect(
     () => () => {
-      if (pending.current !== null) clearTimeout(pending.current);
+      if (pending.current !== null) clearTimeout(pending.current.timer);
       pending.current = null;
     },
     [workspaceId],
   );
-  return React.useCallback(() => {
-    if (workspaceId === null || pending.current !== null) return;
-    pending.current = setTimeout(() => {
-      pending.current = null;
-      void queryClient.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
-    }, TREE_REFRESH_GATHER_MS);
-  }, [queryClient, workspaceId]);
+  return React.useCallback(
+    (event: TreeEvent) => {
+      if (workspaceId === null) return;
+      const sidebarKey = queryKeys.documentTreeWithRowCounts(workspaceId);
+      const sidebar = queryClient.getQueryData<DocumentTreeResponse>(sidebarKey);
+      const applied = sidebar === undefined ? null : applyRowEvent(sidebar, event);
+      if (applied !== null && applied !== sidebar) queryClient.setQueryData(sidebarKey, applied);
+
+      const all = applied === null;
+      if (pending.current !== null) {
+        pending.current.all ||= all;
+        return;
+      }
+      pending.current = {
+        all,
+        timer: setTimeout(() => {
+          const refreshAll = pending.current?.all ?? true;
+          pending.current = null;
+          void queryClient.invalidateQueries({
+            queryKey: queryKeys.documentTree(workspaceId),
+            // Without rows to learn about, only the tree that names them.
+            exact: !refreshAll,
+          });
+          void queryClient.invalidateQueries({ queryKey: queryKeys.pageLinks(workspaceId) });
+        }, TREE_REFRESH_GATHER_MS),
+      };
+    },
+    [queryClient, workspaceId],
+  );
 }
 
 /**

@@ -7,11 +7,21 @@ and rows that are ordinary `Document`s (`type: 'PAGE'`) underneath it. Read
 "how to extend" recipe, the ADR is the "why".
 
 Rows being documents does not make them pages of the hierarchy. The sidebar,
-the move menu and `exo_page_tree` ask the tree with `rows: 'count'`, so a
-database appears there once, with its row count, and its rows live in its
-views (issue #221: unfolding ten thousand rows took 18 s and 1.6 GB). The full
-tree, rows included, is still what the editor's page pickers and link markers
-look titles up in.
+the move menu, the editor's `@` menu and link markers, and `exo_page_tree` ask
+the tree with `rows: 'count'`, so a database appears there once, with its row
+count, and its rows live in its views (issue #221: unfolding ten thousand rows
+took 18 s and 1.6 GB). A row that has sub-pages of its own is the exception:
+it stays under its database, with them, so no sub-page drops out of the tree.
+Opening a row unfolds nothing; the path above the page says where it lives.
+
+What else still has to find a row by name asks for it rather than holding the
+whole list: the link markers resolve a `[[Titel]]` the tree does not know
+through `GET /api/workspaces/:id/documents/resolve` (the same cache entry the
+page-link block uses), the `@` menu asks the search once two letters are
+typed, and the palette searches anyway. Only the page pickers, opened on
+demand, still read the full tree. Realtime events about a row the tree does
+not show move its database's count in the cached tree instead of refetching
+it (`apps/web/src/components/shell/tree-row-events.ts`).
 
 ## The pieces
 

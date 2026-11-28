@@ -12,6 +12,8 @@ import { type DocumentSummary } from '@exocortex/contracts';
 import { type MentionKind } from '@exocortex/editor';
 import { cn } from '@exocortex/ui';
 
+import { useSearch } from '@/lib/api/search-queries';
+
 import {
   SuggestionKeyboard,
   SuggestionPopup,
@@ -108,21 +110,28 @@ function dateCandidates(query: string, hints: DateHints): MentionCandidate[] {
   );
 }
 
+/** How many pages the menu offers at once. */
+const MAX_PAGE_CANDIDATES = 6;
+
 /**
  * The `@` menu: pages, people and dates.
  *
  * Pages and people come from data the shell already loaded, so typing `@` costs no
- * request.
+ * request. The sidebar's tree names no database rows (issue #221), so once two
+ * letters are typed and the tree has not filled the list, the search is asked
+ * as well and its hits whose title contains the words join below.
  */
 export function MentionMenu({
   editor,
   keyboard,
+  workspaceId,
   pages,
   users,
 }: {
   editor: Editor;
   keyboard: SuggestionKeyboard;
-  pages: readonly DocumentSummary[];
+  workspaceId: string;
+  pages: readonly Pick<DocumentSummary, 'title'>[];
   users: readonly { id: string; name: string }[];
 }) {
   const t = useTranslations('editor.mentionMenu');
@@ -131,17 +140,40 @@ export function MentionMenu({
   const { index, setIndex } = useSuggestionHighlight(snapshot?.query ?? null);
   const listRef = React.useRef<HTMLDivElement>(null);
 
+  const needle = snapshot === null ? '' : snapshot.query.trim().toLowerCase();
+  const localPages = React.useMemo(
+    () =>
+      pages
+        .filter((page) => needle.length === 0 || page.title.toLowerCase().includes(needle))
+        .slice(0, MAX_PAGE_CANDIDATES)
+        .map((page) => page.title),
+    [needle, pages],
+  );
+  const search = useSearch(
+    workspaceId,
+    snapshot !== null && localPages.length < MAX_PAGE_CANDIDATES ? needle : '',
+  );
+  const pageTitles = React.useMemo(() => {
+    const titles = [...localPages];
+    for (const hit of search.data?.results ?? []) {
+      if (titles.length >= MAX_PAGE_CANDIDATES) break;
+      if (!hit.title.toLowerCase().includes(needle) || titles.includes(hit.title)) continue;
+      titles.push(hit.title);
+    }
+    return titles;
+  }, [localPages, needle, search.data]);
+
   const items = React.useMemo((): MentionCandidate[] => {
     if (snapshot === null) return [];
-    const needle = snapshot.query.trim().toLowerCase();
     const matches = (value: string): boolean =>
       needle.length === 0 || value.toLowerCase().includes(needle);
 
     return [
-      ...pages
-        .filter((page) => matches(page.title))
-        .slice(0, 6)
-        .map<MentionCandidate>((page) => ({ kind: 'page', label: page.title, hint: t('page') })),
+      ...pageTitles.map<MentionCandidate>((title) => ({
+        kind: 'page',
+        label: title,
+        hint: t('page'),
+      })),
       ...users
         .filter((user) => matches(user.name))
         .slice(0, 4)
@@ -153,7 +185,7 @@ export function MentionMenu({
         typed: t('typedDate'),
       }),
     ];
-  }, [pages, snapshot, t, users]);
+  }, [needle, pageTitles, snapshot, t, users]);
 
   const choose = React.useCallback(
     (chosen: number): void => {

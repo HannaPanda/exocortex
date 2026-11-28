@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueries } from '@tanstack/react-query';
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
@@ -11,6 +12,7 @@ import { type DocumentSummary, type DocumentTreeNode } from '@exocortex/contract
 import { documentLinkTitleKey, wikiLinkDocumentId, wikiLinkTitle } from '@exocortex/editor';
 
 import { useDocumentTree } from '@/lib/api/document-queries';
+import { pageLinkQueryOptions } from '@/lib/api/page-link-queries';
 
 /** Which pages exist right now, in the two shapes a reference can name one. */
 interface KnownPages {
@@ -95,8 +97,28 @@ export function createWikiLinkMarkers(): Extension {
   });
 }
 
+/** The pages a reference can name, before the tooltip is attached. */
+interface PageSet {
+  ids: ReadonlySet<string>;
+  titleKeys: ReadonlySet<string>;
+}
+
+/** A `[[Titel]]` in the text: its label and, when it carries one, its target's id. */
+interface WikiReference {
+  title: string;
+  documentId: string | null;
+}
+
 /**
- * Every page of the workspace, flattened out of the tree.
+ * How many references on one page are asked about one by one. The tree
+ * answers most of them; the rest are rows of a database and pages that do not
+ * exist. A reference past this many is left unmarked rather than called dead
+ * without having been asked about.
+ */
+const MAX_LOOKUPS = 50;
+
+/**
+ * The pages the sidebar's tree names, flattened.
  *
  * Archived pages count as existing: they are still a real target for a link
  * (the reader gets the read-only view), exactly as `resolveLink` treats them.
@@ -104,8 +126,7 @@ export function createWikiLinkMarkers(): Extension {
 function collectKnownPages(
   nodes: readonly DocumentTreeNode[],
   archived: readonly DocumentSummary[],
-  describeMissing: (title: string) => string,
-): KnownPages {
+): PageSet {
   const ids = new Set<string>();
   const titleKeys = new Set<string>();
 
@@ -122,12 +143,73 @@ function collectKnownPages(
 
   for (const node of nodes) walk(node);
   for (const page of archived) add(page);
-  return { ids, titleKeys, describeMissing };
+  return { ids, titleKeys };
+}
+
+function isKnown(pages: PageSet, reference: WikiReference): boolean {
+  return (
+    (reference.documentId !== null && pages.ids.has(reference.documentId)) ||
+    pages.titleKeys.has(documentLinkTitleKey(reference.title))
+  );
+}
+
+/** Every distinct `[[Titel]]` in the document, in a stable order. */
+function collectReferences(editor: Editor): WikiReference[] {
+  const found = new Map<string, WikiReference>();
+  editor.state.doc.descendants((node) => {
+    if (!node.isText) return true;
+    for (const mark of node.marks) {
+      const title = wikiLinkTitle({ type: mark.type.name, attrs: mark.attrs });
+      if (title === null) continue;
+      const documentId = wikiLinkDocumentId(mark.attrs);
+      found.set(`${documentId ?? ''}\u0000${title}`, { title, documentId });
+    }
+    return true;
+  });
+  return [...found.entries()]
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([, reference]) => reference);
+}
+
+function referencesKey(references: readonly WikiReference[]): string {
+  return references
+    .map((reference) => `${reference.documentId ?? ''}\u0000${reference.title}`)
+    .join('\u0001');
 }
 
 /**
- * Pushes a new set of known pages into the running editor.
+ * The references in the text, re-read a moment after the text changes.
  *
+ * Kept as state that only changes when the set of references does, so typing
+ * a sentence costs one walk over the document per pause and no re-render.
+ */
+function useWikiReferences(editor: Editor): readonly WikiReference[] {
+  const [references, setReferences] = React.useState<readonly WikiReference[]>(() =>
+    editor.isDestroyed ? [] : collectReferences(editor),
+  );
+  React.useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const read = (): void => {
+      timer = null;
+      if (editor.isDestroyed) return;
+      const next = collectReferences(editor);
+      setReferences((current) => (referencesKey(current) === referencesKey(next) ? current : next));
+    };
+    const schedule = ({ transaction }: { transaction: { docChanged: boolean } }): void => {
+      if (!transaction.docChanged || timer !== null) return;
+      timer = setTimeout(read, 300);
+    };
+    editor.on('transaction', schedule);
+    read();
+    return () => {
+      editor.off('transaction', schedule);
+      if (timer !== null) clearTimeout(timer);
+    };
+  }, [editor]);
+  return references;
+}
+
+/**
  * Skips the dispatch when nothing actually changed: the tree query refetches on
  * every realtime event, and a transaction per refetch would recompute every
  * decoration in the document for nothing.
@@ -151,26 +233,65 @@ function publishKnownPages(editor: Editor, known: KnownPages): void {
  * Keeps the markers in step with the workspace's pages.
  *
  * Renders nothing, and lives in the editor *chrome* rather than in the surface
- * because it reads a query — the surface must stay free of both queries and
+ * because it reads queries — the surface must stay free of both queries and
  * effects (see the docstring on `EditorSurface`).
  *
- * Resolution here is deliberately the cheap half: the page tree is already in
- * the cache, so marking costs no request, and no page can turn a long text into
- * one lookup per reference. It is a *hint*; following a reference still asks
- * the API (`GET /workspaces/:id/documents/resolve`), which is what decides
- * between one match, several and none.
+ * Two sources, cheapest first. The sidebar's tree is already in the cache and
+ * answers for every page that is not a database row, at no cost. It no longer
+ * names the rows (issue #221: ten thousand of them were 15 MB, fetched again
+ * on every change), so a reference the tree does not know is asked about on
+ * its own, through the same `resolve` route and cache entry the page-link
+ * block and a click use. Until that answer is in, the reference is not marked:
+ * a dead mark that turns live a moment later reads as a broken page.
  */
 export function WikiLinkMarkers({ editor, workspaceId }: { editor: Editor; workspaceId: string }) {
   const t = useTranslations('editor.wikiLink');
-  const tree = useDocumentTree(workspaceId);
+  const tree = useDocumentTree(workspaceId, { rows: 'count' });
   const data = tree.data;
+  const references = useWikiReferences(editor);
+
+  const fromTree = React.useMemo(
+    () => (data === undefined ? null : collectKnownPages(data.nodes, data.archived)),
+    [data],
+  );
+  const unknown = React.useMemo(
+    () =>
+      fromTree === null
+        ? []
+        : references.filter((reference) => !isKnown(fromTree, reference)).slice(0, MAX_LOOKUPS),
+    [fromTree, references],
+  );
+  // One letter per lookup: settled-and-found, settled-and-missing, or still
+  // open. A new array arrives on every render; this string only changes when
+  // an answer does.
+  const answers = useQueries({
+    queries: unknown.map((reference) => pageLinkQueryOptions(workspaceId, reference)),
+    combine: (results) =>
+      results
+        .map((result) =>
+          result.data === undefined ? 'o' : result.data.matches.length > 0 ? 'y' : 'n',
+        )
+        .join(''),
+  });
 
   const describeMissing = React.useCallback((title: string) => t('missing', { title }), [t]);
-  const known = React.useMemo(
-    () =>
-      data === undefined ? null : collectKnownPages(data.nodes, data.archived, describeMissing),
-    [data, describeMissing],
-  );
+  const known = React.useMemo((): KnownPages | null => {
+    if (fromTree === null) return null;
+    const ids = new Set(fromTree.ids);
+    const titleKeys = new Set(fromTree.titleKeys);
+    unknown.forEach((reference, index) => {
+      if (answers[index] === 'n') return;
+      if (reference.documentId !== null) ids.add(reference.documentId);
+      titleKeys.add(documentLinkTitleKey(reference.title));
+    });
+    // Past the cap nothing was asked, so nothing is called dead.
+    for (const reference of references) {
+      if (isKnown({ ids, titleKeys }, reference) || unknown.includes(reference)) continue;
+      if (reference.documentId !== null) ids.add(reference.documentId);
+      titleKeys.add(documentLinkTitleKey(reference.title));
+    }
+    return { ids, titleKeys, describeMissing };
+  }, [answers, describeMissing, fromTree, references, unknown]);
 
   React.useEffect(() => {
     if (known === null || editor.isDestroyed) return;
