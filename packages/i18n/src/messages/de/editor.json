@@ -265,6 +265,7 @@
     "label": "Codeblock",
     "language": "Sprache",
     "noHighlighting": "Ohne Hervorhebung",
+    "terminalSession": "Terminal-Sitzung",
     "copy": "Code kopieren",
     "copied": "Code kopiert"
   },

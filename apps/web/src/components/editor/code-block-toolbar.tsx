@@ -160,9 +160,9 @@ function useHoveredCodeBlock(
  */
 export function CodeBlockToolbar({ editor }: { editor: Editor }) {
   const t = useTranslations('editor.codeBlock');
-  /** The empty value is "no highlighting"; every other label is a language's own name. */
-  const languageLabel = (entry: { value: string; label: string }): string =>
-    entry.value.length === 0 ? t('noHighlighting') : entry.label;
+  /** A language's own name, or the catalogue's word for an entry that has none. */
+  const languageLabel = (entry: (typeof CODE_BLOCK_LANGUAGES)[number]): string =>
+    'labelKey' in entry ? t(entry.labelKey) : entry.label;
   const [copied, setCopied] = React.useState(false);
 
   const barRef = React.useRef<HTMLDivElement>(null);

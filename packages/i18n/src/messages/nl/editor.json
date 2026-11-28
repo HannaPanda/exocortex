@@ -265,6 +265,7 @@
     "label": "Codeblok",
     "language": "Taal",
     "noHighlighting": "Zonder markering",
+    "terminalSession": "Terminalsessie",
     "copy": "Code kopiëren",
     "copied": "Code gekopieerd"
   },

@@ -10,7 +10,6 @@
   "apps/web/src/lib/emoji-data.generated.ts": 1,
   "packages/editor/src/block-catalog.ts": 16,
   "packages/editor/src/breadcrumb.ts": 2,
-  "packages/editor/src/code-block.ts": 1,
   "packages/editor/src/database-embed.ts": 2,
   "packages/editor/src/document-diff.ts": 7,
   "packages/editor/src/document-map.ts": 2,

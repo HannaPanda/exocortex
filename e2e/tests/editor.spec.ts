@@ -507,6 +507,49 @@ test.describe('editor', () => {
   });
 
   /**
+   * Issue #317: a block without a language was coloured by a guessed one, and a
+   * language picked from the bar while the caret stood elsewhere kept the old
+   * colours until the page was reloaded.
+   */
+  test('a code block recolours at once and stays plain without a language', async ({ page }) => {
+    await openEditor(page);
+    await page.keyboard.type('Davor');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('``` ');
+    await page.keyboard.insertText('user@host:~$ rsync -av --progress src/ dst/');
+    await page.keyboard.press('Enter');
+    await page.keyboard.insertText('total size is 2,044,808  speedup is 20,047.14');
+
+    const pre = page.locator('.exocortex-editor pre');
+    const coloured = pre.locator('[class*="hljs-"]');
+    const pick = async (value: string): Promise<void> => {
+      // The caret elsewhere, the bar from the pointer: the path that kept the
+      // stale colours.
+      await page.locator('.exocortex-editor p').first().click();
+      await pre.hover({ position: { x: 60, y: 60 } });
+      await page.getByTestId('code-language-trigger').click();
+      await page.getByTestId(`code-language-${value}`).click();
+      await page.mouse.move(5, 5);
+    };
+
+    // No language: plain, not guessed.
+    await expect(coloured).toHaveCount(0);
+
+    await pick('console');
+    await expect(pre.locator('.hljs-meta.prompt_')).toHaveText('user@host:~$ ');
+    await expect(pre.locator('.hljs-title')).toHaveText('rsync');
+    await expect(pre.locator('.hljs-attr')).toHaveText(['-av', '--progress']);
+
+    await pick('none');
+    await expect(coloured).toHaveCount(0);
+
+    // A script has no prompts; the options are still found.
+    await pick('bash');
+    await expect(pre.locator('.hljs-attr')).toHaveText(['-av', '--progress']);
+    await expect(pre.locator('.hljs-meta')).toHaveCount(0);
+  });
+
+  /**
    * Issue #261: `Strg+A` in a code block selected the whole page, so the next
    * keystroke replaced it. The keymap is unit-tested in `packages/editor`; what
    * only a browser proves is the rest of the promise: the native selection,

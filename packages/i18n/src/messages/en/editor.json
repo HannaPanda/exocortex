@@ -265,6 +265,7 @@
     "label": "Code block",
     "language": "Language",
     "noHighlighting": "No highlighting",
+    "terminalSession": "Terminal session",
     "copy": "Copy code",
     "copied": "Code copied"
   },

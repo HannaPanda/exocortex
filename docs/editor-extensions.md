@@ -514,6 +514,39 @@ made and left empty stays, as one made with `Enter` would. Covered by
 `trailing-paragraph.test.ts` (including that opening a page writes nothing to
 the Yjs state) and `e2e/tests/editor.spec.ts`.
 
+## Code highlighting
+
+A code block stores only its language's name (`language` attribute, the word
+after a Markdown fence); the colours are decorations derived at render time,
+so nothing about highlighting is ever written to the Yjs state (issue #317).
+
+- **The plugin** (`code-highlight.ts`) replaces the one in
+  `@tiptap/extension-code-block-lowlight`, which is no longer a dependency. It
+  recomputes from node identity rather than from the shape of a transaction:
+  an unchanged block is the same immutable node object, so a block whose text
+  or language changed is a new object and is highlighted again, whatever the
+  change was (typing, the bar's language picker with the caret elsewhere, an
+  undo, a write from the collaboration server). Spans of unchanged blocks come
+  from a `WeakMap` keyed by the node.
+- **No guessing.** An empty language, `text`, or a name no grammar knows
+  draws no colour at all. The upstream plugin called `highlightAuto` there,
+  which coloured terminal output as Python. Automatic detection is not offered
+  as an option either: on short snippets and on output it is wrong more often
+  than right, and it would run every grammar on every keystroke.
+- **Grammars** are registered one by one in `code-block.ts`. `bash` and
+  `console` are our wrappers in `code-grammars.ts`: `bash` adds commands,
+  options and paths to upstream's grammar (alias `shell`), `console` is a
+  terminal session where a line starting with a prompt (`user@host:~$`,
+  `host:~/scripts #`, `[me@box dir]$`, `$`, `#`) is a bash command and every
+  other line is output, left plain. `dotenv` and `env` are aliases of `ini`.
+- **Colours** are the `--syntax-*` tokens (`tokens.css`, DESIGN.md §2 "Syntax"),
+  mapped from highlight.js classes in `apps/web/src/app/globals.css`. The AI
+  chat renders fenced code with the same registry through `highlightCode`.
+
+A new language is an import and a line in `lowlight.register`, plus an entry in
+`CODE_BLOCK_LANGUAGES` if the picker should offer it. Covered by
+`code-block.test.ts` and `e2e/tests/editor.spec.ts`.
+
 ## Markdown
 
 - import: `parseMarkdown(markdown)` → ProseMirror JSON (markdown-it token walker)

@@ -265,6 +265,7 @@
     "label": "Bloco de código",
     "language": "Linguagem",
     "noHighlighting": "Sem realce",
+    "terminalSession": "Sessão de terminal",
     "copy": "Copiar código",
     "copied": "Código copiado"
   },

@@ -9440,6 +9440,10 @@
       "source": "e90037c4b4269e55",
       "output": "3902d719f3f45744"
     },
+    "editor.codeBlock.terminalSession": {
+      "source": "596786292b1e7965",
+      "output": "01c0279651f4efce"
+    },
     "editor.colors.background": {
       "source": "204b70a7dc3f37ba",
       "output": "ea2b8a878841df59"
@@ -35265,6 +35269,10 @@
     "editor.codeBlock.noHighlighting": {
       "source": "e90037c4b4269e55",
       "output": "1e65ada72668a10e"
+    },
+    "editor.codeBlock.terminalSession": {
+      "source": "596786292b1e7965",
+      "output": "e17fb9ae4b3f6e4b"
     },
     "editor.colors.background": {
       "source": "204b70a7dc3f37ba",
@@ -61092,6 +61100,10 @@
       "source": "e90037c4b4269e55",
       "output": "8875f9567134fe47"
     },
+    "editor.codeBlock.terminalSession": {
+      "source": "596786292b1e7965",
+      "output": "592afb8a8aba5999"
+    },
     "editor.colors.background": {
       "source": "204b70a7dc3f37ba",
       "output": "da7751d11aa7e16a"
@@ -86917,6 +86929,10 @@
     "editor.codeBlock.noHighlighting": {
       "source": "e90037c4b4269e55",
       "output": "234b35ab10bc5da1"
+    },
+    "editor.codeBlock.terminalSession": {
+      "source": "596786292b1e7965",
+      "output": "609754ecb36c9c77"
     },
     "editor.colors.background": {
       "source": "204b70a7dc3f37ba",
@@ -112744,6 +112760,10 @@
       "source": "e90037c4b4269e55",
       "output": "988c96001b789ee9"
     },
+    "editor.codeBlock.terminalSession": {
+      "source": "596786292b1e7965",
+      "output": "be8146de3aca8f09"
+    },
     "editor.colors.background": {
       "source": "204b70a7dc3f37ba",
       "output": "1e09f08a25d171f6"
@@ -138570,6 +138590,10 @@
       "source": "e90037c4b4269e55",
       "output": "d033d02ce7256b12"
     },
+    "editor.codeBlock.terminalSession": {
+      "source": "596786292b1e7965",
+      "output": "2f0ccf18dd40b465"
+    },
     "editor.colors.background": {
       "source": "204b70a7dc3f37ba",
       "output": "e425609d8a4a6e40"
@@ -164395,6 +164419,10 @@
     "editor.codeBlock.noHighlighting": {
       "source": "e90037c4b4269e55",
       "output": "df73b3dcda3d44e9"
+    },
+    "editor.codeBlock.terminalSession": {
+      "source": "596786292b1e7965",
+      "output": "f0f5c09476447b89"
     },
     "editor.colors.background": {
       "source": "204b70a7dc3f37ba",
