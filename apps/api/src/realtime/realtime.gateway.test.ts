@@ -155,6 +155,39 @@ describe('RealtimeGateway', () => {
     expect(client.leave).toHaveBeenCalledWith('workspace:workspace-2');
   });
 
+  /**
+   * Issue #232: a grantee is not a member, so it holds no subscription the
+   * drop could tell it about, and its navigation would go on listing a page
+   * whose grant is gone.
+   */
+  it('tells every socket of a grantee that its grants changed, subscribed or not', async () => {
+    const gateway = createGateway(async () => ({ userId: 'user-1' }));
+    const first = createSocket('socket-1');
+    const second = createSocket('socket-2');
+    await gateway.handleConnection(first);
+    await gateway.handleConnection(second);
+
+    revoke(gateway, revocation({ reason: 'document_share_changed' }));
+
+    for (const socket of [first, second]) {
+      expect(socket.emit).toHaveBeenCalledWith('exocortex.grants.changed', {
+        workspaceId: 'workspace-1',
+      });
+      expect(socket.leave).not.toHaveBeenCalled();
+      expect(socket.disconnect).not.toHaveBeenCalled();
+    }
+  });
+
+  it('says nothing about grants for a change of membership', async () => {
+    const gateway = createGateway(async () => ({ userId: 'user-1' }));
+    const client = createSocket();
+    await gateway.handleConnection(client);
+
+    revoke(gateway, revocation({ reason: 'workspace_role_changed' }));
+
+    expect(client.emit).not.toHaveBeenCalledWith('exocortex.grants.changed', expect.anything());
+  });
+
   it('disconnects every socket of an account that was switched off', async () => {
     const gateway = createGateway(async () => ({ userId: 'user-1' }));
     const first = createSocket('socket-1');

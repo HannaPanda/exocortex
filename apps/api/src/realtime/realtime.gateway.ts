@@ -16,6 +16,7 @@ import {
   type ApplicationEvent,
   type AuthorizationRevocation,
   REALTIME_EVENT_NAME,
+  REALTIME_GRANTS_CHANGED_EVENT_NAME,
   REALTIME_REVOCATION_EVENT_NAME,
   REALTIME_SOCKET_PATH,
   subscribeWorkspaceMessageSchema,
@@ -270,6 +271,12 @@ export class RealtimeGateway
       }
 
       this.dropSubscription(socket, revocation.workspaceId, revocation.reason);
+      // A grantee holds no subscription to the page's workspace, so the drop
+      // above says nothing to them. Their navigation lists the page all the
+      // same (issue #232), and this is how it learns to read the list again.
+      if (revocation.reason === 'document_share_changed') {
+        socket.emit(REALTIME_GRANTS_CHANGED_EVENT_NAME, { workspaceId: revocation.workspaceId });
+      }
     }
   }
 

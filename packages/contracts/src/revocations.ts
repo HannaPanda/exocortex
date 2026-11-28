@@ -70,3 +70,19 @@ export const subscriptionRevokedSchema = z.object({
   reason: authorizationRevocationReasonSchema,
 });
 export type SubscriptionRevoked = z.infer<typeof subscriptionRevokedSchema>;
+
+/**
+ * Server -> browser notice that a page grant held by this account changed
+ * (issue #232): given, narrowed, widened or withdrawn.
+ *
+ * Sent to every socket of the grantee, subscribed to the page's workspace or
+ * not. A grantee is not a member, so it never is: without this notice the list
+ * "Mit mir geteilt" in the navigation would go on naming a page that is gone
+ * until the next reload. It carries the workspace id and nothing else, which
+ * the grantee already has from that list; the browser answers by reading the
+ * list again, and the server decides from the grants as they are then.
+ */
+export const REALTIME_GRANTS_CHANGED_EVENT_NAME = 'exocortex.grants.changed';
+
+export const grantsChangedSchema = z.object({ workspaceId: idSchema });
+export type GrantsChanged = z.infer<typeof grantsChangedSchema>;

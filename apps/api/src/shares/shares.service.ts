@@ -404,6 +404,11 @@ export class SharesService {
       permission: created.permission,
       scope: created.scope,
     });
+    // A new grant is a change of grants too: the recipient's navigation lists
+    // it at once (issue #232), and a connection they already hold into this
+    // workspace through another grant is replaced, so the wider right arrives
+    // through a fresh handshake like every other widening (ADR-029).
+    await this.announce(created, input.correlationId);
     return { share: toContract(created) };
   }
 

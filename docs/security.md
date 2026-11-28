@@ -333,6 +333,10 @@ grant publishes `document_share_changed` on the revocation channel of
 [ADR-029](adr/ADR-029-revocation-reaches-open-connections.md), for a widening as
 well as a narrowing; the collaboration server's re-authorization sweep already
 re-reads `findDocumentContext`, so a missed message costs at most 30 seconds.
+The grantee's own browser hears of it too (issue #232): the gateway sends
+`exocortex.grants.changed` with nothing but the workspace id to each of their
+sockets, and the navigation reads `GET /api/me/shares` again, so a withdrawn
+page leaves "Mit mir geteilt" while it is open.
 
 **The built-in AI on a shared page is the reader again** (issue #234,
 [ADR-092](adr/ADR-092-a-shared-page-is-context-for-the-readers-own-chat.md)).

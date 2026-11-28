@@ -93,7 +93,12 @@ session loses `write` without waiting for a reconnect. It is deliberately not th
 application event bus (that one fans out into browser rooms) and deliberately not
 the outbox (a poll is too slow for an authorization decision); the guarantee
 underneath it is a periodic re-authorization sweep in both processes. ADR-029 and
-`docs/security.md` have the whole picture.
+`docs/security.md` have the whole picture. Two messages carry a revocation to the
+browser: `exocortex.subscription.revoked` to a socket whose room was dropped, and,
+for `document_share_changed`, `exocortex.grants.changed` to every socket of the
+grantee whatever it is subscribed to, because somebody holding a page grant is in
+no workspace room (issue #232). Neither carries content; the browser answers both
+by asking again.
 
 ## Reliability: outbox plus best-effort realtime
 

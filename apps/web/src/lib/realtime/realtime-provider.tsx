@@ -6,7 +6,9 @@ import { io, type Socket } from 'socket.io-client';
 import {
   type ApplicationEvent,
   type ApplicationEventType,
+  type GrantsChanged,
   REALTIME_EVENT_NAME,
+  REALTIME_GRANTS_CHANGED_EVENT_NAME,
   REALTIME_REVOCATION_EVENT_NAME,
   REALTIME_SOCKET_PATH,
   type SubscriptionResult,
@@ -21,6 +23,7 @@ import { onWakeSignals, type WakeReason } from '../wake-signals';
 export type RealtimeStatus = 'connecting' | 'connected' | 'disconnected';
 
 type Listener = (event: ApplicationEvent) => void;
+type GrantsListener = (message: GrantsChanged) => void;
 
 interface RealtimeContextValue {
   status: RealtimeStatus;
@@ -31,6 +34,11 @@ interface RealtimeContextValue {
     type: TType,
     listener: (event: Extract<ApplicationEvent, { type: TType }>) => void,
   ) => () => void;
+  /**
+   * Registers a listener for "a page grant this account holds changed"
+   * (issue #232). Returns an unsubscribe function.
+   */
+  onGrantsChanged: (listener: GrantsListener) => () => void;
   /** Last subscription rejection, if any. Surfaced in the UI. */
   lastError: string | null;
 }
@@ -81,6 +89,7 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
   const socketRef = React.useRef<Socket | null>(null);
   const listeners = React.useRef(new Map<string, Set<Listener>>());
   const subscribed = React.useRef(new Set<string>());
+  const grantsListeners = React.useRef(new Set<GrantsListener>());
 
   React.useEffect(() => {
     installConnectionDiagnostics();
@@ -204,6 +213,14 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
       );
     });
 
+    // A grant this account holds was given, changed or withdrawn. Not a
+    // subscription matter: a grantee is no member, so the notice arrives
+    // whatever this socket is subscribed to (issue #232).
+    socket.on(REALTIME_GRANTS_CHANGED_EVENT_NAME, (message: GrantsChanged) => {
+      logConnection('app', 'grants.changed', { workspaceId: message.workspaceId });
+      for (const listener of grantsListeners.current) listener(message);
+    });
+
     /**
      * A tab the user just came back to must not sit out a grown backoff.
      *
@@ -264,9 +281,16 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const onGrantsChanged = React.useCallback((listener: GrantsListener): (() => void) => {
+    grantsListeners.current.add(listener);
+    return () => {
+      grantsListeners.current.delete(listener);
+    };
+  }, []);
+
   const value = React.useMemo<RealtimeContextValue>(
-    () => ({ status, subscribe, on, lastError }),
-    [status, subscribe, on, lastError],
+    () => ({ status, subscribe, on, onGrantsChanged, lastError }),
+    [status, subscribe, on, onGrantsChanged, lastError],
   );
 
   return <RealtimeContext.Provider value={value}>{children}</RealtimeContext.Provider>;
@@ -295,4 +319,16 @@ export function useRealtimeEvent<TType extends ApplicationEventType>(
   }, [listener]);
 
   React.useEffect(() => on(type, (event) => stable.current(event)), [on, type]);
+}
+
+/** Runs `listener` whenever a page grant this account holds changed (issue #232). */
+export function useGrantsChanged(listener: (message: GrantsChanged) => void): void {
+  const { onGrantsChanged } = useRealtime();
+  const stable = React.useRef(listener);
+
+  React.useEffect(() => {
+    stable.current = listener;
+  }, [listener]);
+
+  React.useEffect(() => onGrantsChanged((message) => stable.current(message)), [onGrantsChanged]);
 }
