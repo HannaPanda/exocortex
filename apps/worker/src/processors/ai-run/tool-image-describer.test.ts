@@ -4,7 +4,7 @@ import { type VisionPreprocessor } from '@exocortex/ai';
 import { type Settings } from '@exocortex/contracts';
 
 import { type ResolvedModelRow } from './contract';
-import { resolveToolImageDescriber } from './preparation';
+import { resolveImageDescriber, resolveToolImageDescriber } from './preparation';
 
 function modelRow(overrides: Partial<ResolvedModelRow>): ResolvedModelRow {
   return {
@@ -91,5 +91,53 @@ describe('resolveToolImageDescriber (issue #204)', () => {
       }),
     ).toBeNull();
     expect(visionPreprocessorFor).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * Issue #207: the open page's pictures and a chat picture are described by
+ * this same choice, and the stored description keeps the name of whoever
+ * wrote it. A subscription preset's slug never reaches the OpenRouter-based
+ * describer, however the model is marked.
+ */
+describe('resolveImageDescriber, for the page and the chat (issue #207)', () => {
+  const choose = (row: Partial<ResolvedModelRow>, companion: string | null = null) =>
+    resolveImageDescriber({
+      settings: settings(true),
+      modelRow: modelRow(row),
+      conversationCompanionSlug: companion,
+      visionPreprocessorFor: () => preprocessor,
+      correlationId: 'c1',
+    });
+
+  it('names the model that sees as the describer', () => {
+    expect(choose({ slug: 'vendor/vision-model', supportsVision: true })?.model).toBe(
+      'vendor/vision-model',
+    );
+  });
+
+  it("names a text-only model's companion, and the conversation's choice over the row's", () => {
+    expect(choose({ visionCompanionSlug: 'vendor/admin-companion' })?.model).toBe(
+      'vendor/admin-companion',
+    );
+    expect(
+      choose({ visionCompanionSlug: 'vendor/admin-companion' }, 'vendor/chosen-companion')?.model,
+    ).toBe('vendor/chosen-companion');
+  });
+
+  it('never names a preset slug: a subscription model that sees borrows the default companion', () => {
+    const chosen = choose({
+      slug: 'cline-pass/vision-model',
+      provider: 'cline',
+      supportsVision: true,
+    });
+    expect(chosen).not.toBeNull();
+    expect(chosen?.model).toBeNull();
+  });
+
+  it('answers null for a conversation that switched the companion off', () => {
+    expect(
+      choose({ slug: 'cline-pass/m', provider: 'cline', supportsVision: true }, 'off'),
+    ).toBeNull();
   });
 });

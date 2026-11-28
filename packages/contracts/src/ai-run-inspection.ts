@@ -46,6 +46,7 @@ export const AI_RUN_CONTEXT_SECTIONS = [
   'tool_offer',
   'images',
   'chat_images',
+  'page_images',
   'conversation_summary',
   'conversation_user',
   'conversation_assistant',

@@ -8,7 +8,7 @@ import { describeChatAttachments, transcriptCarriesForeignChatFiles } from './ch
 import { awaitChatDocumentTexts } from './chat-documents';
 import { type ChatImagePixels, chatImagePixelsFor } from './chat-images';
 import { type ResolvedModelRow } from './contract';
-import { MAX_IMAGES_PER_RUN } from './images';
+import { MAX_IMAGES_PER_RUN } from './page-pictures';
 import { resolveImageDescriber } from './preparation';
 
 /**

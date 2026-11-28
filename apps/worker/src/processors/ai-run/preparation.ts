@@ -347,45 +347,14 @@ export function resolveVisionCompanionSlug(
 }
 
 /**
- * The preprocessor that describes the open page's images, or `null` when none
- * should run: vision switched off globally, a main model that sees images
- * itself, or a conversation that turned the companion off.
- */
-export function resolveVisionPreprocessor(input: {
-  settings: Settings;
-  modelRow: ResolvedModelRow;
-  conversationCompanionSlug: string | null;
-  visionPreprocessorFor: (modelSlug: string | null) => VisionPreprocessor | null;
-  run: AiRun;
-  logger: AiJob['logger'];
-}): VisionPreprocessor | null {
-  if (!input.settings['ai.visionEnabled']) return null;
-  if (input.modelRow.supportsVision) {
-    // This is the user-visible payoff of the registry: a vision model no
-    // longer pays for a companion call.
-    input.logger.info('Skipping vision preprocessing: the main model sees images itself', {
-      runId: input.run.id,
-      model: input.modelRow.slug,
-    });
-    return null;
-  }
-  const companionSlug = resolveVisionCompanionSlug(
-    input.conversationCompanionSlug,
-    input.modelRow.visionCompanionSlug,
-  );
-  if (companionSlug === 'off') return null;
-  return input.visionPreprocessorFor(companionSlug);
-}
-
-/**
  * Who looks at a picture a tool returned (issue #204), or `null` when nobody
  * may: vision switched off, or a conversation that turned its companion off.
  *
- * The built-in loop's messages are text (ADR-009), so the picture reaches the
- * model as a description either way. What differs from the page images above
- * is who writes it: a main model that sees images describes the picture
- * itself, with the question in front of it being the one the run is about,
- * and only a text-only model borrows its companion (ADR-012).
+ * The built-in loop's tool results are text (ADR-009), so the picture reaches
+ * the model as a description either way. A main model that sees images
+ * describes the picture itself, and only a text-only model, or one whose slug
+ * OpenRouter does not know, borrows its companion (ADR-012). The open page's
+ * pictures and a chat picture are described by the same choice (ADR-102).
  */
 export function resolveToolImageDescriber(input: {
   settings: Settings;

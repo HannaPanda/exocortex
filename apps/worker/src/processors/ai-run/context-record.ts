@@ -14,6 +14,7 @@ import { type PromptSection } from '../../system-prompt';
 import { type ToolContext } from '../../tool-runner';
 
 import { imageInputCount, type RunPromptMessage } from './chat-images';
+import { type PagePicturesForPrompt } from './page-pictures';
 
 const CONVERSATION_SECTION: Record<AiMessage['role'], AiRunContextSectionKey> = {
   system: 'conversation_summary',
@@ -54,7 +55,8 @@ export interface RunNote {
 export function contextEvent(input: {
   promptSections: readonly PromptSection[];
   notes: readonly RunNote[];
-  imageContext: AiMessage | null;
+  /** The open page's pictures: the note is measured as text, the pixels as pictures (ADR-102). */
+  pagePictures: Pick<PagePicturesForPrompt, 'note' | 'images'> | null;
   documentId: string | null;
   conversation: readonly RunPromptMessage[];
   tools: ToolContext | null;
@@ -67,8 +69,8 @@ export function contextEvent(input: {
     }),
   );
   for (const note of input.notes) sections.push(measured(note.key, note.message.content));
-  if (input.imageContext !== null) {
-    const text = input.imageContext.content;
+  if (input.pagePictures !== null) {
+    const text = input.pagePictures.note.content;
     sections.push(
       measured('images', text, {
         sources: [
@@ -101,14 +103,20 @@ export function contextEvent(input: {
   }
 
   // Pictures that go as pixels have no characters, only tokens, and those
-  // are an estimate until the provider reports the turn (ADR-097).
-  const pictures = imageInputCount(input.conversation);
-  if (pictures > 0) {
+  // are an estimate until the provider reports the turn (ADR-097). The
+  // conversation here is the transcript without the page's pictures, which
+  // are counted on their own (ADR-102).
+  const pixelSections = [
+    { key: 'chat_images' as const, count: imageInputCount(input.conversation) },
+    { key: 'page_images' as const, count: input.pagePictures?.images.length ?? 0 },
+  ];
+  for (const { key, count } of pixelSections) {
+    if (count === 0) continue;
     sections.push({
-      key: 'chat_images',
+      key,
       chars: 0,
-      estimatedTokens: pictures * IMAGE_INPUT_TOKEN_ESTIMATE,
-      items: pictures,
+      estimatedTokens: count * IMAGE_INPUT_TOKEN_ESTIMATE,
+      items: count,
       truncated: false,
       sources: [],
     });

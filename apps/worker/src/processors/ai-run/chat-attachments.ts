@@ -47,7 +47,8 @@ export interface ChatAttachmentForPrompt {
   trust?: AttachmentTrust;
 }
 
-const UNSEEN =
+/** What the prompt says of a picture nobody could look at. Shared with the open page's pictures. */
+export const UNSEEN_PICTURE =
   'nicht angesehen: kein Bildmodell verfügbar oder die Beschreibung ist fehlgeschlagen. ' +
   'Sag das, statt den Inhalt zu erraten.';
 
@@ -104,7 +105,7 @@ function contextText(
       }),
     );
   }
-  for (const file of unseen) parts.push(`${file.filename}: ${UNSEEN}`);
+  for (const file of unseen) parts.push(`${file.filename}: ${UNSEEN_PICTURE}`);
   // Outside the fence, because it is this deployment's sentence about the
   // file, not the file's: why reading it stops the run from writing.
   for (const file of [...seen, ...described]) {

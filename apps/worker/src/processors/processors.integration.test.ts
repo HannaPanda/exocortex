@@ -3452,16 +3452,17 @@ describe('ai runs', () => {
     return run.id;
   }
 
-  it('describes a document image and prepends it as context for the main model', async () => {
+  /** Puts one picture on a fresh page, the way the editor stores it. */
+  async function pageWithPicture(filename: string): Promise<{ documentId: string; id: string }> {
     const documentId = await createDocument();
     const attachment = await prisma.attachment.create({
       data: {
         workspaceId,
         documentId,
-        filename: 'katze.png',
+        filename,
         mimeType: 'image/png',
-        byteSize: 3,
-        storageKey: `test/${Date.now().toString(36)}.png`,
+        byteSize: ONE_PIXEL_PNG.byteLength,
+        storageKey: `test/page-${Date.now().toString(36)}-${filename}`,
         createdById: userId,
       },
     });
@@ -3476,6 +3477,11 @@ describe('ai runs', () => {
         },
       },
     });
+    return { documentId, id: attachment.id };
+  }
+
+  it('describes a document image and prepends it as context for the main model', async () => {
+    const { documentId, id } = await pageWithPicture('katze.png');
     const runId = await createRun(documentId);
     const provider = new CapturingAiProvider();
 
@@ -3484,7 +3490,7 @@ describe('ai runs', () => {
       prisma,
       providerFor: providerFor(provider),
       bus,
-      storage: fakeStorage(Buffer.from('fake-image-bytes')),
+      storage: fakeStorage(ONE_PIXEL_PNG),
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => fakeVisionPreprocessor('Eine Katze mit Hut.'),
@@ -3497,13 +3503,84 @@ describe('ai runs', () => {
 
     const messages = provider.lastRequest?.messages ?? [];
     expect(messages[0]?.role).toBe('system');
-    expect(messages[0]?.content).toContain('katze.png');
-    expect(messages[0]?.content).toContain('Eine Katze mit Hut.');
+    expect(messages[0]?.content).toContain('<<<FREMDINHALT');
+    expect(messages[0]?.content).toContain('katze.png: Eine Katze mit Hut.');
     expect(messages[1]?.content).toBe('Was zeigt das Bild?');
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('COMPLETED');
     expect(run.resultText).toBe('ok');
+    // Kept on the row, so the next run on this page pays nothing for it (#207).
+    const stored = await prisma.attachment.findUniqueOrThrow({ where: { id } });
+    expect(stored.imageDescription).toBe('Eine Katze mit Hut.');
+  }, 60_000);
+
+  /**
+   * Issue #207: a model that sees never got the open page's pictures, neither
+   * as pixels nor described. Now it gets both, the description written once
+   * by a companion when the model is a subscription preset, and a model that
+   * may not get pixels reads the stored description.
+   */
+  it("hands the open page's pictures to a model that sees, described once and as pixels", async () => {
+    const { documentId, id } = await pageWithPicture('skizze.png');
+    const conversationId = await createConversation();
+    const describe = vi.fn(async () => 'Eine Skizze mit dem Wort ZEBRA.');
+    const asked: (string | null)[] = [];
+    const runWith = async (
+      overrides: Partial<Settings>,
+    ): Promise<{ provider: CapturingAiProvider; imageInputs: number }> => {
+      const runId = await createConversationRun({ conversationId, content: 'Was steht da?' });
+      await prisma.aiRun.update({ where: { id: runId }, data: { documentId } });
+      const provider = new CapturingAiProvider();
+      const processor = createAiRunProcessor({
+        search: { hybrid: search, keyword: keywordSearch },
+        prisma,
+        providerFor: providerFor(provider),
+        bus,
+        storage: fakeStorage(ONE_PIXEL_PNG),
+        settings: stubSettings(overrides),
+        toolRunnerFactory: null,
+        visionPreprocessorFor: (slug) => {
+          asked.push(slug);
+          return { describeImage: describe } as unknown as VisionPreprocessor;
+        },
+        queues,
+        modelRegistry: async () => ({
+          ...toolCapableModelRow('cline-pass/seeing-model'),
+          provider: 'cline',
+          supportsVision: true,
+        }),
+      });
+      await processor(
+        contextFor<'ai'>({ correlationId: `test-page-pixels-${runId}`, runId, workspaceId, userId })
+          .context,
+      );
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+      expect(run.status).toBe('COMPLETED');
+      return { provider, imageInputs: run.imageInputs };
+    };
+
+    const seeing = await runWith({});
+    const messages = seeing.provider.lastRequest?.messages ?? [];
+    const question = messages.findLast((entry) => entry.role === 'user');
+    expect(question?.images).toHaveLength(1);
+    expect(seeing.imageInputs).toBe(1);
+    const note = messages.find((entry) => entry.content.includes('skizze.png'));
+    expect(note?.content).toContain('in der letzten Nachricht der Nutzerin');
+    // The preset's own slug never went to the describer: the default companion did.
+    expect(asked.length).toBeGreaterThan(0);
+    expect(asked.every((slug) => slug === null)).toBe(true);
+    const stored = await prisma.attachment.findUniqueOrThrow({ where: { id } });
+    expect(stored.imageDescription).toBe('Eine Skizze mit dem Wort ZEBRA.');
+
+    // Without pixels, the same model reads the stored description, and
+    // nothing is described a second time.
+    const reading = await runWith({ 'ai.sendImagesToModel': false });
+    const read = reading.provider.lastRequest?.messages ?? [];
+    expect(read.some((entry) => (entry.images?.length ?? 0) > 0)).toBe(false);
+    expect(read.some((entry) => entry.content.includes('skizze.png: Eine Skizze'))).toBe(true);
+    expect(reading.imageInputs).toBe(0);
+    expect(describe).toHaveBeenCalledTimes(1);
   }, 60_000);
 
   it('describes a picture on a chat message once and hands it to the model, fenced', async () => {

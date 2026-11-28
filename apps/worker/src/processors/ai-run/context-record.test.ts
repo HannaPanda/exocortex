@@ -27,7 +27,10 @@ describe('the recorded context of a run (issue #145)', () => {
       },
     ],
     notes: [{ key: 'write_mode', message: { role: 'system', content: 'Nur vorschlagen.' } }],
-    imageContext: { role: 'system', content: 'Ein Diagramm.' },
+    pagePictures: {
+      note: { role: 'system', content: 'Ein Diagramm.' },
+      images: [{ mimeType: 'image/png', data: 'AAAA' }],
+    },
     documentId: 'page-1',
     conversation: [
       { role: 'user', content: 'Frage eins' },
@@ -47,6 +50,7 @@ describe('the recorded context of a run (issue #145)', () => {
       'images',
       'conversation_user',
       'conversation_assistant',
+      'page_images',
       'tool_schemas',
     ]);
     const user = event.data.sections.find((section) => section.key === 'conversation_user');
@@ -59,6 +63,13 @@ describe('the recorded context of a run (issue #145)', () => {
     if (event.kind !== 'context') return;
     const images = event.data.sections.find((section) => section.key === 'images');
     expect(images?.sources[0]).toMatchObject({ documentId: 'page-1', origin: 'attachment' });
+  });
+
+  it("counts the page's pictures sent as pixels on their own (issue #207)", () => {
+    if (event.kind !== 'context') return;
+    const pixels = event.data.sections.find((section) => section.key === 'page_images');
+    expect(pixels).toMatchObject({ chars: 0, items: 1, estimatedTokens: 1600 });
+    expect(event.data.sections.some((section) => section.key === 'chat_images')).toBe(false);
   });
 
   it('keeps no text, only sizes', () => {

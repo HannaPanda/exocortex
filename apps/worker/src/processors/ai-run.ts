@@ -45,13 +45,17 @@ import {
 } from './ai-run/eval-hold';
 import { executeRun } from './ai-run/execution';
 import { type RunRoutingInput } from './ai-run/execution-types';
-import { describeDocumentImages, MAX_IMAGES_PER_RUN } from './ai-run/images';
+import {
+  MAX_IMAGES_PER_RUN,
+  type PagePicturesForPrompt,
+  preparePagePictures,
+  withPagePictures,
+} from './ai-run/page-pictures';
 import {
   buildRunMessages,
   loadConversationMessages,
+  resolveImageDescriber,
   resolveModelRow,
-  resolveToolImageDescriber,
-  resolveVisionPreprocessor,
   withConfiguredEndpoints,
 } from './ai-run/preparation';
 import { ownKeyPays } from './ai-run/provider-refusal';
@@ -154,7 +158,8 @@ function buildRunRouting(input: {
   payload: JobContext<typeof QUEUE_NAMES.ai>['payload'];
   logger: JobContext<typeof QUEUE_NAMES.ai>['logger'];
   base: AiMessage[];
-  imageContext: AiMessage | null;
+  /** The open page's pictures (ADR-102): their note, and the pixels that ride on the latest message. */
+  pagePictures: PagePicturesForPrompt | null;
   /** Chat pictures as pixels (ADR-097), read again from its cache after a compaction. */
   pixels: ChatImagePixels | null;
   provider: AiProvider;
@@ -165,7 +170,7 @@ function buildRunRouting(input: {
   /** The agent profile's routing keys (issue #143), laid over the configured ones. */
   preferences: ProviderRoutingOverride | null;
 }): RunRoutingInput {
-  const { dependencies, modelRow, run, settings, payload, logger, base, imageContext } = input;
+  const { dependencies, modelRow, run, settings, payload, logger, base, pagePictures } = input;
   const { prisma, bus } = dependencies;
 
   return {
@@ -212,9 +217,10 @@ function buildRunRouting(input: {
               run.createdById,
               input.pixels,
             );
-            return imageContext === null
-              ? [...base, ...reloaded]
-              : [...base, imageContext, ...reloaded];
+            const conversation = withPagePictures(reloaded, pagePictures);
+            return pagePictures === null
+              ? [...base, ...conversation]
+              : [...base, pagePictures.note, ...conversation];
           },
     onAliasDrift: (actualModel: string): void => {
       // Marked and asked for, not repaired here: the snapshot is rebuilt in one
@@ -291,9 +297,11 @@ async function resolveRunPolicy(input: {
 }
 
 /**
- * What a run gets to know about pictures (ADR-012, ADR-088): the open page's
- * images, described before the first turn, and who describes a picture a tool
- * returns later. Both read the same companion choice.
+ * What a run gets to know about pictures (ADR-012, ADR-088, ADR-102): the
+ * open page's pictures, described once and kept, and for a model that sees
+ * sent as pixels too; and who describes a picture a tool returns later. Both
+ * read the same describer choice, so a subscription preset's slug never
+ * reaches OpenRouter (issue #207).
  */
 async function prepareRunVision(input: {
   dependencies: AiRunDependencies;
@@ -301,26 +309,28 @@ async function prepareRunVision(input: {
   settings: Settings;
   modelRow: ResolvedModelRow;
   conversationCompanionSlug: string | null;
+  /** Chat pictures' pixel reader; `null` when this run sends no pixels (ADR-097). */
+  pixels: ChatImagePixels | null;
+  /** The conversation as it will be sent, with the chat's own pixels on it. */
+  conversation: readonly RunPromptMessage[];
   apiKey: string;
   correlationId: string;
   logger: JobContext<typeof QUEUE_NAMES.ai>['logger'];
-}): Promise<{ imageContext: AiMessage | null; describeImage: ToolImageDescriber | null }> {
+}): Promise<{
+  pagePictures: PagePicturesForPrompt | null;
+  describeImage: ToolImageDescriber | null;
+}> {
   const { dependencies, run, settings, logger } = input;
-  const choice = {
+  const describer = resolveImageDescriber({
     settings,
     modelRow: input.modelRow,
     conversationCompanionSlug: input.conversationCompanionSlug,
     visionPreprocessorFor: (modelSlug: string | null) =>
       dependencies.visionPreprocessorFor(modelSlug, input.apiKey),
-  };
-  const describeImage = resolveToolImageDescriber({
-    ...choice,
     correlationId: input.correlationId,
   });
-  const visionPreprocessor = resolveVisionPreprocessor({ ...choice, run, logger });
-  if (run.documentId === null || visionPreprocessor === null) {
-    return { imageContext: null, describeImage };
-  }
+  const describeImage = describer?.describe ?? null;
+  if (run.documentId === null) return { pagePictures: null, describeImage };
   // A page shared from another workspace keeps its pictures there, and is
   // looked at only while the grant still holds (issue #234).
   const reach = await resolveOpenPageReach({
@@ -329,24 +339,29 @@ async function prepareRunVision(input: {
     documentId: run.documentId,
     userId: run.createdById,
   });
-  if (reach === null) return { imageContext: null, describeImage };
-  const imageContext = await describeDocumentImages({
+  if (reach === null) return { pagePictures: null, describeImage };
+  const pagePictures = await preparePagePictures({
     prisma: dependencies.prisma,
     storage: dependencies.storage,
-    visionPreprocessor,
+    describer,
+    decisions: dependencies.decisionsFor?.(input.apiKey) ?? null,
+    pixels: input.pixels,
+    conversation: input.conversation,
     workspaceId: reach.workspaceId,
     documentId: run.documentId,
+    readerId: run.createdById,
+    ownWorkspace: reach.workspaceId === run.workspaceId,
+    maxImages: settings['ai.visionMaxImagesPerRun'] ?? MAX_IMAGES_PER_RUN,
     correlationId: input.correlationId,
     logger,
-    maxImages: settings['ai.visionMaxImagesPerRun'] ?? MAX_IMAGES_PER_RUN,
   }).catch((error: unknown) => {
-    logger.info('Skipping image preprocessing for this run', {
+    logger.info("Skipping the open page's pictures for this run", {
       runId: run.id,
       reason: error instanceof Error ? error.message : String(error),
     });
     return null;
   });
-  return { imageContext, describeImage };
+  return { pagePictures, describeImage };
 }
 
 /**
@@ -555,7 +570,8 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // Pictures on the conversation's messages are described and screened
     // before the prompt is built; a model that sees gets them as pixels too
     // (issue #223, ADR-097).
-    const { pixels, foreign: chatFilesForeign } = await prepareChatPictures({
+    // The open page's pictures below are described by the same choice (#207).
+    const vision = {
       dependencies,
       run,
       settings,
@@ -564,7 +580,8 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       apiKey: key.apiKey,
       correlationId: payload.correlationId,
       logger,
-    });
+    };
+    const { pixels, foreign: chatFilesForeign } = await prepareChatPictures(vision);
 
     const { base, rest, floorInputTokens, promptSections } = await buildRunMessages({
       prisma,
@@ -587,15 +604,10 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       },
     });
 
-    const { imageContext, describeImage } = await prepareRunVision({
-      dependencies,
-      run,
-      settings,
-      modelRow,
-      conversationCompanionSlug,
-      apiKey: key.apiKey,
-      correlationId: payload.correlationId,
-      logger,
+    const { pagePictures, describeImage } = await prepareRunVision({
+      ...vision,
+      pixels,
+      conversation: rest,
     });
     // The mode, the role and the limits this run is held to (issues #141 and
     // #143): told to the model up front, enforced by the loop and, through
@@ -617,26 +629,25 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       describeImage,
       logger,
     });
-    // The image descriptions were produced before the runner existed, and they
-    // are text out of an uploaded file like any other (issue #56): the run has
-    // already read foreign content by the time the first turn starts.
-    // The same holds for a picture somebody put on a message in this
-    // conversation, for as long as its description is in the prompt (#223),
-    // unless it is the requester's own and was screened clean (ADR-096).
-    if (imageContext !== null || chatFilesForeign) runner?.noteUntrustedContent('attachment');
+    // The page's pictures and the chat's are uploaded files (issue #56, #223):
+    // read before the first turn, foreign unless the requester's own upload,
+    // screened clean (ADR-096, ADR-102).
+    if (pagePictures?.foreign === true || chatFilesForeign) {
+      runner?.noteUntrustedContent('attachment');
+    }
 
     const preamble: AiMessage[] = [...base, ...notes.map((note) => note.message)];
     const messages: RunPromptMessage[] = [
       ...preamble,
-      ...(imageContext === null ? [] : [imageContext]),
-      ...rest,
+      ...(pagePictures === null ? [] : [pagePictures.note]),
+      ...withPagePictures(rest, pagePictures),
     ];
 
     timeline.record(
       contextEvent({
         promptSections,
         notes,
-        imageContext,
+        pagePictures,
         documentId: run.documentId,
         conversation: rest,
         tools: runner?.toolContext() ?? null,
@@ -690,7 +701,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             // With the notes, so a compaction between turns keeps the run's
             // mode, role and tool offer rather than only the system prompt.
             base: preamble,
-            imageContext,
+            pagePictures,
             pixels,
             // The routing input's provider writes compaction summaries, nothing else.
             provider: summaryProvider,

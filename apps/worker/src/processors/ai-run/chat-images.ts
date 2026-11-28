@@ -50,8 +50,25 @@ export class ChatImagePixels {
     const newest = [...rows]
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, Math.max(this.options.maxImages, 0));
+    return this.readAll(newest);
+  }
+
+  /**
+   * The first `limit` of these rows in the order given, as images by
+   * attachment id: the open page's pictures, which go in page order rather
+   * than by age (issue #207). Read through the same cache, so a compaction
+   * that rebuilds the prompt reads none of them twice.
+   */
+  async loadInOrder(
+    rows: readonly PictureRow[],
+    limit: number,
+  ): Promise<Map<string, AiImageInput>> {
+    return this.readAll(rows.slice(0, Math.max(limit, 0)));
+  }
+
+  private async readAll(rows: readonly PictureRow[]): Promise<Map<string, AiImageInput>> {
     const images = new Map<string, AiImageInput>();
-    for (const row of newest) {
+    for (const row of rows) {
       const image = await this.read(row);
       if (image !== null) images.set(row.id, image);
     }
