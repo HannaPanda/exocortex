@@ -59,6 +59,7 @@
     "document_patch_not_found": "Este texto no aparece en la página.",
     "document_patch_not_unique": "Este texto aparece varias veces en la página. No se ha modificado nada.",
     "attachment_text_unavailable": "El texto de este archivo aún no está disponible.",
+    "attachment_text_range_invalid": "Este rango no existe en el texto de este archivo. El esquema del texto completo indica los rangos que se pueden leer.",
     "attachment_not_image": "Este archivo no es una imagen legible como tal. Para descargarlo, usa un vale de descarga.",
     "attachment_image_unreadable": "No se ha podido leer esta imagen o no se ha podido reducir lo suficiente. Prueba con unas dimensiones más pequeñas.",
     "setting_unknown": "Este ajuste no existe.",

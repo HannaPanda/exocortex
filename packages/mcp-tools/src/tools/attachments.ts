@@ -8,6 +8,8 @@ import {
   type AttachmentImageResponse,
   attachmentImageResponseSchema,
   attachmentTextInfoResponseSchema,
+  type AttachmentTextReadResponse,
+  attachmentTextReadResponseSchema,
   attachmentTextResponseSchema,
   attachmentTrustNote,
   createDownloadTicketResponseSchema,
@@ -22,6 +24,12 @@ import {
   uploadTicketResponseSchema,
 } from '@exocortex/contracts';
 
+import {
+  groupDigits,
+  PAGE_CONTENT_BUDGET_CHARS,
+  PAGE_MAP_MAX_ENTRIES,
+  renderAttachmentTextMap,
+} from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
 /**
@@ -360,14 +368,58 @@ function describeCorrection(result: {
   return parts.length === 0 ? '' : `[${parts.join(', ')}]\n\n`;
 }
 
+/**
+ * Where a stretch that was read sits in the whole, so a model quoting from it
+ * knows it holds pages 12 to 14 and not the document (issue #133).
+ */
+function describeRange(result: AttachmentTextReadResponse): string {
+  const { range, totalChars, pages } = result;
+  if (range === null || totalChars === null) return '';
+  if (range.fromChar === 0 && range.toChar === totalChars) return '';
+  const parts: string[] = [];
+  if (range.fromPage !== null && range.toPage !== null) {
+    const span =
+      range.fromPage === range.toPage
+        ? `Seite ${range.fromPage}`
+        : `Seiten ${range.fromPage} bis ${range.toPage}`;
+    parts.push(pages === null ? span : `${span} von ${pages}`);
+  }
+  parts.push(
+    `Zeichen ${groupDigits(range.fromChar)} bis ${groupDigits(range.toChar)} von ${groupDigits(totalChars)}`,
+  );
+  return `[Ausschnitt: ${parts.join(', ')}]\n\n`;
+}
+
+/** The stretch an input names, as the route's query; nothing when it names none. */
+function rangeQuery(input: {
+  fromPage?: number | undefined;
+  toPage?: number | undefined;
+  fromChar?: number | undefined;
+  toChar?: number | undefined;
+}): Record<string, string> {
+  const query: Record<string, string> = {};
+  for (const key of ['fromPage', 'toPage', 'fromChar', 'toChar'] as const) {
+    const value = input[key];
+    if (value !== undefined) query[key] = String(value);
+  }
+  return query;
+}
+
 export const attachmentReadTextTool: AnyToolDefinition = defineTool({
   name: 'exo_attachment_read_text',
   description:
     'Liest den extrahierten Text eines Anhangs (z. B. eines PDFs). Die Extraktion läuft im Hintergrund; ' +
     'status: "pending" bedeutet, dass das Werkzeug in Kürze erneut aufgerufen werden sollte. ' +
+    'Ein kurzer Text kommt ganz zurück. Ein langer antwortet nicht mit seinem Anfang, sondern mit ' +
+    'seiner Gliederung: bei einem PDF nach Seiten (mit Größe und erster Zeile), sonst nach ' +
+    'Überschriften oder Absatzfenstern, jeweils mit ihrer Adresse. Lies dann gezielt den Teil, den ' +
+    'du brauchst: mit fromPage und toPage (Seitenbereich) oder mit fromChar und toChar ' +
+    '(Zeichenbereich aus der Gliederung). Ist auch der Teil zu groß, kommt seine feinere ' +
+    'Gliederung. Du musst ein Dokument nie von vorne durchlesen, um an eine späte Stelle zu kommen. ' +
     'Mit includeText: false kommen nur Status und Metadaten (Titel, Autor, Seitenzahl, Tabellen, ' +
     'Texterkennung) zurück, und eine noch nicht gelaufene Extraktion wird dadurch auch nicht gestartet. ' +
-    'Wenn ein Mensch den Text korrigiert hat, ist es immer die korrigierte Fassung, die hier zurückkommt.',
+    'Wenn ein Mensch den Text korrigiert hat, ist es immer die korrigierte Fassung, die hier zurückkommt; ' +
+    'sie hat keine Seitengrenzen und wird nach Überschriften und Absätzen gegliedert.',
   inputSchema: z.object({
     attachmentId: idSchema,
     /**
@@ -375,13 +427,40 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
      * the metadata, not 400,000 characters, and drawing must not start work.
      */
     includeText: z.boolean().default(true),
+    fromPage: z
+      .number()
+      .int()
+      .min(1)
+      .optional()
+      .describe('Erste Seite des Bereichs (ab 1), wie die Gliederung sie nennt'),
+    toPage: z
+      .number()
+      .int()
+      .min(1)
+      .optional()
+      .describe('Letzte Seite des Bereichs, einschließlich; fehlt sie, nur fromPage'),
+    fromChar: z
+      .number()
+      .int()
+      .min(0)
+      .max(ATTACHMENT_TEXT_MAX_CHARS)
+      .optional()
+      .describe('Anfang des Zeichenbereichs, wie die Gliederung ihn nennt'),
+    toChar: z
+      .number()
+      .int()
+      .min(0)
+      .max(ATTACHMENT_TEXT_MAX_CHARS)
+      .optional()
+      .describe('Ende des Zeichenbereichs (ausschließlich)'),
   }),
   surfaces: ['mcp', 'ai'],
   domain: 'attachments',
   mutating: false,
   // A file somebody uploaded. Whatever the extraction found is the author's
   // text, not this workspace's, and a PDF is a perfectly good place to hide a
-  // paragraph addressed to a model (issue #56).
+  // paragraph addressed to a model (issue #56). The map is fenced with it:
+  // its titles are the document's first lines.
   untrustedOutput: 'attachment',
   async execute(client, input) {
     if (!input.includeText) {
@@ -400,7 +479,14 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
     const result = await client.request({
       method: 'GET',
       path: `/api/attachments/${input.attachmentId}/text`,
-      responseSchema: attachmentTextResponseSchema,
+      // The budget travels on every read, as on exo_page_read (ADR-056,
+      // ADR-101): above it the text answers with its map, never a prefix.
+      query: {
+        maxChars: String(PAGE_CONTENT_BUDGET_CHARS),
+        maxEntries: String(PAGE_MAP_MAX_ENTRIES),
+        ...rangeQuery(input),
+      },
+      responseSchema: attachmentTextReadResponseSchema,
     });
     if (result.status === 'pending') {
       return {
@@ -425,8 +511,17 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
     // Whether reading this closes writing is the API's answer for the caller
     // (ADR-096), never the model's or the document's.
     const note = attachmentTrustNote(result.trust);
+    const body =
+      result.view === 'map' && result.map !== null
+        ? renderAttachmentTextMap(result.map, {
+            filename: result.filename,
+            range: result.range,
+            totalChars: result.totalChars,
+            pages: result.pages,
+          })
+        : `${describeRange(result)}${result.text ?? ''}`;
     return {
-      text: `${note === null ? '' : `${note}\n\n`}${describeMetadata(result.metadata)}${describeCorrection(result)}${result.text ?? ''}`,
+      text: `${note === null ? '' : `${note}\n\n`}${describeMetadata(result.metadata)}${describeCorrection(result)}${body}`,
       data: result,
       ...(result.trust.trusted ? { ownScreenedSource: true } : {}),
     };

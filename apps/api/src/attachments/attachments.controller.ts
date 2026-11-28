@@ -12,7 +12,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { type FastifyReply, type FastifyRequest } from 'fastify';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -26,6 +26,10 @@ import {
   attachmentTextCorrectionInputSchema,
   type AttachmentTextInfoResponse,
   attachmentTextInfoResponseSchema,
+  type AttachmentTextReadQuery,
+  attachmentTextReadQuerySchema,
+  type AttachmentTextReadResponse,
+  attachmentTextReadResponseSchema,
   type AttachmentTextResponse,
   attachmentTextResponseSchema,
   type UploadAttachmentFromUrlRequest,
@@ -161,13 +165,24 @@ export class AttachmentsController {
     });
   }
 
+  /**
+   * The text, or with a budget or a stretch named, that stretch or its map
+   * (issue #133, ADR-101). Without query the whole text, as it always was.
+   */
   @Get('attachments/:attachmentId/text')
-  @ApiOkResponse({ schema: openApiResponseSchema(attachmentTextResponseSchema) })
+  @ApiQuery({ name: 'maxChars', required: false })
+  @ApiQuery({ name: 'maxEntries', required: false })
+  @ApiQuery({ name: 'fromPage', required: false })
+  @ApiQuery({ name: 'toPage', required: false })
+  @ApiQuery({ name: 'fromChar', required: false })
+  @ApiQuery({ name: 'toChar', required: false })
+  @ApiOkResponse({ schema: openApiResponseSchema(attachmentTextReadResponseSchema) })
   async text(
     @CurrentSession() session: VerifiedSession,
     @Param('attachmentId') attachmentId: string,
-  ): Promise<AttachmentTextResponse> {
-    return this.attachments.getText(attachmentId, session.userId, currentCorrelationId());
+    @Query(zodPipe(attachmentTextReadQuerySchema)) query: AttachmentTextReadQuery,
+  ): Promise<AttachmentTextReadResponse> {
+    return this.attachments.getText(attachmentId, session.userId, currentCorrelationId(), query);
   }
 
   /**

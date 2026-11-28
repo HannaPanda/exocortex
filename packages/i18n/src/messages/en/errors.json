@@ -59,6 +59,7 @@
     "document_patch_not_found": "This text does not appear on the page.",
     "document_patch_not_unique": "This text appears multiple times on the page. Nothing was changed.",
     "attachment_text_unavailable": "The text of this file is not yet available.",
+    "attachment_text_range_invalid": "This range doesn’t exist in this file’s text. The outline of the full text shows which ranges can be read.",
     "attachment_not_image": "This file is not an image that can be read as an image. You can download it using a download ticket.",
     "attachment_image_unreadable": "This image couldn’t be read or couldn’t be made small enough. Try again with smaller dimensions.",
     "setting_unknown": "This setting does not exist.",

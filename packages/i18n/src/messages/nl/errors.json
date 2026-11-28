@@ -59,6 +59,7 @@
     "document_patch_not_found": "Deze tekst komt niet voor op de pagina.",
     "document_patch_not_unique": "Deze tekst komt meerdere keren voor op de pagina. Er is niets gewijzigd.",
     "attachment_text_unavailable": "De tekst van dit bestand is nog niet beschikbaar.",
+    "attachment_text_range_invalid": "Dit bereik bestaat niet in de tekst van dit bestand. Het overzicht van de volledige tekst toont de bereiken die kunnen worden gelezen.",
     "attachment_not_image": "Dit bestand is geen afbeelding die als afbeelding kan worden gelezen. Downloaden kan via een downloadticket.",
     "attachment_image_unreadable": "Deze afbeelding kon niet worden gelezen of niet klein genoeg worden gemaakt. Probeer het met kleinere afmetingen.",
     "setting_unknown": "Deze instelling bestaat niet.",

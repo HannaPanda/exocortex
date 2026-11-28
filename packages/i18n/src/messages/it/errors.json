@@ -59,6 +59,7 @@
     "document_patch_not_found": "Questo testo non compare nella pagina.",
     "document_patch_not_unique": "Questo testo compare più volte nella pagina. Non è stato modificato nulla.",
     "attachment_text_unavailable": "Il testo di questo file non è ancora disponibile.",
+    "attachment_text_range_invalid": "Questo intervallo non esiste nel testo di questo file. La struttura dell’intero testo indica gli intervalli che è possibile leggere.",
     "attachment_not_image": "Questo file non è un’immagine leggibile come tale. Per scaricarlo puoi usare un ticket di download.",
     "attachment_image_unreadable": "Impossibile leggere quest’immagine o ridurne a sufficienza le dimensioni. Prova con una risoluzione inferiore.",
     "setting_unknown": "Questa impostazione non esiste.",

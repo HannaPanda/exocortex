@@ -59,6 +59,7 @@
     "document_patch_not_found": "Dieser Text kommt auf der Seite nicht vor.",
     "document_patch_not_unique": "Dieser Text kommt auf der Seite mehrfach vor. Nichts wurde geändert.",
     "attachment_text_unavailable": "Der Text dieser Datei liegt noch nicht vor.",
+    "attachment_text_range_invalid": "Diesen Bereich gibt es im Text dieser Datei nicht. Die Gliederung des ganzen Textes nennt die Bereiche, die sich lesen lassen.",
     "attachment_not_image": "Diese Datei ist kein Bild, das sich als Bild lesen lässt. Herunterladen geht über ein Download-Ticket.",
     "attachment_image_unreadable": "Dieses Bild ließ sich nicht lesen oder nicht klein genug machen. Versuch es mit einer kleineren Kantenlänge.",
     "setting_unknown": "Diese Einstellung gibt es nicht.",

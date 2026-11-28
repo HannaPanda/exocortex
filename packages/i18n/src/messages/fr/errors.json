@@ -59,6 +59,7 @@
     "document_patch_not_found": "Ce texte n’apparaît pas sur la page.",
     "document_patch_not_unique": "Ce texte apparaît plusieurs fois sur la page. Rien n’a été modifié.",
     "attachment_text_unavailable": "Le texte de ce fichier n’est pas encore disponible.",
+    "attachment_text_range_invalid": "Cette plage n’existe pas dans le texte de ce fichier. Le plan du texte complet indique les plages qu’il est possible de lire.",
     "attachment_not_image": "Ce fichier n’est pas une image lisible en tant que telle. Le téléchargement est possible via un ticket de téléchargement.",
     "attachment_image_unreadable": "Cette image n’a pas pu être lue ou suffisamment réduite. Essaie avec des dimensions plus petites.",
     "setting_unknown": "Ce paramètre n’existe pas.",

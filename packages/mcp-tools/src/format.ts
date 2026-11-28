@@ -5,7 +5,13 @@
  * context.
  */
 
-import { type DocumentMapDto, type DocumentMapEntryDto } from '@exocortex/contracts';
+import {
+  type AttachmentTextMap,
+  type AttachmentTextMapEntry,
+  type AttachmentTextRange,
+  type DocumentMapDto,
+  type DocumentMapEntryDto,
+} from '@exocortex/contracts';
 
 const TRUNCATION_NOTE = '… (gekürzt)';
 
@@ -106,6 +112,87 @@ export function renderDocumentMap(map: DocumentMapDto, lead: string): string {
       ? '(keine adressierbaren Teile)'
       : map.entries.map(renderEntry).join('\n');
   return `${lead} (${size}). Kein Textauszug, sondern die Gliederung. ${how}${coarse}\n\n${entries}`;
+}
+
+/** An attachment map entry's address, in the words of the tool's own parameters. */
+function attachmentAddress(entry: AttachmentTextMapEntry, byPage: boolean): string {
+  if (byPage && entry.fromPage !== null && entry.toPage !== null) {
+    return entry.fromPage === entry.toPage
+      ? `fromPage ${entry.fromPage}`
+      : `fromPage ${entry.fromPage}, toPage ${entry.toPage}`;
+  }
+  return `fromChar ${entry.fromChar}, toChar ${entry.toChar}`;
+}
+
+function renderAttachmentEntry(entry: AttachmentTextMapEntry, byPage: boolean): string {
+  const where =
+    entry.kind === 'pages'
+      ? entry.fromPage === entry.toPage
+        ? `Seite ${entry.fromPage}`
+        : `Seiten ${entry.fromPage} bis ${entry.toPage}`
+      : entry.kind === 'section'
+        ? entry.level === null
+          ? 'Vorspann'
+          : `H${entry.level}`
+        : 'Absätze';
+  const onPages =
+    entry.kind !== 'pages' && entry.fromPage !== null && entry.toPage !== null
+      ? entry.fromPage === entry.toPage
+        ? `, Seite ${entry.fromPage}`
+        : `, Seiten ${entry.fromPage} bis ${entry.toPage}`
+      : '';
+  const merged = entry.parts > 1 ? `, ${entry.parts} Teile zusammengefasst` : '';
+  const title = entry.title.length === 0 ? '(ohne Text)' : `„${entry.title}“`;
+  return (
+    `- ${where}: ${title} — ${attachmentAddress(entry, byPage)} ` +
+    `(${groupDigits(entry.chars)} Zeichen${onPages}${merged})`
+  );
+}
+
+/**
+ * A long attachment text rendered as its outline instead of its text
+ * (issue #133, ADR-101). Worded like a page map for the same reason: it must
+ * read as a table of contents, so the next call is a choice and not a
+ * continuation. The entries' titles are the document's own first lines, which
+ * is why the tool fences this answer like the text itself.
+ */
+export function renderAttachmentTextMap(
+  map: AttachmentTextMap,
+  context: {
+    filename: string;
+    range: AttachmentTextRange | null;
+    totalChars: number | null;
+    pages: number | null;
+  },
+): string {
+  const { range, totalChars, pages } = context;
+  const whole =
+    range === null || totalChars === null || (range.fromChar === 0 && range.toChar === totalChars);
+  const size = range === null ? '' : `${groupDigits(range.toChar - range.fromChar)} Zeichen`;
+  const pageCount = whole && pages !== null ? `, ${pages} Seiten` : '';
+  const part = whole
+    ? `${context.filename} ist lang (${size}${pageCount})`
+    : `Dieser Teil von ${context.filename} ist zu lang für eine Antwort (${size}` +
+      (range.fromPage !== null && range.toPage !== null
+        ? range.fromPage === range.toPage
+          ? `, Seite ${range.fromPage})`
+          : `, Seiten ${range.fromPage} bis ${range.toPage})`
+        : ')');
+  const byPage = map.mode === 'pages';
+  const how = byPage
+    ? 'Lies einen Bereich mit exo_attachment_read_text und fromPage/toPage.'
+    : map.mode === 'sections'
+      ? 'Lies einen Abschnitt mit exo_attachment_read_text und fromChar/toChar.'
+      : 'Dieser Teil hat keine Überschriften. Lies ein Fenster mit exo_attachment_read_text und ' +
+        'fromChar/toChar.';
+  const coarse = map.coarsened
+    ? ' Benachbarte Teile sind hier zusammengefasst; ein Aufruf auf einen davon zeigt ihn feiner.'
+    : '';
+  const entries =
+    map.entries.length === 0
+      ? '(keine adressierbaren Teile)'
+      : map.entries.map((entry) => renderAttachmentEntry(entry, byPage)).join('\n');
+  return `${part}. Kein Textauszug, sondern die Gliederung. ${how}${coarse}\n\n${entries}`;
 }
 
 /**

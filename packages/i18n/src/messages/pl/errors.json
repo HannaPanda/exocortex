@@ -59,6 +59,7 @@
     "document_patch_not_found": "Ten tekst nie występuje na stronie.",
     "document_patch_not_unique": "Ten tekst występuje na stronie wielokrotnie. Nic nie zostało zmienione.",
     "attachment_text_unavailable": "Tekst tego pliku nie jest jeszcze dostępny.",
+    "attachment_text_range_invalid": "Ten zakres nie istnieje w tekście tego pliku. Struktura całego tekstu określa zakresy, które można odczytać.",
     "attachment_not_image": "Ten plik nie jest obrazem, który można odczytać jako obraz. Pobieranie jest możliwe za pomocą biletu pobierania.",
     "attachment_image_unreadable": "Tego obrazu nie udało się odczytać lub zmniejszyć w wystarczającym stopniu. Spróbuj użyć mniejszej rozdzielczości.",
     "setting_unknown": "Takie ustawienie nie istnieje.",

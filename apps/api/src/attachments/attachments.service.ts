@@ -19,6 +19,8 @@ import {
   type AttachmentImageResponse,
   attachmentTextEngine,
   type AttachmentTextInfoResponse,
+  type AttachmentTextReadQuery,
+  type AttachmentTextReadResponse,
   type AttachmentTextResponse,
   attachmentTrustFor,
   isAttachmentImageSource,
@@ -46,7 +48,11 @@ import { OutboxService } from '../common/outbox.service';
 import { OBJECT_STORAGE, PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
-import { projectAttachmentText } from './attachment-text-projection';
+import {
+  effectivePageStarts,
+  projectAttachmentText,
+  shapeTextRead,
+} from './attachment-text-projection';
 import { CellFilesService } from './cell-files.service';
 import { fetchRemoteFile } from './remote-file';
 import { requireUploadRole } from './upload-access';
@@ -579,16 +585,19 @@ export class AttachmentsService {
     attachmentId: string,
     userId: string,
     correlationId: string,
-  ): Promise<AttachmentTextResponse> {
-    const { attachment, projected } = await this.readTextState(attachmentId, userId);
+    query: AttachmentTextReadQuery = {},
+  ): Promise<AttachmentTextReadResponse> {
+    const { attachment, projected, pageStarts } = await this.readTextState(attachmentId, userId);
+    // Every answer goes out as the stretch or map the query asked for (ADR-101).
+    const answer = (text: AttachmentTextResponse) => shapeTextRead(text, pageStarts, query);
 
     // Ready or already running: nothing to start. A caller that wants a fresh
     // attempt of an already-`ready` attachment has to say so explicitly
     // through `forceReextract` (issue #2); this route stays the idempotent one.
-    if (projected.status === 'ready' || projected.status === 'pending') return projected;
+    if (projected.status === 'ready' || projected.status === 'pending') return answer(projected);
     // Only a document an engine can read is worth chasing; anything else is
     // settled.
-    if (attachmentTextEngine(attachment.mimeType) === null) return projected;
+    if (attachmentTextEngine(attachment.mimeType) === null) return answer(projected);
 
     // A document that was never asked for, or one whose last attempt failed.
     // Reading it is the request to try (again).
@@ -605,7 +614,7 @@ export class AttachmentsService {
 
     // `text` is deliberately not blanked here: a correction, or a machine
     // result from a previous run, stays visible while the new attempt runs.
-    return { ...projected, status: 'pending', extractedAt: null, error: null };
+    return answer({ ...projected, status: 'pending', extractedAt: null, error: null });
   }
 
   /**
@@ -763,10 +772,9 @@ export class AttachmentsService {
     attachmentId: string,
     userId: string,
     options?: { requireEdit?: boolean },
-  ): Promise<{
-    attachment: { workspaceId: string; mimeType: string; documentId: string | null };
-    projected: AttachmentTextResponse;
-  }> {
+  ) {
+    // The row as access read it, its text as the reader gets it, and where
+    // that text's pages begin (none for a correction, ADR-101).
     const context = await this.access.findAttachmentContext(attachmentId, userId);
     if (context === null) {
       throw new AppError(
@@ -781,7 +789,8 @@ export class AttachmentsService {
     );
 
     const { attachment } = context;
-    return { attachment, projected: projectAttachmentText(attachmentId, attachment, userId) };
+    const projected = projectAttachmentText(attachmentId, attachment, userId);
+    return { attachment, projected, pageStarts: effectivePageStarts(attachment) };
   }
 
   private toContract(row: {

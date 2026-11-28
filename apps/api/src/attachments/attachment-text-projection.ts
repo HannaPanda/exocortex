@@ -1,10 +1,16 @@
 import {
+  attachmentPageUnits,
+  type AttachmentTextReadQuery,
+  type AttachmentTextReadResponse,
   type AttachmentTextResponse,
   attachmentTrustFor,
   documentTextMetadataSchema,
   isAttachmentTextErrorCode,
+  readAttachmentText,
   screeningFromColumn,
 } from '@exocortex/contracts';
+
+import { AppError } from '../common/app-error';
 
 /** The columns a text read projects; what `findAttachmentContext` selects. */
 export interface AttachmentTextRow {
@@ -18,6 +24,8 @@ export interface AttachmentTextRow {
   textErrorCode: string | null;
   textMetadata: unknown;
   textTruncated: boolean;
+  /** Where each page begins in `extractedText` (ADR-101); empty when unknown. */
+  textPageStarts: number[];
   correctedText: string | null;
   textCorrectedAt: Date | null;
   textCorrectedById: string | null;
@@ -97,4 +105,53 @@ export function projectAttachmentText(
   }
 
   return { ...base, status: 'not_applicable' };
+}
+
+/** Where the effective text's pages begin: none for a correction (ADR-101). */
+export function effectivePageStarts(
+  attachment: Pick<AttachmentTextRow, 'correctedText' | 'textPageStarts'>,
+): readonly number[] {
+  return attachment.correctedText === null ? attachment.textPageStarts : [];
+}
+
+/**
+ * The text read as asked for (issue #133, ADR-101): the whole text when the
+ * request names neither a budget nor a stretch, otherwise the stretch, or its
+ * map when it is over the budget.
+ *
+ * `pageStarts` describe the effective text, which the caller decides: a
+ * correction is a person's text and may have moved a paragraph across a page,
+ * so a corrected text is read with none and mapped by its headings and
+ * paragraphs like any text without pages.
+ */
+export function shapeTextRead(
+  projected: AttachmentTextResponse,
+  pageStarts: readonly number[],
+  query: AttachmentTextReadQuery,
+): AttachmentTextReadResponse {
+  const text = projected.text;
+  const pages =
+    text === null ? null : (attachmentPageUnits(pageStarts, text.length).at(-1)?.toPage ?? null);
+  const base = { totalChars: text?.length ?? null, pages };
+  const asked = Object.values(query).some((value) => value !== undefined);
+  if (!asked || text === null) {
+    return { ...projected, ...base, view: 'content', map: null, range: null };
+  }
+  const read = readAttachmentText(text, pageStarts, query);
+  if (!read.ok) {
+    throw new AppError(
+      'attachment_text_range_invalid',
+      'The requested stretch of text is not there',
+      { reason: read.reason, totalChars: text.length, pages },
+    );
+  }
+  return {
+    ...projected,
+    ...base,
+    text: read.text,
+    machineText: null,
+    view: read.view,
+    map: read.map,
+    range: read.range,
+  };
 }

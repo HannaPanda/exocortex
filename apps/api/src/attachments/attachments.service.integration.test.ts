@@ -36,6 +36,7 @@ async function createPdfAttachment(
     textCorrectedAt: Date | null;
     textCorrectedById: string | null;
     textTruncated: boolean;
+    textPageStarts: number[];
     screening: 'CLEAN' | 'FLAGGED' | 'FAILED' | null;
     fetchedFromUrl: boolean;
   }> = {},
@@ -54,6 +55,7 @@ async function createPdfAttachment(
       correctedText: data.correctedText ?? null,
       textCorrectedAt: data.textCorrectedAt ?? null,
       textCorrectedById: data.textCorrectedById ?? null,
+      textPageStarts: data.textPageStarts ?? [],
       textTruncated: data.textTruncated ?? false,
       screening: data.screening ?? null,
       fetchedFromUrl: data.fetchedFromUrl ?? false,
@@ -142,6 +144,56 @@ describe('reading extracted text', () => {
     const attachmentId = await createPdfAttachment({ textTruncated: true });
     const info = await service.getTextInfo(attachmentId, memberId);
     expect(info.truncated).toBe(true);
+  });
+});
+
+describe('reading a long text by its pages (issue #133, ADR-101)', () => {
+  const pages = Array.from(
+    { length: 6 },
+    (_, index) => `Seite ${index + 1}\n\n${'w '.repeat(1_500)}\n`,
+  );
+  const text = pages.join('');
+  const starts = pages.map((_, index) => pages.slice(0, index).join('').length);
+
+  it('answers without a query as it always has', async () => {
+    const attachmentId = await createPdfAttachment({ extractedText: text, textPageStarts: starts });
+    const read = await service.getText(attachmentId, memberId, 'test-correlation');
+    expect(read).toMatchObject({ view: 'content', text, machineText: text, pages: 6, range: null });
+  });
+
+  it('answers over the budget with the pages, and reads one of them', async () => {
+    const attachmentId = await createPdfAttachment({ extractedText: text, textPageStarts: starts });
+    const map = await service.getText(attachmentId, memberId, 'test-correlation', {
+      maxChars: 5_000,
+    });
+    expect(map.view).toBe('map');
+    expect(map.text).toBe('');
+    expect(map.machineText).toBeNull();
+    expect(map.map?.entries.map((entry) => entry.title)).toEqual(
+      pages.map((_, i) => `Seite ${i + 1}`),
+    );
+
+    const page = await service.getText(attachmentId, memberId, 'test-correlation', {
+      maxChars: 5_000,
+      fromPage: 4,
+    });
+    expect(page).toMatchObject({ view: 'content', text: pages[3] });
+    expect(page.range).toMatchObject({ fromPage: 4, toPage: 4 });
+  });
+
+  it('reads a correction without pages and refuses to pretend it has them', async () => {
+    const attachmentId = await createPdfAttachment({
+      extractedText: text,
+      textPageStarts: starts,
+      correctedText: text,
+      textCorrectedAt: new Date(),
+      textCorrectedById: memberId,
+    });
+    const read = await service.getText(attachmentId, memberId, 'test-correlation', {});
+    expect(read.pages).toBeNull();
+    await expect(
+      service.getText(attachmentId, memberId, 'test-correlation', { maxChars: 5_000, fromPage: 2 }),
+    ).rejects.toMatchObject({ code: 'attachment_text_range_invalid' });
   });
 });
 

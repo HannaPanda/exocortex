@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { attachmentTrustSchema } from './ai-trust';
+import { attachmentTextMapSchema, attachmentTextRangeSchema } from './attachment-text-map';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 /**
@@ -494,6 +495,50 @@ export const attachmentTextResponseSchema = z.object({
   trust: attachmentTrustSchema,
 });
 export type AttachmentTextResponse = z.infer<typeof attachmentTextResponseSchema>;
+
+/**
+ * Query of `GET /api/attachments/:id/text` (issue #133, ADR-101).
+ *
+ * All optional, and a request naming none of them is answered exactly as
+ * before: the whole text, which is what the correction dialog reads. An agent
+ * names a budget, and then a text over it answers with its map instead of a
+ * prefix (ADR-056); pages or characters name the stretch to read, the way the
+ * map's entries address it.
+ */
+export const attachmentTextReadQuerySchema = z.object({
+  maxChars: z.coerce.number().int().min(200).max(ATTACHMENT_TEXT_MAX_CHARS).optional(),
+  maxEntries: z.coerce.number().int().min(4).max(200).optional(),
+  fromPage: z.coerce.number().int().min(1).max(100_000).optional(),
+  toPage: z.coerce.number().int().min(1).max(100_000).optional(),
+  fromChar: z.coerce.number().int().min(0).max(ATTACHMENT_TEXT_MAX_CHARS).optional(),
+  toChar: z.coerce.number().int().min(0).max(ATTACHMENT_TEXT_MAX_CHARS).optional(),
+});
+export type AttachmentTextReadQuery = z.infer<typeof attachmentTextReadQuerySchema>;
+
+/**
+ * What `GET /api/attachments/:id/text` answers: the text response plus where
+ * the answer sits in the text.
+ *
+ * For a request without budget or range, `view` is `content`, `map` and
+ * `range` are null, and `text` is the whole text as before. With either,
+ * `text` is the stretch read (empty when `view` is `map`, never a prefix) and
+ * `machineText` is null, because the point of asking is not to receive
+ * 400,000 characters.
+ */
+export const attachmentTextReadResponseSchema = attachmentTextResponseSchema.extend({
+  view: z.enum(['content', 'map']),
+  map: attachmentTextMapSchema.nullable(),
+  range: attachmentTextRangeSchema.nullable(),
+  /** Length of the effective text; null when there is none. */
+  totalChars: z.number().int().nonnegative().nullable(),
+  /**
+   * Pages whose start the extraction knew, for the effective text: null for a
+   * correction (a person may have moved text between pages), an office file
+   * and a row extracted before pages were kept.
+   */
+  pages: z.number().int().positive().nullable(),
+});
+export type AttachmentTextReadResponse = z.infer<typeof attachmentTextReadResponseSchema>;
 
 /**
  * The same answer without the two fields that can be 400,000 characters long.

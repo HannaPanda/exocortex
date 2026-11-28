@@ -121,6 +121,12 @@ export const API_ERROR_CODES = [
   'document_page_oversized',
   'attachment_text_unavailable',
   /**
+   * A text read named a stretch that is not there (issue #133): pages of a
+   * text whose pages are unknown, a page past the last, an empty range. The
+   * reason says which; the map of the whole text is the way back.
+   */
+  'attachment_text_range_invalid',
+  /**
    * The image read was asked for a file that is not a raster image it can
    * hand over (issue #204): a PDF, an SVG, a video. The way to the bytes is a
    * download ticket, which the message names.
@@ -421,6 +427,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // the page's state that refuses it, which is what 409 says.
   document_page_oversized: 409,
   attachment_text_unavailable: 409,
+  attachment_text_range_invalid: 422,
   // 422: the request is well formed, the file is simply not something the
   // image read can turn into pixels, and asking again will not change that.
   attachment_not_image: 422,

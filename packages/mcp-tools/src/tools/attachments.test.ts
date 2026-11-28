@@ -58,6 +58,11 @@ const baseResponse = {
   error: null,
   errorCode: null,
   trust: { trusted: false, reason: 'not_own' as const },
+  view: 'content' as const,
+  map: null,
+  range: { fromChar: 0, toChar: 20, fromPage: null, toPage: null },
+  totalChars: 20,
+  pages: null,
 };
 
 describe('exo_attachment_read_text', () => {
@@ -67,10 +72,85 @@ describe('exo_attachment_read_text', () => {
     const result = await attachmentReadTextTool.run(client, { attachmentId: 'attachment1' });
 
     expect(calls).toEqual([
-      { method: 'GET', path: '/api/attachments/attachment1/text', body: undefined },
+      {
+        method: 'GET',
+        path: '/api/attachments/attachment1/text',
+        query: { maxChars: '10000', maxEntries: '40' },
+        body: undefined,
+      },
     ]);
     expect(result.text).toContain('der ausgelesene Text');
     expect(result.text).not.toContain('korrigiert');
+    expect(result.text).not.toContain('Ausschnitt');
+  });
+
+  it('answers a long text with its pages, never with its beginning (issue #133)', async () => {
+    const { client } = createFakeClient({
+      ...baseResponse,
+      text: '',
+      machineText: null,
+      view: 'map',
+      map: {
+        mode: 'pages',
+        coarsened: false,
+        entries: [
+          {
+            kind: 'pages',
+            title: 'Einleitung',
+            level: null,
+            fromChar: 0,
+            toChar: 9000,
+            chars: 9000,
+            fromPage: 1,
+            toPage: 1,
+            parts: 1,
+          },
+          {
+            kind: 'pages',
+            title: 'Anhang A',
+            level: null,
+            fromChar: 9000,
+            toChar: 30_000,
+            chars: 21_000,
+            fromPage: 2,
+            toPage: 3,
+            parts: 1,
+          },
+        ],
+      },
+      range: { fromChar: 0, toChar: 30_000, fromPage: 1, toPage: 3 },
+      totalChars: 30_000,
+      pages: 3,
+    });
+
+    const result = await attachmentReadTextTool.run(client, { attachmentId: 'attachment1' });
+
+    expect(result.text).toContain('bericht.pdf ist lang (30.000 Zeichen, 3 Seiten)');
+    expect(result.text).toContain('Kein Textauszug, sondern die Gliederung');
+    expect(result.text).toContain('- Seite 1: „Einleitung“ — fromPage 1 (9.000 Zeichen)');
+    expect(result.text).toContain('- Seiten 2 bis 3: „Anhang A“ — fromPage 2, toPage 3');
+  });
+
+  it('sends the stretch asked for and says where it sits', async () => {
+    const { client, calls } = createFakeClient({
+      ...baseResponse,
+      text: 'Text der Seite zwölf',
+      machineText: null,
+      range: { fromChar: 50_000, toChar: 54_000, fromPage: 12, toPage: 12 },
+      totalChars: 141_919,
+      pages: 49,
+    });
+
+    const result = await attachmentReadTextTool.run(client, {
+      attachmentId: 'attachment1',
+      fromPage: 12,
+    });
+
+    expect(calls[0]?.query).toEqual({ maxChars: '10000', maxEntries: '40', fromPage: '12' });
+    expect(result.text).toContain(
+      '[Ausschnitt: Seite 12 von 49, Zeichen 50.000 bis 54.000 von 141.919]',
+    );
+    expect(result.text).toContain('Text der Seite zwölf');
   });
 
   it('marks the text as corrected and cut off when the response says so', async () => {

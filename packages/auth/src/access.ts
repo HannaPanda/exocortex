@@ -511,6 +511,8 @@ export class WorkspaceAccessService {
       textMetadata: unknown;
       /** True when `extractedText` was cut off at `ATTACHMENT_TEXT_MAX_CHARS`. */
       textTruncated: boolean;
+      /** Where each page begins in `extractedText` (ADR-101); empty when unknown. */
+      textPageStarts: number[];
       /** Human correction of `extractedText` (issue #2); absent when nobody has corrected it. */
       correctedText: string | null;
       textCorrectedAt: Date | null;
@@ -552,6 +554,7 @@ export class WorkspaceAccessService {
         textErrorCode: true,
         textMetadata: true,
         textTruncated: true,
+        textPageStarts: true,
         correctedText: true,
         textCorrectedAt: true,
         textCorrectedById: true,
