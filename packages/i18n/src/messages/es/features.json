@@ -553,6 +553,16 @@
     },
     "where": "Arrastrar un archivo al editor."
   },
+  "bild-aus-dem-netz": {
+    "title": "Traer una imagen de la web a la página",
+    "summary": "Si solo tienes la dirección de una imagen que está disponible públicamente en la web, eXocortex la descarga por ti y la guarda como adjunto de la página. Así se mostrará siempre, en lugar de quedar un espacio vacío o un simple enlace.",
+    "details": {
+      "p1": "En el editor, escribe / y elige «Imagen de la web», y luego introduce la dirección. La imagen se descarga, se comprueba y se guarda como adjunto de esta página; a partir de ese momento, la página muestra su propia copia y ya no la dirección externa, que de todos modos el navegador no cargaría aquí.",
+      "p2": "Solo se descarga desde direcciones accesibles públicamente, nunca desde redes internas, ni siquiera a través de una redirección. Lo que se recibe se identifica por su contenido, no por la extensión, y no puede superar el tamaño de una subida habitual.",
+      "p3": "Los agentes pueden hacer lo mismo con exo_attachment_upload_url: a través de MCP, también mediante el acceso reducido para ChatGPT, y la IA del chat. Si un agente escribe la dirección de una imagen externa en una página, el aviso le indicará precisamente esta herramienta; si son varias imágenes, las descarga de una en una. La IA del chat trata una imagen descargada de este modo como contenido de la web: mientras la escritura esté bloqueada tras consultar contenido externo (el ajuste predeterminado), no modificará nada más por sí misma durante esa ejecución, ni siquiera otra imagen, y en su lugar sugerirá insertarla."
+    },
+    "where": "En el editor: / y luego «Imagen de la web»."
+  },
   "datenbank-ki-spalten": {
     "title": "Rellenar columnas de una base de datos con IA",
     "summary": "Una columna recibe una instrucción de IA, como «Resumir», «Fecha del documento» o una personalizada. Después, la IA rellena las celdas de esa columna a partir de lo que contiene la fila: el texto de la página, las demás columnas y los archivos adjuntos.",

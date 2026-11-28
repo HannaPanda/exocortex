@@ -70,7 +70,10 @@ What is deliberately still missing is listed under
   downscaled image previews, and text extraction from PDFs (Docling locally,
   with OCR for scans) and from twelve office formats -- Word, Excel,
   PowerPoint, OpenDocument, RTF, EPUB, CSV -- through a local library call
-  (ADR-050); an agent uploads a file from its own disk through a one-time
+  (ADR-050); a picture somebody found on the web comes in by its address,
+  fetched by the server and stored as the page's own file, from the slash
+  menu as from every agent surface (issue #212); an agent uploads a file from
+  its own disk through a one-time
   upload ticket rather than a third host (ADR-064), looks at a picture as
   pixels, and takes any file home through a one-time download ticket (ADR-088)
 

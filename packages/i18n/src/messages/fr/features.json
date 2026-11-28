@@ -553,6 +553,16 @@
     },
     "where": "Glisser un fichier dans l’éditeur."
   },
+  "bild-aus-dem-netz": {
+    "title": "Importer une image depuis le Web sur la page",
+    "summary": "Si tu n’as que l’adresse d’une image accessible publiquement sur le Web, eXocortex la récupère directement et la stocke comme pièce jointe de la page. Elle s’affiche ainsi de manière permanente, au lieu de laisser un espace vide ou un simple lien.",
+    "details": {
+      "p1": "Dans l’éditeur, tape / et choisis « Image depuis le Web », puis saisis l’adresse. L’image est récupérée, vérifiée et enregistrée comme pièce jointe de cette page ; la page affiche ensuite sa propre copie et non plus l’adresse externe, que le navigateur ne chargerait de toute façon pas ici.",
+      "p2": "La récupération ne fonctionne qu’à partir d’adresses accessibles publiquement, jamais depuis des réseaux internes, même via une redirection. Ce qui est reçu est identifié par son contenu, pas par son extension, et ne doit pas dépasser la taille autorisée pour un téléversement standard.",
+      "p3": "Les agents peuvent faire de même avec exo_attachment_upload_url : via MCP, y compris via l’accès restreint pour ChatGPT, ainsi que l’IA dans le chat. Si un agent écrit l’adresse d’une image externe dans une page, l’avertissement lui indique précisément cet outil ; il récupère plusieurs images une par une. L’IA dans le chat traite une image ainsi récupérée comme un contenu provenant du Web : tant que l’écriture est verrouillée après des contenus externes — ce qui est le réglage par défaut —, elle ne modifie plus rien d’elle-même au cours de cette session, pas même une autre image, et suggère plutôt l’intégration."
+    },
+    "where": "Dans l’éditeur : / puis « Image depuis le Web »."
+  },
   "datenbank-ki-spalten": {
     "title": "Faire remplir les colonnes d’une base de données par l’IA",
     "summary": "Une colonne reçoit une consigne pour l’IA, comme « Résume », « Date du document » ou une consigne personnalisée. L’IA remplit ensuite les cellules de cette colonne à partir de ce qui se trouve dans la ligne : le texte de la page, les autres colonnes et les fichiers joints.",

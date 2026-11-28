@@ -25,7 +25,7 @@ import {
 } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { uploadAttachment } from '@/lib/api/attachment-queries';
+import { importAttachmentFromUrl, uploadAttachment } from '@/lib/api/attachment-queries';
 import { ApiError } from '@/lib/api/client';
 import { useCreateDocument, useDocumentTree } from '@/lib/api/document-queries';
 import { useSavedQueries } from '@/lib/api/saved-query-queries';
@@ -61,6 +61,7 @@ interface PendingPrompt {
 /** Where each kind's title, description and placeholder live in `editor.prompt`. */
 const PROMPT_COPY_KEY = {
   url: 'url',
+  'file-from-url': 'fileFromUrl',
   latex: 'latex',
   page: 'page',
   database: 'database',
@@ -112,6 +113,7 @@ export function useBlockPrompt({
   const [value, setValue] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
   const [createError, setCreateError] = React.useState<string | null>(null);
+  const [importing, setImporting] = React.useState(false);
   const createDocument = useCreateDocument(workspaceId);
   const fileInput = React.useRef<HTMLInputElement | null>(null);
   const fileResolve = React.useRef<((value: string | null) => void) | null>(null);
@@ -170,6 +172,7 @@ export function useBlockPrompt({
       return new Promise<string | null>((resolve) => {
         setValue(initialValue ?? '');
         setCreateError(null);
+        setImporting(false);
         setPending({ kind, resolve });
       });
     },
@@ -240,8 +243,34 @@ export function useBlockPrompt({
       }),
     );
 
+  /**
+   * Takes the file at the typed address onto this page (issue #212). The
+   * dialog stays open while the API fetches it and when it refuses, so the
+   * address can be corrected rather than typed again; dismissing it while the
+   * request runs is not offered, or a file would land that nothing embeds.
+   */
+  const importFromUrl = (url: string): void => {
+    if (importing) return;
+    setCreateError(null);
+    setImporting(true);
+    importAttachmentFromUrl({ workspaceId, documentId, url })
+      .then((imported) => {
+        setImporting(false);
+        finish(imported.src);
+      })
+      .catch((importError: unknown) => {
+        setImporting(false);
+        setCreateError(importError instanceof ApiError ? importError.message : t('importFailed'));
+      });
+  };
+
   const submit = (): void => {
     const trimmed = value.trim();
+    if (pending?.kind === 'file-from-url') {
+      if (trimmed.length === 0) finish(null);
+      else importFromUrl(trimmed);
+      return;
+    }
     // A page link may be made for a page that does not exist yet; every other
     // kind answers with the raw string it collected.
     if (trimmed.length === 0) finish(null);
@@ -278,11 +307,12 @@ export function useBlockPrompt({
         onChooseSavedQuery={chooseSavedQuery}
         onSubmit={submit}
         onCancel={() => {
-          if (!createDocument.isPending) finish(null);
+          if (!createDocument.isPending && !importing) finish(null);
         }}
         onCreateDatabase={createDatabase}
         creatingDatabase={createDocument.isPending}
         createDatabaseError={createError}
+        importing={importing}
       />
     </>
   );
@@ -441,6 +471,48 @@ function CreateDatabaseButton({
   );
 }
 
+/**
+ * The dialog's buttons. A database is chosen from the list or made new, a
+ * saved query only chosen, so neither has an insert button; while a database
+ * is made or an address imported, nothing may close the dialog.
+ */
+function BlockPromptFooter({
+  kind,
+  name,
+  busy,
+  creatingDatabase,
+  importing,
+  onCancel,
+  onSubmit,
+  onCreateDatabase,
+}: {
+  kind: PendingPrompt['kind'] | null;
+  name: string;
+  busy: boolean;
+  creatingDatabase: boolean;
+  importing: boolean;
+  onCancel: () => void;
+  onSubmit: () => void;
+  onCreateDatabase: () => void;
+}) {
+  const t = useTranslations('editor.prompt');
+  return (
+    <DialogFooter>
+      <Button variant="ghost" onClick={onCancel} disabled={busy}>
+        {t('cancel')}
+      </Button>
+      {kind === 'database' ? (
+        <CreateDatabaseButton name={name} creating={creatingDatabase} onCreate={onCreateDatabase} />
+      ) : null}
+      {kind === 'database' || kind === 'saved-query' ? null : (
+        <Button data-testid="block-prompt-submit" onClick={onSubmit} disabled={importing}>
+          {importing ? t('importing') : t('insert')}
+        </Button>
+      )}
+    </DialogFooter>
+  );
+}
+
 /** The dialog half of `useBlockPrompt`: one input, optionally a picker below it. */
 function BlockPromptDialog({
   pending,
@@ -457,6 +529,7 @@ function BlockPromptDialog({
   onCreateDatabase,
   creatingDatabase,
   createDatabaseError,
+  importing,
 }: {
   pending: PendingPrompt | null;
   value: string;
@@ -471,7 +544,10 @@ function BlockPromptDialog({
   onCancel: () => void;
   onCreateDatabase: () => void;
   creatingDatabase: boolean;
+  /** Shown in the dialog's own error line: a failed database or a refused import. */
   createDatabaseError: string | null;
+  /** An address import is running (issue #212). */
+  importing: boolean;
 }) {
   const t = useTranslations('editor.prompt');
   const copy = pending === null ? null : PROMPT_COPY_KEY[pending.kind];
@@ -514,6 +590,8 @@ function BlockPromptDialog({
               autoFocus
               value={value}
               data-testid="block-prompt-input"
+              type={pending?.kind === 'file-from-url' ? 'url' : 'text'}
+              disabled={importing}
               placeholder={copy === null ? '' : t(`${copy}.placeholder`)}
               onChange={(event) => onValueChange(event.target.value)}
               onKeyDown={(event) => {
@@ -547,23 +625,16 @@ function BlockPromptDialog({
             </p>
           )}
         </div>
-        <DialogFooter>
-          <Button variant="ghost" onClick={onCancel} disabled={creatingDatabase}>
-            {t('cancel')}
-          </Button>
-          {pending?.kind === 'database' ? (
-            <CreateDatabaseButton
-              name={value.trim()}
-              creating={creatingDatabase}
-              onCreate={onCreateDatabase}
-            />
-          ) : null}
-          {pending?.kind === 'database' || pending?.kind === 'saved-query' ? null : (
-            <Button data-testid="block-prompt-submit" onClick={onSubmit}>
-              {t('insert')}
-            </Button>
-          )}
-        </DialogFooter>
+        <BlockPromptFooter
+          kind={pending?.kind ?? null}
+          name={value.trim()}
+          busy={creatingDatabase || importing}
+          creatingDatabase={creatingDatabase}
+          importing={importing}
+          onCancel={onCancel}
+          onSubmit={onSubmit}
+          onCreateDatabase={onCreateDatabase}
+        />
       </DialogContent>
     </Dialog>
   );

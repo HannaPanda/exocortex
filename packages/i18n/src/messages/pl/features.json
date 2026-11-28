@@ -553,6 +553,16 @@
     },
     "where": "Przeciągnij plik do edytora."
   },
+  "bild-aus-dem-netz": {
+    "title": "Pobieranie obrazu z sieci na stronę",
+    "summary": "Jeśli masz tylko adres obrazu dostępnego publicznie w sieci, eXocortex pobierze go samodzielnie i zapisze jako załącznik strony. Dzięki temu pojawi się na stałe, zamiast jako puste miejsce lub zwykły link.",
+    "details": {
+      "p1": "W edytorze wpisz / i wybierz „Obraz z sieci”, a następnie podaj adres. Obraz zostanie pobrany, sprawdzony i zapisany jako załącznik tej strony; strona wyświetla potem własną kopię, a nie obcy adres, którego przeglądarka i tak by tutaj nie załadowała.",
+      "p2": "Pobieranie działa tylko z publicznie dostępnych adresów, nigdy z sieci wewnętrznych, również poprzez przekierowanie. To, co zostanie odebrane, jest rozpoznawane po zawartości, a nie po rozszerzeniu, i nie może przekraczać rozmiaru zwykłego przesyłanego pliku.",
+      "p3": "Agenci mogą zrobić to samo za pomocą exo_attachment_upload_url: przez MCP, również przez uproszczony dostęp dla ChatGPT, oraz przez AI na czacie. Jeśli agent wpisze adres zewnętrznego obrazu na stronę, ostrzeżenie wskaże mu dokładnie to narzędzie; wiele obrazów pobiera pojedynczo. AI na czacie traktuje tak pobrany obraz jako treść z sieci: dopóki zapisywanie po treściach zewnętrznych jest zablokowane (a jest to ustawienie domyślne), nie zmienia już w tym przebiegu niczego samodzielnie, w tym kolejnego obrazu, lecz zamiast tego proponuje osadzenie."
+    },
+    "where": "W edytorze: / a następnie „Obraz z sieci”."
+  },
   "datenbank-ki-spalten": {
     "title": "Wypełnianie kolumn bazy danych przez AI",
     "summary": "Kolumna otrzymuje instrukcję AI, na przykład „Podsumuj”, „Data z dokumentu” lub własną. Następnie AI wypełnia komórki tej kolumny na podstawie zawartości wiersza: tekstu strony, innych kolumn i załączonych plików.",

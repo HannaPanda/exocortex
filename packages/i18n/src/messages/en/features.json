@@ -553,6 +553,16 @@
     },
     "where": "Drag a file into the editor."
   },
+  "bild-aus-dem-netz": {
+    "title": "Add an image from the web to the page",
+    "summary": "If you only have the address of an image that is publicly available on the web, eXocortex fetches it itself and stores it as an attachment to the page. This way it appears permanently, instead of as a blank space or a mere link.",
+    "details": {
+      "p1": "In the editor, type / and select “Image from the web”, then enter the address. The image is fetched, checked, and saved as an attachment to this page; the page then displays its own copy and no longer the external address, which the browser would not load here anyway.",
+      "p2": "It only fetches from publicly reachable addresses, never from internal networks, not even via a redirect. What arrives is recognized by its content, not by its file extension, and must not be larger than a regular upload.",
+      "p3": "Agents can do the same with exo_attachment_upload_url: via MCP, also via the narrow access for ChatGPT, and the AI in chat. If an agent writes the address of an external image into a page, the warning points it to this exact tool; it fetches multiple images individually. The AI in chat treats an image fetched this way as web content: as long as writing after external content is blocked, which is the default setting, it will no longer change anything itself in that run, not even another image, and suggests embedding it instead."
+    },
+    "where": "In the editor: / and then “Image from the web”."
+  },
   "datenbank-ki-spalten": {
     "title": "Have AI fill in database columns",
     "summary": "A column gets an AI prompt, such as “Summarize”, “Date from document”, or a custom one. The AI then fills in the cells of this column using what is in the row: the text of the page, the other columns, and attached files.",

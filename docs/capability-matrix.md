@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-325 routes are reachable from at least one client; 190 from all three.
+325 routes are reachable from at least one client; 191 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -320,7 +320,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/agent-profiles` | ✓ | · | ✓ | `exo_agent_profile_create` |
 | `POST /api/workspaces/:x/attachments` | ✓ | ✓ | ✓ | `exo_attachment_upload` |
-| `POST /api/workspaces/:x/attachments/from-url` | · | ✓ | ✓ | `exo_attachment_upload_url` |
+| `POST /api/workspaces/:x/attachments/from-url` | ✓ | ✓ | ✓ | `exo_attachment_upload_url` |
 | `POST /api/workspaces/:x/attachments/upload-tickets` | · | · | ✓ | `exo_attachment_upload_ticket` |
 | `POST /api/workspaces/:x/attention` | · | ✓ | ✓ | `exo_attention_request` |
 | `POST /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_create` |

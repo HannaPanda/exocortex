@@ -56,6 +56,10 @@
       "label": "Obraz",
       "description": "Prześlij obraz"
     },
+    "image-from-url": {
+      "label": "Obraz z sieci",
+      "description": "Wstaw obraz za pomocą jego adresu"
+    },
     "table": {
       "label": "Tabela",
       "description": "Tabela z nagłówkiem"
@@ -182,6 +186,11 @@
       "description": "Wpisz pełny adres, na przykład https://exocortex.app/bild.png",
       "placeholder": "https://…"
     },
+    "fileFromUrl": {
+      "title": "Wstaw obraz z sieci",
+      "description": "Podaj adres obrazu dostępnego publicznie w sieci. eXocortex pobierze go i zapisze jako załącznik tej strony, aby wyświetlał się tu na stałe. Ta strona nie wyświetli obrazu bezpośrednio z zewnętrznego serwera.",
+      "placeholder": "https://…/zdjecie.jpg"
+    },
     "latex": {
       "title": "Wprowadź wzór",
       "description": "Notacja LaTeX, na przykład {example}",
@@ -203,6 +212,7 @@
       "placeholder": "Szukaj zapisanego wyszukiwania…"
     },
     "uploadFailed": "Nie udało się przesłać pliku.",
+    "importFailed": "Nie udało się pobrać obrazu.",
     "noPageTitle": "Nie znaleziono strony",
     "noPageDescription": "Wpisz tytuł, aby utworzyć odnośnik do jeszcze nieutworzonej strony.",
     "noDatabaseTitle": "Nie znaleziono bazy danych",
@@ -218,7 +228,8 @@
     "fieldSearch": "Wyszukiwanie",
     "fieldValue": "Wartość",
     "cancel": "Anuluj",
-    "insert": "Wstaw"
+    "insert": "Wstaw",
+    "importing": "Pobieranie…"
   },
   "colors": {
     "name": {

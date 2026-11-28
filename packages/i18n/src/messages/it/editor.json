@@ -56,6 +56,10 @@
       "label": "Immagine",
       "description": "Carica un’immagine"
     },
+    "image-from-url": {
+      "label": "Immagine dal web",
+      "description": "Inserisci un’immagine tramite il suo indirizzo"
+    },
     "table": {
       "label": "Tabella",
       "description": "Tabella con riga di intestazione"
@@ -182,6 +186,11 @@
       "description": "Inserisci l’indirizzo completo, ad esempio https://exocortex.app/bild.png",
       "placeholder": "https://…"
     },
+    "fileFromUrl": {
+      "title": "Inserisci un’immagine dal web",
+      "description": "Inserisci l’indirizzo di un’immagine disponibile pubblicamente sul web. eXocortex la scaricherà e la salverà come allegato di questa pagina, in modo che rimanga visibile in modo permanente. Questa pagina non visualizzerebbe un’immagine ospitata su un server esterno.",
+      "placeholder": "https://…/foto.jpg"
+    },
     "latex": {
       "title": "Inserisci formula",
       "description": "Notazione LaTeX, ad esempio {example}",
@@ -203,6 +212,7 @@
       "placeholder": "Cerca ricerca salvata …"
     },
     "uploadFailed": "Impossibile caricare il file.",
+    "importFailed": "Impossibile importare l’immagine.",
     "noPageTitle": "Nessuna pagina trovata",
     "noPageDescription": "Digita un titolo per creare un collegamento a una pagina non ancora creata.",
     "noDatabaseTitle": "Nessun database trovato",
@@ -218,7 +228,8 @@
     "fieldSearch": "Ricerca",
     "fieldValue": "Valore",
     "cancel": "Annulla",
-    "insert": "Inserisci"
+    "insert": "Inserisci",
+    "importing": "Importazione in corso…"
   },
   "colors": {
     "name": {

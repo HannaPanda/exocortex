@@ -26,6 +26,7 @@ const TRANSLATED_BLOCK_IDS = [
   'ordered-list',
   'task-list',
   'image',
+  'image-from-url',
   'table',
   'callout',
   'file',

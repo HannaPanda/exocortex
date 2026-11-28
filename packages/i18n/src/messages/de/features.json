@@ -553,6 +553,16 @@
     },
     "where": "Datei in den Editor ziehen."
   },
+  "bild-aus-dem-netz": {
+    "title": "Ein Bild aus dem Netz auf die Seite holen",
+    "summary": "Hast du nur die Adresse eines Bildes, das öffentlich im Netz steht, holt eXocortex es selbst und legt es als Anhang der Seite ab. So erscheint es dauerhaft, statt als leere Stelle oder bloßer Link.",
+    "details": {
+      "p1": "Im Editor tippst du / und wählst „Bild aus dem Netz“, dann gibst du die Adresse ein. Das Bild wird geholt, geprüft und als Anhang dieser Seite gespeichert; die Seite zeigt danach die eigene Kopie und nicht mehr die fremde Adresse, die der Browser hier ohnehin nicht laden würde.",
+      "p2": "Geholt wird nur von öffentlich erreichbaren Adressen, nie aus internen Netzen, auch nicht über eine Weiterleitung. Was ankommt, wird am Inhalt erkannt, nicht an der Endung, und darf nicht größer sein als ein gewöhnlicher Upload.",
+      "p3": "Agenten können dasselbe mit exo_attachment_upload_url: über MCP, auch über den schmalen Zugang für ChatGPT, und die KI im Chat. Schreibt ein Agent die Adresse eines fremden Bildes in eine Seite, nennt ihm die Warnung genau dieses Werkzeug; mehrere Bilder holt er einzeln. Die KI im Chat behandelt ein so geholtes Bild als Inhalt aus dem Netz: solange Schreiben nach Fremdinhalten gesperrt ist, und das ist die Voreinstellung, ändert sie danach in diesem Lauf nichts mehr selbst, auch kein weiteres Bild, und schlägt das Einbetten stattdessen vor."
+    },
+    "where": "Im Editor: / und dann „Bild aus dem Netz“."
+  },
   "datenbank-ki-spalten": {
     "title": "Spalten einer Datenbank von der KI ausfüllen lassen",
     "summary": "Eine Spalte bekommt eine KI-Anweisung, etwa „Fasse zusammen“, „Datum aus dem Dokument“ oder eine eigene. Danach füllt die KI die Zellen dieser Spalte aus dem, was in der Zeile steht: dem Text der Seite, den anderen Spalten und den angehängten Dateien.",

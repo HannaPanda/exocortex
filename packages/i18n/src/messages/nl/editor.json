@@ -56,6 +56,10 @@
       "label": "Afbeelding",
       "description": "Afbeelding uploaden"
     },
+    "image-from-url": {
+      "label": "Afbeelding van het web",
+      "description": "Afbeelding via het adres overnemen"
+    },
     "table": {
       "label": "Tabel",
       "description": "Tabel met koprij"
@@ -182,6 +186,11 @@
       "description": "Voer het volledige adres in, bijvoorbeeld https://exocortex.app/bild.png",
       "placeholder": "https://…"
     },
+    "fileFromUrl": {
+      "title": "Afbeelding van het web overnemen",
+      "description": "Voer het adres in van een afbeelding die openbaar op het web staat. eXocortex haalt deze op en slaat hem op als bijlage bij deze pagina, zodat hij hier permanent zichtbaar blijft. Een afbeelding op een externe server zou op deze pagina niet worden weergegeven.",
+      "placeholder": "https://…/foto.jpg"
+    },
     "latex": {
       "title": "Formule invoeren",
       "description": "LaTeX-notatie, bijvoorbeeld {example}",
@@ -203,6 +212,7 @@
       "placeholder": "Opgeslagen zoekopdracht zoeken…"
     },
     "uploadFailed": "Het bestand kon niet worden geüpload.",
+    "importFailed": "De afbeelding kon niet worden overgenomen.",
     "noPageTitle": "Geen pagina gevonden",
     "noPageDescription": "Typ een titel om te linken naar een pagina die nog niet bestaat.",
     "noDatabaseTitle": "Geen database gevonden",
@@ -218,7 +228,8 @@
     "fieldSearch": "Zoeken",
     "fieldValue": "Waarde",
     "cancel": "Annuleren",
-    "insert": "Invoegen"
+    "insert": "Invoegen",
+    "importing": "Wordt overgenomen …"
   },
   "colors": {
     "name": {

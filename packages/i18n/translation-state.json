@@ -9624,6 +9624,14 @@
       "source": "e3c12783f177c2d4",
       "output": "cc29053ff492a0bc"
     },
+    "editor.blocks.image-from-url.description": {
+      "source": "e665274cf440f1bb",
+      "output": "7a91c524741ceedf"
+    },
+    "editor.blocks.image-from-url.label": {
+      "source": "d446a17af3e8625f",
+      "output": "fb87d021e4c2a20b"
+    },
     "editor.blocks.image.description": {
       "source": "3c66c01e1539f5c5",
       "output": "ffe4df6c7ca600c4"
@@ -10295,6 +10303,26 @@
     "editor.prompt.fieldValue": {
       "source": "7e347daa5ec7fbe8",
       "output": "8e37953d23daca5f"
+    },
+    "editor.prompt.fileFromUrl.description": {
+      "source": "26e74cce1e8088eb",
+      "output": "73a6a9400407c2ec"
+    },
+    "editor.prompt.fileFromUrl.placeholder": {
+      "source": "50c94c19f476025d",
+      "output": "36c7cf2538b13cbc"
+    },
+    "editor.prompt.fileFromUrl.title": {
+      "source": "fa08fbfe9376e391",
+      "output": "3c1dc088784aef92"
+    },
+    "editor.prompt.importFailed": {
+      "source": "4d3f37fdc02ade33",
+      "output": "fbbe1671e79ebd68"
+    },
+    "editor.prompt.importing": {
+      "source": "69f785a7eec2b513",
+      "output": "402488572dabff2b"
     },
     "editor.prompt.insert": {
       "source": "96a07506f7d18f05",
@@ -13407,6 +13435,30 @@
     "features.benachrichtigungen-einstellen.where": {
       "source": "2c85dfc7e710934b",
       "output": "cabd6c3fd810b194"
+    },
+    "features.bild-aus-dem-netz.details.p1": {
+      "source": "b0126a28e3bcb3aa",
+      "output": "8986af247aa92f55"
+    },
+    "features.bild-aus-dem-netz.details.p2": {
+      "source": "17839a0a93ab697d",
+      "output": "a0c491a1de5e9b36"
+    },
+    "features.bild-aus-dem-netz.details.p3": {
+      "source": "2c4270a6888c15fa",
+      "output": "243f952c3b0ef22a"
+    },
+    "features.bild-aus-dem-netz.summary": {
+      "source": "bb905bf44e8cbcf3",
+      "output": "1f6d05c8b6470745"
+    },
+    "features.bild-aus-dem-netz.title": {
+      "source": "8c232a5b6b1d6900",
+      "output": "a26f84bacb77fc97"
+    },
+    "features.bild-aus-dem-netz.where": {
+      "source": "db6a5cfb69e75832",
+      "output": "fa681ce2852754c4"
     },
     "features.bild-vergroessern.details.p1": {
       "source": "957a0e26cca0c134",
@@ -36234,6 +36286,14 @@
       "source": "e3c12783f177c2d4",
       "output": "5cc33600e870a9b5"
     },
+    "editor.blocks.image-from-url.description": {
+      "source": "e665274cf440f1bb",
+      "output": "715b68478c576d1c"
+    },
+    "editor.blocks.image-from-url.label": {
+      "source": "d446a17af3e8625f",
+      "output": "a0b44223df4fa8d9"
+    },
     "editor.blocks.image.description": {
       "source": "3c66c01e1539f5c5",
       "output": "251f0755f51e94d1"
@@ -36905,6 +36965,26 @@
     "editor.prompt.fieldValue": {
       "source": "7e347daa5ec7fbe8",
       "output": "b2f530c46991311c"
+    },
+    "editor.prompt.fileFromUrl.description": {
+      "source": "26e74cce1e8088eb",
+      "output": "44fb5dc176e8f81b"
+    },
+    "editor.prompt.fileFromUrl.placeholder": {
+      "source": "50c94c19f476025d",
+      "output": "50c94c19f476025d"
+    },
+    "editor.prompt.fileFromUrl.title": {
+      "source": "fa08fbfe9376e391",
+      "output": "bc8d7c9e0cbd8649"
+    },
+    "editor.prompt.importFailed": {
+      "source": "4d3f37fdc02ade33",
+      "output": "fcda07721a18a6ce"
+    },
+    "editor.prompt.importing": {
+      "source": "69f785a7eec2b513",
+      "output": "c315c201efca53e7"
     },
     "editor.prompt.insert": {
       "source": "96a07506f7d18f05",
@@ -40017,6 +40097,30 @@
     "features.benachrichtigungen-einstellen.where": {
       "source": "2c85dfc7e710934b",
       "output": "410900715921afc6"
+    },
+    "features.bild-aus-dem-netz.details.p1": {
+      "source": "b0126a28e3bcb3aa",
+      "output": "6a52bab08d5dc722"
+    },
+    "features.bild-aus-dem-netz.details.p2": {
+      "source": "17839a0a93ab697d",
+      "output": "d53365882cb4f0bf"
+    },
+    "features.bild-aus-dem-netz.details.p3": {
+      "source": "2c4270a6888c15fa",
+      "output": "76920f71d905e4dc"
+    },
+    "features.bild-aus-dem-netz.summary": {
+      "source": "bb905bf44e8cbcf3",
+      "output": "97aba47bfd38e698"
+    },
+    "features.bild-aus-dem-netz.title": {
+      "source": "8c232a5b6b1d6900",
+      "output": "f7a8ab0a4d3c8cab"
+    },
+    "features.bild-aus-dem-netz.where": {
+      "source": "db6a5cfb69e75832",
+      "output": "76a7d480f8d9b77f"
     },
     "features.bild-vergroessern.details.p1": {
       "source": "957a0e26cca0c134",
@@ -62844,6 +62948,14 @@
       "source": "e3c12783f177c2d4",
       "output": "ae4f49a6f7e596db"
     },
+    "editor.blocks.image-from-url.description": {
+      "source": "e665274cf440f1bb",
+      "output": "3f8f686004d5e140"
+    },
+    "editor.blocks.image-from-url.label": {
+      "source": "d446a17af3e8625f",
+      "output": "dee7de7b2f83c977"
+    },
     "editor.blocks.image.description": {
       "source": "3c66c01e1539f5c5",
       "output": "9861c904a46c8773"
@@ -63515,6 +63627,26 @@
     "editor.prompt.fieldValue": {
       "source": "7e347daa5ec7fbe8",
       "output": "6e8f3132d8e2e2a8"
+    },
+    "editor.prompt.fileFromUrl.description": {
+      "source": "26e74cce1e8088eb",
+      "output": "972feffd41f673ea"
+    },
+    "editor.prompt.fileFromUrl.placeholder": {
+      "source": "50c94c19f476025d",
+      "output": "36c7cf2538b13cbc"
+    },
+    "editor.prompt.fileFromUrl.title": {
+      "source": "fa08fbfe9376e391",
+      "output": "61370d1c182a25fd"
+    },
+    "editor.prompt.importFailed": {
+      "source": "4d3f37fdc02ade33",
+      "output": "956e26ccca821f6b"
+    },
+    "editor.prompt.importing": {
+      "source": "69f785a7eec2b513",
+      "output": "8721536fbf9d224c"
     },
     "editor.prompt.insert": {
       "source": "96a07506f7d18f05",
@@ -66627,6 +66759,30 @@
     "features.benachrichtigungen-einstellen.where": {
       "source": "2c85dfc7e710934b",
       "output": "c50ca6d2e9544d19"
+    },
+    "features.bild-aus-dem-netz.details.p1": {
+      "source": "b0126a28e3bcb3aa",
+      "output": "6266455402079480"
+    },
+    "features.bild-aus-dem-netz.details.p2": {
+      "source": "17839a0a93ab697d",
+      "output": "411e229fbbccc552"
+    },
+    "features.bild-aus-dem-netz.details.p3": {
+      "source": "2c4270a6888c15fa",
+      "output": "1137e40a4f555e4f"
+    },
+    "features.bild-aus-dem-netz.summary": {
+      "source": "bb905bf44e8cbcf3",
+      "output": "21933ab1d660d5b2"
+    },
+    "features.bild-aus-dem-netz.title": {
+      "source": "8c232a5b6b1d6900",
+      "output": "047774c42529a63c"
+    },
+    "features.bild-aus-dem-netz.where": {
+      "source": "db6a5cfb69e75832",
+      "output": "be3b15f26ff92db5"
     },
     "features.bild-vergroessern.details.p1": {
       "source": "957a0e26cca0c134",
@@ -89454,6 +89610,14 @@
       "source": "e3c12783f177c2d4",
       "output": "9e6ea46ba57bb726"
     },
+    "editor.blocks.image-from-url.description": {
+      "source": "e665274cf440f1bb",
+      "output": "734538e9780af95d"
+    },
+    "editor.blocks.image-from-url.label": {
+      "source": "d446a17af3e8625f",
+      "output": "1806c975e0ef88d5"
+    },
     "editor.blocks.image.description": {
       "source": "3c66c01e1539f5c5",
       "output": "1b11de6042b97187"
@@ -90125,6 +90289,26 @@
     "editor.prompt.fieldValue": {
       "source": "7e347daa5ec7fbe8",
       "output": "3b50ed0e6ec24418"
+    },
+    "editor.prompt.fileFromUrl.description": {
+      "source": "26e74cce1e8088eb",
+      "output": "b1f37996b3b26667"
+    },
+    "editor.prompt.fileFromUrl.placeholder": {
+      "source": "50c94c19f476025d",
+      "output": "50c94c19f476025d"
+    },
+    "editor.prompt.fileFromUrl.title": {
+      "source": "fa08fbfe9376e391",
+      "output": "39cf2fe574fe8f11"
+    },
+    "editor.prompt.importFailed": {
+      "source": "4d3f37fdc02ade33",
+      "output": "4c4e34985634a02a"
+    },
+    "editor.prompt.importing": {
+      "source": "69f785a7eec2b513",
+      "output": "3f48270de77d2118"
     },
     "editor.prompt.insert": {
       "source": "96a07506f7d18f05",
@@ -93237,6 +93421,30 @@
     "features.benachrichtigungen-einstellen.where": {
       "source": "2c85dfc7e710934b",
       "output": "c93d83dab5b0a7d9"
+    },
+    "features.bild-aus-dem-netz.details.p1": {
+      "source": "b0126a28e3bcb3aa",
+      "output": "8c11cdb26b379072"
+    },
+    "features.bild-aus-dem-netz.details.p2": {
+      "source": "17839a0a93ab697d",
+      "output": "4c326ef15bf76c45"
+    },
+    "features.bild-aus-dem-netz.details.p3": {
+      "source": "2c4270a6888c15fa",
+      "output": "84eebf273fab7041"
+    },
+    "features.bild-aus-dem-netz.summary": {
+      "source": "bb905bf44e8cbcf3",
+      "output": "823b0f38a1e3313c"
+    },
+    "features.bild-aus-dem-netz.title": {
+      "source": "8c232a5b6b1d6900",
+      "output": "57a88cbf0ddfc191"
+    },
+    "features.bild-aus-dem-netz.where": {
+      "source": "db6a5cfb69e75832",
+      "output": "7b6dbbd8213b5fcc"
     },
     "features.bild-vergroessern.details.p1": {
       "source": "957a0e26cca0c134",
@@ -116064,6 +116272,14 @@
       "source": "e3c12783f177c2d4",
       "output": "4d09b72c3e4a6360"
     },
+    "editor.blocks.image-from-url.description": {
+      "source": "e665274cf440f1bb",
+      "output": "ded8b5a79439c29b"
+    },
+    "editor.blocks.image-from-url.label": {
+      "source": "d446a17af3e8625f",
+      "output": "39b2a88a8f12237e"
+    },
     "editor.blocks.image.description": {
       "source": "3c66c01e1539f5c5",
       "output": "99c8b455db2e18b0"
@@ -116735,6 +116951,26 @@
     "editor.prompt.fieldValue": {
       "source": "7e347daa5ec7fbe8",
       "output": "2bea5ab708c74ff9"
+    },
+    "editor.prompt.fileFromUrl.description": {
+      "source": "26e74cce1e8088eb",
+      "output": "8423e84427cf6cb0"
+    },
+    "editor.prompt.fileFromUrl.placeholder": {
+      "source": "50c94c19f476025d",
+      "output": "50c94c19f476025d"
+    },
+    "editor.prompt.fileFromUrl.title": {
+      "source": "fa08fbfe9376e391",
+      "output": "fa8332939a298bd2"
+    },
+    "editor.prompt.importFailed": {
+      "source": "4d3f37fdc02ade33",
+      "output": "89e8b8ac8988d453"
+    },
+    "editor.prompt.importing": {
+      "source": "69f785a7eec2b513",
+      "output": "6298115f7f4292fd"
     },
     "editor.prompt.insert": {
       "source": "96a07506f7d18f05",
@@ -119847,6 +120083,30 @@
     "features.benachrichtigungen-einstellen.where": {
       "source": "2c85dfc7e710934b",
       "output": "0a6589545880cea6"
+    },
+    "features.bild-aus-dem-netz.details.p1": {
+      "source": "b0126a28e3bcb3aa",
+      "output": "9e40f1c2eeb5b254"
+    },
+    "features.bild-aus-dem-netz.details.p2": {
+      "source": "17839a0a93ab697d",
+      "output": "3d01bdc723ee68a3"
+    },
+    "features.bild-aus-dem-netz.details.p3": {
+      "source": "2c4270a6888c15fa",
+      "output": "b58e5cd77b0c280b"
+    },
+    "features.bild-aus-dem-netz.summary": {
+      "source": "bb905bf44e8cbcf3",
+      "output": "35621ff83fa87980"
+    },
+    "features.bild-aus-dem-netz.title": {
+      "source": "8c232a5b6b1d6900",
+      "output": "445dead912f0bd37"
+    },
+    "features.bild-aus-dem-netz.where": {
+      "source": "db6a5cfb69e75832",
+      "output": "8f8ad478ca27c67c"
     },
     "features.bild-vergroessern.details.p1": {
       "source": "957a0e26cca0c134",
@@ -142674,6 +142934,14 @@
       "source": "e3c12783f177c2d4",
       "output": "bae0a14bedce283d"
     },
+    "editor.blocks.image-from-url.description": {
+      "source": "e665274cf440f1bb",
+      "output": "f0c9d229fea264c5"
+    },
+    "editor.blocks.image-from-url.label": {
+      "source": "d446a17af3e8625f",
+      "output": "a3f6f1ca5c77edde"
+    },
     "editor.blocks.image.description": {
       "source": "3c66c01e1539f5c5",
       "output": "39ed4b94ad28fb5d"
@@ -143345,6 +143613,26 @@
     "editor.prompt.fieldValue": {
       "source": "7e347daa5ec7fbe8",
       "output": "373e115458ae4b6a"
+    },
+    "editor.prompt.fileFromUrl.description": {
+      "source": "26e74cce1e8088eb",
+      "output": "c9837e0a4aedda61"
+    },
+    "editor.prompt.fileFromUrl.placeholder": {
+      "source": "50c94c19f476025d",
+      "output": "38cd90d914ea784f"
+    },
+    "editor.prompt.fileFromUrl.title": {
+      "source": "fa08fbfe9376e391",
+      "output": "42806f210783b782"
+    },
+    "editor.prompt.importFailed": {
+      "source": "4d3f37fdc02ade33",
+      "output": "f80952522f48b159"
+    },
+    "editor.prompt.importing": {
+      "source": "69f785a7eec2b513",
+      "output": "51dbdf3d4f48ca57"
     },
     "editor.prompt.insert": {
       "source": "96a07506f7d18f05",
@@ -146457,6 +146745,30 @@
     "features.benachrichtigungen-einstellen.where": {
       "source": "2c85dfc7e710934b",
       "output": "9ee21924efcc4090"
+    },
+    "features.bild-aus-dem-netz.details.p1": {
+      "source": "b0126a28e3bcb3aa",
+      "output": "b42f7c6f7fd2c489"
+    },
+    "features.bild-aus-dem-netz.details.p2": {
+      "source": "17839a0a93ab697d",
+      "output": "6b6792e38a81df4a"
+    },
+    "features.bild-aus-dem-netz.details.p3": {
+      "source": "2c4270a6888c15fa",
+      "output": "74d069d0e12c2ff0"
+    },
+    "features.bild-aus-dem-netz.summary": {
+      "source": "bb905bf44e8cbcf3",
+      "output": "2ce8902a0c170948"
+    },
+    "features.bild-aus-dem-netz.title": {
+      "source": "8c232a5b6b1d6900",
+      "output": "2cd81e53a84f5680"
+    },
+    "features.bild-aus-dem-netz.where": {
+      "source": "db6a5cfb69e75832",
+      "output": "f47dc399bd8ae2d8"
     },
     "features.bild-vergroessern.details.p1": {
       "source": "957a0e26cca0c134",
@@ -169284,6 +169596,14 @@
       "source": "e3c12783f177c2d4",
       "output": "3eebdaf6f2134913"
     },
+    "editor.blocks.image-from-url.description": {
+      "source": "e665274cf440f1bb",
+      "output": "aaf440ceb74acd3b"
+    },
+    "editor.blocks.image-from-url.label": {
+      "source": "d446a17af3e8625f",
+      "output": "445758f5d24fe3cd"
+    },
     "editor.blocks.image.description": {
       "source": "3c66c01e1539f5c5",
       "output": "0c49f388092310b9"
@@ -169955,6 +170275,26 @@
     "editor.prompt.fieldValue": {
       "source": "7e347daa5ec7fbe8",
       "output": "b2f530c46991311c"
+    },
+    "editor.prompt.fileFromUrl.description": {
+      "source": "26e74cce1e8088eb",
+      "output": "c66d345e97cd2254"
+    },
+    "editor.prompt.fileFromUrl.placeholder": {
+      "source": "50c94c19f476025d",
+      "output": "50c94c19f476025d"
+    },
+    "editor.prompt.fileFromUrl.title": {
+      "source": "fa08fbfe9376e391",
+      "output": "238b535bd93970cb"
+    },
+    "editor.prompt.importFailed": {
+      "source": "4d3f37fdc02ade33",
+      "output": "0b9c1622605261cc"
+    },
+    "editor.prompt.importing": {
+      "source": "69f785a7eec2b513",
+      "output": "b983e8ba328d9ee8"
     },
     "editor.prompt.insert": {
       "source": "96a07506f7d18f05",
@@ -173067,6 +173407,30 @@
     "features.benachrichtigungen-einstellen.where": {
       "source": "2c85dfc7e710934b",
       "output": "b1c109218ef5a79f"
+    },
+    "features.bild-aus-dem-netz.details.p1": {
+      "source": "b0126a28e3bcb3aa",
+      "output": "e41dffa1c2e674f8"
+    },
+    "features.bild-aus-dem-netz.details.p2": {
+      "source": "17839a0a93ab697d",
+      "output": "7a969d4324cf9fa4"
+    },
+    "features.bild-aus-dem-netz.details.p3": {
+      "source": "2c4270a6888c15fa",
+      "output": "27ac08685e446c6b"
+    },
+    "features.bild-aus-dem-netz.summary": {
+      "source": "bb905bf44e8cbcf3",
+      "output": "bdc95769ecbcf8ff"
+    },
+    "features.bild-aus-dem-netz.title": {
+      "source": "8c232a5b6b1d6900",
+      "output": "5e5f586ad478c4a0"
+    },
+    "features.bild-aus-dem-netz.where": {
+      "source": "db6a5cfb69e75832",
+      "output": "500fb20d3ad0867a"
     },
     "features.bild-vergroessern.details.p1": {
       "source": "957a0e26cca0c134",

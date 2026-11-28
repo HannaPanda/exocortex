@@ -553,6 +553,16 @@
     },
     "where": "Bestand naar de editor slepen."
   },
+  "bild-aus-dem-netz": {
+    "title": "Een afbeelding van het web naar de pagina halen",
+    "summary": "Heb je alleen het adres van een afbeelding die openbaar op het web staat, dan haalt eXocortex deze zelf op en slaat deze op als bijlage van de pagina. Zo blijft hij permanent zichtbaar, in plaats van een lege plek of een gewone link.",
+    "details": {
+      "p1": "Typ in de editor / en kies „Afbeelding van het web”, en voer vervolgens het adres in. De afbeelding wordt opgehaald, gecontroleerd en als bijlage van deze pagina opgeslagen; de pagina toont daarna de eigen kopie en niet meer het externe adres, dat de browser hier toch niet zou laden.",
+      "p2": "Er wordt alleen opgehaald van openbaar bereikbare adressen, nooit uit interne netwerken, ook niet via een omleiding. Wat binnenkomt, wordt herkend aan de inhoud, niet aan de bestandsextensie, en mag niet groter zijn dan een gewone upload.",
+      "p3": "Agenten kunnen hetzelfde doen met exo_attachment_upload_url: via MCP, ook via de beperkte toegang voor ChatGPT, en de AI in de chat. Schrijft een agent het adres van een externe afbeelding op een pagina, dan wijst de waarschuwing hem precies op dit hulpprogramma; meerdere afbeeldingen haalt hij één voor één op. De AI in de chat behandelt een dergelijke opgehaalde afbeelding als inhoud van het web: zolang schrijven na externe inhoud geblokkeerd is – en dat is de standaardinstelling – past deze daarna in dezelfde sessie zelf niets meer aan, ook geen verdere afbeelding, en stelt in plaats daarvan voor om deze in te sluiten."
+    },
+    "where": "In de editor: / en vervolgens „Afbeelding van het web”."
+  },
   "datenbank-ki-spalten": {
     "title": "Kolommen van een database door AI laten invullen",
     "summary": "Een kolom krijgt een AI-instructie, zoals „Vat samen”, „Datum uit het document” of een eigen instructie. Daarna vult de AI de cellen van deze kolom in op basis van wat er in de rij staat: de tekst van de pagina, de andere kolommen en de bijgevoegde bestanden.",

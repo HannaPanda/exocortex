@@ -127,7 +127,15 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     area: 'dateien',
     since: '2026-08-05',
     ui: {},
-    tools: ['exo_attachment_upload', 'exo_attachment_upload_url'],
+    tools: ['exo_attachment_upload'],
+  }),
+  defineFeature({
+    id: 'bild-aus-dem-netz',
+    area: 'dateien',
+    since: '2026-11-28',
+    references: ['#212', '#117'],
+    ui: {},
+    tools: ['exo_attachment_upload_url'],
   }),
   defineFeature({
     id: 'datenbank-ki-spalten',

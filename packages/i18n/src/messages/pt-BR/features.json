@@ -553,6 +553,16 @@
     },
     "where": "Arrastar o arquivo para o editor."
   },
+  "bild-aus-dem-netz": {
+    "title": "Trazer uma imagem da web para a página",
+    "summary": "Se você tiver apenas o endereço de uma imagem publicamente disponível na web, o eXocortex a busca e a salva como anexo da página. Assim, ela aparece de forma permanente, em vez de deixar um espaço vazio ou um mero link.",
+    "details": {
+      "p1": "No editor, digite / e escolha „Imagem da web”, depois insira o endereço. A imagem é buscada, verificada e salva como anexo desta página; a página passa a exibir a própria cópia e não mais o endereço externo, que o navegador de qualquer forma não carregaria aqui.",
+      "p2": "A busca é feita apenas a partir de endereços acessíveis publicamente, nunca de redes internas, nem mesmo por redirecionamento. O conteúdo recebido é identificado pelo seu formato real, não pela extensão, e não pode exceder o tamanho limite de um upload comum.",
+      "p3": "Agentes podem fazer o mesmo com exo_attachment_upload_url: via MCP, também pelo acesso simplificado para ChatGPT, e a IA no chat. Se um agente escrever o endereço de uma imagem externa em uma página, o aviso indicará exatamente essa ferramenta; se houver várias imagens, ele as busca uma a uma. A IA no chat trata uma imagem obtida dessa forma como conteúdo da web: enquanto a escrita após conteúdos externos estiver bloqueada — o que é o padrão —, ela não alterará mais nada por conta própria nessa execução, nem mesmo outra imagem, e apenas sugerirá a incorporação."
+    },
+    "where": "No editor: / e depois „Imagem da web”."
+  },
   "datenbank-ki-spalten": {
     "title": "Preencher colunas de um banco de dados com IA",
     "summary": "Uma coluna recebe uma instrução de IA, como „Resuma“, „Data do documento“ ou uma personalizada. Em seguida, a IA preenche as células dessa coluna a partir do conteúdo da linha: o texto da página, as outras colunas e os arquivos anexados.",

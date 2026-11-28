@@ -56,6 +56,10 @@
       "label": "Bild",
       "description": "Bild hochladen"
     },
+    "image-from-url": {
+      "label": "Bild aus dem Netz",
+      "description": "Bild über seine Adresse übernehmen"
+    },
     "table": {
       "label": "Tabelle",
       "description": "Tabelle mit Kopfzeile"
@@ -182,6 +186,11 @@
       "description": "Gib die vollständige Adresse ein, zum Beispiel https://exocortex.app/bild.png",
       "placeholder": "https://…"
     },
+    "fileFromUrl": {
+      "title": "Bild aus dem Netz übernehmen",
+      "description": "Gib die Adresse eines Bildes ein, das öffentlich im Netz steht. eXocortex holt es und legt es als Anhang dieser Seite ab, damit es hier dauerhaft erscheint. Ein Bild auf einem fremden Server würde diese Seite nicht anzeigen.",
+      "placeholder": "https://…/foto.jpg"
+    },
     "latex": {
       "title": "Formel eingeben",
       "description": "LaTeX-Notation, zum Beispiel {example}",
@@ -203,6 +212,7 @@
       "placeholder": "Gespeicherte Suche suchen …"
     },
     "uploadFailed": "Die Datei konnte nicht hochgeladen werden.",
+    "importFailed": "Das Bild konnte nicht übernommen werden.",
     "noPageTitle": "Keine Seite gefunden",
     "noPageDescription": "Tippe einen Titel, um einen Verweis auf eine noch nicht angelegte Seite zu setzen.",
     "noDatabaseTitle": "Keine Datenbank gefunden",
@@ -218,7 +228,8 @@
     "fieldSearch": "Suche",
     "fieldValue": "Wert",
     "cancel": "Abbrechen",
-    "insert": "Einfügen"
+    "insert": "Einfügen",
+    "importing": "Wird übernommen …"
   },
   "colors": {
     "name": {

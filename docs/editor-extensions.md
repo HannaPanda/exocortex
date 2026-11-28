@@ -57,8 +57,13 @@ because `packages/editor` has to stay renderer-free for headless use on the serv
 `apps/web/src/components/editor/block-icon.tsx` resolves the names.
 
 An entry that needs more than the editor declares it with `prompt`:
-`'url'`, `'file'`, `'page'`, `'database'`, `'saved-query'` or `'latex'`. The web layer collects the value
+`'url'`, `'file'`, `'file-from-url'`, `'page'`, `'database'`, `'saved-query'` or `'latex'`. The web layer collects the value
 (`block-prompt.tsx`, including the attachment upload) and passes it into `run`.
+`'file-from-url'` (issue #212) asks for an address, has the API fetch it
+(`POST /api/workspaces/:id/attachments/from-url`, the route behind
+`exo_attachment_upload_url`) and answers like `'file'` with the stored copy's
+own address; the dialog stays open on a refusal, so the address can be
+corrected.
 
 An insert-only entry whose block may not stand everywhere names the node it
 inserts with `inserts`. The slash menu asks `blockCatalogAllowedAt(catalog,

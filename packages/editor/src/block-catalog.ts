@@ -78,6 +78,13 @@ export type BlockPromptKind =
   | 'url'
   /** A file upload, handled by the attachment endpoint. */
   | 'file'
+  /**
+   * The address of a file on the web, which the attachment endpoint fetches
+   * and stores (issue #212). Answers like `file`, with this deployment's own
+   * address of the stored copy, never the foreign one: the page's Content
+   * Security Policy would block that.
+   */
+  | 'file-from-url'
   /** A page from this workspace, for a page link. */
   | 'page'
   /** A LaTeX expression. */
@@ -250,6 +257,25 @@ export const imageBlocks: readonly BlockCatalogEntry[] = [
       return editor.chain().focus().setImage({ src: value }).run();
     },
     isActive: (editor) => editor.isActive('image'),
+  },
+  {
+    // The browser's half of `exo_attachment_upload_url` (issue #212): a
+    // picture somebody found on the web becomes a file of this page, because
+    // a foreign address never loads here.
+    id: 'image-from-url',
+    // Never shown: the browser reads `editor.blocks.image-from-url` from the
+    // message catalogue, and nothing else builds the menu.
+    label: 'Foto per URL',
+    description: 'Foto von einer Adresse holen',
+    keywords: ['bild', 'image', 'foto', 'url', 'link', 'adresse', 'internet', 'web', 'import'],
+    group: 'media',
+    icon: 'Image',
+    prompt: 'file-from-url',
+    turnInto: false,
+    run: (editor, value) => {
+      if (value === undefined || value.length === 0) return false;
+      return editor.chain().focus().setImage({ src: value }).run();
+    },
   },
 ];
 

@@ -553,6 +553,16 @@
     },
     "where": "Trascina il file nell’editor."
   },
+  "bild-aus-dem-netz": {
+    "title": "Scaricare un’immagine dal web sulla pagina",
+    "summary": "Se hai solo l’indirizzo di un’immagine disponibile pubblicamente sul web, eXocortex la scarica direttamente e la salva come allegato della pagina. Così rimane visibile in modo permanente, anziché come spazio vuoto o semplice link.",
+    "details": {
+      "p1": "Nell’editor digiti / e scegli «Immagine dal web», poi inserisci l’indirizzo. L’immagine viene scaricata, verificata e salvata come allegato di questa pagina; la pagina mostrerà poi la propria copia e non più l’indirizzo esterno, che il browser qui comunque non caricherebbe.",
+      "p2": "Il download avviene solo da indirizzi accessibili pubblicamente, mai da reti interne, nemmeno tramite reindirizzamento. Il contenuto ricevuto viene riconosciuto in base ai dati effettivi e non all’estensione, e non può superare le dimensioni di un normale caricamento.",
+      "p3": "Gli agenti possono fare lo stesso con exo_attachment_upload_url: tramite MCP, anche tramite l’accesso ristretto per ChatGPT, e con l’IA nella chat. Se un agente scrive l’indirizzo di un’immagine esterna in una pagina, l’avviso gli suggerisce proprio questo strumento; più immagini vengono scaricate singolarmente. L’IA nella chat tratta un’immagine scaricata in questo modo come contenuto dal web: finché la scrittura dopo contenuti esterni è bloccata (impostazione predefinita), non modificherà più nulla autonomamente durante questa sessione, nemmeno un’altra immagine, e proporrà invece l’incorporamento."
+    },
+    "where": "Nell’editor: / e poi «Immagine dal web»."
+  },
   "datenbank-ki-spalten": {
     "title": "Far compilare le colonne di un database dall’IA",
     "summary": "A una colonna viene assegnata un’istruzione IA, ad esempio «Riassumi», «Data dal documento» o un’istruzione personalizzata. Dopodiché l’IA compila le celle di questa colonna in base a quanto presente nella riga: il testo della pagina, le altre colonne e i file allegati.",

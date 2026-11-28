@@ -110,6 +110,7 @@ describe('block catalog execution', () => {
       latex: 'a^2 + b^2 = c^2',
       url: 'https://exocortex.app/bild.png',
       file: '/api/attachments/abc/download',
+      'file-from-url': '/api/attachments/abc/download',
       page: 'Andere Seite',
       database: JSON.stringify({ documentId: 'doc123', title: 'Aufgaben' }),
       'saved-query': JSON.stringify({ savedQueryId: 'sq123', name: 'Offene Aufgaben', limit: 5 }),

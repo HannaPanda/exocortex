@@ -2,7 +2,7 @@
 
 import { attachmentDownloadPath, type UploadAttachmentResponse } from '@exocortex/contracts';
 
-import { uploadRequest } from './client';
+import { apiRequest, uploadRequest } from './client';
 
 /**
  * Uploads a file and returns the **stable** URL to reference it from a document.
@@ -29,6 +29,29 @@ export async function uploadAttachment(input: {
   return {
     // The id as well as the URL: a project asset is bound to a path by id
     // (issue #43), where the editor only ever needs something to put in a src.
+    id: attachment.id,
+    src: attachmentDownloadPath(attachment.id),
+    name: attachment.filename,
+  };
+}
+
+/**
+ * Takes a file from an address on the web onto a page (issue #212): the API
+ * fetches it through its address check and stores it like an upload, and the
+ * answer is the same stable address `uploadAttachment` gives. The browser
+ * never loads the foreign address itself; the page's Content Security Policy
+ * would not let it show anyway.
+ */
+export async function importAttachmentFromUrl(input: {
+  workspaceId: string;
+  documentId: string;
+  url: string;
+}): Promise<{ id: string; src: string; name: string }> {
+  const { attachment } = await apiRequest<UploadAttachmentResponse>(
+    `/api/workspaces/${input.workspaceId}/attachments/from-url`,
+    { method: 'POST', body: { url: input.url, documentId: input.documentId } },
+  );
+  return {
     id: attachment.id,
     src: attachmentDownloadPath(attachment.id),
     name: attachment.filename,
