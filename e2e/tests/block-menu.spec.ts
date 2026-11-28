@@ -300,6 +300,8 @@ test.describe('the block menu', () => {
       [
         'Oben',
         '- [x] Erledigt\n  - [ ] Noch offen\n- [ ] Offen eins\n- [x] Auch erledigt\n- [ ] Offen zwei',
+        // Without a line between them, Markdown reads the two as one list.
+        'Zahlen',
         '- Zehn 10\n- Neun 9\n- Elf 11',
       ].join('\n\n'),
     );
