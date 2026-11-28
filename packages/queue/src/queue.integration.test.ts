@@ -8,7 +8,7 @@ import { type ApplicationEvent, QUEUE_NAMES } from '@exocortex/contracts';
 import { createLogger, currentTraceIds, startTracing, withSpan } from '@exocortex/logger';
 
 import { RedisEventBus } from './event-bus';
-import { QueueRegistry, testQueuePrefix } from './registry';
+import { QueueRegistry, QueueWaitTimeoutError, testQueuePrefix } from './registry';
 import { createTypedWorker } from './worker';
 
 /**
@@ -357,6 +357,50 @@ describe('createTypedWorker', () => {
     expect(seen.optsDelay).toBe(delayMs);
     // What is left is the actual queue wait, not the 300 ms the job asked for.
     expect(seen.waited).toBeLessThan(delayMs);
+  }, 20_000);
+});
+
+describe('enqueueAndWait', () => {
+  const titlePayload = (conversationId: string) => ({
+    correlationId: `corr-${conversationId}`,
+    conversationId,
+    workspaceId: 'workspace-test-0001',
+    userId: 'user-test-0001',
+    model: 'test/model',
+    provider: 'openrouter',
+  });
+
+  it("hands the job's return value back to the caller (issue #233)", async () => {
+    const { worker, connection } = createTypedWorker({
+      name: QUEUE_NAMES.conversationTitle,
+      redisUrl,
+      logger,
+      prefix,
+      handler: async ({ payload }) => ({ outcome: 'suggested', title: payload.conversationId }),
+    });
+    try {
+      const conversationId = `conv-wait-${Date.now().toString(36)}`;
+      await expect(
+        queues.enqueueAndWait(QUEUE_NAMES.conversationTitle, titlePayload(conversationId), {
+          timeoutMs: 10_000,
+        }),
+      ).resolves.toEqual({ outcome: 'suggested', title: conversationId });
+    } finally {
+      await worker.close();
+      await connection.quit();
+    }
+  }, 20_000);
+
+  it('gives up after the timeout and withdraws a job nobody started', async () => {
+    // No worker listens, so the job stays waiting.
+    const conversationId = `conv-nobody-${Date.now().toString(36)}`;
+    await expect(
+      queues.enqueueAndWait(QUEUE_NAMES.conversationTitle, titlePayload(conversationId), {
+        timeoutMs: 300,
+      }),
+    ).rejects.toBeInstanceOf(QueueWaitTimeoutError);
+    const waiting = await queues.getQueue(QUEUE_NAMES.conversationTitle).getWaiting();
+    expect(waiting.map((job) => job.data.conversationId)).not.toContain(conversationId);
   }, 20_000);
 });
 

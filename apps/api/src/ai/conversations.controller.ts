@@ -43,6 +43,8 @@ import {
   aiConversationSearchResponseSchema,
   type AiConversationSourcesResponse,
   aiConversationSourcesResponseSchema,
+  type AiConversationTitleSuggestionResponse,
+  aiConversationTitleSuggestionResponseSchema,
   type ConversationToPageRequest,
   conversationToPageRequestSchema,
   type ConversationToPageResponse,
@@ -302,6 +304,26 @@ export class ConversationsController {
     @Param('conversationId') conversationId: string,
   ): Promise<AiConversationCompactResponse> {
     return this.conversations.compact({
+      conversationId,
+      userId: session.userId,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /**
+   * Suggests a title from the conversation itself (issue #233), the button in
+   * the rename dialog. Waits for the model's answer and stores nothing: the
+   * title changes only when the person saves it through the PATCH above.
+   */
+  @Post(':conversationId/title-suggestion')
+  @ApiCreatedResponse({
+    schema: openApiResponseSchema(aiConversationTitleSuggestionResponseSchema),
+  })
+  async suggestTitle(
+    @CurrentSession() session: VerifiedSession,
+    @Param('conversationId') conversationId: string,
+  ): Promise<AiConversationTitleSuggestionResponse> {
+    return this.conversations.suggestTitle({
       conversationId,
       userId: session.userId,
       correlationId: currentCorrelationId(),

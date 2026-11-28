@@ -11,6 +11,7 @@ import {
   type AiConversation,
   type AiConversationCompactResponse,
   type AiConversationDetailResponse,
+  type AiConversationTitleSuggestionResponse,
   type CreateAiConversationRequest,
   MESSAGE_SELECTION_MAX_CHARS,
   type PostConversationMessageRequest,
@@ -53,6 +54,7 @@ import {
   loadOwnedConversation,
   PREVIEW_MAX_CHARS,
 } from './conversation-mapping';
+import { suggestConversationTitle } from './conversation-title';
 import { readRunWrites } from './run-changes';
 import { mapAiRunRow } from './run-mapper';
 
@@ -580,6 +582,24 @@ export class ConversationsService {
     const conversation = await this.loadOwned(input.conversationId, input.userId);
     await this.assertNoRunOpen(conversation.id);
     return this.requestCompaction(conversation, input.userId, input.correlationId);
+  }
+
+  /**
+   * Suggests a title from the conversation itself (issue #233), for the
+   * rename dialog and nothing else: it waits for the worker's answer and
+   * stores nothing. Allowed while a run is open, because it reads the
+   * messages and writes none of them.
+   */
+  async suggestTitle(input: {
+    conversationId: string;
+    userId: string;
+    correlationId: string;
+  }): Promise<AiConversationTitleSuggestionResponse> {
+    const conversation = await this.loadOwned(input.conversationId, input.userId);
+    return suggestConversationTitle(
+      { queues: this.queues, logger: this.logger, modelResolver: this.modelResolver },
+      { conversation, userId: input.userId, correlationId: input.correlationId },
+    );
   }
 
   private async requestCompaction(

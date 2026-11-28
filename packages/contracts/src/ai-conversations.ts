@@ -557,6 +557,57 @@ export const aiConversationCompactResponseSchema = z.object({
 });
 export type AiConversationCompactResponse = z.infer<typeof aiConversationCompactResponseSchema>;
 
+/** The longest title a suggestion may carry; a renamed title may be longer (160). */
+export const AI_CONVERSATION_SUGGESTED_TITLE_MAX_CHARS = 60;
+
+/**
+ * Why no title was suggested (issue #233). `nothing_to_name`: the
+ * conversation holds no message of the person or the assistant yet.
+ * `provider_failed`: the model did not answer, or answered nothing usable.
+ * `key_unreadable`: the workspace's own AI key cannot be read (ADR-091).
+ * `timed_out`: the worker did not answer in time.
+ */
+export const aiConversationTitleSuggestionFailureSchema = z.enum([
+  'nothing_to_name',
+  'provider_failed',
+  'key_unreadable',
+  'timed_out',
+]);
+export type AiConversationTitleSuggestionFailure = z.infer<
+  typeof aiConversationTitleSuggestionFailureSchema
+>;
+
+/**
+ * The answer to `POST /api/ai/conversations/:id/title-suggestion` (issue
+ * #233), and what the `conversation-title` job returns.
+ *
+ * A suggestion changes nothing: the title is only stored when a person saves
+ * it through the ordinary rename (`PATCH /api/ai/conversations/:id`), after
+ * reading and perhaps editing it. That is what keeps a title somebody chose
+ * from being replaced behind their back.
+ */
+export const aiConversationTitleSuggestionSchema = z.discriminatedUnion('outcome', [
+  z.object({
+    outcome: z.literal('suggested'),
+    title: z.string().min(1).max(AI_CONVERSATION_SUGGESTED_TITLE_MAX_CHARS),
+  }),
+  z.object({
+    outcome: z.literal('failed'),
+    reason: aiConversationTitleSuggestionFailureSchema,
+  }),
+]);
+export type AiConversationTitleSuggestion = z.infer<typeof aiConversationTitleSuggestionSchema>;
+
+export const aiConversationTitleSuggestionResponseSchema = z.object({
+  conversationId: idSchema,
+  /** The title the conversation has now, so a caller can compare. */
+  currentTitle: z.string(),
+  suggestion: aiConversationTitleSuggestionSchema,
+});
+export type AiConversationTitleSuggestionResponse = z.infer<
+  typeof aiConversationTitleSuggestionResponseSchema
+>;
+
 /** Exactly one of `run` / `command` is set. */
 export const postConversationMessageResponseSchema = z.object({
   run: aiRunSchema.nullable(),

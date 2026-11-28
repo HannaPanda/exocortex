@@ -21,6 +21,7 @@ import { createAttachmentTextProcessor } from './processors/attachment-text';
 import { createAutomationProcessor } from './processors/automation';
 import { createCalendarSyncProcessor } from './processors/calendar-sync';
 import { createConversationCompactionProcessor } from './processors/conversation-compaction';
+import { createConversationTitleProcessor } from './processors/conversation-title';
 import { createDatabaseAiFillProcessor } from './processors/database-ai-fill';
 import { createDocumentCoverProcessor } from './processors/document-cover';
 import { createDocumentOverviewProcessor } from './processors/document-overview';
@@ -42,7 +43,7 @@ import { type WorkerRuntime } from './runtime';
  * What the shutdown path needs from a started worker, and nothing else.
  *
  * Structural rather than `ReturnType<typeof createTypedWorker>`: each queue has
- * its own payload type, so the eighteen of them only share this much.
+ * its own payload type, so the nineteen of them only share this much.
  */
 export interface QueueWorker {
   worker: { close: () => Promise<void> };
@@ -50,7 +51,7 @@ export interface QueueWorker {
 }
 
 /**
- * The eighteen queues this process listens on, in three groups.
+ * The nineteen queues this process listens on, in three groups.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is an external call and runs one at a time so it
@@ -269,6 +270,22 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
     }),
   });
 
+  // A title somebody asked for in the rename dialog (issue #233): one short
+  // model call, answered to the request that waits for it. Concurrency 2, so
+  // one slow answer does not hold up the next person's dialog. One attempt:
+  // the request does not wait for a retry.
+  const conversationTitle = createTypedWorker({
+    name: QUEUE_NAMES.conversationTitle,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 2,
+    handler: createConversationTitleProcessor({
+      prisma,
+      settings: readSettings,
+      providerFor,
+    }),
+  });
+
   // A database column filled by its AI instruction (issue #237, ADR-099):
   // one batch at a time per worker, because each batch already asks a few
   // cells at once and a second would only meet the provider's rate limits.
@@ -289,7 +306,15 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
     }),
   });
 
-  return [materialization, indexing, ai, maintenance, conversationCompaction, databaseAiFill];
+  return [
+    materialization,
+    indexing,
+    ai,
+    maintenance,
+    conversationCompaction,
+    conversationTitle,
+    databaseAiFill,
+  ];
 }
 
 /** Everything that turns a file, a page or a calendar into something else. */

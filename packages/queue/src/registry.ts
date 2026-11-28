@@ -73,6 +73,14 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
   [QUEUE_NAMES.conversationCompaction]: {
     attempts: 1,
   },
+  // A title suggestion (issue #233) is waited on by an open request: a retry
+  // after a backoff would answer nobody, and would pay for the call twice.
+  // Kept briefly, because the request reads the answer the moment it is in.
+  [QUEUE_NAMES.conversationTitle]: {
+    attempts: 1,
+    removeOnComplete: { age: 300, count: 200 },
+    removeOnFail: { age: 3_600, count: 200 },
+  },
   // An AI fill settles its own cells (issue #237): a second attempt would ask
   // the model again for cells the first one paid for. Asking again is a retry
   // somebody starts, which is a new batch.
@@ -113,6 +121,17 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
     backoff: { type: 'exponential', delay: 30_000 },
   },
 };
+
+/** `enqueueAndWait` gave up: the job did not finish within the time it was given. */
+export class QueueWaitTimeoutError extends Error {
+  constructor(
+    readonly queue: QueueName,
+    readonly timeoutMs: number,
+  ) {
+    super(`No answer from the ${queue} queue within ${String(timeoutMs)} ms`);
+    this.name = 'QueueWaitTimeoutError';
+  }
+}
 
 /** Debounce window for document materialization. */
 export const MATERIALIZATION_DEBOUNCE_MS = 2_000;
@@ -257,6 +276,36 @@ export class QueueRegistry {
         },
       },
     );
+  }
+
+  /**
+   * Enqueues a job and waits for its return value, for a request that answers
+   * with what the worker found (issue #233). The event stream is opened before
+   * the job is added, so a job that finishes at once is still heard.
+   *
+   * Throws when the job fails or `timeoutMs` passes. On a timeout a job that
+   * has not started yet is withdrawn, because nobody is waiting for its answer
+   * any more; one that is already running is left to finish.
+   */
+  async enqueueAndWait<TName extends QueueName>(
+    name: TName,
+    payload: JobPayloadMap[TName],
+    options: { timeoutMs: number },
+  ): Promise<unknown> {
+    const events = this.getQueueEvents(name);
+    await events.waitUntilReady();
+    const parsed = JOB_SCHEMAS[name].parse(this.withTraceContext(payload)) as JobPayloadMap[TName];
+    const job = await this.rawQueue(name).add(name, parsed);
+    try {
+      return (await job.waitUntilFinished(events, options.timeoutMs)) as unknown;
+    } catch (error) {
+      const state = await job.getState().catch(() => 'unknown');
+      if (state === 'failed') throw error;
+      if (state === 'waiting' || state === 'delayed' || state === 'prioritized') {
+        await job.remove().catch(() => undefined);
+      }
+      throw new QueueWaitTimeoutError(name, options.timeoutMs);
+    }
   }
 
   /**

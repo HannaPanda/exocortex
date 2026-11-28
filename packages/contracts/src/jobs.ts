@@ -30,6 +30,7 @@ export const QUEUE_NAMES = {
   mail: 'mail',
   workflow: 'workflow',
   conversationCompaction: 'conversation-compaction',
+  conversationTitle: 'conversation-title',
   databaseAiFill: 'database-ai-fill',
 } as const;
 
@@ -52,6 +53,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.mail,
   QUEUE_NAMES.workflow,
   QUEUE_NAMES.conversationCompaction,
+  QUEUE_NAMES.conversationTitle,
   QUEUE_NAMES.databaseAiFill,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
@@ -719,6 +721,27 @@ export const conversationCompactionJobSchema = jobBase.extend({
 export type ConversationCompactionJob = z.infer<typeof conversationCompactionJobSchema>;
 
 /**
+ * A person asked for a title for one of their conversations (issue #233).
+ *
+ * The one queue a request waits on: the API holds the HTTP request open until
+ * the worker answers (`QueueRegistry.enqueueAndWait`), because the answer is a
+ * few words the rename dialog shows at once. It runs in the worker for the
+ * same reason a compaction does: only the worker reads a workspace's own key
+ * (ADR-090, ADR-091). The job returns an `AiConversationTitleSuggestion` and
+ * writes nothing; storing the title is the person's rename.
+ */
+export const conversationTitleJobSchema = jobBase.extend({
+  conversationId: idSchema,
+  workspaceId: idSchema,
+  userId: idSchema,
+  /** The slug the next message would run on; the compaction model setting still wins. */
+  model: z.string().min(1).max(200),
+  /** That model's `provider` column: a subscription preset or OpenRouter (issue #187). */
+  provider: z.string().min(1).max(64),
+});
+export type ConversationTitleJob = z.infer<typeof conversationTitleJobSchema>;
+
+/**
  * A database column filled by its AI instruction (issue #237, ADR-099).
  *
  * - `run` works through one batch the API created: an `ai_run` of kind FILL
@@ -760,6 +783,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.mail]: mailDeliveryJobSchema,
   [QUEUE_NAMES.workflow]: workflowJobSchema,
   [QUEUE_NAMES.conversationCompaction]: conversationCompactionJobSchema,
+  [QUEUE_NAMES.conversationTitle]: conversationTitleJobSchema,
   [QUEUE_NAMES.databaseAiFill]: databaseAiFillJobSchema,
 } as const;
 
@@ -782,5 +806,6 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.mail]: MailDeliveryJob;
   [QUEUE_NAMES.workflow]: WorkflowJob;
   [QUEUE_NAMES.conversationCompaction]: ConversationCompactionJob;
+  [QUEUE_NAMES.conversationTitle]: ConversationTitleJob;
   [QUEUE_NAMES.databaseAiFill]: DatabaseAiFillJob;
 };
