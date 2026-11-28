@@ -132,3 +132,13 @@ because removing it would take something nobody named. Deleting the text of an
 item that has sub-items is refused (`list_item_text`) with the item's id,
 because either answer -- an item without text, or the sub-items gone too -- is
 a guess.
+
+**A database does not go into a table cell (issue #312).** Content holding a
+database, aimed at a place inside a table cell at any depth, is refused before
+anything is written (`database_in_table_cell`, a validation failure carrying
+that reason), with a sentence naming what to send instead: the database above
+or below the table, or a `:::page` block or `[[Titel]]` linking to it from the
+cell. Like the list rules it is decided in `applyBlockRangeEditToYDoc`, so the
+collaboration server makes the same decision; the finished page is still
+validated, and `validateProseMirrorDocument` refuses a database in a cell on
+its own (`packages/editor/src/table-cell-blocks.ts`).

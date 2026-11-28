@@ -5,6 +5,11 @@ import { BLOCK_ID_ATTRIBUTE } from './block-id';
 import { type ProseMirrorDocument } from './contract';
 import { serializePlainText } from './plain-text';
 import { getExocortexSchema, validateProseMirrorDocument } from './schema';
+import {
+  findBlocksInTableCells,
+  TABLE_CELL_TYPES,
+  tableCellViolationMessage,
+} from './table-cell-blocks';
 import { YJS_DOCUMENT_FIELD, yjsStateToDocument, yjsStateToProseMirrorJson } from './yjs';
 
 /**
@@ -74,7 +79,12 @@ export type BlockRangeRefusal =
    * it would leave an item without its text, and deleting the item instead
    * would take the sub-items with it, which nobody named (issue #247).
    */
-  | 'list_item_text';
+  | 'list_item_text'
+  /**
+   * The content holds a database, and the place it is aimed at lies inside a
+   * table cell, where no database stands (issue #312).
+   */
+  | 'database_in_table_cell';
 
 export class BlockRangeError extends Error {
   public readonly reason: BlockRangeRefusal;
@@ -324,6 +334,40 @@ function deleteRange(range: ResolvedBlockRange): void {
   }
 }
 
+/** Whether a Yjs parent is a table cell or stands inside one. */
+function insideTableCell(parent: YParent): boolean {
+  let current: unknown = parent;
+  while (current instanceof Y.XmlElement) {
+    if (TABLE_CELL_TYPES.has(current.nodeName)) return true;
+    current = current.parent;
+  }
+  return false;
+}
+
+/**
+ * Refuses a database aimed into a table cell (issue #312), by name and before
+ * anything is written, rather than as the finished page failing validation:
+ * the agent learns what to send instead.
+ */
+function refuseDatabaseInTableCell(
+  insertion: Insertion,
+  document: ProseMirrorDocument,
+  edit: BlockRangeEdit,
+): void {
+  if (!insideTableCell(insertion.parent)) return;
+  // The incoming blocks as if they stood in a cell, which is where they go.
+  const [violation] = findBlocksInTableCells({
+    type: 'tableCell',
+    content: document.content ?? [],
+  });
+  if (violation === undefined) return;
+  throw new BlockRangeError(
+    'database_in_table_cell',
+    edit.fromBlockId,
+    tableCellViolationMessage(violation),
+  );
+}
+
 /** The ids of the nodes an edit put on the page, for the response. */
 function idsOf(nodes: readonly (Y.XmlElement | Y.XmlText)[]): string[] {
   return nodes
@@ -376,6 +420,7 @@ export function applyBlockRangeEditToYDoc(
     deleteCount: edit.placement === 'replace' ? range.count : 0,
     itemsOnly: false,
   };
+  refuseDatabaseInTableCell(insertion, document, edit);
 
   const source = prosemirrorJSONToYDoc(getExocortexSchema(), document, YJS_DOCUMENT_FIELD);
   try {

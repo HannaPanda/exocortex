@@ -14,7 +14,11 @@ import {
   updateCalloutAt,
 } from './callout';
 import { migrateCalloutsInYjsDoc, migrateCalloutsInYjsState } from './callout-yjs';
-import { type ProseMirrorDocument, type ProseMirrorNode } from './contract';
+import {
+  EXOCORTEX_SCHEMA_VERSION,
+  type ProseMirrorDocument,
+  type ProseMirrorNode,
+} from './contract';
 import { buildEditorExtensions } from './extensions';
 import { parseMarkdown } from './markdown/parse';
 import { serializeMarkdown } from './markdown/serialize';
@@ -232,7 +236,7 @@ describe('schema 6 migration', () => {
 
   it('is part of the registered upgrade path', () => {
     const result = migrateDocument(LEGACY_DOCUMENT, 5);
-    expect(result.toVersion).toBe(6);
+    expect(result.toVersion).toBe(EXOCORTEX_SCHEMA_VERSION);
     expect(result.document.content?.[3]?.attrs?.emoji).toBe('⚠️');
   });
 });

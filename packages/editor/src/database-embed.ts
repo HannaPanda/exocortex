@@ -2,6 +2,7 @@ import { mergeAttributes, Node } from '@tiptap/core';
 
 import { type BlockCatalogEntry } from './block-catalog';
 import { type MarkdownExtensionAdapter, type PlainTextAdapter } from './contract';
+import { blockAllowedAt } from './table-cell-blocks';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -125,8 +126,12 @@ export const databaseEmbedBlocks: readonly BlockCatalogEntry[] = [
     icon: 'LayoutGrid',
     prompt: 'database',
     turnInto: false,
+    inserts: 'databaseEmbed',
     run: (editor, value) => {
       if (value === undefined || value.length === 0) return false;
+      // Not offered in a table cell; refused here too, for a caller that did
+      // not ask the catalog first (issue #312).
+      if (!blockAllowedAt(editor.state.selection.$from, 'databaseEmbed')) return false;
       const picked = JSON.parse(value) as { documentId: string; title: string };
       return editor.chain().focus().insertDatabaseEmbed(picked.documentId, picked.title).run();
     },

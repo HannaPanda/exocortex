@@ -10,7 +10,7 @@ import {
 } from '@exocortex/auth';
 import { type CollaborationAccess } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
-import { migrateCalloutsInYjsDoc } from '@exocortex/editor';
+import { migratedElements, migrateYjsDoc } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { type QueueRegistry } from '@exocortex/queue';
 
@@ -215,20 +215,22 @@ export function createCollaborationServer(
     },
 
     /**
-     * Brings a page written before the callouts of #306 up to date as it
-     * opens: the variant becomes a symbol and a colour, attribute by
-     * attribute, in this living document. Done here rather than only in the
-     * database because an open page is this server's to write (ADR-016), and
-     * every page is opened through here; the change then reaches the browsers
-     * and the store like any other edit. Idempotent, so a page that is already
-     * migrated costs one walk over its callouts.
+     * Brings a page written by an older schema up to date as it opens: the
+     * callouts of #306 (the variant becomes a symbol and a colour) and the
+     * databases in table cells of #312 (each becomes a link to its database),
+     * in this living document. Done here rather than only in the database
+     * because an open page is this server's to write (ADR-016), and every page
+     * is opened through here; the change then reaches the browsers and the
+     * store like any other edit. Idempotent, so a page that is already
+     * migrated costs one walk over its elements.
      */
     async afterLoadDocument({ document, documentName }) {
-      const migrated = migrateCalloutsInYjsDoc(document);
-      if (migrated > 0) {
-        logger.info('Migrated callouts of a loaded document', {
+      const migration = migrateYjsDoc(document);
+      if (migratedElements(migration) > 0) {
+        logger.info('Migrated a loaded document to the current schema', {
           documentId: documentName,
-          callouts: migrated,
+          callouts: migration.callouts,
+          tableCellBlocks: migration.tableCellBlocks,
         });
       }
     },

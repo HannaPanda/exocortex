@@ -115,6 +115,13 @@ export interface BlockCatalogEntry {
    * (`turnBlockInto`, issue #284).
    */
   makesList?: string;
+  /**
+   * The node an insert-only entry puts on the page, where that decides whether
+   * it is offered at all: a database is not offered inside a table cell
+   * (`blockCatalogAllowedAt`, issue #312). Entries that may go anywhere a
+   * block goes leave it out.
+   */
+  inserts?: string;
   /** Performs the insertion or the conversion. Returns whether it applied. */
   run: (editor: Editor, value?: string) => boolean;
   /** Whether the current selection already is this block. */

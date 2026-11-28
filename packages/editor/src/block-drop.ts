@@ -18,6 +18,7 @@ import { ReplaceStep } from '@tiptap/pm/transform';
 import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
 
 import { isListNode, LIST_ITEM_TYPE_NAMES, splitListAt } from './list-split';
+import { fitsTableCellRule } from './table-cell-blocks';
 
 /**
  * Dragging a block with a line that says where it lands (issue #243).
@@ -242,6 +243,9 @@ export function blockDropCandidates(
     if (pos > source.from && pos < source.to) continue;
     const $pos = doc.resolve(pos);
     if ($pos.parent.inlineContent || inFrontOfItemText($pos)) continue;
+    // No database lands in a table cell, not even inside a quote in one: the
+    // schema only says so for the cell's own children (issue #312).
+    if (!fitsTableCellRule($pos, content)) continue;
     const index = $pos.index();
     if ($pos.parent.canReplace(index, index, content)) {
       candidates.push({ pos, wrap: null });

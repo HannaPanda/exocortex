@@ -3,6 +3,11 @@ import { Fragment, type Node as PMNode, type Schema } from '@tiptap/pm/model';
 
 import { type ProseMirrorDocument, type ProseMirrorNode } from './contract';
 import { buildEditorExtensions } from './extensions';
+import {
+  findBlocksInTableCells,
+  tableCellBlocksToLinks,
+  tableCellViolationMessage,
+} from './table-cell-blocks';
 
 let cachedSchema: Schema | null = null;
 
@@ -43,6 +48,13 @@ export interface DocumentValidationResult {
 export function validateProseMirrorDocument(
   document: ProseMirrorDocument,
 ): DocumentValidationResult {
+  // Before the schema's own check, so a database in a cell is refused with a
+  // sentence that says so rather than as "invalid content for node tableCell",
+  // and at any depth, which the content expression cannot reach (issue #312).
+  const [violation] = findBlocksInTableCells(document);
+  if (violation !== undefined) {
+    return { valid: false, error: tableCellViolationMessage(violation) };
+  }
   try {
     const node = getExocortexSchema().nodeFromJSON(document);
     node.check();
@@ -106,7 +118,11 @@ function repairNode(json: ProseMirrorNode, schema: Schema): PMNode | null {
  */
 export function repairProseMirrorDocument(document: ProseMirrorDocument): ProseMirrorDocument {
   if (validateProseMirrorDocument(document).valid) return document;
-  const repaired = repairNode(document, getExocortexSchema());
+  // A database in a cell is not repaired by dropping the cell: it becomes a
+  // link to the database, the way schema 7 migrates one (issue #312).
+  const linked = tableCellBlocksToLinks(document);
+  if (linked !== document && validateProseMirrorDocument(linked).valid) return linked;
+  const repaired = repairNode(linked, getExocortexSchema());
   if (repaired === null) return document;
   return repaired.toJSON() as ProseMirrorDocument;
 }

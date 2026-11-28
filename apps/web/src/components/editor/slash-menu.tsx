@@ -7,7 +7,12 @@ import Suggestion, { type SuggestionKeyDownProps } from '@tiptap/suggestion';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type BlockCatalogEntry, filterBlockCatalog, groupBlockCatalog } from '@exocortex/editor';
+import {
+  blockCatalogAllowedAt,
+  type BlockCatalogEntry,
+  filterBlockCatalog,
+  groupBlockCatalog,
+} from '@exocortex/editor';
 import { cn } from '@exocortex/ui';
 
 import { BlockIcon } from './block-icon';
@@ -78,9 +83,18 @@ export function SlashMenu({
   const anchor = useSuggestionAnchor(editor, snapshot);
   const { index, setIndex } = useSuggestionHighlight(snapshot?.query ?? null);
 
+  // Only what may stand where the slash was typed: inside a table cell that
+  // is everything but a database (issue #312). Read when the snapshot changes,
+  // which is every keystroke of the query and every move of the menu.
   const items = React.useMemo(
-    () => (snapshot === null ? [] : filterBlockCatalog(catalog, snapshot.query)),
-    [catalog, snapshot],
+    () =>
+      snapshot === null
+        ? []
+        : filterBlockCatalog(
+            blockCatalogAllowedAt(catalog, editor.state.selection.$from),
+            snapshot.query,
+          ),
+    [catalog, editor, snapshot],
   );
 
   const choose = React.useCallback(

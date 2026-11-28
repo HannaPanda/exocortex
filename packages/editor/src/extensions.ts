@@ -112,8 +112,10 @@ import { SCHEMA_V3_MIGRATION } from './schema-v3';
 import { SCHEMA_V4_MIGRATION } from './schema-v4';
 import { SCHEMA_V5_MIGRATION } from './schema-v5';
 import { SCHEMA_V6_MIGRATION } from './schema-v6';
+import { SCHEMA_V7_MIGRATION } from './schema-v7';
 import { ScopedSelectAll } from './scoped-select-all';
 import { ShiftArrowSelection } from './shift-arrow-selection';
+import { TABLE_CELL_CONTENT, TableCellBlocks } from './table-cell-blocks';
 import {
   TableOfContents,
   tableOfContentsBlocks,
@@ -340,9 +342,17 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
   },
   {
     name: 'tables',
-    schemaVersion: 1,
-    extensions: [Table.configure({ resizable: false }), TableRow, TableHeader, TableCell],
+    // Introduced in 1, changed in 7: a cell holds no database (issue #312).
+    schemaVersion: 7,
+    extensions: [
+      Table.configure({ resizable: false }),
+      TableRow,
+      TableHeader.extend({ content: TABLE_CELL_CONTENT }),
+      TableCell.extend({ content: TABLE_CELL_CONTENT }),
+      TableCellBlocks,
+    ],
     blocks: tableBlocks,
+    migrations: [SCHEMA_V7_MIGRATION],
   },
   {
     name: 'media',

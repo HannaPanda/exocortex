@@ -60,6 +60,48 @@ An entry that needs more than the editor declares it with `prompt`:
 `'url'`, `'file'`, `'page'`, `'database'`, `'saved-query'` or `'latex'`. The web layer collects the value
 (`block-prompt.tsx`, including the attachment upload) and passes it into `run`.
 
+An insert-only entry whose block may not stand everywhere names the node it
+inserts with `inserts`. The slash menu asks `blockCatalogAllowedAt(catalog,
+$pos)` where the slash was typed, so the database (`inserts: 'databaseEmbed'`)
+is not offered inside a table cell (next section).
+
+## What a table cell holds
+
+A table cell holds no database, at any depth (issue #312, Johanna's decision
+of 2026-11-27): a database ran over the cell, the table's lines crossed it,
+and it cannot be worked with at that width. The rule is one module,
+`packages/editor/src/table-cell-blocks.ts`, and every way into a cell asks it:
+
+- **The schema.** `tableCell` and `tableHeader` take `TABLE_CELL_CONTENT`,
+  every block except `BLOCKS_OUTSIDE_TABLE_CELLS`, with `paragraph` first so a
+  new cell is filled with one. A content expression cannot subtract, so the
+  list is written out (`TABLE_CELL_BLOCKS`); `table-cell-blocks.test.ts` fails
+  for a new block that is in neither list, which makes allowing it in a cell a
+  decision.
+- **Validation, at any depth.** A quote, callout or toggle inside a cell holds
+  `block+`, which the schema cannot narrow without a second set of nodes, so
+  `validateProseMirrorDocument` asks `findBlocksInTableCells` first and refuses
+  with a sentence naming the alternative (above or below the table, or
+  `:::page Titel` / `[[Titel]]` in the cell). Every server-side write goes
+  through it; a narrow write (ADR-055) is refused earlier, by name
+  (`database_in_table_cell`). Markdown cannot write one: a pipe table's cells
+  hold inline text only.
+- **The editor.** The slash menu does not offer the database in a cell
+  (`blockCatalogAllowedAt`), the entry's `run` refuses as well, the drop line
+  offers no place for it in a cell (`fitsTableCellRule` in
+  `blockDropCandidates`; the handle already treats a whole table as one
+  block), and pasting into a cell turns a copied database into a page link to
+  it (`TableCellBlocks`, `transformPasted`), so the rest of what was copied
+  still lands and the cell can open the database.
+- **Existing pages.** Schema 7 turns a database standing in a cell into a page
+  link to the same database, with its title and block identifier (see
+  "Document migrations"). `repairProseMirrorDocument` does the same instead of
+  dropping the cell.
+
+Other large blocks in a cell (PDF, video, external embed, transclusion, saved
+search, file) stay allowed: they shrink to the cell's width rather than
+running over it.
+
 ## Editor UI
 
 All of it lives in `apps/web/src/components/editor` and contributes **no** schema:
@@ -839,9 +881,10 @@ never dropped — it is shown as unresolved and offers to create the page.
 ## Document migrations
 
 `EXOCORTEX_SCHEMA_VERSION` is stored on every `DocumentContent` and
-`DocumentSnapshot` row. It is at **6**: version 2 added the full block set,
+`DocumentSnapshot` row. It is at **7**: version 2 added the full block set,
 version 3 the database embed, version 4 the page link's identity, version 5 the
-link mark's, version 6 the callout's symbol, heading and colour.
+link mark's, version 6 the callout's symbol, heading and colour, version 7 took
+databases out of table cells.
 
 `SCHEMA_V2_MIGRATION` and `SCHEMA_V3_MIGRATION` are identity migrations — those
 steps were purely additive. They exist because `migrateDocument` requires
@@ -867,9 +910,11 @@ none is invented. It runs in three places:
   on the stored Yjs elements in one transaction, so the page keeps its history
   and nothing is rebuilt from Markdown. The collaboration server calls it in
   `afterLoadDocument` for every page it opens (an open page is its to write,
-  ADR-016), and `pnpm --filter @exocortex/api documents:migrate-callouts`
+  ADR-016), and `pnpm --filter @exocortex/api documents:migrate`
   for every stored page at once, after a deploy; both are idempotent, so the
   two meeting on an open page store a migrated page whichever writes last.
+  Both reach it through `migrateYjsDoc` (`yjs-migrations.ts`), which runs
+  every Yjs migration in version order.
 - `currentContentOfState` (`migrations.ts`) derives a stored state and runs
   `migrateDocument` on it. Restoring a snapshot from an older schema goes
   through it and is applied as an edit like any other restore (before #306
@@ -880,6 +925,18 @@ none is invented. It runs in three places:
   state a migration has not reached yet (a snapshot restored byte for byte, a
   browser that has not reloaded) still shows its symbol and colour.
 
+`SCHEMA_V7_MIGRATION` (`schema-v7.ts`, issue #312) is the second of that
+kind. A database standing in a table cell (`databaseEmbed`, at any depth)
+becomes a `pageLink` to the same database: its `title`, its `documentId` (or
+none, for an embed never bound, which then resolves by title) and its block
+identifier, so a comment or transclusion aimed at it finds the link.
+`migrateTableCellBlocksInYjsDoc` (`table-cell-yjs.ts`) puts the new element at
+the old one's index and deletes the old one in one transaction; everything
+else in the cell and the page stays the same Yjs item. It runs where schema 6
+runs: `afterLoadDocument` and `documents:migrate` through `migrateYjsDoc`, and
+`currentContentOfState` for a snapshot. When it arrived (2026-11-28) no page
+of this deployment had one.
+
 To add one:
 
 1. bump `EXOCORTEX_SCHEMA_VERSION` in `packages/editor/src/contract.ts`,
@@ -888,7 +945,9 @@ To add one:
 3. call `migrateDocument(json, storedVersion)` where stored content is read
    (`currentContentOfState` does both steps for a stored Yjs state),
 4. if the change alters stored nodes rather than adding defaults, migrate the
-   canonical state too, the way `callout-yjs.ts` does.
+   canonical state too, the way `callout-yjs.ts` does, and add the step to
+   `migrateYjsDoc` in `yjs-migrations.ts` so the collaboration server and
+   `documents:migrate` both run it.
 
 `migrateDocument` refuses to downgrade a document written by a newer build, and
 requires exactly one migration per version step, so the path is deterministic.

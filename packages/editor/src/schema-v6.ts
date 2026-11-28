@@ -19,7 +19,7 @@ import { mapDocumentNodes } from './document-nodes';
  * state in place, attribute by attribute, so the canonical state keeps its
  * history and nothing is rebuilt from a derived form (ADR-004/005); the
  * collaboration server applies it to every page it loads, and
- * `documents:migrate-callouts` to every page at once.
+ * `documents:migrate` to every page at once.
  */
 export const SCHEMA_V6_MIGRATION: DocumentMigration = {
   fromVersion: 5,

@@ -1,15 +1,15 @@
 /**
- * Brings every stored page to schema version 6: the callouts of issue #306.
+ * Brings every stored page to the current schema version.
  *
- * A callout written before #306 carries one of five variants (`info`, `note`,
- * `success`, `warning`, `danger`). Version 6 stores what the box shows
- * instead: a symbol, a heading and a colour. `migrateCalloutsInYjsState`
- * rewrites those attributes in the binary Yjs state itself, element by
- * element, so the page keeps its history and nothing is rebuilt from its
- * Markdown (ADR-004/005). A page without a callout only has its version
- * raised.
+ * Two versions rewrite stored content rather than only adding defaults:
+ * schema 6, the callouts of issue #306 (a variant becomes a symbol, a heading
+ * and a colour), and schema 7, issue #312 (a database standing in a table
+ * cell becomes a page link to that database). `migrateYjsState` rewrites the
+ * binary Yjs state itself, element by element, so the page keeps its history
+ * and nothing is rebuilt from its Markdown (ADR-004/005). A page without
+ * anything to change only has its version raised.
  *
- * The collaboration server applies the same migration to every page it
+ * The collaboration server applies the same migrations to every page it
  * loads (`afterLoadDocument`), which is what makes running this next to open
  * pages safe: a page somebody has open was loaded after the deploy that
  * brought this script, so it is migrated in that living copy too, and
@@ -20,7 +20,7 @@
  * write, so a single page can be put back from its history.
  *
  * Usage:
- *   pnpm --filter @exocortex/api documents:migrate-callouts [-- --dry-run]
+ *   pnpm --filter @exocortex/api documents:migrate [-- --dry-run]
  */
 import { randomUUID } from 'node:crypto';
 import { parseArgs } from 'node:util';
@@ -28,7 +28,7 @@ import { parseArgs } from 'node:util';
 import { loadApiEnv } from '@exocortex/config';
 import { QUEUE_NAMES } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
-import { EXOCORTEX_SCHEMA_VERSION, migrateCalloutsInYjsState } from '@exocortex/editor';
+import { EXOCORTEX_SCHEMA_VERSION, migrateYjsState, type YjsDocMigration } from '@exocortex/editor';
 import { createLogger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
@@ -40,10 +40,11 @@ interface ContentRow {
   yjsState: Uint8Array;
   yjsUpdatedAt: Date;
   schemaVersion: number;
-  document: { title: string; workspaceId: string };
+  document: { workspaceId: string };
 }
 
-type RowOutcome = { kind: 'raised' } | { kind: 'skipped' } | { kind: 'migrated'; callouts: number };
+type RowOutcome =
+  { kind: 'raised' } | { kind: 'skipped' } | { kind: 'migrated'; migration: YjsDocMigration };
 
 /**
  * Migrates one stored page.
@@ -65,7 +66,7 @@ async function migrateRow(
     schemaVersion: row.schemaVersion,
     yjsUpdatedAt: row.yjsUpdatedAt,
   };
-  const result = migrateCalloutsInYjsState(new Uint8Array(row.yjsState));
+  const result = migrateYjsState(new Uint8Array(row.yjsState));
   // Bound to a local before the guard: a narrowing on a property does not
   // survive into the transaction callback below.
   const migratedState = result.yjsState;
@@ -80,8 +81,13 @@ async function migrateRow(
     return count === 1 ? { kind: 'raised' } : { kind: 'skipped' };
   }
 
-  console.log(`${row.documentId} "${row.document.title}": ${result.migrated} callouts`);
-  if (dryRun) return { kind: 'migrated', callouts: result.migrated };
+  // The id only: a title is somebody's content and has no place in a log.
+  console.log(
+    `${row.documentId}: ${result.callouts} callouts, ` +
+      `${result.tableCellBlocks} databases in table cells`,
+  );
+  const migration = { callouts: result.callouts, tableCellBlocks: result.tableCellBlocks };
+  if (dryRun) return { kind: 'migrated', migration };
 
   const now = new Date();
   const written = await prisma.$transaction(async (tx) => {
@@ -107,7 +113,7 @@ async function migrateRow(
   });
   if (!written) return { kind: 'skipped' };
 
-  // The derived Markdown, plain text and JSON still name the variant.
+  // The derived Markdown, plain text and JSON still show the old content.
   await queues.enqueue(QUEUE_NAMES.documentMaterialization, {
     correlationId: randomUUID(),
     documentId: row.documentId,
@@ -115,7 +121,7 @@ async function migrateRow(
     yjsUpdatedAt: now.getTime(),
     reason: 'manual',
   });
-  return { kind: 'migrated', callouts: result.migrated };
+  return { kind: 'migrated', migration };
 }
 
 async function main(): Promise<void> {
@@ -127,13 +133,14 @@ async function main(): Promise<void> {
   const dryRun = values['dry-run'] === true;
 
   const env = loadApiEnv();
-  const logger = createLogger({ name: 'migrate-callouts', level: 'warn', pretty: true });
+  const logger = createLogger({ name: 'migrate-documents', level: 'warn', pretty: true });
   const prisma = createPrismaClient({ databaseUrl: env.DATABASE_URL });
   const queues = new QueueRegistry({ redisUrl: env.REDIS_URL, logger });
 
   let scanned = 0;
   let pages = 0;
   let callouts = 0;
+  let tableCellBlocks = 0;
   let raised = 0;
   let skipped = 0;
 
@@ -155,7 +162,7 @@ async function main(): Promise<void> {
           yjsState: true,
           yjsUpdatedAt: true,
           schemaVersion: true,
-          document: { select: { title: true, workspaceId: true } },
+          document: { select: { workspaceId: true } },
         },
       });
       if (rows.length === 0) break;
@@ -168,14 +175,16 @@ async function main(): Promise<void> {
         if (outcome.kind === 'skipped') skipped += 1;
         if (outcome.kind === 'migrated') {
           pages += 1;
-          callouts += outcome.callouts;
+          callouts += outcome.migration.callouts;
+          tableCellBlocks += outcome.migration.tableCellBlocks;
         }
       }
     }
 
     console.log(
       `\n${scanned} pages below schema ${EXOCORTEX_SCHEMA_VERSION}: ` +
-        `${pages} with ${callouts} callouts ${dryRun ? 'would be migrated' : 'migrated'}, ` +
+        `${pages} with ${callouts} callouts and ${tableCellBlocks} databases in table cells ` +
+        `${dryRun ? 'would be migrated' : 'migrated'}, ` +
         `${raised} ${dryRun ? 'would only be raised' : 'only raised'} to the new version, ` +
         `${skipped} skipped because they changed meanwhile (run again).`,
     );
@@ -186,6 +195,6 @@ async function main(): Promise<void> {
 }
 
 void main().catch((error: unknown) => {
-  console.error('Failed to migrate callouts:', error instanceof Error ? error.message : error);
+  console.error('Failed to migrate documents:', error instanceof Error ? error.message : error);
   process.exit(1);
 });
