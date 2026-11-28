@@ -127,18 +127,9 @@ export function PageHistoryDialog({
           <DialogDescription>{readOnly ? t('readOnlyHint') : t('description')}</DialogDescription>
         </DialogHeader>
 
-        <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-          <HistoryVersionPane
-            documentId={documentId}
-            selected={selected}
-            waiting={history.isPending}
-            view={view}
-            onView={setView}
-            readOnly={readOnly}
-            onBack={isMobile ? () => setShowVersion(false) : null}
-            onPickBlocks={() => setPicking(true)}
-            hidden={isMobile && !showVersion}
-          />
+        {/* The list comes first in the reading and tab order, which is where a
+            visit starts; it stands on the right, as Notion's does. */}
+        <div className="flex min-h-0 flex-1 flex-col md:flex-row-reverse">
           <HistoryListPane
             history={history}
             groups={groups}
@@ -149,6 +140,17 @@ export function PageHistoryDialog({
               setNote(null);
             }}
             hidden={isMobile && showVersion}
+          />
+          <HistoryVersionPane
+            documentId={documentId}
+            selected={selected}
+            waiting={history.isPending}
+            view={view}
+            onView={setView}
+            readOnly={readOnly}
+            onBack={isMobile ? () => setShowVersion(false) : null}
+            onPickBlocks={() => setPicking(true)}
+            hidden={isMobile && !showVersion}
           />
         </div>
 
