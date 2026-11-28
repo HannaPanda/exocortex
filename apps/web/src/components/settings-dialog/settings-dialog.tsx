@@ -173,6 +173,11 @@ function SettingsDialog({
 
   const select = (id: SettingsSectionId | '') => guarded(() => onSelect(id));
 
+  // The search field takes the focus on a desktop, where typing is the
+  // fastest way in; a phone would raise its keyboard over the list somebody
+  // opened the dialog to look at, so there the dialog itself holds the focus.
+  const popup = React.useRef<HTMLDivElement>(null);
+
   return (
     <Dialog
       open
@@ -188,6 +193,8 @@ function SettingsDialog({
       }}
     >
       <DialogContent
+        ref={popup}
+        initialFocus={(type) => (isMobile || type === 'touch' ? popup.current : true)}
         data-testid="settings-dialog"
         className={cn(
           'flex-row gap-0 overflow-hidden p-0',
@@ -228,7 +235,7 @@ function SettingsDialog({
             key={`${shown.area === 'workspace' ? (chosen.workspaceId ?? '') : ''}:${shown.id}`}
             aria-labelledby="settings-section-title"
             data-testid={`settings-section-${shown.id}`}
-            className="relative min-w-0 flex-1 overflow-y-auto px-6 pt-6 pb-8"
+            className="relative min-w-0 flex-1 overflow-y-auto overscroll-contain px-6 pt-6 pb-8"
           >
             <UnsavedDraftReport.Provider value={setUnsaved}>
               <SectionView

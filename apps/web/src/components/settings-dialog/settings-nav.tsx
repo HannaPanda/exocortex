@@ -89,6 +89,9 @@ export function SettingsNav({
           />
           <Input
             type="search"
+            name="settings-search"
+            autoComplete="off"
+            spellCheck={false}
             value={query}
             onChange={(event) => onQuery(event.target.value)}
             onKeyDown={(event) => {
@@ -107,7 +110,7 @@ export function SettingsNav({
           {searching ? t('search.count', { count: hits.length }) : ''}
         </p>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-4">
         {searching ? (
           <SearchResults hits={hits} query={query} href={href} onChoose={choose} />
         ) : (
