@@ -83,8 +83,15 @@ call because the text is unchanged, and finds nothing once all are mapped.
 block of a keyword hit: a list point in a long list, the paragraph, or the file.
 `exo_page_block_read` with that identifier reads exactly that place.
 
-The map costs storage: on this deployment, 2825 pages and 38,407 units. See
-the issue for the measured size.
+The map costs storage, measured on this deployment at the time of writing:
+2,818 materialized pages hold 38,407 units, 1.55 MB of map as JSON text and
+about 1.3 MB as stored (`pg_column_size` came to 81 % of the text on the
+first 600 mapped rows), beside a `document_search_index` of 37 MB and a
+`document_embedding` of 180 MB. The largest single map is 21 KB. Building one
+takes at most 29 ms on the largest page, and a search costs about 50 ms instead
+of 7 for twenty hits, most of it finding the fragment again in long texts; the
+two CTEs that cut the headline are `MATERIALIZED`, because inlined they cut it
+again for every unit of the map (850 ms).
 
 A semantic hit still names its section only. Its passage is about two thousand
 characters, several blocks long, and naming one block of it would be a guess.
