@@ -101,11 +101,20 @@
     },
     "where": "Nell’editor, nel menu della maniglia di una voce dell’elenco alla voce «Ordina elenco»."
   },
+  "listen-ebenen": {
+    "title": "Riconoscere i livelli degli elenchi dal marcatore",
+    "summary": "Gli elenchi puntati rientrati hanno un proprio marcatore per ogni livello: un punto, un cerchio, un quadrato, per poi ricominciare da capo. Gli elenchi numerati usano lettere al secondo livello e numeri romani al terzo. In questo modo vedi a colpo d’occhio quanto è profondo un elemento.",
+    "details": {
+      "p1": "Un elenco puntato inizia con un punto pieno, le sue sottovoci hanno un cerchio vuoto, il livello successivo un quadratino e dal quarto livello si ricomincia con il punto. Un elenco numerato conta all’esterno 1., 2., 3., sotto a., b., c. e un livello ancora più sotto i., ii., iii. Ogni elenco conta come livello, anche una lista di attività: un elenco puntato sotto un’attività inizia quindi con il cerchio.",
+      "p2": "Le liste di attività mantengono la loro casella su ogni livello. Il contenuto non cambia: i marcatori sono solo elementi visivi, e in Markdown, durante la copia e per l’IA e l’MCP un elenco rimane tale e quale. Nell’editor, nella vista di lettura, in una sezione incorporata, durante la stampa, su un link pubblico e nelle risposte della chat con l’IA i simboli hanno lo stesso aspetto, e il punto tenue durante il proseguimento di un elenco mostra il marcatore del livello su cui finirà la nuova voce."
+    },
+    "where": "Nell’editor, applica un rientro con Tab a un elenco puntato o numerato."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Continuare gli elenchi dopo un’immagine",
     "summary": "Se sotto un elenco c’è un’immagine, una citazione o una tabella, la riga vuota successiva propone di continuare l’elenco: un punto sbiadito mostra dove andrebbe la voce successiva e con Tab la rende effettiva. Se inizi semplicemente a digitare, la riga rimane un normale paragrafo.",
     "details": {
-      "p1": "Fai clic sulla riga vuota sotto l’immagine. Se appartiene a un elenco precedente, compare in trasparenza il marcatore (in una lista numerata il numero successivo, in una lista di attività una casella vuota) e l’indicazione «Tab: Continua elenco». Con Tab si trasforma nella voce successiva; l’immagine rimane dov’era. Con Strg+Z puoi annullare l’operazione in un solo passaggio.",
+      "p1": "Fai clic sulla riga vuota sotto l’immagine. Se appartiene a un elenco precedente, lì compare in modo tenue il marcatore del livello su cui finirà la nuova voce (per un elenco numerato il numero successivo, per una lista di attività una casella vuota) e l’indicazione «Tab: continua l’elenco». Premendo Tab diventa la voce successiva; l’immagine rimane dov’era. Strg+Z annulla l’operazione in un solo passaggio.",
       "p2": "Viene continuato l’ultimo elenco precedente alla riga, purché ci siano al massimo due blocchi intermedi e nessun titolo. Direttamente sotto l’elenco, la nuova voce si posiziona al livello dell’ultima voce, anche in un sottoelenco; scavalcando un’immagine, al livello dell’elenco accanto all’immagine. Un elenco numerato continua il conteggio, un’attività rimane un’attività. Se l’immagine si trova all’interno di una voce e la riga vuota sotto di essa, la riga diventa la voce successiva dello stesso elenco.",
       "p3": "Il suggerimento è solo un’anteprima e non finisce nel documento. Se vuoi iniziare intenzionalmente un nuovo elenco, digita come sempre «- » o «1. ». Nelle tabelle, Tab continua a spostarsi alla cella successiva, e all’interno di un elenco Tab fa rientrare una voce come di consueto. Se vuoi comunque tornare indietro, il tasto Backspace in una riga vuota subito sotto un elenco rimuove la riga con una sola pressione e posiziona il cursore alla fine dell’ultima voce."
     },

@@ -101,11 +101,20 @@
     },
     "where": "No editor, no menu da alça de um item de lista, em „Ordenar lista“."
   },
+  "listen-ebenen": {
+    "title": "Reconhecer níveis de lista pelo marcador",
+    "summary": "Listas com marcadores recuadas usam um marcador próprio para cada nível: um ponto, um círculo, um quadrado e depois recomeçam. Listas numeradas contam no segundo nível com letras e no terceiro com números romanos. Assim, você vê num relance a profundidade de cada item.",
+    "details": {
+      "p1": "Uma lista com marcadores começa com um ponto preenchido, seus subitens usam um círculo aberto, o nível seguinte um pequeno quadrado e, a partir do quarto nível, recomeça com o ponto. Uma lista numerada conta no nível externo 1., 2., 3., abaixo a., b., c. e mais um nível abaixo i., ii., iii. Cada lista conta como um nível, inclusive uma lista de tarefas: portanto, uma lista com marcadores sob uma tarefa começa com o círculo.",
+      "p2": "Listas de tarefas mantêm sua caixa de seleção em todos os níveis. Nada muda no conteúdo: os marcadores são apenas visuais e, em Markdown, ao copiar e para IA e MCP, uma lista continua sendo o que sempre foi. No editor, na visualização de leitura, em uma seção incorporada, na impressão, em um link público e nas respostas do chat com IA, os marcadores têm a mesma aparência, e o marcador esmaecido ao continuar uma lista mostra o símbolo do nível em que o novo item vai parar."
+    },
+    "where": "No editor, recue uma lista com marcadores ou numerada usando Tab."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Continuar listas após uma imagem",
     "summary": "Se houver uma imagem, citação ou tabela abaixo de uma lista, a linha vazia seguinte sugere continuar a lista: um marcador esmaecido mostra onde o próximo ficaria, e Tab o torna real. Se você simplesmente começar a digitar, a linha continuará sendo um parágrafo normal.",
     "details": {
-      "p1": "Clique na linha vazia abaixo da imagem. Se ela pertencer a uma lista acima, o marcador aparecerá de forma esmaecida (o próximo número em uma lista numerada, uma caixa vazia em uma lista de tarefas) junto com a dica „Tab: Continuar lista“. Pressionar Tab transforma-o no próximo item; a imagem permanece onde estava. Ctrl+Z desfaz isso em uma única etapa.",
+      "p1": "Clique na linha vazia sob a imagem. Se ela pertencer a uma lista acima, aparecerá ali de forma esmaecida o marcador do nível em que o novo item vai parar (em uma lista numerada, o próximo número; em uma lista de tarefas, uma caixa vazia) e a dica „Tab: continuar lista“. Com Tab, isso se torna o próximo item; a imagem permanece onde estava. Strg+Z desfaz isso em uma única etapa.",
       "p2": "A última lista antes da linha é continuada, desde que haja no máximo dois blocos intermediários e nenhum título. Diretamente abaixo da lista, o novo item fica no mesmo nível do último item, inclusive em uma sublista; através de uma imagem, no nível da lista ao lado da imagem. Uma lista numerada continua a contagem, e uma tarefa continua sendo uma tarefa. Se a imagem estiver dentro de um item e a linha vazia estiver abaixo dela, a linha se tornará o próximo item dessa mesma lista.",
       "p3": "A sugestão é apenas uma prévia e não entra no documento. Se quiser começar uma nova lista de propósito, continue digitando „- “ ou „1. “ como antes. Em tabelas, o Tab continua mudando para a próxima célula, e em uma lista, o Tab recua um item como de costume. Se quiser voltar atrás, a tecla Backspace na linha vazia logo abaixo de uma lista remove a linha com um único toque e posiciona o cursor no final do último item."
     },

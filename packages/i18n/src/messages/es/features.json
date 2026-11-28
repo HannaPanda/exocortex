@@ -101,11 +101,20 @@
     },
     "where": "En el editor, en el menú del tirador de un elemento de lista, bajo «Ordenar lista»."
   },
+  "listen-ebenen": {
+    "title": "Reconocer niveles de lista por su símbolo",
+    "summary": "Las listas con viñetas sangradas tienen un símbolo diferente para cada nivel: un punto, un círculo, un cuadrado y luego se repite el ciclo. Las listas numeradas cuentan en el segundo nivel con letras y en el tercero con números romanos. Así puedes ver de un vistazo a qué profundidad se encuentra cada elemento.",
+    "details": {
+      "p1": "Una lista con viñetas comienza con un punto relleno, sus subelementos llevan un círculo hueco, el siguiente nivel un pequeño cuadrado y, a partir del cuarto nivel, se vuelve a empezar con el punto. Una lista numerada cuenta por fuera con 1., 2., 3., por debajo con a., b., c. y un nivel más abajo con i., ii., iii. Cada lista cuenta como un nivel, incluso una lista de tareas: por lo tanto, una lista con viñetas debajo de una tarea comenzará con el círculo.",
+      "p2": "Las listas de tareas conservan su casilla en todos los niveles. El contenido no cambia: los símbolos son solo representación visual y, en Markdown, al copiar y para la IA y MCP, una lista sigue siendo lo que era. En el editor, en la vista de lectura, en una sección incrustada, al imprimir, en un enlace público y en las respuestas del chat de IA los símbolos se ven iguales, y el punto tenue al continuar una lista muestra el símbolo del nivel en el que se ubicará el nuevo elemento."
+    },
+    "where": "En el editor, sangra una lista con viñetas o numerada usando Tab."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Continuar listas después de una imagen",
     "summary": "Si debajo de una lista hay una imagen, una cita o una tabla, la línea vacía que le sigue te ofrece continuar la lista: un punto tenue muestra dónde iría el siguiente elemento y Tab lo convierte en uno real. Si simplemente comienzas a escribir, la línea sigue siendo un párrafo normal.",
     "details": {
-      "p1": "Haz clic en la línea vacía debajo de la imagen. Si pertenece a una lista anterior, aparecerá de forma tenue la viñeta (en una lista numerada, el siguiente número; en una lista de tareas, una casilla vacía) y el aviso «Tab: continuar lista». Al pulsar Tab, se convierte en el siguiente elemento; la imagen se queda donde estaba. Strg+Z lo deshace en un solo paso.",
+      "p1": "Haz clic en la línea vacía debajo de la imagen. Si pertenece a una lista anterior, aparecerá de forma tenue el símbolo de viñeta del nivel en el que se ubicará el nuevo elemento (en una lista numerada el siguiente número, en una lista de tareas una casilla vacía) y la indicación «Tab: continuar lista». Con Tab se convierte en el siguiente elemento; la imagen permanece donde estaba. Strg+Z deshace esto en un solo paso.",
       "p2": "Se continúa la última lista antes de la línea, siempre que no haya más de dos bloques de por medio ni ningún encabezado. Justo debajo de la lista, el nuevo elemento queda en el nivel del último punto, incluso en una sublista; si hay una imagen de por medio, en el nivel de la lista junto a la imagen. Una lista numerada sigue contando, una tarea sigue siendo una tarea. Si la imagen está dentro de un elemento y la línea vacía debajo, la línea se convierte en el siguiente elemento de esa misma lista.",
       "p3": "La sugerencia es solo una vista previa y no se añade al documento. Si quieres empezar una nueva lista de forma deliberada, escribe como siempre «- » o «1. ». En tablas, Tab sigue pasando a la siguiente celda y, en una lista, Tab sangra un elemento como de costumbre. Si prefieres volver atrás, la tecla de retroceso en la línea vacía situada justo debajo de una lista elimina la línea de una sola pulsación y coloca el cursor al final del último elemento."
     },

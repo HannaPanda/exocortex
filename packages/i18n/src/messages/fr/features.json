@@ -101,11 +101,20 @@
     },
     "where": "Dans l’éditeur, via le menu sur la poignée d’un élément de liste, sous « Trier la liste »."
   },
+  "listen-ebenen": {
+    "title": "Reconnaître les niveaux de liste à leur puce",
+    "summary": "Les listes à puces indentées utilisent un symbole différent par niveau : un disque, un cercle, un carré, puis recommencent. Les listes numérotées comptent avec des lettres au deuxième niveau et avec des chiffres romains au troisième. Tu vois ainsi d’un coup d’œil à quelle profondeur se trouve un élément.",
+    "details": {
+      "p1": "Une liste à puces commence par un disque plein, ses sous-éléments portent un cercle évidé, le niveau suivant un petit carré, et à partir du quatrième niveau, le cycle recommence avec le disque. Une liste numérotée compte au niveau supérieur avec 1., 2., 3., puis en dessous avec a., b., c., et encore un niveau plus bas avec i., ii., iii. Chaque liste compte comme un niveau, y compris une liste de tâches : une liste à puces sous une tâche commence donc par le cercle.",
+      "p2": "Les listes de tâches conservent leur case à chaque niveau. Rien ne change dans le contenu : les symboles ne sont qu’un affichage, et en Markdown, lors de la copie ainsi que pour l’IA et le MCP, une liste reste ce qu’elle était. Dans l’éditeur, en mode lecture, dans une section intégrée, à l’impression, sur un lien public et dans les réponses du chat IA, les symboles ont la même apparence, et la puce estompée lors de la reprise d’une liste indique le symbole du niveau auquel le nouvel élément se place."
+    },
+    "where": "Dans l’éditeur, indente une liste à puces ou numérotée avec Tab."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Poursuivre les listes après une image",
     "summary": "Si une image, une citation ou un tableau se trouve sous une liste, la ligne vide suivante te propose de continuer la liste : une puce estompée montre où se situerait le point suivant, et Tab la transforme en véritable puce. Si tu commences simplement à écrire, la ligne reste un paragraphe normal.",
     "details": {
-      "p1": "Clique sur la ligne vide sous l’image. Si elle se rattache à une liste située au-dessus, la puce y apparaît en estompé (le numéro suivant pour une liste numérotée, une case vide pour une liste de tâches) accompagnée de l’indication « Tab : Poursuivre la liste ». Appuie sur Tab pour en faire l’élément suivant ; l’image reste à sa place. Strg+Z annule cette action en une seule étape.",
+      "p1": "Clique dans la ligne vide sous l’image. Si elle appartient à une liste au-dessus, la puce du niveau où arrivera le nouvel élément s’y affiche en estompé (le numéro suivant pour une liste numérotée, une case vide pour une liste de tâches) ainsi que l’indication « Tab : Continuer la liste ». En appuyant sur Tab, elle devient le prochain élément ; l’image reste là où elle était. Strg+Z annule cette action en une seule étape.",
       "p2": "La dernière liste avant la ligne est prolongée, tant que deux blocs au maximum s’interposent et sans titre entre-temps. Juste sous la liste, le nouvel élément se place au niveau du dernier point, y compris dans une sous-liste ; par-dessus une image, au niveau de la liste jouxtant l’image. Une liste numérotée poursuit son décompte, une tâche reste une tâche. Si l’image se trouve à l’intérieur d’un point et la ligne vide dessous, la ligne devient le point suivant de cette même liste.",
       "p3": "La suggestion n’est qu’un aperçu et ne se retrouve pas dans le document. Si tu veux délibérément commencer une nouvelle liste, saisis comme d’habitude « - » ou « 1. ». Dans les tableaux, Tab permet toujours de passer à la cellule suivante, et dans une liste, Tab indente un élément comme d’habitude. Si tu souhaites revenir en arrière, la touche Retour arrière sur la ligne vide située directement sous une liste supprime la ligne en une seule pression et place le curseur à la fin du dernier élément."
     },

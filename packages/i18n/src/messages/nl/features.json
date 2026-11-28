@@ -101,11 +101,20 @@
     },
     "where": "In de editor in het menu bij de greep van een lijstitem onder „Lijst sorteren”."
   },
+  "listen-ebenen": {
+    "title": "Lijstniveaus herkennen aan het symbool",
+    "summary": "Ingesprongen opsommingen hebben per niveau een eigen symbool: een punt, een cirkel, een vierkant, en daarna weer van voren af aan. Genummerde lijsten tellen op het tweede niveau met letters en op het derde met Romeinse cijfers. Zo zie je in één oogopslag hoe diep een punt staat.",
+    "details": {
+      "p1": "Een opsomming begint met een gevulde punt, de subpunten krijgen een open cirkel, het volgende niveau een klein vierkant, en vanaf het vierde niveau begint het weer van voren af aan met de punt. Een genummerde lijst telt buiten 1., 2., 3., daaronder a., b., c. en nog een niveau dieper i., ii., iii. Elke lijst telt daarbij als niveau, ook een takenlijst: een opsomming onder een taak begint dus met de cirkel.",
+      "p2": "Takenlijsten behouden op elk niveau hun selectievakje. Aan de inhoud verandert niets: de tekens zijn puur weergave, en in Markdown, bij het kopiëren en voor AI en MCP blijft een lijst wat hij was. In de editor, in de leesweergave, in een ingesloten sectie, bij het afdrukken, via een openbare link en in antwoorden in de AI-chat zien de symbolen er hetzelfde uit, en de vage punt bij het voortzetten van een opsomming toont het symbool van het niveau waarop het nieuwe punt terechtkomt."
+    },
+    "where": "In de editor een opsomming of genummerde lijst met Tab laten inspringen."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Lijsten voortzetten na een afbeelding",
     "summary": "Staat er onder een lijst een afbeelding, citaat of tabel, dan biedt de lege regel eronder aan om de lijst voort te zetten: een lichtgekleurd opsommingsteken toont waar het volgende punt zou komen, en met Tab maak je er een echt punt van. Begin je gewoon te typen, dan blijft de regel een normale alinea.",
     "details": {
-      "p1": "Klik in de lege regel onder de afbeelding. Hoort deze bij een lijst erboven, dan staat daar vaag het opsommingsteken (bij een genummerde lijst het volgende nummer, bij een takenlijst een leeg vakje) en de hint „Tab: lijst voortzetten”. Met Tab maak je er het volgende punt van; de afbeelding blijft waar hij stond. Met Strg+Z maak je dit in één stap ongedaan.",
+      "p1": "Klik op de lege regel onder de afbeelding. Hoort deze bij een opsomming erboven, dan staat daar vaag het opsommingsteken van het niveau waarop het nieuwe punt terechtkomt (bij een genummerde lijst het volgende nummer, bij een takenlijst een leeg vakje) en de hint „Tab: Opsomming voortzetten”. Met Tab wordt dit het volgende punt; de afbeelding blijft waar hij was. Met Strg+Z maak je dit in één stap ongedaan.",
       "p2": "De laatste lijst vóór de regel wordt voortgezet, zolang er hoogstens twee blokken tussen staan en geen tussenkop. Direct onder de lijst komt het nieuwe punt op het niveau van het laatste punt terecht, ook in een sublijst; over een afbeelding heen op het niveau van de lijst naast de afbeelding. Een genummerde lijst telt door, een taak blijft een taak. Staat de afbeelding binnen een punt en de lege regel eronder, dan wordt de regel het volgende punt van dezelfde lijst.",
       "p3": "Het voorstel is slechts een voorbeeld en belandt niet in het document. Wie bewust een nieuwe lijst wil beginnen, typt zoals voorheen „- ” of „1. ”. In tabellen ga je met Tab naar de volgende cel, en in een lijst springt Tab zoals gewoonlijk een punt in. Wil je toch terug, dan verwijdert de backspatetoets in de lege regel direct onder een lijst de regel met één druk en zet de cursor aan het einde van het laatste punt."
     },

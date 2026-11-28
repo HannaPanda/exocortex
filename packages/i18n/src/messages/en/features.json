@@ -101,11 +101,20 @@
     },
     "where": "In the editor, in the handle menu of a list item under “Sort list”."
   },
+  "listen-ebenen": {
+    "title": "Recognizing list levels by bullet style",
+    "summary": "Indented bullet lists use a distinct symbol for each level: a disc, a circle, a square, and then repeating. Numbered lists count with letters on the second level and Roman numerals on the third. That way you can see at a glance how deep an item is nested.",
+    "details": {
+      "p1": "A bullet list starts with a solid disc, its sub-items have an open circle, the next level has a small square, and starting from the fourth level it begins again with the disc. A numbered list counts 1., 2., 3. on the outside, a., b., c. underneath, and i., ii., iii. one level deeper. Every list counts as a level, including task lists: a bullet list under a task therefore starts with the circle.",
+      "p2": "Task lists keep their checkbox on every level. Nothing changes in the content: the symbols are just visual styling, and in Markdown, when copying, and for AI and MCP, a list stays what it was. In the editor, in reading view, in an embedded section, when printing, on a public link, and in responses in AI chat, the symbols look the same, and the faint bullet when continuing a list shows the symbol of the level where the new item will land."
+    },
+    "where": "Indent a bullet list or numbered list with Tab in the editor."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Continue lists after an image",
     "summary": "If an image, quote, or table follows a list, the empty line below offers to continue the list: a faint bullet shows where the next item would be, and Tab turns it into a real one. If you just start typing, the line stays a normal paragraph.",
     "details": {
-      "p1": "Click into the empty line below the image. If it belongs to a list above, the list marker appears faintly (for a numbered list the next number, for a task list an empty checkbox) alongside the hint “Tab: Continue list”. Pressing Tab turns it into the next item; the image stays where it was. Strg+Z undoes this in a single step.",
+      "p1": "Click into the empty line below the image. If it belongs to a list above, it faintly shows the bullet of the level where the new item will land (the next number for a numbered list, an empty checkbox for a task list) and the hint “Tab: Continue list”. Pressing Tab turns it into the next item; the image stays where it was. Ctrl+Z undoes this in a single step.",
       "p2": "It continues the last list before the line, as long as there are at most two blocks in between and no heading. Directly below the list, the new item lands on the level of the last item, even in a sublist; across an image, on the level of the list next to the image. A numbered list continues counting, a task remains a task. If the image is inside an item and the empty line is below it, the line becomes the next item of that same list.",
       "p3": "The suggestion is only a preview and does not end up in the document. If you deliberately want to start a new list, type “- ” or “1. ” as before. In tables, Tab continues to move to the next cell, and within a list, Tab indents an item as usual. If you want to go back after all, Backspace on the empty line directly below a list removes the line with a single press and places the cursor at the end of the last item."
     },
