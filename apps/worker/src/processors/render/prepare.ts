@@ -1,7 +1,7 @@
 /**
  * Turning eXocortex Markdown into something Pandoc can read (issue #44).
  *
- * Three small transformations, and each of them exists because leaving the text
+ * Four small transformations, and each of them exists because leaving the text
  * alone produces a visibly wrong PDF rather than an error:
  *
  * - an image points at `/api/attachments/<id>/download`, which means nothing
@@ -9,6 +9,8 @@
  * - `[[Andere Seite]]` is eXocortex's wiki link, which Pandoc prints verbatim,
  *   brackets and all
  * - `@[[Seite]]` and `@(Person)` mentions are the same problem one level in
+ * - the table of contents block is `:::toc` and `:::` on two lines, which
+ *   Pandoc's GFM reader has no notation for and would print as colons
  *
  * Everything else -- headings, lists, tables, code, footnotes, quotes -- is
  * Pandoc's job, and deliberately not touched here (ADR-026).
@@ -72,6 +74,44 @@ export function dropAsset(markdown: string, id: string): string {
  */
 export function flattenWikiLinks(markdown: string): string {
   return markdown.replace(WIKI_LINK, (_match, target: string, label?: string) => label ?? target);
+}
+
+/** The opening line of the table of contents block, with or without its block id. */
+const TOC_OPEN = /^\s*:::toc(?:\s+\^[A-Za-z0-9_-]+)?\s*$/;
+const CONTAINER_CLOSE = /^\s*:::\s*$/;
+
+/**
+ * Takes the table of contents blocks out of the text and says whether there
+ * was one (issue #228).
+ *
+ * The block stores no entries, so there is nothing to print in its place; what
+ * it asks for is Pandoc's own table of contents, built by LaTeX from the same
+ * headings with page numbers. That one sits where the template puts it, after
+ * the title, rather than where the block stood: placing it exactly would mean
+ * accepting raw LaTeX from the page, which no page should be able to send into
+ * the build. Fenced code is left alone, since a `:::toc` there is an example.
+ */
+export function takeTableOfContents(markdown: string): { markdown: string; wanted: boolean } {
+  const lines = markdown.split('\n');
+  const kept: string[] = [];
+  let fence: string | null = null;
+  let wanted = false;
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index] ?? '';
+    const fenceMatch = /^\s{0,3}(`{3,}|~{3,})/.exec(line);
+    if (fenceMatch !== null) {
+      const marker = fenceMatch[1] ?? '';
+      if (fence === null) fence = marker[0] ?? null;
+      else if (marker.startsWith(fence)) fence = null;
+    }
+    if (fence === null && TOC_OPEN.test(line) && CONTAINER_CLOSE.test(lines[index + 1] ?? '')) {
+      wanted = true;
+      index += 1;
+      continue;
+    }
+    kept.push(line);
+  }
+  return { markdown: wanted ? kept.join('\n') : markdown, wanted };
 }
 
 /** Escapes one scalar for the YAML metadata file. */

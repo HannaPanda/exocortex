@@ -8,6 +8,7 @@ import {
   collectAttachmentImages,
   dropAsset,
   flattenWikiLinks,
+  takeTableOfContents,
 } from './prepare';
 
 /**
@@ -78,6 +79,25 @@ describe('flattenWikiLinks', () => {
     expect(flattenWikiLinks('@[[Johanna]] hat das geschrieben')).toBe(
       'Johanna hat das geschrieben',
     );
+  });
+});
+
+describe('takeTableOfContents', () => {
+  it('takes the block out and asks for the PDF table of contents (#228)', () => {
+    expect(takeTableOfContents('Intro\n\n:::toc\n:::\n\n# Kapitel\n')).toEqual({
+      markdown: 'Intro\n\n\n# Kapitel\n',
+      wanted: true,
+    });
+  });
+
+  it('recognises the block with its block id', () => {
+    expect(takeTableOfContents(':::toc ^abcdefghijkl\n:::\n\n# Kapitel').wanted).toBe(true);
+  });
+
+  it('leaves a page without one, and an example in fenced code, untouched', () => {
+    const example = '```markdown\n:::toc\n:::\n```\n';
+    expect(takeTableOfContents(example)).toEqual({ markdown: example, wanted: false });
+    expect(takeTableOfContents(':::toggle Mehr\nText\n:::\n').wanted).toBe(false);
   });
 });
 

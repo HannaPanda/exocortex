@@ -88,6 +88,12 @@ finished PDF lives only in the dialog that made it.
 **Scope.** `DOCUMENT` is the page alone. `SUBTREE` takes the descendants with
 it, each one a heading level deeper than its parent, and adds a table of
 contents -- that is how a project with sub-pages becomes one PDF with chapters.
+A single page gets the same table of contents when it carries the table of
+contents block (`:::toc`, issue #228): `takeTableOfContents` in
+`apps/worker/src/processors/render/prepare.ts` removes the marker and sets
+`--toc`. It then stands where the template puts `$toc$` (after the title in
+Pandoc's default), not where the block stood, because placing it exactly would
+take raw LaTeX from the page; a template without `$toc$` prints none.
 
 **The cache.** Asking twice for the same page, template and values hands back
 the PDF that already exists. A page or template that has changed since makes the

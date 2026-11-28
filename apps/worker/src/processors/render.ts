@@ -16,6 +16,7 @@ import {
   collectAttachmentImages,
   dropAsset,
   flattenWikiLinks,
+  takeTableOfContents,
 } from './render/prepare';
 
 export interface RenderDependencies {
@@ -179,7 +180,9 @@ async function build(context: {
       }),
       template: template?.source ?? null,
       assets: prepared.assets,
-      tableOfContents: job.source === 'SUBTREE',
+      // A subtree is a book and always gets one; a single page when it carries
+      // the block (issue #228).
+      tableOfContents: job.source === 'SUBTREE' || prepared.tableOfContents,
       timeoutMs: settings['render.timeoutSeconds'] * 1_000,
       maxArtifactBytes: settings['render.maxArtifactBytes'],
       signal: controller.signal,
@@ -369,6 +372,8 @@ function variableRecord(value: Prisma.JsonValue): Record<string, string> {
 
 interface PreparedDocument {
   markdown: string;
+  /** The page carried a table of contents block (issue #228). */
+  tableOfContents: boolean;
   assets: { name: string; bytes: Uint8Array }[];
   /** What was done to the document, prepended to the build log. */
   notes: string;
@@ -436,7 +441,13 @@ async function prepareDocument(input: {
     notes.push(`[render] image ${id} skipped: more than ${String(MAX_ASSETS)} images.`);
   }
 
-  return { markdown: flattenWikiLinks(markdown), assets, notes: notes.join('\n') };
+  const toc = takeTableOfContents(flattenWikiLinks(markdown));
+  return {
+    markdown: toc.markdown,
+    tableOfContents: toc.wanted,
+    assets,
+    notes: notes.join('\n'),
+  };
 }
 
 function extensionFor(mimeType: string): string {
