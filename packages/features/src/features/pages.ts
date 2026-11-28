@@ -49,6 +49,13 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'inhaltsverzeichnis',
+    area: 'seiten',
+    since: '2026-11-28',
+    references: ['#228'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'bloecke-verschieben',
     area: 'seiten',
     since: '2026-11-26',

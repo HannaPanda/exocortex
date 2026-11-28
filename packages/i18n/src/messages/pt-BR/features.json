@@ -81,6 +81,16 @@
     },
     "where": "No editor via „/Destaque” ou „Transformar em outro bloco”; um clique no ícone da caixa abre a seleção."
   },
+  "inhaltsverzeichnis": {
+    "title": "Sumário a partir dos títulos",
+    "summary": "Um bloco que exibe todos os títulos da página como uma lista com links, recuados conforme o nível. Ele acompanha a página automaticamente: um título novo, renomeado ou movido aparece logo na posição correta.",
+    "details": {
+      "p1": "Digite “/sumario” (ou “/toc”) no local onde ele deve ficar. Um clique em um item leva direto ao respectivo título; o link fica vinculado ao próprio título, não ao seu texto exato, mantendo o funcionamento mesmo se for renomeado. Se a página ainda não tiver títulos, o bloco avisa.",
+      "p2": "O sumário é gerado a cada vez a partir dos títulos e não fica salvo em lugar nenhum, evitando conteúdo duplicado ou desatualizado. Em links públicos, ele funciona da mesma forma; no PDF, transforma-se no sumário diagramado com números de página, posicionado após o título.",
+      "p3": "Na exportação em Markdown e para os agentes, o bloco aparece como “:::toc” com uma linha “:::” logo abaixo, e um agente pode criá-lo da mesma maneira."
+    },
+    "where": "No editor via “/sumario”, “/toc” ou “/indice”."
+  },
   "bloecke-verschieben": {
     "title": "Mover blocos e itens de lista",
     "summary": "Pela alça à esquerda de um bloco, você pode arrastá-lo para outro lugar, inclusive um item de lista individual com seus subitens. Uma linha mostra onde ele vai cair ao arrastar, e o recuo indica em qual nível.",

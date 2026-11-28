@@ -81,6 +81,16 @@
     },
     "where": "In the editor via “/Callout” or “Turn into another block”; clicking the box’s icon opens the selector."
   },
+  "inhaltsverzeichnis": {
+    "title": "Table of contents from headings",
+    "summary": "A block that shows all headings on the page as a linked list, indented by their level. It updates automatically: new, renamed, or moved headings appear correctly right away.",
+    "details": {
+      "p1": "Type “/table of contents” (or “/toc”) where you want it to appear. Clicking an entry jumps to its heading; the reference attaches to the heading itself rather than its wording, so it keeps working even after renaming. If the page doesn’t have any headings yet, the block tells you so.",
+      "p2": "The table of contents is generated from the headings every time and stored nowhere, so there is no duplicate content and nothing that can go out of date. It looks the same via a public link, and in PDFs it becomes the formatted table of contents with page numbers, positioned right after the title.",
+      "p3": "In Markdown exports and for agents, the block appears as “:::toc” followed by a line with “:::”, and an agent inserts it the same way."
+    },
+    "where": "In the editor via “/table of contents”, “/toc”, or “/outline”."
+  },
   "bloecke-verschieben": {
     "title": "Move blocks and list items",
     "summary": "Drag a block by the handle to its left to move it somewhere else, including an individual list item along with its sub-items. A line shows where it will land as you drag, and its indentation indicates the level.",

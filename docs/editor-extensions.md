@@ -949,6 +949,31 @@ automatically. Exact whitespace is not preserved; semantic content is. The two
 deliberate exceptions (text colour, non-default background) are in
 `docs/deviations.md`.
 
+### The table of contents is a marker
+
+`:::toc` and `:::` are the whole block (issue #228). Its entries are derived
+from the page's headings wherever it is drawn and never stored or exported:
+a written-out list would be a second copy of every heading that goes stale the
+moment one is renamed (ADR-007). `readOutline` reads them from an editor
+document and `readOutlineFromJson` from JSON, both in
+`packages/editor/src/table-of-contents.ts`; they leave out empty headings and
+count the indentation over the levels the page really uses, as the floating
+outline does. Each entry links to its heading's block id, so a renamed heading
+keeps its link.
+
+Where it is drawn:
+
+- **Editor**, also read-only: the plain-DOM node view redraws on every
+  transaction that changed the document. It has to listen for them itself,
+  because ProseMirror asks a node view to update only when its own node
+  changed, and a heading edited elsewhere leaves this node untouched.
+- **Public link**: `pruneForReading` keeps the node, and `ReadingMarkdown`
+  draws it from the headings it renders, which get positional anchors
+  (`abschnitt-1`, …) since that Markdown carries no block ids.
+- **PDF**: Pandoc's own table of contents, see `docs/render.md`.
+- **Markdown export and agents**: the marker as it is; the plain text for the
+  search index leaves it out, since the headings are indexed already.
+
 ## Adding a new block node
 
 The `callout` node is the reference implementation. To add, for example, a

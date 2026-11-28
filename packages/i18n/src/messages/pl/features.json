@@ -81,6 +81,16 @@
     },
     "where": "W edytorze przez „/Wyróżnienie” lub „Przekształć w inny blok”; okno wyboru otwiera kliknięcie ikony ramki."
   },
+  "inhaltsverzeichnis": {
+    "title": "Spis treści z nagłówków",
+    "summary": "Blok, który wyświetla wszystkie nagłówki strony jako listę z linkami, wciętą według ich poziomów. Aktualizuje się automatycznie: nowy, zmieniony lub przeniesiony nagłówek pojawia się w nim od razu we właściwym miejscu.",
+    "details": {
+      "p1": "Wpisz „/Spis treści” (lub „/toc”) w miejscu, w którym ma się znaleźć. Kliknięcie wpisu przenosi do danego nagłówka; odnośnik jest powiązany z samym nagłówkiem, a nie z jego brzmieniem, więc przetrwa także zmianę nazwy. Jeśli strona nie ma jeszcze nagłówków, blok o tym poinformuje.",
+      "p2": "Spis jest tworzony za każdym razem na podstawie nagłówków i nigdzie niezapisywany, dzięki czemu treść się nie duplikuje i nic się nie dezaktualizuje. Pod publicznym linkiem wygląda tak samo, a w pliku PDF zmienia się w sformatowany spis treści z numerami stron, umieszczany po tytule.",
+      "p3": "W eksporcie Markdown i dla agentów blok jest zapisywany jako „:::toc” z linią „:::” poniżej, a agent wstawia go w ten sam sposób."
+    },
+    "where": "W edytorze przez „/Spis treści”, „/toc” lub „/Gliederung”."
+  },
   "bloecke-verschieben": {
     "title": "Przenoszenie bloków i elementów listy",
     "summary": "Za pomocą uchwytu po lewej stronie bloku przeciągniesz go w inne miejsce – także pojedynczy element listy wraz z jego podelementami. Linia podczas przeciągania wskazuje miejsce docelowe, a jej wcięcie – poziom zagłębienia.",

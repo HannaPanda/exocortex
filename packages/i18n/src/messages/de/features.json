@@ -81,6 +81,16 @@
     },
     "where": "Im Editor über „/Hinweis“ oder „In anderen Block umwandeln“; die Auswahl öffnet ein Klick auf das Symbol des Kastens."
   },
+  "inhaltsverzeichnis": {
+    "title": "Inhaltsverzeichnis aus den Überschriften",
+    "summary": "Ein Block, der alle Überschriften der Seite als verlinkte Liste zeigt, eingerückt nach ihrer Ebene. Er folgt der Seite von selbst: eine neue, umbenannte oder verschobene Überschrift steht sofort richtig darin.",
+    "details": {
+      "p1": "Tippe „/Inhaltsverzeichnis“ (oder „/toc“) an der Stelle, an der es stehen soll. Ein Klick auf einen Eintrag springt zu seiner Überschrift; der Verweis hängt an der Überschrift selbst, nicht an ihrem Wortlaut, und hält deshalb auch ein Umbenennen aus. Hat die Seite noch keine Überschrift, sagt der Block das.",
+      "p2": "Das Verzeichnis wird jedes Mal aus den Überschriften gebildet und nirgends gespeichert, deshalb gibt es keinen Inhalt doppelt und nichts, das veralten kann. Hinter einem öffentlichen Link erscheint es genauso, im PDF wird daraus das gesetzte Inhaltsverzeichnis mit Seitenzahlen, das dort nach dem Titel steht.",
+      "p3": "Im Markdown-Export und für Agenten steht der Block als „:::toc“ mit einer Zeile „:::“ darunter, und ein Agent setzt ihn auf demselben Weg."
+    },
+    "where": "Im Editor über „/Inhaltsverzeichnis“, „/toc“ oder „/Gliederung“."
+  },
   "bloecke-verschieben": {
     "title": "Blöcke und Listenpunkte verschieben",
     "summary": "Am Griff links neben einem Block ziehst du ihn an eine andere Stelle, auch einen einzelnen Listenpunkt samt seinen Unterpunkten. Eine Linie zeigt beim Ziehen, wo er landet, und ihre Einrückung, auf welcher Ebene.",

@@ -81,6 +81,16 @@
     },
     "where": "Nell’editor tramite «/Avviso» o «Trasforma in un altro blocco»; la selezione si apre cliccando sull’icona del riquadro."
   },
+  "inhaltsverzeichnis": {
+    "title": "Sommario dalle intestazioni",
+    "summary": "Un blocco che mostra tutte le intestazioni della pagina come elenco collegato, rientrato in base al rispettivo livello. Segue la pagina automaticamente: un’intestazione nuova, rinominata o spostata vi appare subito corretta.",
+    "details": {
+      "p1": "Digita „/Sommario“ (o „/toc“) nel punto in cui desideri inserirlo. Facendo clic su una voce passi alla relativa intestazione; il riferimento è legato all’intestazione stessa, non al suo testo esatto, e resiste quindi anche alla ridenominazione. Se la pagina non ha ancora intestazioni, il blocco lo segnala.",
+      "p2": "Il sommario viene generato ogni volta a partire dalle intestazioni e non viene salvato da nessuna parte; non ci sono quindi contenuti duplicati né elementi che possano diventare obsoleti. Dietro un link pubblico appare nello stesso modo, mentre nel PDF si trasforma nel sommario impaginato con i numeri di pagina, posizionato dopo il titolo.",
+      "p3": "Nell’esportazione Markdown e per gli agenti, il blocco appare come „:::toc“ seguito da una riga „:::“, e un agente lo inserisce nello stesso modo."
+    },
+    "where": "Nell’editor tramite „/Sommario“, „/toc“ o „/Indice“."
+  },
   "bloecke-verschieben": {
     "title": "Spostare blocchi e voci di elenco",
     "summary": "Usa la maniglia a sinistra di un blocco per trascinarlo in un’altra posizione, inclusa una singola voce di elenco con i suoi sottopunti. Durante il trascinamento, una linea mostra dove verrà posizionato e il rientro indica a quale livello.",

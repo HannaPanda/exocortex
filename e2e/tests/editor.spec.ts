@@ -215,6 +215,78 @@ test.describe('editor', () => {
     await expect(page.locator('.exocortex-editor nav[data-toc]')).toHaveCount(1);
   });
 
+  /**
+   * Issue #228: the table of contents follows its headings, jumps to them, and
+   * is drawn behind a public link too. Unit-tested in `packages/editor`; what
+   * only a browser proves is the redraw on a real page and the two readers.
+   */
+  test('keeps the table of contents in step with its headings, everywhere', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Verzeichnis ${Date.now().toString(36)}`);
+    const filler = Array.from({ length: 30 }, (_, index) => `Absatz ${String(index)}`).join('\n\n');
+    const markdown = [
+      ':::toc',
+      ':::',
+      '',
+      '## Anfang',
+      '',
+      filler,
+      '',
+      '### Tiefer',
+      '',
+      'Ende',
+      '',
+    ];
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: { markdown: markdown.join('\n'), mode: 'replace' },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    await page.reload();
+
+    const surface = page.getByTestId('editor-surface');
+    const entries = surface.locator('nav[data-toc] li');
+    await expect(entries).toHaveText(['Anfang', 'Tiefer'], { timeout: 30_000 });
+    // Indented by the levels in use: H2 is the top here, H3 one step in.
+    await expect(entries.nth(0)).toHaveAttribute('data-depth', '0');
+    await expect(entries.nth(1)).toHaveAttribute('data-depth', '1');
+
+    // Renaming a heading further down redraws the list.
+    await surface.locator('h3').click();
+    await page.keyboard.press('End');
+    await page.keyboard.type(' unten');
+    await expect(entries).toHaveText(['Anfang', 'Tiefer unten']);
+
+    // An entry jumps to its heading by the heading's block id.
+    await page.keyboard.press('Control+Home');
+    const link = entries.nth(1).locator('a');
+    await expect(link).toHaveAttribute('href', /^#[a-z0-9]{12}$/);
+    await link.click();
+    await expect(surface.locator('h3')).toBeInViewport();
+
+    const granted = await page.request.post(`/api/documents/${documentId}/shares`, {
+      data: { kind: 'PUBLIC_LINK', scope: 'PAGE_ONLY' },
+    });
+    expect(granted.status(), await granted.text()).toBe(201);
+    const { share } = (await granted.json()) as { share: { id: string; token: string } };
+    try {
+      const reader = page.locator('article');
+      await expect
+        .poll(
+          async () => {
+            await page.goto(`/freigabe/${share.token}`);
+            return reader.locator('nav[data-toc] a').allTextContents();
+          },
+          { timeout: 60_000 },
+        )
+        .toEqual(['Anfang', 'Tiefer unten']);
+      await reader.locator('nav[data-toc] a', { hasText: 'Tiefer unten' }).click();
+      await expect(reader.getByText('Tiefer unten', { exact: true }).last()).toBeInViewport();
+    } finally {
+      await page.request.delete(`/api/shares/${share.id}`);
+    }
+  });
+
   test('converts a paragraph into a heading through the toolbar', async ({ page }) => {
     await openEditor(page);
     await page.keyboard.type('Wird eine Überschrift');

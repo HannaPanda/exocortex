@@ -81,6 +81,16 @@
     },
     "where": "Dans l’éditeur via « /Remarque » ou « Transformer en un autre bloc » ; un clic sur le symbole de l’encadré ouvre la sélection."
   },
+  "inhaltsverzeichnis": {
+    "title": "Table des matières à partir des titres",
+    "summary": "Un bloc qui affiche tous les titres de la page sous forme de liste de liens, indentés selon leur niveau. Il suit la page automatiquement : tout titre ajouté, renommé ou déplacé y apparaît immédiatement à la bonne place.",
+    "details": {
+      "p1": "Tape « /Table des matières » (ou « /toc ») à l’endroit où tu souhaites l’insérer. Cliquer sur une entrée renvoie directement à son titre ; le lien est rattaché au titre lui-même et non à son libellé exact, si bien qu’il reste valide même si tu le renommes. Si la page ne contient encore aucun titre, le bloc l’indique.",
+      "p2": "La table est générée à chaque fois à partir des titres et n’est enregistrée nulle part : aucun contenu n’est dupliqué et rien ne risque de devenir obsolète. Elle s’affiche de la même façon derrière un lien public, et dans l’export PDF, elle se transforme en une table des matières mise en page avec numéros de page, placée après le titre.",
+      "p3": "Dans l’export Markdown et pour les agents, le bloc apparaît sous la forme « :::toc » suivi d’une ligne « ::: », et un agent peut l’insérer de la même manière."
+    },
+    "where": "Dans l’éditeur via « /Table des matières », « /toc » ou « /Sommaire »."
+  },
   "bloecke-verschieben": {
     "title": "Déplacer des blocs et des éléments de liste",
     "summary": "À l’aide de la poignée à gauche d’un bloc, glisse-le vers un autre endroit, y compris un élément de liste individuel et ses sous-éléments. Une ligne indique où il atterrira lors du glisser-déposer, et son indentation montre à quel niveau.",

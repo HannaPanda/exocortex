@@ -81,6 +81,16 @@
     },
     "where": "In de editor via „/Opmerking” of „Omzetten in ander blok”; de selectie opent met een klik op het pictogram van het kader."
   },
+  "inhaltsverzeichnis": {
+    "title": "Inhoudsopgave op basis van tussenkoppen",
+    "summary": "Een blok dat alle tussenkoppen van de pagina als een gelinkte lijst toont, ingesprongen op basis van hun niveau. Het volgt de pagina automatisch: een nieuwe, hernoemde of verplaatste tussenkop staat er meteen goed in.",
+    "details": {
+      "p1": "Typ „/Inhoudsopgave” (of „/toc”) op de plek waar deze moet komen te staan. Een klik op een item springt naar de betreffende tussenkop; de link is gekoppeld aan de tussenkop zelf en niet aan de exacte tekst, waardoor hij ook na een naamsverandering blijft werken. Als de pagina nog geen tussenkop heeft, meldt het blok dat.",
+      "p2": "De inhoudsopgave wordt telkens opnieuw gegenereerd op basis van de tussenkoppen en nergens opgeslagen. Er is dus geen dubbele inhoud en niets kan verouderen. Achter een openbare link ziet het er precies zo uit; in de pdf wordt het de opgemaakte inhoudsopgave met paginanummers die na de titel volgt.",
+      "p3": "In de Markdown-export en voor agents verschijnt het blok als „:::toc” met een regel „:::” eronder, en een agent plaatst het op dezelfde manier."
+    },
+    "where": "In de editor via „/Inhoudsopgave”, „/toc” of „/Structuur”."
+  },
   "bloecke-verschieben": {
     "title": "Blokken en lijstitems verplaatsen",
     "summary": "Via de greep links van een blok sleep je het naar een andere plek, ook een afzonderlijk lijstitem inclusief de subitems. Een lijn laat tijdens het slepen zien waar het terechtkomt, en het inspringen toont op welk niveau.",

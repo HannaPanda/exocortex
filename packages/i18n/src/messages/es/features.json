@@ -81,6 +81,16 @@
     },
     "where": "En el editor mediante «/Aviso» o «Convertir en otro bloque»; al hacer clic en el icono del cuadro se abre la selección."
   },
+  "inhaltsverzeichnis": {
+    "title": "Índice a partir de los encabezados",
+    "summary": "Un bloque que muestra todos los encabezados de la página en forma de lista con enlaces, con sangría según su nivel. Se actualiza automáticamente: cualquier encabezado nuevo, renombrado o movido aparece de inmediato en su sitio.",
+    "details": {
+      "p1": "Escribe «/Índice» (o «/toc») donde quieras colocarlo. Al hacer clic en una entrada, saltas a su encabezado; el enlace está vinculado al propio encabezado, no a su texto exacto, por lo que sigue funcionando aunque le cambies el nombre. Si la página aún no tiene encabezados, el bloque lo indica.",
+      "p2": "El índice se genera cada vez a partir de los encabezados y no se guarda en ningún sitio; por eso no hay contenido duplicado ni nada que pueda quedar desactualizado. Tras un enlace público se ve exactamente igual, y en el PDF se convierte en el índice maquetado con números de página que aparece tras el título.",
+      "p3": "En la exportación a Markdown y para los agentes, el bloque se representa como «:::toc» con una línea «:::» debajo, y un agente puede insertarlo de la misma forma."
+    },
+    "where": "En el editor mediante «/Índice», «/toc» o «/Esquema»."
+  },
   "bloecke-verschieben": {
     "title": "Mover bloques y elementos de lista",
     "summary": "Arrastra desde el tirador a la izquierda de un bloque para moverlo a otro lugar, incluido un elemento de lista individual con sus subelementos. Una línea te muestra al arrastrar dónde quedará, y su sangría indica en qué nivel.",
