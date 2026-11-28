@@ -7,7 +7,8 @@
     "pageNavigation": "Page navigation",
     "navigationWidth": "Navigation width",
     "contextTitle": "Context panel",
-    "contextWidth": "Context panel width"
+    "contextWidth": "Context panel width",
+    "resizeHint": "Drag to resize, double-click to reset"
   },
   "topbar": {
     "toggleNavigation": "Toggle navigation",

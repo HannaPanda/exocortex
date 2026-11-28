@@ -452,9 +452,10 @@ test.describe('editor', () => {
    */
   test('keeps the block handle inside the canvas on a full-width page', async ({ page }) => {
     // Both panels at their maximum width, so the editor column is as narrow as
-    // a person can make it without resizing the window.
+    // a person can make it without resizing the window. The context panel has
+    // no fixed ceiling since issue #246: a width past its limit is drawn at it.
     await presetPanelPreference(page, 'exocortex.sidebar', { open: true, width: 420 });
-    await presetPanelPreference(page, 'exocortex.context', { open: true, width: 520 });
+    await presetPanelPreference(page, 'exocortex.context', { open: true, width: 2000 });
     await page.setViewportSize({ width: 1440, height: 900 });
 
     await page.goto('/arbeitsbereich');

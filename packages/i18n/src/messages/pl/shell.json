@@ -7,7 +7,8 @@
     "pageNavigation": "Nawigacja po stronach",
     "navigationWidth": "Szerokość nawigacji",
     "contextTitle": "Panel kontekstowy",
-    "contextWidth": "Szerokość panelu kontekstowego"
+    "contextWidth": "Szerokość panelu kontekstowego",
+    "resizeHint": "Przeciągnij, aby zmienić szerokość; kliknij dwukrotnie, aby ją zresetować"
   },
   "topbar": {
     "toggleNavigation": "Pokaż/ukryj nawigację",

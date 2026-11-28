@@ -7,7 +7,8 @@
     "pageNavigation": "Navigazione delle pagine",
     "navigationWidth": "Larghezza della navigazione",
     "contextTitle": "Pannello contestuale",
-    "contextWidth": "Larghezza del pannello contestuale"
+    "contextWidth": "Larghezza del pannello contestuale",
+    "resizeHint": "Trascina per modificare la larghezza, fai doppio clic per ripristinarla"
   },
   "topbar": {
     "toggleNavigation": "Mostra/nascondi navigazione",

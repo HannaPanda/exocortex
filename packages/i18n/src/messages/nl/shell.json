@@ -7,7 +7,8 @@
     "pageNavigation": "Paginanavigatie",
     "navigationWidth": "Breedte van de navigatie",
     "contextTitle": "Contextpaneel",
-    "contextWidth": "Breedte van het contextpaneel"
+    "contextWidth": "Breedte van het contextpaneel",
+    "resizeHint": "Sleep om de breedte aan te passen, dubbelklik om te herstellen"
   },
   "topbar": {
     "toggleNavigation": "Navigatie in-/uitklappen",

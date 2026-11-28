@@ -7,7 +7,8 @@
     "pageNavigation": "Navegación de páginas",
     "navigationWidth": "Ancho de la navegación",
     "contextTitle": "Panel de contexto",
-    "contextWidth": "Ancho del panel de contexto"
+    "contextWidth": "Ancho del panel de contexto",
+    "resizeHint": "Arrastra para cambiar el ancho, haz doble clic para restablecerlo"
   },
   "topbar": {
     "toggleNavigation": "Mostrar u ocultar navegación",

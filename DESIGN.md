@@ -917,6 +917,22 @@ goes with the focus, is never on a page that is only read, is gone in print,
 and a reader can switch it off in the editor settings (on by default: a caret
 that is hard to find is the defect, and the mark moves nothing).
 
+### The side columns' width
+
+The navigation and the context panel are columns of the shell, sized by
+`ResizablePanel` with the same handle as the row panel below: drag, arrow
+keys, Home and End, and a double-click back to the default (272 px and
+336 px). The width is the reader's and lives in this browser. The navigation
+stays between 200 and 420 px. The context panel starts at 260 px and has no
+fixed ceiling (issue #246): it may take everything but 496 px of the row,
+the narrowest editor still worth reading (the 20rem measure plus its gutter on
+both sides). A window made smaller draws it narrower without forgetting the
+stored width. The chat inside it grows only up to the measure it keeps when
+it has the screen (`max-w-3xl`, centred), so a wide panel never makes an
+unreadable line; the other tabs use the whole width. Its grip reaches 8 px
+into the panel, wider than the line it draws. On a phone both are sheets and
+there is no handle.
+
 ### A row beside its database
 
 A row of a database opens in a side panel over the right-hand part of the

@@ -84,13 +84,11 @@ export interface AiPanelLayout {
 
 /**
  * A line as wide as a desktop screen is unreadable, so a chat that has the
- * screen keeps the measure it had in the panel, centred (issue #288).
+ * screen keeps a readable measure, centred (issue #288). The same measure
+ * holds in a context panel dragged wide (issue #246): up to it the chat
+ * grows with the panel, past it the panel's other tabs still use the room.
  */
-function panelFrameClass(expanded: boolean): string {
-  return expanded
-    ? 'mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col'
-    : 'flex min-h-0 flex-1 flex-col';
-}
+const PANEL_FRAME_CLASS = 'mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col';
 
 export interface AiPanelProps {
   workspaceId: string | null;
@@ -416,7 +414,7 @@ function AiPanelBody({
 
   return (
     <div
-      className={panelFrameClass(layout.expanded)}
+      className={PANEL_FRAME_CLASS}
       data-testid="ai-panel"
       data-expanded={String(layout.expanded)}
       {...fileDrop.handlers}

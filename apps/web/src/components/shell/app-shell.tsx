@@ -53,6 +53,7 @@ import {
   CONTEXT_STORAGE_KEY,
   type PanelPreference,
   parsePanelPreference,
+  resolveContextWidth,
   SIDEBAR_DEFAULT,
   SIDEBAR_STORAGE_KEY,
 } from './panel-preferences';
@@ -172,6 +173,13 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   });
   const chatFillsScreen = chatScreen.fills;
   const changeChatExpanded = chatScreen.change;
+
+  // The row the context panel shares with the page, which is what its upper
+  // limit is measured against (issue #246): the shell's body less the
+  // navigation beside it.
+  const [bodyWidth, measureBody] = useElementWidth();
+  const navigationTakes = showNavigation && !isMobile && sidebarOpen ? sidebar.width : 0;
+  const contextRoom = bodyWidth === 0 ? 0 : bodyWidth - navigationTakes;
 
   // Handing a selection to the AI is pointless while the panel is closed: the
   // chip that says what will be sent would be invisible. The ref keys on the
@@ -386,7 +394,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
           }}
         />
 
-        <AppBody>
+        <AppBody ref={measureBody}>
           {showNavigation ? (
             isMobile ? (
               <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -405,6 +413,8 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
                 minWidth={200}
                 maxWidth={420}
                 label={t('navigationWidth')}
+                onReset={() => setSidebar({ ...sidebar, width: SIDEBAR_DEFAULT.width })}
+                handleTitle={t('resizeHint')}
                 className="border-r border-border bg-surface"
                 data-testid="sidebar"
               >
@@ -426,7 +436,9 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             open={contextOpen}
             onOpenChange={setContextOpen}
             width={context.width}
+            room={contextRoom}
             onWidthChange={(width) => setContext({ ...context, width })}
+            onWidthReset={() => setContext({ ...context, width: CONTEXT_DEFAULT.width })}
             chatFillsScreen={chatFillsScreen}
             panel={{
               workspaceId,
@@ -471,15 +483,20 @@ function ContextArea({
   open,
   onOpenChange,
   width,
+  room,
   onWidthChange,
+  onWidthReset,
   chatFillsScreen,
   panel,
 }: {
   mobile: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** The remembered width; `room` decides how much of it is drawn. */
   width: number;
+  room: number;
   onWidthChange: (width: number) => void;
+  onWidthReset: () => void;
   chatFillsScreen: boolean;
   panel: Omit<ContextPanelProps, 'closeButtonInset'>;
 }) {
@@ -501,14 +518,22 @@ function ContextArea({
     );
   }
   if (!open) return null;
+  const sizing = resolveContextWidth(width, room);
   return (
     <ResizablePanel
-      width={width}
+      width={sizing.width}
       onWidthChange={onWidthChange}
       handle="left"
-      minWidth={260}
-      maxWidth={520}
+      minWidth={sizing.min}
+      maxWidth={sizing.max}
       label={t('contextWidth')}
+      onReset={onWidthReset}
+      handleTitle={t('resizeHint')}
+      handleTestId="context-panel-resize"
+      // A grip wider than its line, reaching into the panel: four pixels are
+      // a target for a mouse, not for a finger or a pen. Inwards, because the
+      // panel clips; nothing in it scrolls at its left edge.
+      handleClassName="z-10 before:absolute before:inset-y-0 before:left-0 before:w-2"
       // The same element either way, so a chat that takes the screen in the
       // middle of an answer keeps streaming it. Filling the row, the
       // remembered width and its handle have nothing to say. Spread only when
@@ -526,6 +551,23 @@ function ContextArea({
       </aside>
     </ResizablePanel>
   );
+}
+
+/**
+ * The width of an element, kept current. Read from a ref callback, which runs
+ * before the first paint, so a remembered panel width does not jump in a
+ * frame after the shell appeared.
+ */
+function useElementWidth(): [number, (node: HTMLElement | null) => (() => void) | undefined] {
+  const [width, setWidth] = React.useState(0);
+  const measure = React.useCallback((node: HTMLElement | null) => {
+    if (node === null) return undefined;
+    setWidth(node.clientWidth);
+    const observer = new ResizeObserver(() => setWidth(node.clientWidth));
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  return [width, measure];
 }
 
 /**

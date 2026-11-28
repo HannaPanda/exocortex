@@ -7,7 +7,8 @@
     "pageNavigation": "Navegação de páginas",
     "navigationWidth": "Largura da navegação",
     "contextTitle": "Painel de contexto",
-    "contextWidth": "Largura do painel de contexto"
+    "contextWidth": "Largura do painel de contexto",
+    "resizeHint": "Arraste para alterar a largura; clique duas vezes para redefinir"
   },
   "topbar": {
     "toggleNavigation": "Mostrar/ocultar navegação",
