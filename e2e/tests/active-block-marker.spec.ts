@@ -95,9 +95,10 @@ async function expectBeside(page: Page, block: Locator): Promise<void> {
     .poll(async () => {
       const line = await box(marker(page));
       const target = await box(block);
-      return [Math.round(line.y - target.y), Math.round(line.height - target.height)];
+      // Within a pixel: the line is placed on whole pixels, the text is not.
+      return Math.abs(line.y - target.y) <= 1 && Math.abs(line.height - target.height) <= 1;
     })
-    .toEqual([0, 0]);
+    .toBe(true);
 }
 
 /** Where the text column starts: the left edge of a top-level paragraph. */
