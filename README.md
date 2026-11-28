@@ -200,6 +200,9 @@ What is deliberately still missing is listed under
   office document or text file is read through its extracted text. Both are
   handed over fenced, survive a compaction by description and name, and
   leave with the chat when it is deleted (ADR-095)
+- the open page's pictures reach every model: each is described once and the
+  description kept, and a model that sees also gets the pictures themselves
+  on the question, within the same limit as the chat's own (ADR-102)
 - a person's own uploads are theirs to work with: a file somebody uploaded
   themselves is screened once for instructions addressed to an AI, and when
   the screening finds nothing, reading it no longer stops that person's AI run

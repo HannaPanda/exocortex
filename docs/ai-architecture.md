@@ -104,33 +104,47 @@ unreachable decision engine must never stop a run.
 
 ## Vision preprocessing
 
-`z-ai/glm-5.2` cannot see images, so the worker turns them into text first
+A run that stands on a page reads that page's pictures before its first turn
 (`docs/adr/ADR-012-vision-preprocessing.md`, which supersedes ADR-009's "no
-document content leaves the system" for images specifically):
+document content leaves the system" for images specifically, and
+[ADR-102](adr/ADR-102-the-open-pages-pictures-go-like-a-chat-picture.md),
+which makes them go like a chat picture). `preparePagePictures`
+(`apps/worker/src/processors/ai-run/page-pictures.ts`):
 
-1. When an `AiRun` has a `documentId` and `OPENROUTER_VISION_MODEL` is
-   configured, the worker reads that document's materialized
-   `proseMirrorJson` and collects every `image` node's `src`
-   (`apps/worker/src/processors/ai-run.ts`, `collectImageSources`).
-2. Each `src` (`/api/attachments/:id/download`) resolves to an `Attachment`
-   row, scoped to the run's own workspace and document.
-3. The bytes are fetched from object storage, base64-encoded (object storage
-   is not reachable from the public internet on this deployment, so a plain
-   image URL is not an option) and sent to `OPENROUTER_VISION_MODEL` via
-   `packages/ai/src/vision-preprocessor.ts`, deliberately outside the
-   `AiProvider` contract — see its doc comment for why.
-4. The resulting descriptions are prepended as a single `system` message
-   ahead of the messages the user typed, for that one call only. They are
-   never persisted into `AiRun.messages`.
+1. reads the page's materialized `proseMirrorJson`, collects every `image`
+   node's `src` (`collectImageSources`), and resolves each
+   `/api/attachments/:id/download` to an `Attachment` row of the page's own
+   workspace and the page itself. The first `ai.visionMaxImagesPerRun`
+   pictures in page order count, of the types the image read accepts (no
+   SVG); a page shared from another workspace is read there while the grant
+   holds (`resolveOpenPageReach`).
+2. describes a picture that has no `imageDescription` yet: scaled like
+   `exo_attachment_read_image` (1568 pixels), handed to the describer
+   `resolveImageDescriber` chooses (the run's model when it sees images and
+   is not a subscription preset, else the companion, see "Vision companions"),
+   and stored on the row with `imageDescribedAt` and `imageDescriptionModel`.
+   Every later run on the page reads the stored text and pays nothing.
+3. screens the description of the reader's own picture on a page of the
+   run's workspace (ADR-096), the only kind a clean answer can make trusted.
+4. for a run that sends chat pictures as pixels (ADR-097, below), reads the
+   page's pictures as pixels too, in the room the chat's pictures leave under
+   `ai.visionMaxImagesPerRun`, and `withPagePictures` puts them on the
+   person's latest message after the chat's own.
+5. writes one `system` message in front of the conversation
+   (`pagePicturesContext`): which pictures are in the latest message, the
+   others' descriptions fenced as `attachment` content, a picture neither
+   seen nor described named as unseen, and the trust note of an own picture
+   that stays foreign. With pixels it carries the described form as
+   `withoutImages` for the refusal fallback.
 
-Bounds and known limitations: capped at `ai.visionMaxImagesPerRun` per run
-(default 4, `MAX_IMAGES_PER_RUN` in code); no caching, so a multi-turn
-conversation about the same page re-describes its images on every turn;
-best-effort throughout — a document that fails to load, an unresolvable
-attachment or one failed description is logged and skipped, never fails the
-run. `ai.visionEnabled: false` turns this off entirely; see "Vision
-companions" below for how the companion _model_ is now chosen per run rather
-than fixed to `OPENROUTER_VISION_MODEL`.
+A picture in the prompt that is not the requester's own screened upload marks
+the run as having read foreign content (ADR-030). The run inspector names the
+note `images` and the pixels `page_images`. Best effort throughout: a page
+that fails to load, an unresolvable attachment or one failed description is
+logged and skipped, never fails the run. `ai.visionEnabled: false` stops new
+descriptions (stored ones are still read), `ai.sendImagesToModel: false` stops
+the pixels; see "Vision companions" below for how the companion _model_ is
+chosen per run.
 
 ### Pictures on a chat message
 
@@ -142,7 +156,7 @@ Before a run builds its prompt, `describeChatAttachments`
 (`apps/worker/src/processors/ai-run/chat-attachments.ts`) describes the
 pictures on messages still in the context that have no description yet, with
 the same describer as the page's pictures, and stores the text on the row, so
-each picture is described once per conversation rather than per turn.
+each picture is described once rather than per turn.
 `loadConversationMessages` then puts a system message before every user
 message with pictures, its descriptions fenced as `attachment` content, and a
 run whose transcript carries one that is not the requester's own screened
@@ -198,10 +212,9 @@ The describer comes from `resolveToolImageDescriber`
 (`apps/worker/src/processors/ai-run/preparation.ts`): the run's own model when
 `supportsVision` is set, otherwise the companion the conversation or the model
 row names, and nobody when `ai.visionEnabled` is off or the companion is
-switched off. Nobody to ask turns the call into an error that says so. Unlike
-the page images above, a model that sees images is used here rather than
-skipped, because a tool result is text: only a picture on a chat message goes
-as pixels (ADR-097).
+switched off. Nobody to ask turns the call into an error that says so. A tool
+result is text, so only a picture on a chat message or on the open page goes
+as pixels (ADR-097, ADR-102).
 
 ## Image generation (page covers)
 
@@ -751,7 +764,7 @@ result counts as much as the page does -- a title and a snippet are written by
 whoever owns the page. The vision preprocessor is the one path that
 bypasses the tool loop: it describes images out of an uploaded file before the
 first turn, so `ai-run.ts` notes the origin on the runner directly and
-`images.ts` fences the description.
+`page-pictures.ts` fences the description.
 
 **A person's own file, screened clean, is the exception (ADR-096).**
 `attachmentTrustFor` trusts a file for one reader only: they uploaded it,
@@ -983,10 +996,14 @@ A companion model is chosen per run, not fixed at the deployment level
    (e.g. GLM 5.2 and DeepSeek default to `qwen/qwen3.7-flash`).
 3. Otherwise the deployment's `OPENROUTER_VISION_MODEL` default.
 
-**A model with `supportsVision: true` skips the companion call entirely** and
-logs that it did — this is the registry's actual payoff: switching the
-driver to a vision-capable model stops paying for a second call per image.
-`ai.visionEnabled` gates the whole mechanism.
+**A model with `supportsVision: true` describes pictures itself**
+(`resolveImageDescriber`): the description goes through the same OpenRouter
+call a companion would get, with the run's own slug. A subscription preset's
+slug (`cline-pass/...`) is a name only the preset knows, so such a model
+borrows the companion like a text-only one (issue #207). Every description is
+stored on the attachment row and written once. `ai.visionEnabled` gates the
+describing; `ai.sendImagesToModel` decides whether a model that sees also gets
+the pixels (ADR-097, ADR-102).
 
 ## Attachment text
 

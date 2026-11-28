@@ -79,8 +79,10 @@ back. The run inspector lists them as the `chat_images` context section.
   compaction keeps"), never as pixels.
 - An eval replay posts the case's text into a fresh conversation and carries no
   chat pictures, so there is nothing for it to send or describe.
-- The open page's pictures and a picture a tool returns are still described
-  (ADR-012, ADR-088); issue #207 is about the former.
+- A picture a tool returns is still described (ADR-088). The open page's
+  pictures go like a chat picture since ADR-102: described once, and for a
+  model that sees as pixels on the person's latest message, sharing the
+  chat's `ai.visionMaxImagesPerRun`.
 
 ## Alternatives considered
 

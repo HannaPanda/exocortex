@@ -1,6 +1,7 @@
 # ADR-012: Vision preprocessing sends document images to an external provider
 
-- Status: accepted
+- Status: accepted, amended by ADR-102 (descriptions are kept per picture, and a
+  model that sees gets the page's pictures as pixels as well)
 - Date: 2026-08-05
 
 ## Context

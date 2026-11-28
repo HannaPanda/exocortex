@@ -1038,7 +1038,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   names the pages a phrase stands on, a literal scan at read time.
   `exo_attachment_read_text` sends the page read's budget; the map is fenced
   like the text. No vectors, no attachment passages in the context compiler.
-  Full list: `docs/adr/`.
+- ADR-102: the open page's pictures go like a chat picture. Each is described
+  once by `resolveImageDescriber` (never with a preset's slug) and the text is
+  kept on its attachment row; a model that sees gets them as pixels on the
+  person's latest message, behind the chat's own and within the same
+  `ai.visionMaxImagesPerRun`; a picture neither seen nor described is named
+  as unseen. Trust is ADR-096's predicate per picture: the reader's own upload
+  on a page of the run's workspace, screened clean, and only those are
+  screened. Full list: `docs/adr/`.
 
 ## How to extend the system
 

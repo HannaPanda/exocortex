@@ -77,6 +77,9 @@ trusted own file records `ownScreenedSource` instead of an untrusted origin.
   companion (ADR-012), and pictures a tool returns, are still foreign: their
   description is not stored, so there is nothing that was screened. That
   changes when page pictures are stored or sent as pixels (issue #207).
+  Since ADR-102 they are: a page picture's description is stored and, for
+  its uploader's own picture on a page of the run's workspace, screened, so
+  this predicate now decides it like any other file.
 - `exo_context_compile` still leaves attachment text out (ADR-061).
 - `ai.untrustedContentPolicy` keeps its meaning: `deny` still refuses every
   write, `allow` still allows them after any foreign text.
