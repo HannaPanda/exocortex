@@ -94,7 +94,7 @@
     "adminOnly": "Qui può revocare solo chi ha il ruolo di admin nell’area di lavoro «{workspace}»."
   },
   "incoming": {
-    "intro": "Pagine da aree di lavoro di cui non fai parte. Non compaiono in nessun menu di navigazione, solo qui.",
+    "intro": "Pagine provenienti da aree di lavoro di cui non fai parte. Le trovi anche nella barra laterale sotto „Condivisi con me“.",
     "emptyTitle": "Nessuna condivisione per te",
     "emptyDescription": "Quando qualcuno condivide una pagina con te, comparirà qui.",
     "origin": "da «{workspace}», da {name}"

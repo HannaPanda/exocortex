@@ -63,11 +63,19 @@ export function useWorkspaceShares(
   });
 }
 
-export function useIncomingShares(): UseQueryResult<IncomingShareListResponse> {
+export function useIncomingShares(
+  options: { enabled?: boolean } = {},
+): UseQueryResult<IncomingShareListResponse> {
   return useQuery({
     queryKey: shareKeys.incoming(),
     queryFn: () => apiRequest<IncomingShareListResponse>('/api/me/shares'),
+    enabled: options.enabled ?? true,
     staleTime: 30_000,
+    // The navigation shows this list on every screen (issue #232). A grant
+    // that changes while the tab is open arrives as a realtime notice; one
+    // that simply ran out does not, and coming back to the tab is the moment
+    // somebody looks at the list again.
+    refetchOnWindowFocus: true,
   });
 }
 

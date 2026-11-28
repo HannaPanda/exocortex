@@ -999,6 +999,16 @@
     },
     "where": "Ein Arbeitsbereich wird in den Einstellungen unter Arbeitsbereich, Gruppe Allgemein, zum Gedächtnis erklärt."
   },
+  "mit-mir-geteilt-in-der-seitenleiste": {
+    "title": "Mit mir geteilte Seiten in der Seitenleiste",
+    "summary": "Seiten, die andere mit dir geteilt haben, stehen in der Seitenleiste unter „Mit mir geteilt“, mit dem Namen der Person, die sie geteilt hat, und dem Arbeitsbereich, aus dem sie kommen. So findest du sie, ohne erst das Kontomenü zu öffnen.",
+    "details": {
+      "p1": "In jedem deiner Arbeitsbereiche steht unter dem Seitenbaum, nach Suche und Wissenskarte, der Abschnitt „Mit mir geteilt“. Jeder Eintrag nennt die geteilte Seite und darunter, von wem sie kommt und aus welchem Arbeitsbereich. Ein Klick öffnet sie unter /geteilt. Ist nichts mit dir geteilt, fehlt der Abschnitt ganz, damit er nicht in jeder Seitenleiste leer herumsteht.",
+      "p2": "Auf einer geteilten Seite selbst bist du in keinem deiner Arbeitsbereiche, deshalb zeigt die Seitenleiste dort statt eines Seitenbaums die Liste der mit dir geteilten Seiten und darunter deine eigenen Arbeitsbereiche. Von dort kommst du mit einem Klick zur nächsten Freigabe oder zurück in deinen Bereich. In der Befehlspalette (Strg+K) führt „Mit mir geteilt öffnen“ zu denselben Seiten.",
+      "p3": "Gezeigt wird nur die Seite, die geteilt wurde, nie die Seiten darüber und nie ihre Titel. Zieht jemand eine Freigabe zurück, verschwindet der Eintrag sofort aus deiner Seitenleiste, auch wenn sie gerade offen ist. Seiten im Papierkorb des fremden Arbeitsbereichs stehen nicht in der Seitenleiste, nur in der vollständigen Liste unter „Freigaben“."
+    },
+    "where": "Die Seitenleiste, Abschnitt „Mit mir geteilt“ unter dem Seitenbaum; auf einer geteilten Seite die ganze Seitenleiste. In der Befehlspalette „Mit mir geteilt öffnen“."
+  },
   "von-mir-geteilt": {
     "title": "Alles, was ich geteilt habe, an einer Stelle",
     "summary": "Eine Liste aller Freigaben, die du selbst erteilt hast, über alle Arbeitsbereiche hinweg. Wenn du weißt, dass du etwas geteilt hast, aber nicht mehr, welche Seite es war, findest du es hier und ziehst es mit einem Klick und einer Rückfrage zurück.",
@@ -1026,7 +1036,7 @@
     "summary": "Zwei Listen: alle Freigaben eines Arbeitsbereichs an einer Stelle, zum Aufräumen, und die Seiten, die andere mit dir geteilt haben. Letztere stehen in keiner Navigation, weil du in dem Arbeitsbereich kein Mitglied bist.",
     "details": {
       "p1": "In den Einstellungen eines Arbeitsbereichs führt „Freigaben öffnen“ auf die Liste dessen, was von hier nach außen gegeben ist: welche Seite, an wen oder als Link, lesend oder schreibend, wie weit, bis wann. Zurückgezogene Freigaben bleiben stehen statt zu verschwinden, weil „das war bis März offen“ zur Antwort gehört. Ohne diese Liste ist „was ist bei uns eigentlich öffentlich“ eine Frage, die nach einem Jahr niemand mehr beantworten kann.",
-      "p2": "Im Kontomenü oben rechts führt „Freigaben“, Reiter „Mit mir geteilt“, auf die Gegenrichtung: Seiten, die jemand dir gegeben hat, über Arbeitsbereiche hinweg. Sie tauchen in keinem Seitenbaum auf, denn du bist dort kein Mitglied; diese Liste ist der einzige Weg dorthin. Eine solche Seite öffnet sich ohne die Navigation des fremden Arbeitsbereichs: du siehst die Seite und, wenn der Bereich mitgegeben wurde, was darunter hängt, sonst nichts.",
+      "p2": "Im Kontomenü oben rechts führt „Freigaben“, Reiter „Mit mir geteilt“, auf die Gegenrichtung: Seiten, die jemand dir gegeben hat, über Arbeitsbereiche hinweg. Sie tauchen in keinem Seitenbaum auf, denn du bist dort kein Mitglied; dieselben Seiten stehen deshalb zusätzlich in der Seitenleiste unter „Mit mir geteilt“. Eine solche Seite öffnet sich ohne die Navigation des fremden Arbeitsbereichs: du siehst die Seite und, wenn der Bereich mitgegeben wurde, was darunter hängt, sonst nichts.",
       "p3": "Was du über eine Freigabe erreichst, kannst du nicht weitergeben. Eine geteilte Seite hat keinen „Teilen“-Knopf: wer sie weiterreichen darf, ist eine Frage an den Arbeitsbereich, aus dem sie kommt."
     },
     "where": "Kontomenü oben rechts, „Freigaben“, Reiter „Mit mir geteilt“; in den Einstellungen unter Arbeitsbereich, Gruppe Allgemein, „Freigaben“."

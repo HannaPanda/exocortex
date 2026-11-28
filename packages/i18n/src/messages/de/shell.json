@@ -131,6 +131,20 @@
     "openWorkItems": "Aufträge",
     "openChangesets": "Vorschläge"
   },
+  "sharedWithMe": {
+    "title": "Mit mir geteilt",
+    "listLabel": "Seiten, die mit mir geteilt sind",
+    "all": "Alle",
+    "allLabel": "Alle Seiten öffnen, die mit mir geteilt sind",
+    "origin": "von {name} · {workspace}",
+    "more": "{count, plural, one {# weitere anzeigen} other {# weitere anzeigen}}",
+    "empty": "Noch hat niemand eine Seite mit dir geteilt.",
+    "loading": "Freigaben werden geladen …",
+    "loadError": "Die Freigaben konnten nicht geladen werden.",
+    "workspacesTitle": "Deine Arbeitsbereiche",
+    "workspacesLabel": "Deine eigenen Arbeitsbereiche",
+    "workspacesEmpty": "Du hast noch keinen eigenen Arbeitsbereich."
+  },
   "connectionStatus": {
     "offlineShort": "offline",
     "offline": "Offline: Änderungen werden lokal gespeichert",
@@ -513,6 +527,14 @@
       "appearanceKeywords": "karte farben glow bloom leuchten sterne halo look design anpassen",
       "screensaver": "Wissenskarte als Bildschirmschoner",
       "screensaverKeywords": "karte bildschirmschoner screensaver vollbild zuschauen deko leuchten demo"
+    },
+    "sharedWithMe": {
+      "menu": "Mit mir geteilt öffnen",
+      "placeholder": "Welche geteilte Seite?",
+      "keywords": "freigabe freigaben geteilt mit mir gast fremde seite",
+      "all": "Alle Seiten, die mit mir geteilt sind",
+      "origin": "von {name} · {workspace}",
+      "empty": "Mit dir ist noch nichts geteilt."
     }
   },
   "documentTopBar": {

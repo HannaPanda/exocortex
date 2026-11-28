@@ -131,6 +131,20 @@
     "openWorkItems": "Work items",
     "openChangesets": "Suggestions"
   },
+  "sharedWithMe": {
+    "title": "Shared with me",
+    "listLabel": "Pages shared with me",
+    "all": "All",
+    "allLabel": "Open all pages shared with me",
+    "origin": "by {name} · {workspace}",
+    "more": "{count, plural, one {Show # more} other {Show # more}}",
+    "empty": "No one has shared a page with you yet.",
+    "loading": "Loading shares …",
+    "loadError": "Could not load shares.",
+    "workspacesTitle": "Your workspaces",
+    "workspacesLabel": "Your own workspaces",
+    "workspacesEmpty": "You don’t have your own workspace yet."
+  },
   "connectionStatus": {
     "offlineShort": "offline",
     "offline": "Offline: changes are saved locally",
@@ -513,6 +527,14 @@
       "appearanceKeywords": "map colors glow bloom shine stars halo look design customize",
       "screensaver": "Knowledge map as screensaver",
       "screensaverKeywords": "map screensaver fullscreen watch decoration glow demo"
+    },
+    "sharedWithMe": {
+      "menu": "Open Shared with me",
+      "placeholder": "Which shared page?",
+      "keywords": "share shares shared with me guest other page",
+      "all": "All pages shared with me",
+      "origin": "by {name} · {workspace}",
+      "empty": "Nothing has been shared with you yet."
     }
   },
   "documentTopBar": {

@@ -999,6 +999,16 @@
     },
     "where": "Un’area di lavoro viene designata come memoria nelle impostazioni sotto Area di lavoro, gruppo Generale."
   },
+  "mit-mir-geteilt-in-der-seitenleiste": {
+    "title": "Pagine condivise con me nella barra laterale",
+    "summary": "Le pagine condivise con te da altre persone si trovano nella barra laterale sotto «Condivisi con me», con il nome di chi le ha condivise e l’area di lavoro da cui provengono. In questo modo puoi trovarle senza dover prima aprire il menu dell’account.",
+    "details": {
+      "p1": "In ciascuna delle tue aree di lavoro, sotto l’albero delle pagine, dopo la ricerca e la mappa della conoscenza, si trova la sezione «Condivisi con me». Ogni voce indica la pagina condivisa e, sotto di essa, da chi proviene e da quale area di lavoro. Un clic la apre sotto /geteilt. Se nulla è stato condiviso con te, la sezione non compare affatto, evitando così di rimanere vuota in ogni barra laterale.",
+      "p2": "All’interno di una pagina condivisa non ti trovi in nessuna delle tue aree di lavoro; per questo motivo, invece dell’albero delle pagine, la barra laterale mostra l’elenco delle pagine condivise con te e, sotto di esse, le tue aree di lavoro. Da lì puoi passare con un clic alla condivisione successiva o tornare alla tua area. Nella tavolozza dei comandi (Strg+K), «Apri condivisi con me» porta alle stesse pagine.",
+      "p3": "Viene mostrata solo la pagina condivisa, mai le pagine di livello superiore e mai i loro titoli. Se qualcuno revoca una condivisione, la voce scompare immediatamente dalla tua barra laterale, anche se è aperta in quel momento. Le pagine nel cestino dell’area di lavoro altrui non compaiono nella barra laterale, ma solo nell’elenco completo sotto «Condivisioni»."
+    },
+    "where": "La barra laterale, sezione «Condivisi con me» sotto l’albero delle pagine; su una pagina condivisa, l’intera barra laterale. Nella tavolozza dei comandi, «Apri condivisi con me»."
+  },
   "von-mir-geteilt": {
     "title": "Tutto ciò che ho condiviso, in un unico posto",
     "summary": "Un elenco di tutte le condivisioni che hai creato, in tutte le aree di lavoro. Se sai di aver condiviso qualcosa ma non ricordi quale pagina fosse, la trovi qui e la revochi con un clic e una conferma.",
@@ -1026,7 +1036,7 @@
     "summary": "Due elenchi: tutte le condivisioni di un’area di lavoro in un unico posto per fare ordine, e le pagine che altri hanno condiviso con te. Queste ultime non compaiono in nessun menu di navigazione, perché non fai parte di quell’area di lavoro.",
     "details": {
       "p1": "Nelle impostazioni di un’area di lavoro, «Apri condivisioni» porta all’elenco di tutto ciò che è stato condiviso verso l’esterno: quale pagina, a chi o come link, in sola lettura o scrittura, con quale estensione e fino a quando. Le condivisioni revocate rimangono visibili anziché scomparire, perché «era accessibile fino a marzo» fa parte della risposta. Senza questo elenco, «cosa è effettivamente pubblico da noi?» diventerebbe una domanda a cui nessuno saprebbe più rispondere dopo un anno.",
-      "p2": "Nel menu dell’account in alto a destra, «Condivisioni», scheda «Condivisi con me», mostra la direzione opposta: le pagine che qualcuno ti ha concesso, attraverso diverse aree di lavoro. Non compaiono in nessun albero delle pagine, poiché lì non hai l’accesso come membro; questo elenco è l’unico modo per raggiungerle. Una pagina di questo tipo si apre senza la navigazione dell’area di lavoro esterna: vedi la pagina e, se l’intera sezione è stata inclusa, ciò che contiene al di sotto, nient’altro.",
+      "p2": "Nel menu dell’account in alto a destra, «Condivisioni», scheda «Condivisi con me», porta alla direzione opposta: pagine che qualcuno ti ha affidato, attraverso diverse aree di lavoro. Non compaiono in nessun albero delle pagine, poiché lì non hai l’iscrizione; per questo motivo le stesse pagine si trovano anche nella barra laterale sotto «Condivisi con me». Una pagina di questo tipo si apre senza la navigazione dell’area di lavoro altrui: vedi solo la pagina e, se l’area è stata inclusa, ciò che si trova al di sotto, nient’altro.",
       "p3": "Ciò a cui accedi tramite una condivisione non può essere ricondiviso. Una pagina condivisa non ha il pulsante «Condividi»: stabilire chi può distribuirla ulteriormente spetta all’area di lavoro da cui proviene."
     },
     "where": "Menu dell’account in alto a destra, «Condivisioni», scheda «Condivisi con me»; nelle impostazioni sotto Area di lavoro, gruppo Generale, «Condivisioni»."

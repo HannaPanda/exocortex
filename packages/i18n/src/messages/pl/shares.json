@@ -94,7 +94,7 @@
     "adminOnly": "Wycofać udostępnienie może tutaj tylko administrator obszaru roboczego „{workspace}”."
   },
   "incoming": {
-    "intro": "Strony z obszarów roboczych, w których nie masz członkostwa. Nie ma ich w nawigacji, tylko tutaj.",
+    "intro": "Strony z obszarów roboczych, w których nie masz członkostwa. Znajdziesz je także na pasku bocznym w sekcji „Udostępnione dla mnie”.",
     "emptyTitle": "Nic ci nie udostępniono",
     "emptyDescription": "Gdy ktoś udostępni ci stronę, pojawi się tutaj.",
     "origin": "z „{workspace}”, od {name}"

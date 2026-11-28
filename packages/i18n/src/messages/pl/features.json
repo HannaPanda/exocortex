@@ -999,6 +999,16 @@
     },
     "where": "Obszar roboczy oznacza się jako pamięć w ustawieniach w sekcji Obszar roboczy, w grupie Ogólne."
   },
+  "mit-mir-geteilt-in-der-seitenleiste": {
+    "title": "Strony udostępnione dla mnie na pasku bocznym",
+    "summary": "Strony udostępnione ci przez innych znajdują się na pasku bocznym w sekcji „Udostępnione dla mnie”, wraz z imieniem i nazwiskiem osoby udostępniającej oraz obszarem roboczym, z którego pochodzą. Dzięki temu znajdziesz je bez otwierania menu konta.",
+    "details": {
+      "p1": "W każdym z twoich obszarów roboczych pod drzewem stron, za wyszukiwarką i mapą wiedzy, znajduje się sekcja „Udostępnione dla mnie”. Każdy wpis wskazuje udostępnioną stronę, a poniżej – od kogo pochodzi i z jakiego obszaru roboczego. Kliknięcie otwiera ją pod /geteilt. Jeśli nic ci nie udostępniono, sekcja ta w ogóle się nie wyświetla, aby nie zajmować pustego miejsca na każdym pasku bocznym.",
+      "p2": "Na samej udostępnionej stronie nie znajdujesz się w żadnym ze swoich obszarów roboczych, dlatego pasek boczny zamiast drzewa stron pokazuje listę stron udostępnionych dla ciebie, a pod nią twoje własne obszary robocze. Stamtąd jednym kliknięciem przejdziesz do kolejnego udostępnienia lub z powrotem do swojego obszaru. W palecie poleceń (Strg+K) opcja „Otwórz udostępnione dla mnie” prowadzi do tych samych stron.",
+      "p3": "Pokazywana jest wyłącznie ta strona, która została udostępniona – nigdy strony nadrzędne ani ich tytuły. Jeśli ktoś cofnie udostępnienie, wpis natychmiast znika z twojego paska bocznego, nawet jeśli jest on akurat otwarty. Strony znajdujące się w koszu cudzego obszaru roboczego nie pojawiają się na pasku bocznym, a jedynie na pełnej liście w sekcji „Udostępnienia”."
+    },
+    "where": "Pasek boczny, sekcja „Udostępnione dla mnie” pod drzewem stron; na udostępnionej stronie cały pasek boczny. W palecie poleceń opcja „Otwórz udostępnione dla mnie”."
+  },
   "von-mir-geteilt": {
     "title": "Wszystko, co udostępniono przeze mnie, w jednym miejscu",
     "summary": "Lista wszystkich udostępnień nadanych przez ciebie we wszystkich obszarach roboczych. Jeśli pamiętasz, że coś zostało udostępnione, ale nie pamiętasz już, która to strona, znajdziesz to tutaj i wycofasz jednym kliknięciem po potwierdzeniu.",
@@ -1026,7 +1036,7 @@
     "summary": "Dwie listy: wszystkie udostępnienia obszaru roboczego w jednym miejscu, do zrobienia porządków, oraz strony udostępnione tobie przez innych. Te drugie nie znajdują się w żadnej nawigacji, ponieważ nie należysz do tamtego obszaru roboczego.",
     "details": {
       "p1": "W ustawieniach obszaru roboczego pozycja „Otwórz udostępnienia” prowadzi do listy elementów przekazanych stąd na zewnątrz: jaka strona, komu lub jako link, do odczytu czy edycji, w jakim zakresie i do kiedy. Cofnięte udostępnienia pozostają na liście zamiast znikać, ponieważ informacja „to było otwarte do marca” jest ważną odpowiedzią. Bez tej listy pytanie „co u nas jest właściwie publiczne” po roku staje się zagadką, na którą nikt nie zna odpowiedzi.",
-      "p2": "W menu konta w prawym górnym rogu pozycja „Udostępnienia”, zakładka „Udostępnione mi”, prowadzi w drugą stronę: do stron przekazanych tobie przez innych, w różnych obszarach roboczych. Nie pojawiają się one w żadnym drzewie stron, ponieważ nie należysz do tamtych obszarów; ta lista to jedyna droga do nich. Taka strona otwiera się bez nawigacji obcego obszaru roboczego: widzisz samą stronę i – jeśli udostępniono cały obszar – elementy podrzędne, nic więcej.",
+      "p2": "W menu konta w prawym górnym rogu opcja „Udostępnienia”, zakładka „Udostępnione dla mnie”, prowadzi w drugą stronę: do stron, które ktoś ci udostępnił, ze wszystkich obszarów roboczych. Nie pojawiają się one w żadnym drzewie stron, ponieważ nie należysz do tamtych obszarów; te same strony znajdują się dlatego dodatkowo na pasku bocznym w sekcji „Udostępnione dla mnie”. Taka strona otwiera się bez nawigacji obcego obszaru roboczego: widzisz stronę i – jeśli udostępniono całą gałąź – to, co znajduje się pod nią, nic więcej.",
       "p3": "Tego, do czego uzyskujesz dostęp przez udostępnienie, nie możesz przekazywać dalej. Udostępniona strona nie ma przycisku „Udostępnij”: to, kto może podawać ją dalej, zależy wyłącznie od obszaru roboczego, z którego pochodzi."
     },
     "where": "Menu konta w prawym górnym rogu, „Udostępnienia”, zakładka „Udostępnione dla mnie”; w ustawieniach w sekcji Obszar roboczy, w grupie Ogólne, „Udostępnienia”."

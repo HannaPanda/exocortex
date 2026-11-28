@@ -131,6 +131,20 @@
     "openWorkItems": "Tareas",
     "openChangesets": "Sugerencias"
   },
+  "sharedWithMe": {
+    "title": "Compartido conmigo",
+    "listLabel": "Páginas compartidas conmigo",
+    "all": "Todas",
+    "allLabel": "Abrir todas las páginas compartidas conmigo",
+    "origin": "de {name} · {workspace}",
+    "more": "{count, plural, one {mostrar # más} many {mostrar # más} other {mostrar # más}}",
+    "empty": "Todavía nadie ha compartido una página contigo.",
+    "loading": "Cargando páginas compartidas…",
+    "loadError": "No se pudieron cargar los elementos compartidos.",
+    "workspacesTitle": "Tus espacios de trabajo",
+    "workspacesLabel": "Tus propios espacios de trabajo",
+    "workspacesEmpty": "Aún no tienes ningún espacio de trabajo propio."
+  },
   "connectionStatus": {
     "offlineShort": "sin conexión",
     "offline": "Sin conexión: los cambios se guardan localmente",
@@ -513,6 +527,14 @@
       "appearanceKeywords": "mapa colores resplandor brillo destello estrellas halo look diseno personalizar",
       "screensaver": "Mapa de conocimiento como salvapantallas",
       "screensaverKeywords": "mapa salvapantallas screensaver pantalla completa mirar decorativo brillo demo"
+    },
+    "sharedWithMe": {
+      "menu": "Abrir Compartido conmigo",
+      "placeholder": "¿Qué página compartida?",
+      "keywords": "compartido compartida compartir conmigo invitado externa pagina",
+      "all": "Todas las páginas compartidas conmigo",
+      "origin": "de {name} · {workspace}",
+      "empty": "Todavía no han compartido nada contigo."
     }
   },
   "documentTopBar": {

@@ -131,6 +131,20 @@
     "openWorkItems": "Incarichi",
     "openChangesets": "Proposte"
   },
+  "sharedWithMe": {
+    "title": "Condivisi con me",
+    "listLabel": "Pagine condivise con me",
+    "all": "Tutte",
+    "allLabel": "Apri tutte le pagine condivise con me",
+    "origin": "da {name} · {workspace}",
+    "more": "{count, plural, one {mostra un’altra} many {mostra altre #} other {mostra altre #}}",
+    "empty": "Nessuno ha ancora condiviso una pagina con te.",
+    "loading": "Caricamento delle condivisioni…",
+    "loadError": "Impossibile caricare le condivisioni.",
+    "workspacesTitle": "Le tue aree di lavoro",
+    "workspacesLabel": "Le tue aree di lavoro personali",
+    "workspacesEmpty": "Non hai ancora un’area di lavoro personale."
+  },
   "connectionStatus": {
     "offlineShort": "offline",
     "offline": "Offline: le modifiche vengono salvate localmente",
@@ -513,6 +527,14 @@
       "appearanceKeywords": "mappa colori glow bloom bagliore stelle alone look design personalizzare",
       "screensaver": "Mappa della conoscenza come salvaschermo",
       "screensaverKeywords": "mappa salvaschermo screensaver schermo intero guardare decorazione illuminazione demo"
+    },
+    "sharedWithMe": {
+      "menu": "Apri Condivisi con me",
+      "placeholder": "Quale pagina condivisa?",
+      "keywords": "condivisione condivisioni condivisi con me ospite pagina esterna",
+      "all": "Tutte le pagine condivise con me",
+      "origin": "da {name} · {workspace}",
+      "empty": "Non c’è ancora nulla di condiviso con te."
     }
   },
   "documentTopBar": {

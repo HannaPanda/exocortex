@@ -131,6 +131,20 @@
     "openWorkItems": "Opdrachten",
     "openChangesets": "Voorstellen"
   },
+  "sharedWithMe": {
+    "title": "Met mij gedeeld",
+    "listLabel": "Pagina’s die met mij zijn gedeeld",
+    "all": "Alle",
+    "allLabel": "Alle pagina’s openen die met mij zijn gedeeld",
+    "origin": "van {name} · {workspace}",
+    "more": "{count, plural, one {# andere weergeven} other {# andere weergeven}}",
+    "empty": "Nog niemand heeft een pagina met je gedeeld.",
+    "loading": "Delingen laden …",
+    "loadError": "De delingen konden niet worden geladen.",
+    "workspacesTitle": "Je werkruimtes",
+    "workspacesLabel": "Je eigen werkruimtes",
+    "workspacesEmpty": "Je hebt nog geen eigen werkruimte."
+  },
   "connectionStatus": {
     "offlineShort": "offline",
     "offline": "Offline: wijzigingen worden lokaal opgeslagen",
@@ -513,6 +527,14 @@
       "appearanceKeywords": "kaart kleuren glow bloom gloeien sterren halo look design aanpassen",
       "screensaver": "Kenniskaart als schermbeveiliging",
       "screensaverKeywords": "kaart schermbeveiliging screensaver volledig scherm kijken decoratie oplichten demo"
+    },
+    "sharedWithMe": {
+      "menu": "Met mij gedeeld openen",
+      "placeholder": "Welke gedeelde pagina?",
+      "keywords": "deling delingen gedeeld met mij gast externe pagina",
+      "all": "Alle pagina’s die met mij zijn gedeeld",
+      "origin": "van {name} · {workspace}",
+      "empty": "Er is nog niets met je gedeeld."
     }
   },
   "documentTopBar": {

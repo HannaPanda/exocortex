@@ -94,7 +94,7 @@
     "adminOnly": "Aquí solo puede revocar quien tenga permisos de administración en el espacio de trabajo «{workspace}»."
   },
   "incoming": {
-    "intro": "Páginas de espacios de trabajo donde no eres miembro. No aparecen en ninguna navegación, solo aquí.",
+    "intro": "Páginas de espacios de trabajo de los que no formas parte. También puedes encontrarlas en la barra lateral, en «Compartido conmigo».",
     "emptyTitle": "No hay nada compartido contigo",
     "emptyDescription": "Cuando alguien comparta una página contigo, aparecerá aquí.",
     "origin": "de «{workspace}», de {name}"

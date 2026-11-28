@@ -999,6 +999,16 @@
     },
     "where": "Een werkruimte wordt in de instellingen onder Werkruimte, groep Algemeen, tot geheugen gemaakt."
   },
+  "mit-mir-geteilt-in-der-seitenleiste": {
+    "title": "Met mij gedeelde pagina’s in de zijbalk",
+    "summary": "Pagina’s die anderen met jou hebben gedeeld, staan in de zijbalk onder „Met mij gedeeld”, met de naam van de persoon die ze heeft gedeeld en de werkruimte waar ze vandaan komen. Zo vind je ze zonder eerst het accountmenu te openen.",
+    "details": {
+      "p1": "In elk van je werkruimtes staat onder de paginaboom, na zoeken en de kenniskaart, het gedeelte „Met mij gedeeld”. Elk item toont de gedeelde pagina en daaronder van wie deze afkomstig is en uit welke werkruimte. Eén klik opent de pagina onder /geteilt. Als er niets met je is gedeeld, ontbreekt het gedeelte helemaal, zodat het niet leeg in elke zijbalk blijft staan.",
+      "p2": "Op een gedeelde pagina zelf bevind je je in geen van je werkruimtes; daarom toont de zijbalk daar in plaats van een paginaboom de lijst met pagina’s die met jou zijn gedeeld en daaronder je eigen werkruimtes. Van daaruit ga je met één klik naar de volgende deling of terug naar je eigen omgeving. In het opdrachtpalet (Strg+K) leidt „Met mij gedeeld openen” naar dezelfde pagina’s.",
+      "p3": "Alleen de pagina die is gedeeld wordt getoond, nooit de bovenliggende pagina’s en nooit hun titels. Als iemand een deling intrekt, verdwijnt het item meteen uit je zijbalk, zelfs als deze op dat moment openstaat. Pagina’s in de prullenbak van de andere werkruimte staan niet in de zijbalk, maar alleen in de volledige lijst onder „Delingen”."
+    },
+    "where": "De zijbalk, gedeelte „Met mij gedeeld” onder de paginaboom; op een gedeelde pagina de hele zijbalk. In het opdrachtpalet „Met mij gedeeld openen”."
+  },
   "von-mir-geteilt": {
     "title": "Alles wat ik heb gedeeld op één plek",
     "summary": "Een lijst van alle delingen die je zelf hebt toegekend, over alle werkruimtes heen. Als je weet dat je iets hebt gedeeld, maar niet meer welke pagina het was, vind je het hier en trek je het met één klik en een bevestiging weer in.",
@@ -1026,7 +1036,7 @@
     "summary": "Twee lijsten: alle delingen van een werkruimte op één plek, om op te ruimen, en de pagina’s die anderen met jou hebben gedeeld. Die laatste staan in geen enkele navigatie, omdat je in die werkruimte geen lid bent.",
     "details": {
       "p1": "In de instellingen van een werkruimte leidt „Delingen openen” naar de lijst van wat van hieruit naar buiten is gegeven: welke pagina, aan wie of als link, alleen-lezen of bewerken, hoe ver, tot wanneer. Ingetrokken delingen blijven staan in plaats van te verdwijnen, omdat „dat was open tot maart” bij het antwoord hoort. Zonder deze lijst is „wat is bij ons eigenlijk openbaar” een vraag die na een jaar niemand meer kan beantwoorden.",
-      "p2": "In het accountmenu rechtsboven leidt „Delingen”, tabblad „Met mij gedeeld”, naar de tegenovergestelde richting: pagina’s die iemand aan jou heeft gegeven, over werkruimtes heen. Ze verschijnen in geen enkele paginaboom, want je bent daar geen lid; deze lijst is de enige weg ernaartoe. Zo’n pagina opent zonder de navigatie van de andere werkruimte: je ziet de pagina en, als het bereik meegegeven is, wat eronder hangt, verder niets.",
+      "p2": "In het accountmenu rechtsboven leidt „Delingen”, tabblad „Met mij gedeeld”, naar de andere kant: pagina’s die iemand met jou heeft gedeeld, over werkruimtes heen. Ze verschijnen in geen enkele paginaboom, omdat je daar geen lid bent; daarom staan dezelfde pagina’s ook in de zijbalk onder „Met mij gedeeld”. Zo’n pagina opent zonder de navigatie van de andere werkruimte: je ziet de pagina en, als het bereik is meegegeven, wat daaronder hangt, verder niets.",
       "p3": "Wat je via een deling bereikt, kun je niet doorgeven. Een gedeelde pagina heeft geen „Delen”-knop: wie hem mag doorgeven, is een vraag voor de werkruimte waar hij vandaan komt."
     },
     "where": "Accountmenu rechtsboven, „Delingen”, tabblad „Met mij gedeeld”; in de instellingen onder Werkruimte, groep Algemeen, „Delingen”."

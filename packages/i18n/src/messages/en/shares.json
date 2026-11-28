@@ -94,7 +94,7 @@
     "adminOnly": "Only admins in workspace “{workspace}” can revoke here."
   },
   "incoming": {
-    "intro": "Pages from workspaces where you aren’t a member. They don’t appear in any navigation, only here.",
+    "intro": "Pages from workspaces you are not a member of. You can also find them in the sidebar under “Shared with me”.",
     "emptyTitle": "Nothing shared with you",
     "emptyDescription": "When someone shares a page with you, it will appear here.",
     "origin": "from “{workspace}”, by {name}"

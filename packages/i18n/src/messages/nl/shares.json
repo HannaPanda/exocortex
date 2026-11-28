@@ -94,7 +94,7 @@
     "adminOnly": "Alleen beheerders in werkruimte ’{workspace}’ kunnen dit intrekken."
   },
   "incoming": {
-    "intro": "Pagina’s uit werkruimtes waarin je geen lid bent. Ze staan in geen enkele navigatie, alleen hier.",
+    "intro": "Pagina’s uit werkruimtes waarvan je geen lid bent. Je vindt ze ook in de zijbalk onder „Gedeeld met mij”.",
     "emptyTitle": "Niets met jou gedeeld",
     "emptyDescription": "Wanneer iemand een pagina met je deelt, verschijnt die hier.",
     "origin": "uit ’{workspace}’, van {name}"

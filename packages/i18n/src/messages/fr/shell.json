@@ -131,6 +131,20 @@
     "openWorkItems": "Tâches",
     "openChangesets": "Suggestions"
   },
+  "sharedWithMe": {
+    "title": "Partagés avec moi",
+    "listLabel": "Pages partagées avec moi",
+    "all": "Tout",
+    "allLabel": "Ouvrir toutes les pages partagées avec moi",
+    "origin": "de {name} · {workspace}",
+    "more": "{count, plural, one {# autre à afficher} many {# autres à afficher} other {# autres à afficher}}",
+    "empty": "Personne n’a encore partagé de page avec toi.",
+    "loading": "Chargement des partages…",
+    "loadError": "Impossible de charger les partages.",
+    "workspacesTitle": "Tes espaces de travail",
+    "workspacesLabel": "Tes propres espaces de travail",
+    "workspacesEmpty": "Tu n’as pas encore d’espace de travail."
+  },
   "connectionStatus": {
     "offlineShort": "hors ligne",
     "offline": "Hors ligne : modifications enregistrées localement",
@@ -513,6 +527,14 @@
       "appearanceKeywords": "carte couleurs lueur bloom brillance étoiles halo look design personnaliser",
       "screensaver": "Carte des connaissances en économiseur d’écran",
       "screensaverKeywords": "carte économiseur ecran veille screensaver plein écran regarder déco lueur démo"
+    },
+    "sharedWithMe": {
+      "menu": "Ouvrir « Partagés avec moi »",
+      "placeholder": "Quelle page partagée ?",
+      "keywords": "partage partages partagé avec moi invité externe page",
+      "all": "Toutes les pages partagées avec moi",
+      "origin": "de {name} · {workspace}",
+      "empty": "Rien n’est encore partagé avec toi."
     }
   },
   "documentTopBar": {

@@ -33,9 +33,10 @@ import { SettingsDialogProvider } from '@/components/settings-dialog/settings-di
 import { useTimeFormatPreference } from '@/lib/api/preferences-queries';
 import { queryKeys } from '@/lib/api/query-keys';
 import { useSessionQuery } from '@/lib/api/session-queries';
+import { shareKeys } from '@/lib/api/share-queries';
 import { signOut } from '@/lib/auth/client';
 import { isTypingTarget } from '@/lib/keyboard';
-import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';
+import { useGrantsChanged, useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { CaptureDialog } from './capture-dialog';
@@ -53,6 +54,7 @@ import {
   SIDEBAR_DEFAULT,
   SIDEBAR_STORAGE_KEY,
 } from './panel-preferences';
+import { SharedNavigation } from './shared-with-me-nav';
 import { Topbar } from './topbar';
 import { TrashSheet } from './trash-sheet';
 import { useChatScreen } from './use-chat-screen';
@@ -83,6 +85,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <PaletteRequestsProvider>
               <PaletteContributionsProvider>
                 <SettingsDialogProvider>
+                  <GrantsRefresh />
                   <AppShellInner>{children}</AppShellInner>
                 </SettingsDialogProvider>
               </PaletteContributionsProvider>
@@ -105,12 +108,11 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 
   const workspaceId = params.workspaceId ?? null;
   const documentId = params.documentId ?? null;
-  // The knowledge map is a room of its own (issue #189): the map fills the
-  // left, the assistant stands on the right, and the page tree would only be
-  // a second, smaller map of the same pages beside it.
+  // The knowledge map is a room of its own (issue #189): the map fills the left,
+  // the assistant the right, and a page tree would be a second, smaller map.
   const pathname = usePathname();
   const immersive = isKnowledgeMapPath(pathname);
-  const showNavigation = workspaceId !== null && !immersive;
+  const showNavigation = hasNavigation(pathname, workspaceId) && !immersive;
 
   // Below the mobile breakpoint, panels overlay the canvas instead of sharing
   // it, so a first-time visitor should not land with one already covering the
@@ -409,7 +411,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
                 <SheetContent side="left" data-testid="sidebar">
                   <SheetTitle className="exocortex-sr-only">{t('navigationTitle')}</SheetTitle>
                   <nav aria-label={t('pageNavigation')} className="flex min-h-0 flex-1 flex-col">
-                    <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
+                    <ShellNavigation workspaceId={workspaceId} setTrashOpen={setTrashOpen} />
                   </nav>
                 </SheetContent>
               </Sheet>
@@ -425,7 +427,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
                 data-testid="sidebar"
               >
                 <nav aria-label={t('pageNavigation')} className="flex min-h-0 flex-1 flex-col">
-                  <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
+                  <ShellNavigation workspaceId={workspaceId} setTrashOpen={setTrashOpen} />
                 </nav>
               </ResizablePanel>
             ) : null
@@ -595,4 +597,53 @@ function useAssistantBesideMap(
 /** `/arbeitsbereich/<id>/karte`, the one route the shell draws without its navigation. */
 export function isKnowledgeMapPath(pathname: string | null): boolean {
   return pathname !== null && /^\/arbeitsbereich\/[^/]+\/karte\/?$/.test(pathname);
+}
+
+/** The workspace's page tree, or on the shared screens the shared navigation. */
+function ShellNavigation({
+  workspaceId,
+  setTrashOpen,
+}: {
+  workspaceId: string | null;
+  setTrashOpen: (open: boolean) => void;
+}) {
+  return workspaceId === null ? (
+    <SharedNavigation />
+  ) : (
+    <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
+  );
+}
+
+/**
+ * Whether the shell draws a navigation column at all: inside a workspace, and
+ * on the shared screens. Those belong to no workspace of the reader's, so they
+ * have no tree; their navigation is the list of what was shared and the way
+ * back into a workspace of one's own (issue #232).
+ */
+function hasNavigation(pathname: string | null, workspaceId: string | null): boolean {
+  return workspaceId !== null || isSharedPath(pathname);
+}
+
+/** `/geteilt` and `/geteilt/<id>`: the screens of pages shared with the reader. */
+export function isSharedPath(pathname: string | null): boolean {
+  return pathname !== null && /^\/geteilt(\/[^/]+)?\/?$/.test(pathname);
+}
+
+/**
+ * Reads what was shared with this account again whenever a grant of theirs
+ * changed (issue #232, ADR-029). A grantee is in no workspace room, so this
+ * notice is the only thing that reaches them: the list in the navigation, the
+ * branches unfolded under it, and the shared page that is open all ask the
+ * server again, which answers from the grants as they are now.
+ */
+function GrantsRefresh(): null {
+  const queryClient = useQueryClient();
+  const documentId = useParams<{ documentId?: string }>().documentId ?? null;
+  useGrantsChanged(() => {
+    void queryClient.invalidateQueries({ queryKey: shareKeys.incoming() });
+    if (documentId !== null) {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.document(documentId) });
+    }
+  });
+  return null;
 }

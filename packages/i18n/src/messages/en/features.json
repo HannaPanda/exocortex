@@ -999,6 +999,16 @@
     },
     "where": "A workspace is designated as a memory in Settings under Workspace, General group."
   },
+  "mit-mir-geteilt-in-der-seitenleiste": {
+    "title": "Pages shared with me in the sidebar",
+    "summary": "Pages that others have shared with you appear in the sidebar under “Shared with me”, along with the name of the person who shared them and the workspace they come from. This helps you find them without having to open the account menu first.",
+    "details": {
+      "p1": "In each of your workspaces, below the page tree, after search and the knowledge map, you will find the “Shared with me” section. Each entry displays the shared page and, below it, who shared it and from which workspace. Clicking it opens the page under /geteilt. If nothing has been shared with you, the section is omitted entirely so it does not sit empty in every sidebar.",
+      "p2": "On a shared page itself, you are not inside any of your workspaces, so the sidebar there shows the list of pages shared with you instead of a page tree, followed by your own workspaces. From there, you can switch to the next share or back to your own workspace with a single click. In the command palette (Strg+K), “Open shared with me” leads to the same pages.",
+      "p3": "Only the page that was shared is shown, never the pages above it and never their titles. If someone revokes a share, the entry disappears from your sidebar immediately, even if it is currently open. Pages in the other workspace’s trash do not appear in the sidebar, only in the full list under “Shares”."
+    },
+    "where": "The sidebar, “Shared with me” section below the page tree; on a shared page, the entire sidebar. In the command palette, “Open shared with me”."
+  },
   "von-mir-geteilt": {
     "title": "Everything I have shared, in one place",
     "summary": "A list of all shares you granted yourself, across all workspaces. If you know you shared something, but no longer which page it was, you will find it here and can revoke it with a click and a confirmation.",
@@ -1026,7 +1036,7 @@
     "summary": "Two lists: all shares of a workspace in one place, for tidying up, and the pages that others have shared with you. The latter appear in no navigation, because you are not a member of that workspace.",
     "details": {
       "p1": "In workspace settings, “Open shares” leads to the list of what has been granted outward from here: which page, to whom or as a link, read-only or writing, how far, until when. Revoked shares remain listed instead of disappearing, because “that was open until March” is part of the answer. Without this list, “what of ours is actually public” is a question nobody can answer after a year.",
-      "p2": "In the account menu top right, “Shares”, under the “Shared with me” tab, leads in the opposite direction: pages that someone has given you, across workspaces. They do not appear in any page tree, because you are not a member there; this list is the only way to them. Such a page opens without the navigation of the foreign workspace: you see the page and, if the area was included, what hangs below it, nothing else.",
+      "p2": "In the account menu at the top right, “Shares”, on the “Shared with me” tab, shows the opposite direction: pages someone has given you across workspaces. They do not appear in any page tree because you are not a member there; therefore, the same pages are also listed in the sidebar under “Shared with me”. Such a page opens without the navigation of the external workspace: you see the page and, if the section was included, what sits beneath it, but nothing else.",
       "p3": "What you reach via a share, you cannot pass on. A shared page has no “Share” button: who may pass it on is a question for the workspace it comes from."
     },
     "where": "Account menu at the top right, “Shares”, “Shared with me” tab; in Settings under Workspace, General group, “Shares”."

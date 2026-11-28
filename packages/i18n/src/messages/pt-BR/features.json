@@ -999,6 +999,16 @@
     },
     "where": "Um espaço de trabalho é definido como memória nas configurações em Espaço de trabalho, grupo Geral."
   },
+  "mit-mir-geteilt-in-der-seitenleiste": {
+    "title": "Páginas compartilhadas comigo na barra lateral",
+    "summary": "As páginas que outras pessoas compartilharam com você ficam na barra lateral em „Compartilhadas comigo”, com o nome de quem as compartilhou e o espaço de trabalho de onde vieram. Assim você as encontra sem precisar abrir o menu da conta.",
+    "details": {
+      "p1": "Em cada um dos seus espaços de trabalho, a seção „Compartilhadas comigo” fica abaixo da árvore de páginas, depois da busca e do mapa de conhecimento. Cada entrada mostra a página compartilhada e, logo abaixo, quem a compartilhou e de qual espaço de trabalho. Um clique a abre em /geteilt. Se nada tiver sido compartilhado com você, a seção simplesmente não aparece, para não ficar vazia em todas as barras laterais.",
+      "p2": "Na própria página compartilhada, você não está em nenhum dos seus espaços de trabalho; por isso, a barra lateral mostra, em vez de uma árvore de páginas, a lista das páginas compartilhadas com você e, abaixo dela, os seus próprios espaços de trabalho. De lá, você chega com um clique ao próximo compartilhamento ou de volta ao seu espaço. Na paleta de comandos (Strg+K), a opção „Abrir compartilhadas comigo” leva a essas mesmas páginas.",
+      "p3": "Apenas a página compartilhada é mostrada, nunca as páginas acima dela e nunca os títulos delas. Se alguém revogar um compartilhamento, a entrada desaparece na hora da sua barra lateral, mesmo se ela estiver aberta no momento. Páginas na lixeira do outro espaço de trabalho não aparecem na barra lateral, apenas na lista completa em „Compartilhamentos”."
+    },
+    "where": "Na barra lateral, na seção „Compartilhadas comigo” abaixo da árvore de páginas; em uma página compartilhada, na barra lateral inteira. Na paleta de comandos, em „Abrir compartilhadas comigo”."
+  },
   "von-mir-geteilt": {
     "title": "Tudo o que compartilhei em um só lugar",
     "summary": "Uma lista de todos os compartilhamentos criados por você em todos os espaços de trabalho. Se souber que compartilhou algo, mas não lembrar mais qual página era, você a encontra aqui e revoga o acesso com um clique e uma confirmação.",
@@ -1026,7 +1036,7 @@
     "summary": "Duas listas: todos os compartilhamentos de um espaço de trabalho em um só lugar, para organizar, e as páginas que outras pessoas compartilharam com você. As últimas não aparecem em nenhuma navegação, pois você não é membro daquele espaço de trabalho.",
     "details": {
       "p1": "Nas configurações de um espaço de trabalho, „Abrir compartilhamentos“ leva à lista de tudo o que foi concedido daqui para fora: qual página, para quem ou como link, somente leitura ou escrita, até onde e até quando. Compartilhamentos revogados continuam visíveis em vez de desaparecer, pois saber que „esteve aberto até março“ faz parte da resposta. Sem essa lista, „o que realmente temos aberto ao público?“ é uma pergunta que ninguém mais consegue responder depois de um ano.",
-      "p2": "No menu da conta no canto superior direito, „Compartilhamentos“, na aba „Compartilhado comigo“, leva ao sentido inverso: páginas que alguém concedeu a você em diferentes espaços de trabalho. Elas não aparecem em nenhuma árvore de páginas, já que você não é membro por lá; essa lista é o único caminho até elas. Uma página desse tipo abre sem a navegação do espaço de trabalho alheio: você vê a página e, se a área veio junto, o que estiver abaixo dela – nada mais.",
+      "p2": "No menu da conta, no canto superior direito, a opção „Compartilhamentos”, na aba „Compartilhadas comigo”, mostra o caminho inverso: páginas que alguém deu a você, em diferentes espaços de trabalho. Elas não aparecem em nenhuma árvore de páginas, pois você não é membro de lá; por isso, as mesmas páginas também ficam na barra lateral em „Compartilhadas comigo”. Uma página dessas se abre sem a navegação do outro espaço de trabalho: você vê a página e, se o espaço correspondente tiver sido incluído, o que estiver subordinado a ela, nada mais.",
       "p3": "Você não pode repassar o que acessa por meio de um compartilhamento. Uma página compartilhada não tem botão „Compartilhar“: quem pode repassá-la é uma decisão do espaço de trabalho de onde ela veio."
     },
     "where": "Menu da conta no canto superior direito, „Compartilhamentos“, aba „Compartilhado comigo“; nas configurações em Espaço de trabalho, grupo Geral, „Compartilhamentos“."

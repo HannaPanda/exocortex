@@ -144,7 +144,9 @@ What is deliberately still missing is listed under
   anything, for one page or the branch below it, optionally with an expiry and
   withdrawable while somebody has it open. A subtree grant follows the
   hierarchy, so moving a page into a shared branch shares it -- which is why the
-  move says so first and the page header says so afterwards. The KI chat works
+  move says so first and the page header says so afterwards. Pages shared with
+  you stand in the navigation under "Mit mir geteilt", with who shared them and
+  from where, and leave it the moment the grant is withdrawn. The KI chat works
   on a page shared with you (ADR-092): it runs in your own workspace, on its
   key and budget, and may do on the page exactly what the grant allows
 - API tokens confined to a page or a branch: such a token reaches nothing else,

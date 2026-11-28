@@ -999,6 +999,16 @@
     },
     "where": "Un espace de travail est désigné comme mémoire dans les paramètres sous Espace de travail, groupe Général."
   },
+  "mit-mir-geteilt-in-der-seitenleiste": {
+    "title": "Pages partagées avec moi dans la barre latérale",
+    "summary": "Les pages que d’autres personnes ont partagées avec toi apparaissent dans la barre latérale sous « Partagé avec moi », avec le nom de la personne qui les a partagées et l’espace de travail d’où elles proviennent. Tu peux ainsi les retrouver sans devoir d’abord ouvrir le menu du compte.",
+    "details": {
+      "p1": "Dans chacun de tes espaces de travail, la section « Partagé avec moi » se trouve sous l’arborescence des pages, après la recherche et la carte de connaissances. Chaque entrée indique la page partagée et, en dessous, qui l’a partagée ainsi que l’espace de travail d’origine. Un clic l’ouvre sous /geteilt. Si rien n’est partagé avec toi, la section n’apparaît pas du tout afin de ne pas encombrer inutilement chaque barre latérale.",
+      "p2": "Sur une page partagée elle-même, tu ne te trouves dans aucun de tes espaces de travail ; c’est pourquoi la barre latérale y affiche la liste des pages partagées avec toi à la place de l’arborescence des pages, et tes propres espaces de travail en dessous. De là, un simple clic te mène au partage suivant ou te ramène dans ton espace. Dans la palette de commandes (Strg+K), « Ouvrir Partagé avec moi » mène aux mêmes pages.",
+      "p3": "Seule la page qui a été partagée s’affiche, jamais les pages situées au-dessus ni leurs titres. Si quelqu’un révoque un partage, l’entrée disparaît immédiatement de ta barre latérale, même si celle-ci est ouverte à ce moment-là. Les pages placées dans la corbeille de l’autre espace de travail n’apparaissent pas dans la barre latérale, mais uniquement dans la liste complète sous « Partages »."
+    },
+    "where": "La barre latérale, section « Partagé avec moi » sous l’arborescence des pages ; sur une page partagée, toute la barre latérale. Dans la palette de commandes, « Ouvrir Partagé avec moi »."
+  },
   "von-mir-geteilt": {
     "title": "Tout ce que j’ai partagé, au même endroit",
     "summary": "Une liste de tous les partages que tu as accordés toi-même, à travers tous les espaces de travail. Si tu sais que tu as partagé quelque chose, mais plus quelle page c’était, tu la retrouves ici et tu révoques l’accès en un clic après confirmation.",
@@ -1026,7 +1036,7 @@
     "summary": "Deux listes : tous les partages d’un espace de travail au même endroit, pour faire le tri, et les pages que d’autres personnes ont partagées avec toi. Ces dernières ne figurent dans aucune navigation, car tu n’es pas membre de cet espace de travail.",
     "details": {
       "p1": "Dans les paramètres d’un espace de travail, « Ouvrir les partages » mène à la liste de ce qui est partagé vers l’extérieur depuis ici : quelle page, avec qui ou sous forme de lien, en lecture ou en écriture, jusqu’où, jusqu’à quand. Les partages révoqués restent affichés au lieu de disparaître, car « c’était ouvert jusqu’en mars » fait partie de la réponse. Sans cette liste, « qu’est-ce qui est public chez nous au juste ? » devient une question à laquelle plus personne ne peut répondre au bout d’un an.",
-      "p2": "Dans le menu du compte en haut à droite, « Partages », onglet « Partagé avec moi », mène à la direction opposée : les pages qu’on t’a partagées, tous espaces de travail confondus. Elles n’apparaissent dans aucune arborescence, car tu n’y es pas membre ; cette liste est le seul moyen d’y accéder. Une telle page s’ouvre sans la navigation de l’autre espace de travail : tu vois la page et, si la zone a été incluse, ce qui se trouve en dessous, rien d’autre.",
+      "p2": "Dans le menu du compte en haut à droite, « Partages », onglet « Partagé avec moi », mène à la vue inverse : les pages que quelqu’un t’a transmises, tous espaces de travail confondus. Elles n’apparaissent dans aucune arborescence de pages, car tu n’y es pas membre ; ces mêmes pages figurent donc également dans la barre latérale sous « Partagé avec moi ». Une telle page s’ouvre sans la navigation de l’espace de travail distant : tu vois la page et, si l’accès y a été inclus, ce qui en dépend, rien d’autre.",
       "p3": "Ce à quoi tu accèdes via un partage ne peut pas être repartagé par toi. Une page partagée n’a pas de bouton « Partager » : savoir qui peut la transmettre est une décision qui appartient à l’espace de travail dont elle provient."
     },
     "where": "Menu du compte en haut à droite, « Partages », onglet « Partagés avec moi » ; dans les paramètres sous Espace de travail, groupe Général, « Partages »."

@@ -94,7 +94,7 @@
     "adminOnly": "Aqui, somente quem for admin no espaço de trabalho “{workspace}” pode revogar."
   },
   "incoming": {
-    "intro": "Páginas de espaços de trabalho dos quais você não é membro. Elas não aparecem em nenhuma navegação, apenas aqui.",
+    "intro": "Páginas de espaços de trabalho dos quais você não faz parte. Você também pode encontrá-las na barra lateral em „Compartilhado comigo“.",
     "emptyTitle": "Nada compartilhado com você",
     "emptyDescription": "Quando alguém compartilhar uma página com você, ela aparecerá aqui.",
     "origin": "de “{workspace}”, por {name}"

@@ -20,6 +20,7 @@ the feature.
 | Telling the recipient                             | `apps/worker/src/processors/maintenance-tasks/share-notifications.ts`                                                                                                      |
 | Tools                                             | `packages/mcp-tools/src/tools/shares.ts`                                                                                                                                   |
 | Browser                                           | `share-dialog.tsx`, `workspace-shares-page.tsx`, `shares-page.tsx` (`my-shares-list.tsx`, `incoming-shares-list.tsx`), `share-revoke-confirm.tsx`, `public-share-page.tsx` |
+| The navigation of a recipient                     | `shared-with-me-nav.tsx` (in the page tree and as the whole navigation of `/geteilt`), `shared-with-me-commands.tsx` in the palette                                        |
 
 ## Adding a route that answers with pages
 
@@ -148,6 +149,22 @@ Two things to keep in mind when changing this feature:
 
 ## Things that are deliberate
 
+- **What was shared with you stands in the navigation** (issue #232). Every
+  workspace's navigation ends, above the trash, with "Mit mir geteilt": the
+  incoming grants, each with its title and its origin (who shared it, out of
+  which workspace), from the same `GET /api/me/shares` the list on `/geteilt`
+  reads. It names the shared page and nothing above it, because that answer
+  carries no parent. Inside a workspace the section is absent while the list
+  is empty, still loading or failing: it is a second way in, and an empty
+  heading under every tree would teach nothing. On `/geteilt` and
+  `/geteilt/<id>` the reader is in no workspace of theirs, so the navigation
+  there is that list plus their own workspaces, and it says every state out
+  loud. A grant that is given, changed or withdrawn reaches the list at once:
+  `SharesService.announce` runs on creation too now, and the gateway answers
+  a `document_share_changed` revocation with `exocortex.grants.changed` on
+  every socket of the grantee, subscribed or not, because a grantee is in no
+  workspace room the ordinary drop could reach. A grant that simply expires
+  sends nothing and leaves on the next read (returning to the tab reads again).
 - **A shared row names its people, and lists nobody else.** A row answer
   carries the names of the accounts its Person and created-by cells name
   (`people`, issue #314), so a guest reads the same names a member does. The

@@ -94,7 +94,7 @@
     "adminOnly": "Ici, seules les personnes administratrices de l’espace de travail « {workspace} » peuvent effectuer une révocation."
   },
   "incoming": {
-    "intro": "Pages issues d’espaces de travail dont tu n’es pas membre. Elles ne figurent dans aucune navigation, uniquement ici.",
+    "intro": "Pages issues d’espaces de travail dont tu n’es pas membre. Tu les trouveras aussi dans la barre latérale sous « Partagé avec moi ».",
     "emptyTitle": "Rien n’a été partagé avec toi",
     "emptyDescription": "Dès que quelqu’un partage une page avec toi, elle apparaît ici.",
     "origin": "depuis « {workspace} », par {name}"

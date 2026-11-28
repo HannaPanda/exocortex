@@ -94,7 +94,7 @@
     "adminOnly": "Zurückziehen kann hier nur, wer im Arbeitsbereich „{workspace}“ Admin ist."
   },
   "incoming": {
-    "intro": "Seiten aus Arbeitsbereichen, in denen du kein Mitglied bist. Sie stehen in keiner Navigation, nur hier.",
+    "intro": "Seiten aus Arbeitsbereichen, in denen du kein Mitglied bist. Du findest sie auch in der Seitenleiste unter „Mit mir geteilt“.",
     "emptyTitle": "Nichts für dich freigegeben",
     "emptyDescription": "Wenn jemand dir eine Seite freigibt, taucht sie hier auf.",
     "origin": "aus „{workspace}“, von {name}"

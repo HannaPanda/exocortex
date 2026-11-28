@@ -39,6 +39,7 @@ import {
   parseExpanded,
   setSubtree,
 } from './page-tree-state';
+import { SharedWithMeSection } from './shared-with-me-nav';
 import { SmartViews } from './smart-views';
 import { SuggestParentDialog } from './suggest-parent-dialog';
 import { TemplatePickerDialog } from './template-picker-dialog';
@@ -301,6 +302,11 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
         ) : null}
 
         <SmartViews workspaceId={workspaceId} />
+
+        {/* Pages other people shared with this account (issue #232). Below the
+            workspace's own ways in, because it is not part of this workspace,
+            and above the trash, which closes the column. */}
+        <SharedWithMeSection />
 
         {/* The trash opens as its own sheet rather than unfolding here: what it
             has to show (structure, dates, what came along, a selection) does not

@@ -23,6 +23,7 @@ apps/web/src/components/palette/
   shell-commands.tsx       capture, panels, "Kontextbereich öffnen → …", new chat, undo the chat's last run, focus, fullscreen, trash
   create-commands.tsx      a new page, database, project, saved search, a page from a template
   workspace-commands.tsx   "Arbeitsbereich wechseln → …" for every other workspace
+  shared-with-me-commands.tsx "Mit mir geteilt öffnen → …", the pages other people shared with the reader
   chat-scroll-commands.tsx switching the AI chat between following an answer and staying at its start
   outline-preference-commands.tsx switching a pinned outline between its own column and lying over the text, and opening the scale on hover
   time-format-commands.tsx the clock every time is written on: as the language does, 24 or 12 hours (#255)

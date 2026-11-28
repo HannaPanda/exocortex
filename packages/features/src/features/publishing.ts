@@ -112,6 +112,14 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/geteilt', '/geteilt/:x', '/arbeitsbereich/:x/freigaben'] },
   }),
   defineFeature({
+    id: 'mit-mir-geteilt-in-der-seitenleiste',
+    area: 'veroeffentlichen',
+    since: '2026-11-28',
+    references: ['#232', 'ADR-044', 'ADR-029'],
+    ui: {},
+    claims: { screens: ['/geteilt', '/geteilt/:x'] },
+  }),
+  defineFeature({
     id: 'von-mir-geteilt',
     area: 'veroeffentlichen',
     since: '2026-09-24',

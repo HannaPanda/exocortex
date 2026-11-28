@@ -131,6 +131,20 @@
     "openWorkItems": "Zadania",
     "openChangesets": "Propozycje"
   },
+  "sharedWithMe": {
+    "title": "Udostępnione dla mnie",
+    "listLabel": "Strony udostępnione dla mnie",
+    "all": "Wszystkie",
+    "allLabel": "Otwórz wszystkie strony udostępnione dla mnie",
+    "origin": "od {name} · {workspace}",
+    "more": "{count, plural, one {pokaż # kolejną} few {pokaż # kolejne} many {pokaż # kolejnych} other {pokaż # kolejnej}}",
+    "empty": "Nikt jeszcze nie udostępnił ci żadnej strony.",
+    "loading": "Wczytywanie udostępnień…",
+    "loadError": "Nie udało się wczytać udostępnień.",
+    "workspacesTitle": "Twoje obszary robocze",
+    "workspacesLabel": "Twoje własne obszary robocze",
+    "workspacesEmpty": "Nie masz jeszcze własnego obszaru roboczego."
+  },
   "connectionStatus": {
     "offlineShort": "offline",
     "offline": "Offline: zmiany są zapisywane lokalnie",
@@ -513,6 +527,14 @@
       "appearanceKeywords": "mapa kolory glow bloom blask świecenie gwiazdy halo look wygląd dostosuj",
       "screensaver": "Mapa wiedzy jako wygaszacz ekranu",
       "screensaverKeywords": "mapa wygaszacz ekranu screensaver pełny ekran oglądanie dekoracja świecenie demo"
+    },
+    "sharedWithMe": {
+      "menu": "Otwórz Udostępnione dla mnie",
+      "placeholder": "Która udostępniona strona?",
+      "keywords": "udostępnienie udostępnienia udostępnione dla mnie gość inna strona",
+      "all": "Wszystkie strony udostępnione dla mnie",
+      "origin": "od {name} · {workspace}",
+      "empty": "Nic jeszcze ci nie udostępniono."
     }
   },
   "documentTopBar": {
