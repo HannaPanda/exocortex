@@ -82,7 +82,6 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     shortcuts: [
       'Alt+Pfeil hoch oder runter auf dem Griff einer Sortierung verschiebt sie um eine Stelle',
     ],
-    tools: ['exo_database_view_update', 'exo_database_query'],
   }),
   defineFeature({
     id: 'kalenderansicht',
