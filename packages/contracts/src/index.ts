@@ -9,6 +9,7 @@ export * from './ai-run-changes';
 export * from './ai-run-inspection';
 export * from './ai-runtime';
 export * from './ai-trust';
+export * from './attachment-text-map';
 export * from './attachments';
 export * from './attention';
 export * from './auth';

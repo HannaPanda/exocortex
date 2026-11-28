@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { type Logger } from '@exocortex/logger';
 
+import { type DoclingLayout, doclingLayoutSchema, locateDoclingPages } from './docling-pages';
 import {
   type DocumentTextExtraction,
   type DocumentTextExtractor,
@@ -50,14 +51,9 @@ const doclingResponseSchema = z.object({
   status: z.enum(['pending', 'started', 'failure', 'success', 'partial_success', 'skipped']),
   document: z.object({
     md_content: z.string().nullable().default(null),
-    json_content: z
-      .object({
-        pages: z.record(z.string(), z.unknown()).nullable().default(null),
-        tables: z.array(z.unknown()).nullable().default(null),
-        pictures: z.array(z.unknown()).nullable().default(null),
-      })
-      .nullable()
-      .default(null),
+    // Read by `doclingLayoutSchema` on its own, so a layout this cannot place
+    // pages in costs the page starts and never the text.
+    json_content: z.unknown().default(null),
   }),
   errors: z
     .array(z.object({ error_message: z.string().default(''), category: z.string().default('') }))
@@ -80,14 +76,17 @@ type DoclingResponse = z.infer<typeof doclingResponseSchema>;
  * of fallbacks: a document without tables reports no `tables` key at all, and
  * that is "none", not "unknown".
  */
-function toExtractionMetadata(payload: DoclingResponse): DocumentTextExtraction['metadata'] {
-  const document = payload.document.json_content;
+function toExtractionMetadata(
+  payload: DoclingResponse,
+  document: DoclingLayout | null,
+): DocumentTextExtraction['metadata'] {
   return {
     ...EMPTY_METADATA,
     extractor: 'docling',
     pageCount: document?.pages === null ? null : Object.keys(document?.pages ?? {}).length,
-    tableCount: document?.tables?.length ?? null,
-    pictureCount: document?.pictures?.length ?? null,
+    // An absent list is "none" on the wire, which the schema's default says.
+    tableCount: document === null ? null : document.tables.length,
+    pictureCount: document === null ? null : document.pictures.length,
     confidence: payload.confidence?.mean_score ?? null,
     // `ocr_score` stays null when the pipeline never ran OCR, which is
     // exactly the signal for "this document had a usable text layer".
@@ -182,11 +181,18 @@ export function createDoclingPdfExtractor(
           return { text: null, metadata: null };
         }
 
-        const metadata = toExtractionMetadata(payload);
+        const layout = doclingLayoutSchema.safeParse(payload.document.json_content);
+        const document = layout.success ? layout.data : null;
+        const metadata = toExtractionMetadata(payload, document);
         const text = payload.document.md_content ?? '';
         // Layout facts are worth keeping even for a document that yielded no
         // text: "three pages, no content" is a real answer.
-        return { text: text.trim().length === 0 ? null : text, metadata };
+        if (text.trim().length === 0) return { text: null, metadata };
+        return {
+          text,
+          metadata,
+          pageStarts: document === null ? null : locateDoclingPages(text, document),
+        };
       } finally {
         clearTimeout(timeout);
       }

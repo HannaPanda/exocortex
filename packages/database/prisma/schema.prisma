@@ -1898,6 +1898,12 @@ model Attachment {
   /// `ATTACHMENT_TEXT_MAX_CHARS` and got cut off (issue #2). Reset on every new
   /// extraction so a stale flag never survives a shorter re-read.
   textTruncated       Boolean              @default(false)
+  /// Where each page of a PDF begins in `extractedText` (ADR-101): entry `i`
+  /// is the UTF-16 offset of page `i + 1`, `-1` for a page whose start the
+  /// engine could not place. Empty when nothing is known: an office file, a
+  /// row from before the column, an engine that reports no pages. Describes
+  /// `extractedText` only, never `correctedText`, and is rewritten with it.
+  textPageStarts      Int[]                @default([])
 
   /// Human correction of `extractedText` (issue #2), kept in a column of its
   /// own rather than overwriting the machine result: a later re-extraction must

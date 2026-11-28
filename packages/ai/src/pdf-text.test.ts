@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createLogger, type Logger } from '@exocortex/logger';
 
-import { createOpenRouterPdfExtractor } from './pdf-text';
+import { createOpenRouterPdfExtractor, pdfTextPageStarts } from './pdf-text';
 
 /** The real logger, silenced: a hand-rolled one drifts from the interface. */
 function fakeLogger(): Logger {
@@ -124,5 +124,22 @@ describe('createOpenRouterPdfExtractor', () => {
     const { metadata } = await extractor().extract(input);
 
     expect(metadata?.createdAt).toBe('2026-04-26T09:56:10.000Z');
+  });
+});
+
+describe('pdfTextPageStarts (ADR-101)', () => {
+  it('places every page at its heading', () => {
+    const text = '# a.pdf\n## Contents\n### Page 1\neins\n### Page 2\nzwei\n### Page 3\ndrei';
+    expect(pdfTextPageStarts(text)).toEqual([
+      0,
+      text.indexOf('### Page 2'),
+      text.indexOf('### Page 3'),
+    ]);
+  });
+
+  it('marks a missing or out-of-order heading as unknown instead of guessing', () => {
+    const text = '### Page 1\neins\n### Page 3\ndrei';
+    expect(pdfTextPageStarts(text)).toEqual([0, -1, text.indexOf('### Page 3')]);
+    expect(pdfTextPageStarts('kein Gerüst')).toBeNull();
   });
 });

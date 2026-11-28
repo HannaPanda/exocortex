@@ -19,6 +19,13 @@ export interface DocumentTextExtraction {
    * merges metadata across every engine it tried.
    */
   metadata: DocumentTextMetadata | null;
+  /**
+   * Where each page begins in `text` (ADR-101): entry `i` is the UTF-16
+   * offset of page `i + 1`, `-1` for a page the engine could not place.
+   * Absent or null when the engine knows no pages, which every office format
+   * is: nothing in a docx says where Word would break it.
+   */
+  pageStarts?: readonly number[] | null;
 }
 
 export interface DocumentTextExtractor {
@@ -208,6 +215,36 @@ export function mergeDocumentTextMetadata(
 }
 
 /**
+ * Where the plugin's `### Page N` headings stand in its answer (ADR-101).
+ *
+ * The skeleton names every page, so this engine's pages are exact; a heading
+ * the model left out or repeated is a page that could not be placed (`-1`),
+ * never a guess. Null when there is no heading at all.
+ */
+export function pdfTextPageStarts(text: string): number[] | null {
+  const found = new Map<number, number>();
+  for (const match of text.matchAll(/^### Page (\d+)[ \t]*$/gm)) {
+    const page = Number(match[1]);
+    if (page >= 1 && !found.has(page)) found.set(page, match.index);
+  }
+  if (found.size === 0) return null;
+  const pageCount = Math.max(...found.keys());
+  const starts: number[] = [];
+  let last = -1;
+  for (let page = 1; page <= pageCount; page += 1) {
+    const start = page === 1 ? 0 : (found.get(page) ?? -1);
+    // Out of order is as good as missing: a page never begins before the one before it.
+    if (start !== -1 && start <= last) {
+      starts.push(-1);
+      continue;
+    }
+    starts.push(start);
+    if (start !== -1) last = start;
+  }
+  return starts;
+}
+
+/**
  * PDF text extraction through OpenRouter's `file-parser` plugin.
  *
  * The `pdf-text` engine is free and runs on OpenRouter's side, which keeps this
@@ -303,7 +340,7 @@ export function createOpenRouterPdfExtractor(
           return { text: null, metadata };
         }
 
-        return { text, metadata };
+        return { text, metadata, pageStarts: pdfTextPageStarts(text) };
       } finally {
         clearTimeout(timeout);
       }

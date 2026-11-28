@@ -11,6 +11,7 @@ import {
   type AttachmentTextErrorCode,
   type DocumentTextMetadata,
   isAttachmentTextErrorCode,
+  keptPageStarts,
   QUEUE_NAMES,
   type Settings,
 } from '@exocortex/contracts';
@@ -263,7 +264,7 @@ async function extractFromPdf(context: EngineContext): Promise<ExtractionOutcome
   // joined with the locally read dictionary below: the three sources see
   // different things (the file carries the title and the dates, Docling
   // reports the layout and whether OCR ran).
-  const { text, winner, attempted, firstError } = await runExtractorChain(
+  const { text, winner, pageStarts, attempted, firstError } = await runExtractorChain(
     extractors,
     { data, filename: attachment.filename, correlationId: payload.correlationId },
     logger,
@@ -290,7 +291,12 @@ async function extractFromPdf(context: EngineContext): Promise<ExtractionOutcome
     };
   }
 
-  return readyUpdate(text, mergeAttempts(winner, [localInfo, ...attempted]), attachment.id, logger);
+  return readyUpdate(
+    { text, pageStarts },
+    mergeAttempts(winner, [localInfo, ...attempted]),
+    attachment.id,
+    logger,
+  );
 }
 
 /**
@@ -365,16 +371,23 @@ async function extractFromOffice(context: EngineContext): Promise<ExtractionOutc
     };
   }
 
-  return readyUpdate(result.text, result.metadata, attachment.id, logger);
+  // No pages: nothing in an office file says where it would break (ADR-101).
+  return readyUpdate(
+    { text: result.text, pageStarts: null },
+    result.metadata,
+    attachment.id,
+    logger,
+  );
 }
 
 /** The one successful write, shared so the cap and the log cannot diverge. */
 function readyUpdate(
-  text: string,
+  extracted: { text: string; pageStarts: readonly number[] | null | undefined },
   metadata: DocumentTextMetadata | null,
   attachmentId: string,
   logger: JobContext<typeof QUEUE_NAMES.attachmentText>['logger'],
 ): Prisma.AttachmentUpdateInput {
+  const { text } = extracted;
   // Cut silently until now (issue #2): `textTruncated` is what lets the UI
   // say so instead of a long scan looking like a complete result.
   const truncated = text.length > ATTACHMENT_TEXT_MAX_CHARS;
@@ -394,12 +407,17 @@ function readyUpdate(
     textErrorCode: null,
     textMetadata: toJsonColumn(metadata),
     textTruncated: truncated,
+    // Written with the text it describes, every time, so a re-extraction never
+    // leaves the page starts of an earlier text behind.
+    textPageStarts: keptPageStarts(extracted.pageStarts, ATTACHMENT_TEXT_MAX_CHARS),
   };
 }
 
 /** What the chain of engines learned, whether or not any of them produced text. */
 interface ExtractorChainResult {
   text: string | null;
+  /** Where the winning engine's pages begin in `text`. */
+  pageStarts: readonly number[] | null;
   /** Metadata of the engine that produced the text, `null` when none did. */
   winner: DocumentTextMetadata | null;
   /** Metadata of the engines that ran but found nothing. */
@@ -443,12 +461,18 @@ async function runExtractorChain(
       continue;
     }
     if (result.text !== null) {
-      return { text: result.text, winner: result.metadata, attempted, firstError };
+      return {
+        text: result.text,
+        winner: result.metadata,
+        pageStarts: result.pageStarts ?? null,
+        attempted,
+        firstError,
+      };
     }
     attempted.push(result.metadata);
   }
 
-  return { text: null, winner: null, attempted, firstError };
+  return { text: null, winner: null, pageStarts: null, attempted, firstError };
 }
 
 /**
