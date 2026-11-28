@@ -20,10 +20,10 @@ import xml from 'highlight.js/lib/languages/xml';
 import yaml from 'highlight.js/lib/languages/yaml';
 import { createLowlight } from 'lowlight';
 
+import { codeBlockBackspace, codeBlockDelete, type CodeBlockEdgeOutcome } from './code-block-edges';
 import { placeCodeBlock, planCodeBlock } from './code-block-placement';
 import { looksLikeSession, shellScript, terminalSession } from './code-grammars';
 import { codeHighlightPlugin, type HighlightSpan } from './code-highlight';
-import { isListItemNode } from './list-split';
 
 /**
  * Syntax highlighting for code blocks.
@@ -259,25 +259,33 @@ export const ExocortexCodeBlock = CodeBlock.extend({
 
   addKeyboardShortcuts() {
     const parent = this.parent?.() ?? {};
+    /** Dispatches what the edge rule decided; `false` lets the key go on. */
+    const apply = (outcome: CodeBlockEdgeOutcome): boolean => {
+      if (outcome === null) return false;
+      if (outcome !== 'stay') this.editor.view.dispatch(outcome);
+      return true;
+    };
     return {
       ...parent,
       /**
-       * An empty code block inside a list item becomes an empty line of that
-       * item again. Upstream's `clearNodes` lifted it out of every list around
-       * it, which split the list a code block had just been placed in.
+       * Backspace and Delete never join a code block with its neighbour
+       * (`code-block-edges.ts`, issue #319). An empty code block becomes an
+       * empty paragraph where it stands, also inside a list item (#318),
+       * where upstream's `clearNodes` lifted it out of every list around it.
        */
       Backspace: (props) => {
-        const { empty, $anchor } = this.editor.state.selection;
-        if (
-          empty &&
-          $anchor.parent.type === this.type &&
-          $anchor.parent.content.size === 0 &&
-          $anchor.depth > 1 &&
-          isListItemNode($anchor.node(-1))
-        ) {
-          return this.editor.commands.setNode('paragraph');
-        }
+        if (!this.editor.isEditable) return false;
+        const { $from } = this.editor.state.selection;
+        // A text block typed into shape right below a code block (`# `)
+        // goes back to its text first, as everywhere else.
+        if ($from.parent.type !== this.type && this.editor.commands.undoInputRule()) return true;
+        if (apply(codeBlockBackspace(this.editor.state, this.type))) return true;
         return parent.Backspace?.(props) ?? false;
+      },
+      Delete: (props) => {
+        if (!this.editor.isEditable) return false;
+        if (apply(codeBlockDelete(this.editor.state, this.type))) return true;
+        return parent.Delete?.(props) ?? false;
       },
     };
   },

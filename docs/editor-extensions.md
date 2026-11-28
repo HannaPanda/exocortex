@@ -555,6 +555,45 @@ The change is planned on a transaction of its own and copied over only when
 it worked, so it is one dispatch and `Strg+Z` takes it back in one step.
 Covered by `code-block-placement.test.ts` and `e2e/tests/editor.spec.ts`.
 
+## Backspace and Delete next to a code block
+
+ProseMirror's `joinBackward` and `joinForward` treat a code block like any
+text block and join it with its neighbour (issue #319). A code block keeps its
+lines as `\n` inside one text node, so the join turned them into line breaks
+of the paragraph above (the schema's `linebreakReplacement`) and the block was
+gone; after a list the code landed in the last point as raw newlines, after a
+callout it moved into the callout, after a picture the picture was deleted,
+and as the first block of the page Tiptap's `clearNodes` turned it into a
+paragraph full of newlines. The other way round, the text below a code block
+was pulled into the code. Removing the empty lines above a code block from its
+first character broke the block the moment the last empty line was gone.
+
+`code-block-edges.ts` answers both keys first, from the code block's own
+keymap in `code-block.ts`. The rule: **a code block is never joined with a
+neighbour by Backspace or Delete.** One key removes at most one empty line
+between the block and its neighbour; otherwise the caret moves and nothing
+changes type.
+
+- Backspace in an empty line above a code block removes the line (also at the
+  top of the page, where it used to do nothing).
+- Backspace at the start of a code block with code in it: an empty line
+  directly above goes and the block moves up; otherwise the caret goes to the
+  end of the block above (the last point of a list, the text of a callout),
+  or a block without text (a picture) is selected. As the first block of the
+  page, or of a column or table cell, nothing happens.
+- Backspace at the start of an empty code block makes it an empty paragraph
+  where it stands, inside a list item too (#318), keeping its block id.
+- Backspace at the start of the line below a code block: an empty line goes,
+  text stays where it is; the caret goes to the end of the code.
+- Delete at the end of the line above a code block (also the last point of a
+  list above it): an empty line goes, text stays, the code is never pulled in.
+- Delete at the end of a code block: an empty line below goes, a picture
+  below is selected, anything else stays.
+
+Every outcome is one transaction, so `Strg+Z` takes it back in one step. A
+selection across the block's edge is still ProseMirror's ordinary deletion.
+Covered by `code-block-edges.test.ts` and `e2e/tests/editor.spec.ts`.
+
 ## Code highlighting
 
 A code block stores only its language's name (`language` attribute, the word
