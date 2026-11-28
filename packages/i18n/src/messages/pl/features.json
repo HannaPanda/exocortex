@@ -540,6 +540,17 @@
     },
     "where": "Komórka kolumny typu Pliki, w tabeli lub u góry strony wiersza."
   },
+  "datenbank-personen": {
+    "title": "Wpisywanie osób w bazie danych po nazwisku",
+    "summary": "Kolumna osób wyświetla imiona i nazwiska z inicjałami zamiast identyfikatorów. Kliknięcie komórki otwiera listę wyboru z wyszukiwarką członków obszaru roboczego, a komórka może pomieścić wiele osób.",
+    "details": {
+      "p1": "Wybór jest dostępny wszędzie tam, gdzie edytowany jest wiersz: w tabeli, w nagłówku strony wiersza, na pasku bocznym, w panelu właściwości oraz podczas ustawiania wartości dla wielu zaznaczonych wierszy. Wpisz nazwisko, wybierz klawiszami strzałek i zatwierdź klawiszem Enter; klawisz Backspace w pustym polu wyszukiwania usuwa ostatnio dodaną osobę. Klawisz Escape lub kliknięcie obok zatwierdza wybór. Karty na tablicy i w galerii również wyświetlają nazwiska.",
+      "p2": "Osoby, które opuściły obszar roboczy, pozostają widoczne ze swoim nazwiskiem, jedynie nieco wyszarzone, i można je usunąć. Usunięte konto pojawia się jako „Usunięte konto”. Wpisać można tylko aktualnych członków. Osoba widząca stronę jedynie dzięki udostępnieniu nie ma dostępu do listy członków: widzi nazwiska już znajdujące się w komórce i może co najwyżej kogoś usunąć.",
+      "p3": "Również pola „Utworzone przez” i „Zmodyfikowane przez” zawierają imiona i nazwiska. Tabela sortowana według kolumny osób porządkuje wiersze według nazwiska pierwszej osoby, a filtr kolumny osób wyświetla członków z ich nazwiskami.",
+      "p4": "Agenci odczytują nazwiska obok identyfikatorów za pomocą exo_database_row_get i exo_database_query. Identyfikatory potrzebne do zapisu pobiera exo_workspace_members, a zapis odbywa się przez exo_database_row_update."
+    },
+    "where": "Komórka kolumny osób, w tabeli lub u góry strony wiersza."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agenci przeglądają obrazy i pobierają pliki",
     "summary": "Agent może pobrać załącznik graficzny jako prawdziwy obraz i go obejrzeć, na przykład zrzut ekranu lub porównanie przed i po. Inne pliki, takie jak PDF-y, pobiera przez adres URL ważny przez dziesięć minut i dokładnie na jedno użycie.",

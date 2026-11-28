@@ -10,6 +10,7 @@ import {
   type DatabaseProperty,
   type DatabaseSort,
   type DatabaseView,
+  type WorkspacePerson,
 } from '@exocortex/contracts';
 import {
   Badge,
@@ -27,12 +28,14 @@ import {
 } from '@exocortex/ui';
 
 import { useUpdateDatabaseView } from '@/lib/api/database-queries';
+import { useWorkspacePeople } from '@/lib/api/workspace-queries';
 
 import { operatorsForType, useFilterWording } from './property-types';
 import { ViewOptionsMenu } from './view-options-menu';
 
 interface FilterSortBarProps {
   documentId: string;
+  workspaceId: string;
   view: DatabaseView;
   properties: DatabaseProperty[];
   readOnly: boolean;
@@ -49,9 +52,17 @@ function leafConditions(view: DatabaseView): DatabaseFilterCondition[] {
   );
 }
 
-export function FilterSortBar({ documentId, view, properties, readOnly }: FilterSortBarProps) {
+export function FilterSortBar({
+  documentId,
+  workspaceId,
+  view,
+  properties,
+  readOnly,
+}: FilterSortBarProps) {
   const t = useTranslations('database.filters');
-  const wording = useFilterWording();
+  // A Person filter names members rather than account ids (issue #314).
+  const people = useWorkspacePeople(workspaceId).members;
+  const wording = useFilterWording(people);
   const updateView = useUpdateDatabaseView(documentId);
   const conditions = leafConditions(view);
 
@@ -123,7 +134,7 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
 
       {readOnly ? null : (
         <>
-          <AddFilterPopover properties={properties} onAdd={addCondition} />
+          <AddFilterPopover properties={properties} people={people} onAdd={addCondition} />
           <AddSortPopover properties={properties} onAdd={addSort} />
           {/* Row height and column visibility only describe a table. */}
           {view.type === 'TABLE' ? (
@@ -150,13 +161,15 @@ function defaultFilterValue(
 
 function AddFilterPopover({
   properties,
+  people,
   onAdd,
 }: {
   properties: DatabaseProperty[];
+  people: readonly WorkspacePerson[] | null;
   onAdd: (condition: DatabaseFilterCondition) => void;
 }) {
   const t = useTranslations('database.filters');
-  const wording = useFilterWording();
+  const wording = useFilterWording(people);
   const [open, setOpen] = React.useState(false);
   const [propertyId, setPropertyId] = React.useState(properties[0]?.id ?? '');
   const property = properties.find((entry) => entry.id === propertyId) ?? properties[0];

@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Algunas entradas tienen fecha de finalización. Elimina las fechas de finalización antes de desactivar el intervalo de fechas.",
     "database_files_target_invalid": "No se pueden subir archivos a esta columna.",
     "database_files_foreign": "Una celda solo admite archivos que se hayan subido directamente a ella.",
+    "database_person_not_member": "En una celda de persona solo se puede añadir a quien sea miembro de este espacio de trabajo.",
     "database_rows_not_found": "Algunas de las filas seleccionadas ya no existen. Recarga la tabla y vuelve a seleccionarlas.",
     "database_property_ai_invalid": "Esta instrucción de IA no sirve para esta columna.",
     "ai_fill_not_configured": "Esta columna aún no tiene una instrucción de IA.",

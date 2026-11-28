@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Niektóre wpisy mają datę końcową. Usuń daty końcowe przed wyłączeniem zakresu dat.",
     "database_files_target_invalid": "Do tej kolumny nie można przesyłać plików.",
     "database_files_foreign": "Komórka przyjmuje tylko pliki, które zostały przesłane bezpośrednio do niej.",
+    "database_person_not_member": "W komórce osoby można wpisać tylko kogoś, kto jest członkiem tego obszaru roboczego.",
     "database_rows_not_found": "Niektóre z wybranych wierszy już nie istnieją. Odśwież tabelę i wybierz ponownie.",
     "database_property_ai_invalid": "Ta instrukcja dla AI nie pasuje do tej kolumny.",
     "ai_fill_not_configured": "Ta kolumna nie ma jeszcze instrukcji dla AI.",

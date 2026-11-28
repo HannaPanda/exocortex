@@ -540,6 +540,17 @@
     },
     "where": "Una celda de una columna de archivos, en la tabla o en la parte superior de la página de una fila."
   },
+  "datenbank-personen": {
+    "title": "Añadir personas por su nombre en una base de datos",
+    "summary": "Una columna de personas muestra nombres con iniciales en lugar de identificadores. Al hacer clic en la celda se abre un selector con búsqueda entre los miembros del espacio de trabajo, y una celda puede incluir a varias personas.",
+    "details": {
+      "p1": "El selector está disponible dondequiera que se edite una fila: en la tabla, en el encabezado de una página de fila, en la barra lateral, en el panel de propiedades y al asignar un valor para varias filas seleccionadas. Escribe un nombre, selecciona con las teclas de flecha y Enter; la tecla de retroceso en el campo de búsqueda vacío elimina a la última persona añadida. Escape o un clic fuera aplica la selección. Las tarjetas del tablero y de la galería también muestran los nombres.",
+      "p2": "Quien haya dejado el espacio de trabajo permanece con su nombre, solo con un tono más atenuado, y se puede eliminar. Una cuenta eliminada aparece como «Cuenta eliminada». Solo se puede añadir a quienes sean miembros. Quien solo vea una página mediante uso compartido no tiene acceso a la lista de miembros: ve los nombres que ya están en la celda y, como mucho, puede quitar a alguien.",
+      "p3": "«Creado por» y «Modificado por» también se muestran con nombres. Al ordenar una tabla por una columna de personas, se ordena según el nombre de la primera persona, y un filtro en una columna de personas ofrece a los miembros por su nombre.",
+      "p4": "Los agentes leen con exo_database_row_get y exo_database_query los nombres junto a los identificadores. Los identificadores para escribir los proporciona exo_workspace_members, y la escritura se realiza con exo_database_row_update."
+    },
+    "where": "Una celda de una columna de personas, en la tabla o en la parte superior de la página de una fila."
+  },
   "agenten-bilder-ansehen": {
     "title": "Los agentes ven imágenes y descargan archivos",
     "summary": "Un agente puede obtener un archivo adjunto de imagen como una imagen real y verla, por ejemplo una captura de pantalla o una comparación del antes y el después. Otros archivos, como los PDF, los descarga a través de una dirección de descarga válida durante diez minutos y de un solo uso.",

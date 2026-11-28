@@ -134,6 +134,7 @@ export function DatabaseShell({
       />
       <FilterSortBar
         documentId={documentId}
+        workspaceId={workspaceId}
         view={activeView}
         properties={properties.data}
         readOnly={readOnly}

@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Sommige items hebben een einddatum. Verwijder de einddatums voordat je de periode uitschakelt.",
     "database_files_target_invalid": "Je kunt geen bestanden uploaden naar deze kolom.",
     "database_files_foreign": "Een cel accepteert alleen bestanden die direct erin zijn geüpload.",
+    "database_person_not_member": "In een personencel kan alleen iemand worden ingevuld die lid is van deze werkruimte.",
     "database_rows_not_found": "Sommige van de geselecteerde rijen bestaan niet meer. Vernieuw de tabel en maak opnieuw een keuze.",
     "database_property_ai_invalid": "Deze AI-instructie past niet bij deze kolom.",
     "ai_fill_not_configured": "Deze kolom heeft nog geen AI-instructie.",

@@ -132,7 +132,9 @@ export function useRemoveWorkspaceMember(workspaceId: string) {
           method: 'DELETE',
         },
       ),
-    onSuccess: () =>
-      void client.invalidateQueries({ queryKey: queryKeys.workspaceDetail(workspaceId) }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: queryKeys.workspaceDetail(workspaceId) });
+      void client.invalidateQueries({ queryKey: queryKeys.workspacePeople(workspaceId) });
+    },
   });
 }

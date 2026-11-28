@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Einige Einträge haben ein Enddatum. Entferne die Enddaten, bevor du den Zeitraum abschaltest.",
     "database_files_target_invalid": "In diese Spalte lassen sich keine Dateien hochladen.",
     "database_files_foreign": "Eine Zelle nimmt nur Dateien auf, die in sie hochgeladen wurden.",
+    "database_person_not_member": "In eine Personen-Zelle kann nur eingetragen werden, wer Mitglied dieses Arbeitsbereichs ist.",
     "database_rows_not_found": "Einige der ausgewählten Zeilen gibt es nicht mehr. Lade die Tabelle neu und wähle noch einmal.",
     "database_property_ai_invalid": "Diese KI-Anweisung passt nicht zu dieser Spalte.",
     "ai_fill_not_configured": "Diese Spalte hat noch keine KI-Anweisung.",

@@ -111,7 +111,7 @@ export function GalleryView({
                       key={property.id}
                       property={property}
                       value={value}
-                      files={row.files}
+                      row={row}
                     />
                   );
                 })}

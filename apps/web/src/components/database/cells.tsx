@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl';
 import {
   type DatabaseProperty,
   type DatabaseRow,
-  type DatabaseRowFile,
   type DatabaseRowHeight,
   type DatabaseRowPropertyValue,
 } from '@exocortex/contracts';
@@ -15,6 +14,7 @@ import { Checkbox } from '@exocortex/ui';
 import { DateCell, useDateValueFormat } from './date-cell';
 import { FilesCell } from './files-cell';
 import { MultiSelectCell, OptionBadge, SelectCell } from './option-cells';
+import { PeopleValueDisplay, PersonCell } from './person-cell';
 import {
   ARRAY_PROPERTY_TYPES,
   COMPUTED_PROPERTY_TYPES,
@@ -22,7 +22,7 @@ import {
 } from './property-types';
 import { ReadonlyCell, useComputedValueFormat } from './readonly-cell';
 import { RelationCell, RelationValueDisplay } from './relation-cell';
-import { IdListCell, NumberCell, TextCell } from './text-cells';
+import { NumberCell, TextCell } from './text-cells';
 
 export type CellValue = DatabaseRowPropertyValue['value'];
 
@@ -38,7 +38,20 @@ export interface PropertyCellProps {
    * files' names from it (issue #245); the other cells do not need it.
    */
   row?: DatabaseRow;
+  /**
+   * The workspace, where there is no single row to read it from: the dialog
+   * that sets one value for several rows (issue #244). A PERSON cell lists its
+   * members from it (issue #314).
+   */
+  workspaceId?: string;
 }
+
+/** The types whose value names accounts, shown by name (issue #314). */
+const PERSON_VALUED_TYPES = new Set<DatabaseProperty['type']>([
+  'PERSON',
+  'CREATED_BY',
+  'UPDATED_BY',
+]);
 
 /**
  * Dispatches to the editor for `property.type`. One switch, not ten call sites.
@@ -56,9 +69,23 @@ export function PropertyCell({
   readOnly,
   rowHeight = 'short',
   row,
+  workspaceId,
 }: PropertyCellProps) {
   const cellKey = JSON.stringify(value);
   const shared = { property, value, onChange, readOnly, rowHeight };
+  // Who made or changed the row is computed, so it is never edited; it reads
+  // like a Person cell, by name. A PERSON cell is not keyed on its value: its
+  // picker keeps a draft while it is open, and a refetch must not close it.
+  if (PERSON_VALUED_TYPES.has(property.type)) {
+    return (
+      <PersonCell
+        {...shared}
+        readOnly={readOnly || property.type !== 'PERSON'}
+        row={row}
+        workspaceId={workspaceId}
+      />
+    );
+  }
   // A rollup and a formula are computed by the query engine on every read, so
   // there is nothing here to edit: the way to change one is to change the
   // linked rows, or the formula itself in the column menu.
@@ -83,8 +110,6 @@ export function PropertyCell({
       // second file arriving must not remount it away (issue #245). The cell
       // holds no draft of the value that would need the remount.
       return <FilesCell {...shared} row={row} />;
-    case 'PERSON':
-      return <IdListCell key={cellKey} {...shared} />;
     default:
       return <TextCell key={cellKey} {...shared} />;
   }
@@ -117,17 +142,24 @@ export function isArrayProperty(property: DatabaseProperty): boolean {
 export function PropertyValueDisplay({
   property,
   value,
-  files,
+  row,
 }: {
   property: DatabaseProperty;
   value: CellValue;
-  /** The row's files, so a FILES value reads as names (issue #245). */
-  files?: readonly DatabaseRowFile[];
+  /**
+   * The row the value belongs to: its files, so a FILES value reads as names
+   * (issue #245), and its people, so a Person value does (issue #314).
+   */
+  row?: DatabaseRow;
 }) {
   const t = useTranslations('database.cells');
   const formatDateValue = useDateValueFormat();
   const formatComputedValue = useComputedValueFormat();
   if (value === null || (Array.isArray(value) && value.length === 0)) return null;
+
+  if (PERSON_VALUED_TYPES.has(property.type)) {
+    return <PeopleValueDisplay value={value} row={row} />;
+  }
 
   if (COMPUTED_PROPERTY_TYPES.has(property.type) || DERIVED_PROPERTY_TYPE_SET.has(property.type)) {
     return (
@@ -164,20 +196,25 @@ export function PropertyValueDisplay({
     );
   }
   if (property.type === 'FILES' && Array.isArray(value)) {
-    const names = new Map((files ?? []).map((file) => [file.id, file.filename] as const));
-    const shown = value.flatMap((id) => {
-      const name = names.get(id);
-      return name === undefined ? [] : [name];
-    });
-    if (shown.length === 0) return null;
-    return (
-      <span className="truncate text-xs text-muted-foreground" title={shown.join(', ')}>
-        {shown.join(', ')}
-      </span>
-    );
+    return <FileNamesDisplay ids={value} row={row} />;
   }
   if (Array.isArray(value)) {
     return <span className="text-xs text-muted-foreground">{value.join(', ')}</span>;
   }
   return <span className="truncate text-xs text-muted-foreground">{String(value)}</span>;
+}
+
+/** A FILES value on a card: the names of the files that still exist. */
+function FileNamesDisplay({ ids, row }: { ids: readonly string[]; row: DatabaseRow | undefined }) {
+  const names = new Map((row?.files ?? []).map((file) => [file.id, file.filename] as const));
+  const shown = ids.flatMap((id) => {
+    const name = names.get(id);
+    return name === undefined ? [] : [name];
+  });
+  if (shown.length === 0) return null;
+  return (
+    <span className="truncate text-xs text-muted-foreground" title={shown.join(', ')}>
+      {shown.join(', ')}
+    </span>
+  );
 }

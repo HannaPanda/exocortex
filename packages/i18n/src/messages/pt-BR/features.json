@@ -540,6 +540,17 @@
     },
     "where": "Uma célula de uma coluna de arquivos, na tabela ou no topo da página de uma linha."
   },
+  "datenbank-personen": {
+    "title": "Inserir pessoas em um banco de dados pelo nome",
+    "summary": "Uma coluna de pessoas mostra nomes com iniciais em vez de identificadores. Clicar na célula abre uma seleção com busca entre os membros do espaço de trabalho, e uma célula pode conter várias pessoas.",
+    "details": {
+      "p1": "A seleção está disponível onde quer que uma linha seja editada: na tabela, no topo da página de uma linha, na barra lateral, no painel de propriedades e ao definir um valor para várias linhas selecionadas. Digite um nome, escolha com as teclas de seta e Enter; pressionar Backspace no campo de busca vazio remove a última pessoa. Escape ou um clique fora aplica a seleção. Cartões no quadro e na galeria também exibem os nomes.",
+      "p2": "Quem saiu do espaço de trabalho continua aparecendo com seu nome, apenas com menos destaque, e pode ser removido. Uma conta excluída aparece como „Conta excluída“. Só é possível adicionar quem é membro. Quem vê uma página apenas por meio de um compartilhamento não tem acesso à lista de membros: vê os nomes que já estão na célula e pode, no máximo, remover alguém.",
+      "p3": "„Criado por“ e „Modificado por“ também aparecem com nomes. Uma tabela ordenada por uma coluna de pessoas organiza pelo nome da primeira pessoa, e um filtro em uma coluna de pessoas oferece os membros com seus nomes.",
+      "p4": "Os agentes leem os nomes junto aos identificadores com exo_database_row_get e exo_database_query. Os identificadores para gravação são fornecidos por exo_workspace_members, e a escrita é feita com exo_database_row_update."
+    },
+    "where": "Uma célula de uma coluna de pessoas, na tabela ou no topo da página de uma linha."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agentes visualizam imagens e baixam arquivos",
     "summary": "Um agente pode obter um anexo de imagem como uma imagem real e visualizá-lo, por exemplo, uma captura de tela ou uma comparação de antes e depois. Outros arquivos, como PDFs, ele baixa por meio de um endereço de download que vale por dez minutos e apenas uma vez.",

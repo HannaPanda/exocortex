@@ -540,6 +540,17 @@
     },
     "where": "A cell of a files column, in the table or at the top of a row’s page."
   },
+  "datenbank-personen": {
+    "title": "Assign people by name in a database",
+    "summary": "A person column shows names with initials instead of IDs. Clicking a cell opens a picker with a search across workspace members, and a cell can hold multiple people.",
+    "details": {
+      "p1": "The picker is available anywhere a row can be edited: in the table, in the header of a row page, in the sidebar, in the properties section, and when setting a value across multiple selected rows. Type a name, select with the arrow keys and Enter, and pressing Backspace in an empty search field removes the last person. Pressing Escape or clicking outside confirms the selection. Cards on boards and in galleries also show the names.",
+      "p2": "Anyone who has left the workspace remains listed by name, just slightly dimmed, and can be removed. A deleted account appears as “Deleted account”. Only workspace members can be added. Anyone viewing a page only via a share won’t get a member list: they see the names already in the cell and can at most remove someone.",
+      "p3": "“Created by” and “Last edited by” also display names. Sorting a table by a person column sorts by the first person’s name, and filtering by a person column lists members by name.",
+      "p4": "Agents use exo_database_row_get and exo_database_query to read names alongside IDs. The IDs needed for writing are provided by exo_workspace_members, and updates are made using exo_database_row_update."
+    },
+    "where": "A cell in a person column, in the table or at the top of a row’s page."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agents view images and retrieve files",
     "summary": "An agent can retrieve an image attachment as an actual image and view it, such as a screenshot or a before-and-after comparison. For other files like PDFs, it retrieves them via a download address that is valid for ten minutes and exactly once.",

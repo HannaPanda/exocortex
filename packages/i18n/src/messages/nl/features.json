@@ -540,6 +540,17 @@
     },
     "where": "Een cel van een bestandenkolom, in de tabel of bovenaan de pagina van een rij."
   },
+  "datenbank-personen": {
+    "title": "Personen in een database met naam invoeren",
+    "summary": "Een personenkolom toont namen met initialen in plaats van ID’s. Een klik op de cel opent een selectie met zoekfunctie over de leden van de werkruimte, en een cel kan meerdere personen bevatten.",
+    "details": {
+      "p1": "De selectie is overal beschikbaar waar een rij wordt bewerkt: in de tabel, in de kop van een rijpagina, in de zijbalk, in het eigenschappenpaneel en bij het instellen van een waarde voor meerdere geselecteerde rijen. Typ een naam, kies met de pijltjestoetsen en Enter; de backspace in een leeg zoekveld verwijdert de laatste persoon weer. Escape of een klik ernaast bevestigt de selectie. Kaarten op het bord en in de galerij tonen de namen eveneens.",
+      "p2": "Wie de werkruimte heeft verlaten, blijft met diens naam staan (alleen iets subtieler) en kan worden verwijderd. Een verwijderd account wordt weergegeven als „Verwijderd account”. Alleen leden kunnen worden toegevoegd. Wie een pagina alleen via een deling ziet, krijgt geen ledenlijst: diegene ziet de namen die al in de cel staan en kan hoogstens iemand verwijderen.",
+      "p3": "Ook „Gemaakt door” en „Gewijzigd door” worden met naam weergegeven. Bij het sorteren op een personenkolom sorteert een tabel op de naam van de eerste persoon, en een filter op een personenkolom biedt de leden op naam aan.",
+      "p4": "Agenten lezen met exo_database_row_get en exo_database_query de namen naast de ID’s. De ID’s om te schrijven worden geleverd door exo_workspace_members; schrijven gebeurt met exo_database_row_update."
+    },
+    "where": "Een cel van een personenkolom, in de tabel of bovenaan de pagina van een rij."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agents bekijken afbeeldingen en halen bestanden op",
     "summary": "Een agent kan een afbeeldingsbijlage als echte afbeelding ophalen en bekijken, bijvoorbeeld een screenshot of een voor-en-na-vergelijking. Andere bestanden zoals pdf’s haalt hij op via een download-URL die tien minuten en precies één keer geldig is.",

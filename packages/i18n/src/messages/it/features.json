@@ -540,6 +540,17 @@
     },
     "where": "Una cella di una colonna File, nella tabella o in cima alla pagina di una riga."
   },
+  "datenbank-personen": {
+    "title": "Inserire persone in un database con il loro nome",
+    "summary": "Una colonna di tipo persona mostra i nomi con le iniziali invece degli identificativi. Un clic sulla cella apre una selezione con ricerca tra i membri dell’area di lavoro, e una cella può contenere più persone.",
+    "details": {
+      "p1": "La selezione è disponibile ovunque si modifichi una riga: nella tabella, nell’intestazione della pagina di una riga, nella barra laterale, nella sezione delle proprietà e quando si imposta un valore per più righe selezionate. Digita un nome, seleziona con i tasti freccia e Invio; il tasto Backspace nel campo di ricerca vuoto rimuove l’ultima persona inserita. Con Esc o con un clic all’esterno confermi la selezione. Anche le schede nella vista bacheca e galleria mostrano i nomi.",
+      "p2": "Chi ha lasciato l’area di lavoro rimane visibile con il proprio nome, solo con uno stile più attenuato, e può essere rimosso. Un account eliminato compare come «Account eliminato». È possibile inserire solo chi fa parte dei membri. Chi vede una pagina solo tramite condivisione non ha accesso all’elenco dei membri: vede i nomi già presenti nella cella e può al massimo rimuovere qualcuno.",
+      "p3": "Anche «Creato da» e «Modificato da» compaiono con i rispettivi nomi. Un ordinamento della tabella in base a una colonna di persone si basa sul nome della prima persona, e un filtro su una colonna di persone propone i membri con il loro nome.",
+      "p4": "Gli agenti leggono i nomi accanto agli identificativi tramite exo_database_row_get ed exo_database_query. Gli identificativi per la scrittura vengono forniti da exo_workspace_members, mentre la scrittura avviene tramite exo_database_row_update."
+    },
+    "where": "Una cella di una colonna di tipo persona, nella tabella o in cima alla pagina di una riga."
+  },
   "agenten-bilder-ansehen": {
     "title": "Gli agenti guardano le immagini e scaricano i file",
     "summary": "Un agente può recuperare un allegato immagine come immagine reale e visualizzarlo, ad esempio uno screenshot o un confronto prima e dopo. Altri file, come i PDF, vengono recuperati tramite un indirizzo di download valido per dieci minuti e utilizzabile una sola volta.",

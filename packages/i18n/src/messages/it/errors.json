@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Alcune voci hanno una data di fine. Rimuovi le date di fine prima di disattivare l’intervallo temporale.",
     "database_files_target_invalid": "Non è possibile caricare file in questa colonna.",
     "database_files_foreign": "Una cella accetta solo i file caricati al suo interno.",
+    "database_person_not_member": "In una cella persona è possibile inserire solo chi fa parte di quest’area di lavoro.",
     "database_rows_not_found": "Alcune delle righe selezionate non esistono più. Ricarica la tabella e selezionale di nuovo.",
     "database_property_ai_invalid": "Questa istruzione IA non è adatta a questa colonna.",
     "ai_fill_not_configured": "Questa colonna non ha ancora un’istruzione IA.",

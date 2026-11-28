@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Algumas entradas têm uma data de término. Remova as datas de término antes de desativar o intervalo de datas.",
     "database_files_target_invalid": "Não é possível fazer upload de arquivos nesta coluna.",
     "database_files_foreign": "Uma célula só aceita arquivos enviados diretamente para ela.",
+    "database_person_not_member": "Só é possível adicionar a uma célula de pessoa quem for membro deste espaço de trabalho.",
     "database_rows_not_found": "Algumas das linhas selecionadas não existem mais. Recarregue a tabela e selecione novamente.",
     "database_property_ai_invalid": "Esta instrução de IA não é compatível com esta coluna.",
     "ai_fill_not_configured": "Esta coluna ainda não tem uma instrução de IA.",

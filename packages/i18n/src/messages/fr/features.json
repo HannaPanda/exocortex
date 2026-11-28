@@ -540,6 +540,17 @@
     },
     "where": "Une cellule d’une colonne Fichiers, dans le tableau ou en haut de la page d’une ligne."
   },
+  "datenbank-personen": {
+    "title": "Ajouter des personnes par leur nom dans une base de données",
+    "summary": "Une colonne Personnes affiche les noms avec leurs initiales plutôt que des identifiants. Un clic sur la cellule ouvre une liste avec recherche parmi les membres de l’espace de travail, et une cellule peut contenir plusieurs personnes.",
+    "details": {
+      "p1": "Cette sélection est disponible partout où une ligne est modifiée : dans le tableau, dans l’en-tête d’une page de ligne, dans la barre latérale, dans le volet des propriétés et lors de la définition d’une valeur pour plusieurs lignes sélectionnées. Saisis un nom, choisis avec les touches fléchées et Entrée ; la touche Retour arrière dans le champ de recherche vide retire la dernière personne. Échap ou un clic à côté valide la sélection. Les cartes du tableau Kanban et de la galerie affichent aussi les noms.",
+      "p2": "Les personnes qui ont quitté l’espace de travail restent affichées avec leur nom, simplement de manière plus discrète, et peuvent être retirées. Un compte supprimé apparaît comme « Compte supprimé ». Seuls les membres actuels peuvent être ajoutés. Une personne qui accède à une page uniquement via un partage n’a pas accès à la liste des membres : elle voit les noms déjà présents dans la cellule et peut tout au plus en retirer.",
+      "p3": "« Créé par » et « Modifié par » s’affichent également avec les noms. Un tableau trié selon une colonne Personnes se base sur le nom de la première personne, et un filtre sur une colonne Personnes propose les membres par leur nom.",
+      "p4": "Les agents lisent les noms à côté des identifiants avec exo_database_row_get et exo_database_query. Les identifiants nécessaires pour l’écriture sont fournis par exo_workspace_members, et l’écriture s’effectue avec exo_database_row_update."
+    },
+    "where": "Une cellule d’une colonne Personnes, dans le tableau ou en haut de la page d’une ligne."
+  },
   "agenten-bilder-ansehen": {
     "title": "Les agents examinent des images et récupèrent des fichiers",
     "summary": "Un agent peut récupérer une pièce jointe image sous forme d’image réelle et la regarder, par exemple une capture d’écran ou une comparaison avant/après. Il récupère les autres fichiers tels que les PDF via une URL de téléchargement valable dix minutes et une seule fois.",

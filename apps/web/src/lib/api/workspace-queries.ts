@@ -8,6 +8,8 @@ import {
   type WorkspaceDetail,
   type WorkspaceListResponse,
   type WorkspaceOverviewResponse,
+  type WorkspacePeopleResponse,
+  type WorkspacePerson,
 } from '@exocortex/contracts';
 
 import { apiRequest } from './client';
@@ -31,6 +33,31 @@ export function useWorkspaceDetail(
     queryFn: () => apiRequest<WorkspaceDetail>(`/api/workspaces/${workspaceId ?? ''}`),
     enabled: workspaceId !== undefined,
   });
+}
+
+/**
+ * The members of a workspace by name (issue #314), for whoever may list them:
+ * a member. Asked once per workspace and kept for a while, because every
+ * Person cell of a table reads it and the list rarely changes. `null` while
+ * it loads and for a reader who is not a member -- a guest holding a share
+ * gets no list, only the names already standing in the cells.
+ */
+export function useWorkspacePeople(workspaceId: string | undefined): {
+  members: readonly WorkspacePerson[] | null;
+  isMember: boolean;
+} {
+  const workspaces = useWorkspaces();
+  const isMember =
+    workspaceId !== undefined &&
+    (workspaces.data ?? []).some((workspace) => workspace.id === workspaceId);
+  const people = useQuery({
+    queryKey: queryKeys.workspacePeople(workspaceId ?? 'none'),
+    queryFn: () =>
+      apiRequest<WorkspacePeopleResponse>(`/api/workspaces/${workspaceId ?? ''}/members`),
+    enabled: isMember,
+    staleTime: 5 * 60_000,
+  });
+  return { members: isMember ? (people.data?.members ?? null) : null, isMember };
 }
 
 /**

@@ -540,6 +540,17 @@
     },
     "where": "Eine Zelle einer Dateien-Spalte, in der Tabelle oder oben auf der Seite einer Zeile."
   },
+  "datenbank-personen": {
+    "title": "Personen in einer Datenbank mit Namen eintragen",
+    "summary": "Eine Personen-Spalte zeigt Namen mit Initialen statt Kennungen. Ein Klick auf die Zelle öffnet eine Auswahl mit Suche über die Mitglieder des Arbeitsbereichs, und eine Zelle kann mehrere Personen aufnehmen.",
+    "details": {
+      "p1": "Die Auswahl gibt es überall, wo eine Zeile bearbeitet wird: in der Tabelle, im Kopf einer Zeilenseite, in der Seitenleiste, im Eigenschaften-Bereich und beim Setzen eines Werts für mehrere ausgewählte Zeilen. Tippe einen Namen, wähle mit den Pfeiltasten und Enter, die Rücktaste im leeren Suchfeld nimmt die letzte Person wieder heraus. Escape oder ein Klick daneben übernimmt die Auswahl. Karten im Board und in der Galerie zeigen die Namen ebenfalls.",
+      "p2": "Wer den Arbeitsbereich verlassen hat, bleibt mit seinem Namen stehen, nur etwas leiser, und lässt sich entfernen. Ein gelöschtes Konto erscheint als „Gelöschtes Konto“. Eintragen lässt sich nur, wer Mitglied ist. Wer eine Seite nur über eine Freigabe sieht, bekommt keine Mitgliederliste: er sieht die Namen, die schon in der Zelle stehen, und kann höchstens jemanden herausnehmen.",
+      "p3": "Auch „Erstellt von“ und „Geändert von“ stehen mit Namen da. Eine Tabelle sortiert nach einer Personen-Spalte nach dem Namen der ersten Person, und ein Filter auf eine Personen-Spalte bietet die Mitglieder mit Namen an.",
+      "p4": "Agenten lesen mit exo_database_row_get und exo_database_query die Namen neben den Kennungen. Die Kennungen zum Schreiben liefert exo_workspace_members, geschrieben wird mit exo_database_row_update."
+    },
+    "where": "Eine Zelle einer Personen-Spalte, in der Tabelle oder oben auf der Seite einer Zeile."
+  },
   "agenten-bilder-ansehen": {
     "title": "Agenten sehen sich Bilder an und holen Dateien ab",
     "summary": "Ein Agent kann einen Bildanhang als echtes Bild abrufen und ihn ansehen, zum Beispiel einen Screenshot oder einen Vorher-nachher-Vergleich. Andere Dateien wie PDFs holt er sich über eine Download-Adresse, die zehn Minuten und genau einmal gilt.",

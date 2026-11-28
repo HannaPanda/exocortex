@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Some entries have an end date. Remove the end dates before turning off date ranges.",
     "database_files_target_invalid": "Files cannot be uploaded to this column.",
     "database_files_foreign": "A cell only accepts files that were uploaded to it.",
+    "database_person_not_member": "Only members of this workspace can be added to a person cell.",
     "database_rows_not_found": "Some of the selected rows no longer exist. Reload the table and select again.",
     "database_property_ai_invalid": "This AI instruction doesn’t match this column.",
     "ai_fill_not_configured": "This column doesn’t have an AI instruction yet.",

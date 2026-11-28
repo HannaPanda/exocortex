@@ -10,6 +10,7 @@ import {
   type DatabasePropertyType,
   DERIVED_PROPERTY_TYPES,
   IMPLEMENTED_PROPERTY_TYPES,
+  type WorkspacePerson,
 } from '@exocortex/contracts';
 
 /**
@@ -63,7 +64,13 @@ export interface CheckboxWords {
 export function filterValueChoices(
   property: DatabaseProperty,
   words: CheckboxWords,
+  people: readonly WorkspacePerson[] = [],
 ): { value: string; label: string }[] {
+  // A person is stored by account id; the filter offers the member's name
+  // (issue #314). Without a member list it stays free text.
+  if (property.type === 'PERSON') {
+    return people.map((person) => ({ value: person.userId, label: person.name }));
+  }
   if (property.type === 'CHECKBOX') {
     return [
       { value: 'true', label: words.checked },
@@ -81,8 +88,13 @@ export function filterValueLabel(
   property: DatabaseProperty | undefined,
   value: unknown,
   words: CheckboxWords,
+  people: readonly WorkspacePerson[] = [],
 ): string {
   if (property !== undefined) {
+    if (property.type === 'PERSON') {
+      const person = people.find((entry) => entry.userId === value);
+      if (person !== undefined) return person.name;
+    }
     if (property.type === 'CHECKBOX')
       return value === true || value === 'true' ? words.checked : words.unchecked;
     if (property.type === 'SELECT' || property.type === 'MULTI_SELECT') {
@@ -97,20 +109,22 @@ export function filterValueLabel(
  * Everything a filter chip and a filter form say, in the reader's language:
  * the operator, the closed value set to pick from, and a stored value read
  * back. Shared by the database's filter bar and the saved-query builder, so
- * the same condition reads the same in both.
+ * the same condition reads the same in both. `people` names a Person value
+ * (issue #314); without it one reads as the account id it is stored as.
  */
-export function useFilterWording() {
+export function useFilterWording(people: readonly WorkspacePerson[] | null = null) {
   const t = useTranslations('database.filters');
   return React.useMemo(() => {
+    const known = people ?? [];
     const choiceWords = { checked: t('checkedChoice'), unchecked: t('uncheckedChoice') };
     const valueWords = { checked: t('checkedValue'), unchecked: t('uncheckedValue') };
     return {
       operator: (operator: DatabaseFilterOperator): string => t(`operators.${operator}`),
-      choices: (property: DatabaseProperty) => filterValueChoices(property, choiceWords),
+      choices: (property: DatabaseProperty) => filterValueChoices(property, choiceWords, known),
       valueLabel: (property: DatabaseProperty | undefined, value: unknown): string =>
-        filterValueLabel(property, value, valueWords),
+        filterValueLabel(property, value, valueWords, known),
     };
-  }, [t]);
+  }, [t, people]);
 }
 
 /** Which filter operators make sense for a given property type, in menu order. */

@@ -119,6 +119,15 @@ Two things to keep in mind when changing this feature:
 
 ## Things that are deliberate
 
+- **A shared row names its people, and lists nobody else.** A row answer
+  carries the names of the accounts its Person and created-by cells name
+  (`people`, issue #314), so a guest reads the same names a member does. The
+  member list a Person picker offers (`GET /api/workspaces/:id/members`) is a
+  membership question through `requireRole`, so a guest, and a page-confined
+  token, gets none: they can take somebody out of a cell they may edit and add
+  nobody. A write can only add a member, which is what keeps `people` from
+  becoming a way to read the name behind an arbitrary account id.
+
 - **A public link is `READ` in three places**: the contract refines it, the
   service hard-codes it, and the database refuses it. Anonymous writing is not a
   setting that defaults to off, it is absent.

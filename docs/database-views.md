@@ -258,8 +258,8 @@ below). Like the cell it is not a copy:
   `tall` clamp: dates with `DatePicker`/`TimeInput` (#255), selections with
   their badges, relations with their picker, rollups and formulas read-only
   through `ReadonlyCell` (ADR-041), files with `FilesCell` (see "Files in a
-  FILES cell" below). PERSON is the table's raw id editor, see the limitation
-  below.
+  FILES cell" below), people with `PersonCell` (see "People in a PERSON
+  cell" below).
 - **Folding.** `layoutRowHeader` (`row-header-layout.ts`, unit-tested) decides
   what shows before "N weitere Eigenschaften": up to eight columns are shown
   whole to an editor; past that the first six and every filled one, at most
@@ -564,6 +564,45 @@ properties panel, because all three render `PropertyCell` and pass it the row.
   is outlined and names its column. Without the right to edit, the cell only
   shows and downloads.
 
+## People in a PERSON cell
+
+Issue #314. A PERSON value is a list of user ids, and one column is always a
+list, as Notion's "Personen" is: the schema has no single-person setting and
+none was added. `PersonCell` (`apps/web/src/components/database/person-cell.tsx`,
+pure helpers in `person-values.ts`) is the one editor, in the table, a row's
+page header (on its page and in the side panel), the properties panel and the
+dialog that sets a value for several selected rows (#244). It also draws who
+created or last changed a row, read-only.
+
+- **Names come from the row.** Every row answer carries `people`: id, name and
+  `member` for each account its PERSON, CREATED_BY and UPDATED_BY values name,
+  once. The name is read from the account, so somebody who left the workspace
+  stays named (`member: false`, drawn quieter with a hint); an id without an
+  entry is a deleted account and reads "Gelöschtes Konto". Board and gallery
+  cards print the names from the same field.
+- **The picker asks the member list once.** `GET /api/workspaces/:id/members`
+  answers names and user ids only, sorted by name, to a member of the
+  workspace (`useWorkspacePeople`, cached for five minutes per workspace). The
+  browser asks only when the workspace is one of the reader's own, so a guest
+  holding a share is never offered a list: they see the names already in the
+  cell, can take somebody out, and add nobody. The picker is Base UI's
+  combobox rendered inline in a popover, with chips: arrows and Enter pick,
+  Backspace in the empty search takes out the last person, Escape or a click
+  outside commits. It keeps a draft while open and writes once when it closes,
+  so a refetch does not close it and one decision is one write.
+- **Only members are added.** `PATCH .../values` (and the batch route) refuse
+  an id the cell does not already hold unless it is a member of the
+  workspace (`database_person_not_member`); an id it holds may stay. That keeps
+  the names `people` hands out to accounts a member could have picked anyway.
+  The AI fill already chose among members only (`coerceAiFillAnswer`) and goes
+  through the same check.
+- **Sorting and filtering.** A sort on a PERSON column orders by the name of
+  its first person, and one on CREATED_BY or UPDATED_BY by that account's name
+  (`sortKeyFor` in `packages/database/src/database-query.ts`); a deleted
+  account sorts with the empty values. The filter bar offers the members by
+  name for `contains`/`not_contains` and names the person on the chip; the
+  stored condition is still the user id.
+
 ## Columns the AI fills
 
 Issue #237, [ADR-099](adr/ADR-099-an-ai-column-is-a-stored-value-a-batch-is-a-run.md).
@@ -642,11 +681,6 @@ The value is an ordinary stored value, never a formula (ADR-041).
   delete-and-recreate; there is no coercion path for existing values.
 - **Pagination degrades to offset-based once a view sorts or filters.** See
   ADR-011's consequences section.
-- **PERSON is edited as raw, comma-separated ids** in `text-cells.tsx`'s
-  `IdListCell`, in the table and a row's page header alike — a
-  member picker is a separate, larger feature; this is the honest minimal
-  editor that still round-trips the array completely through the API. FILES
-  has had its own cell since issue #245.
 - **A database embed's Markdown export/import loses the reference.** Markdown
   is interchange-only (ADR-007) and never carries internal ids, so the
   `:::database-embed` container round-trips only the database's title, and

@@ -143,6 +143,14 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     ui: {},
   }),
   defineFeature({
+    id: 'datenbank-personen',
+    area: 'datenbanken',
+    since: '2026-11-28',
+    references: ['#314'],
+    ui: {},
+    tools: ['exo_workspace_members'],
+  }),
+  defineFeature({
     id: 'agenten-datei-hochladen',
     area: 'dateien',
     since: '2026-09-25',

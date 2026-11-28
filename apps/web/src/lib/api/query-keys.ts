@@ -10,6 +10,8 @@ export const queryKeys = {
   session: ['session'] as const,
   workspaces: ['workspaces'] as const,
   workspaceDetail: (workspaceId: string) => ['workspace', workspaceId, 'detail'] as const,
+  /** Members by name only, for a Person picker (issue #314). */
+  workspacePeople: (workspaceId: string) => ['workspace', workspaceId, 'people'] as const,
   documentTree: (workspaceId: string) => ['workspace', workspaceId, 'tree'] as const,
   /**
    * The tree without database rows (issue #221). Below `documentTree` on

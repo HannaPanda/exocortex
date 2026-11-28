@@ -9,8 +9,8 @@ import { type CellValue, type PropertyCellProps } from './cells';
 import { ROW_HEIGHT_LINE_CLAMP } from './table-columns';
 
 /**
- * The cells whose value is typed as text: free text, URL, e-mail, phone, the
- * id list of PERSON, and numbers. Split out of `cells.tsx`
+ * The cells whose value is typed as text: free text, URL, e-mail, phone and
+ * numbers. Split out of `cells.tsx`
  * (issue #97); they share the commit-on-close contract and the cell box.
  */
 
@@ -192,32 +192,6 @@ export function NumberCell({ value, onChange, readOnly }: PropertyCellProps) {
         const parsed = Number(draft);
         if (Number.isFinite(parsed) && parsed !== value) onChange(parsed);
       })}
-    />
-  );
-}
-
-/**
- * PERSON stores an array of user ids. A proper member picker is a separate
- * feature; this is the honest minimal editor for the array itself, entered as
- * a comma-separated list, so the property round-trips completely through the
- * API. FILES has its own cell since issue #245 (`files-cell.tsx`).
- */
-export function IdListCell(props: PropertyCellProps) {
-  const t = useTranslations('database.cells');
-  return (
-    <ExpandableTextCell
-      {...props}
-      multiline={false}
-      monospace
-      placeholder={t('idListPlaceholder')}
-      format={(value) => (Array.isArray(value) ? value.join(', ') : '')}
-      parse={(raw) => {
-        const next = raw
-          .split(',')
-          .map((entry) => entry.trim())
-          .filter((entry) => entry.length > 0);
-        return next.length === 0 ? null : next;
-      }}
     />
   );
 }

@@ -181,6 +181,7 @@ export function RowSelectionBar({
                 property={editing}
                 value={sharedValue(rows, editing.id)}
                 readOnly={busy}
+                workspaceId={rows[0]?.document.workspaceId}
                 onChange={(value) => onSetValue(editing.id, value)}
               />
             </div>

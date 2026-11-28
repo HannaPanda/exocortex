@@ -19,6 +19,7 @@
     "database_property_date_range_in_use": "Certaines entrées ont une date de fin. Supprime les dates de fin avant de désactiver la période.",
     "database_files_target_invalid": "Impossible de téléverser des fichiers dans cette colonne.",
     "database_files_foreign": "Une cellule n’accepte que les fichiers qui y ont été téléversés.",
+    "database_person_not_member": "Seules les personnes membres de cet espace de travail peuvent être ajoutées dans une cellule de type Personne.",
     "database_rows_not_found": "Certaines des lignes sélectionnées n’existent plus. Recharge le tableau et refais ta sélection.",
     "database_property_ai_invalid": "Cette instruction IA ne convient pas à cette colonne.",
     "ai_fill_not_configured": "Cette colonne n’a pas encore d’instruction IA.",
