@@ -374,7 +374,8 @@
       "p1": "In the editor, type “/” and choose the embed, then pick the database and the view to display there. The block shows the exact same data as the database itself, not a copy: whatever you change in the embed is updated everywhere immediately.",
       "p2": "This is useful anywhere text and a list belong together. On a project page, open tasks for that project appear directly beneath the description, filtered via the view, instead of someone having to jump back and forth between two pages.",
       "p3": "Because the view is chosen along with it, the same database can look completely different in multiple places: here as a board by status, there as a list of upcoming dates.",
-      "p4": "If the database does not exist yet, you create it in the same dialog: type a name into the search field and select “New database” at the bottom. It is created as a subpage of the page it is in, and is embedded immediately. If you close the dialog instead, nothing is created. An agent does the same in two steps: exo_database_create with the page as parent page, then a “:::database-embed” block with the database name in the page."
+      "p4": "If the database does not exist yet, you create it in the same dialog: type a name into the search field and select “New database” at the bottom. It is created as a subpage of the page it is in, and is embedded immediately. If you close the dialog instead, nothing is created. An agent does the same in two steps: exo_database_create with the page as parent page, then a “:::database-embed” block with the database name in the page.",
+      "p5": "A database cannot be placed inside a table cell; it is too narrow there. Inside a cell, the menu does not offer it, and if you paste a copied database into a cell, it turns into a link that opens the database. If there was already one in a cell before, it has likewise turned into a link."
     },
     "where": "Type “/” in the editor and choose embed database."
   },
