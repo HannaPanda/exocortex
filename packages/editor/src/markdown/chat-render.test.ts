@@ -13,7 +13,7 @@ import {
 } from '../fixtures';
 import { serializePlainText } from '../plain-text';
 
-import { pruneForChat, sanitizeLinkHref } from './chat-render';
+import { pruneForChat, pruneForReading, sanitizeLinkHref } from './chat-render';
 import { parseMarkdown } from './parse';
 
 /** Every node type anywhere in the document, for allow/deny assertions. */
@@ -188,6 +188,17 @@ describe('pruneForChat', () => {
     expect(collectTypes(pruned).has('mention')).toBe(false);
     // The plain text around the mentions is an ordinary paragraph and survives.
     expect(serializePlainText(pruned)).toContain('Besprochen mit');
+  });
+});
+
+describe('pruneForReading', () => {
+  it('keeps a table of contents for the reader to draw, and the chat drops it (#228)', () => {
+    const parsed = parseMarkdown('## Kapitel\n\n:::toc\n:::\n', { assignBlockIds: false }).document;
+    expect(pruneForReading(parsed).content?.map((node) => node.type)).toEqual([
+      'heading',
+      'tableOfContents',
+    ]);
+    expect(pruneForChat(parsed).content?.map((node) => node.type)).toEqual(['heading']);
   });
 });
 

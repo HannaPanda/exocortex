@@ -7,15 +7,18 @@ import * as React from 'react';
 import {
   highlightCode,
   type HighlightNode,
+  type OutlineEntry,
   parseMarkdown,
   type ProseMirrorDocument,
   type ProseMirrorNode,
   pruneForChat,
   pruneForReading,
+  readOutlineFromJson,
   WIKI_LINK_SCHEME,
 } from '@exocortex/editor';
 import {
   Button,
+  cn,
   Table,
   TableBody,
   TableCell,
@@ -320,8 +323,16 @@ function renderBlock(node: ProseMirrorNode, key: string): React.ReactNode {
     case 'heading': {
       const level = typeof node.attrs?.level === 'number' ? node.attrs.level : 1;
       const Tag = headingTag(level);
+      // Set only by `withReadingAnchors`; the parser never writes this attribute,
+      // so a chat answer cannot put an id of its choosing into the page.
+      const anchor =
+        typeof node.attrs?.[READING_ANCHOR] === 'string' ? node.attrs[READING_ANCHOR] : undefined;
       return (
-        <Tag key={key} className={headingClassName(level)}>
+        <Tag
+          key={key}
+          id={anchor}
+          className={cn(headingClassName(level), anchor !== undefined && 'scroll-mt-4')}
+        >
           {renderInlineChildren(node.content, key)}
         </Tag>
       );
@@ -393,7 +404,7 @@ function renderBlock(node: ProseMirrorNode, key: string): React.ReactNode {
       );
 
     default:
-      // The two blocks only `pruneForReading` keeps, and then nothing:
+      // The blocks only `pruneForReading` keeps, and then nothing:
       // `pruneForChat` already removed everything else, and this guards
       // against a future node type slipping through.
       return renderReadingBlock(node, key);
@@ -403,18 +414,85 @@ function renderBlock(node: ProseMirrorNode, key: string): React.ReactNode {
 /**
  * The blocks a page has and a chat bubble does not (issue #83, ADR-044).
  *
- * Only ever reached through `ReadingMarkdown`: `pruneForChat` drops both, so a
+ * Only ever reached through `ReadingMarkdown`: `pruneForChat` drops them, so a
  * model's answer can never put an image on screen, which is what keeps a reply
  * from making the reader's browser fetch an address the model chose.
  */
 function renderReadingBlock(node: ProseMirrorNode, key: string): React.ReactNode {
   if (node.type === 'horizontalRule') return <hr key={key} className="my-6 border-border" />;
+  if (node.type === 'tableOfContents') return <ReadingTableOfContents key={key} />;
   if (node.type !== 'image') return null;
 
   const src = typeof node.attrs?.src === 'string' ? node.attrs.src : '';
   const alt = typeof node.attrs?.alt === 'string' ? node.attrs.alt : '';
   if (src.length === 0) return null;
   return <ZoomableImage key={key} src={src} alt={alt} />;
+}
+
+/** The heading attribute that carries a reading anchor; see `withReadingAnchors`. */
+const READING_ANCHOR = 'readingAnchor';
+
+/** The outline of the page being read, for its table of contents (issue #228). */
+const ReadingOutlineContext = React.createContext<readonly OutlineEntry[]>([]);
+
+/**
+ * Gives every heading of a page being read an anchor its table of contents can
+ * point at (issue #228).
+ *
+ * The Markdown behind a public link carries no block ids, so the anchor is the
+ * heading's position on the page. That is enough here: it is computed from the
+ * same document the list is drawn from, in the same render. The anchor goes in
+ * as the heading's `blockId` too, which is what the shared outline reader
+ * links by.
+ */
+function withReadingAnchors(document: ProseMirrorDocument): ProseMirrorDocument {
+  let count = 0;
+  const walk = (nodes: readonly ProseMirrorNode[] | undefined): ProseMirrorNode[] | undefined =>
+    nodes?.map((node) => {
+      if (node.type === 'heading') {
+        count += 1;
+        const anchor = `abschnitt-${String(count)}`;
+        return { ...node, attrs: { ...node.attrs, blockId: anchor, [READING_ANCHOR]: anchor } };
+      }
+      return node.content === undefined ? node : { ...node, content: walk(node.content) };
+    });
+  return { ...document, content: walk(document.content) };
+}
+
+/**
+ * The table of contents of a page being read, drawn from its headings the way
+ * the editor's block draws it, with the same classes (`globals.css`).
+ */
+function ReadingTableOfContents() {
+  const t = useTranslations('editor.nodeViews.tableOfContents');
+  const entries = React.useContext(ReadingOutlineContext);
+  return (
+    <nav aria-label={t('label')} data-toc="" className="exocortex-toc mb-3">
+      {entries.length === 0 ? (
+        <p className="text-muted-foreground">{t('empty')}</p>
+      ) : (
+        <ol>
+          {entries.map((entry, index) => (
+            <li
+              key={`${entry.blockId ?? ''}-${String(index)}`}
+              data-depth={Math.min(entry.depth, 3)}
+            >
+              {entry.blockId === null ? (
+                entry.text
+              ) : (
+                <a
+                  href={`#${entry.blockId}`}
+                  className="text-primary-text underline-offset-2 hover:underline"
+                >
+                  {entry.text}
+                </a>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
+    </nav>
+  );
 }
 
 /**
@@ -491,14 +569,22 @@ const ChatBlock = React.memo(function ChatBlock({
  * rendering the same Markdown differently.
  */
 export function ReadingMarkdown({ content, className }: { content: string; className?: string }) {
-  const document = React.useMemo(() => {
+  const { document, outline } = React.useMemo(() => {
+    let read: ProseMirrorDocument;
     try {
-      return pruneForReading(parseMarkdown(content, { assignBlockIds: false }).document);
+      read = withReadingAnchors(
+        pruneForReading(parseMarkdown(content, { assignBlockIds: false }).document),
+      );
     } catch {
-      return { type: 'doc', content: [] } as ProseMirrorDocument;
+      read = { type: 'doc', content: [] };
     }
+    return { document: read, outline: readOutlineFromJson(read) };
   }, [content]);
-  return <div className={className}>{renderBlockChildren(document.content, 'reading')}</div>;
+  return (
+    <ReadingOutlineContext.Provider value={outline}>
+      <div className={className}>{renderBlockChildren(document.content, 'reading')}</div>
+    </ReadingOutlineContext.Provider>
+  );
 }
 
 /**

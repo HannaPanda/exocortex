@@ -148,8 +148,8 @@ export function pruneForChat(document: ProseMirrorDocument): ProseMirrorDocument
 }
 
 /**
- * The same vocabulary plus images and rules, for a page somebody is *reading*
- * rather than a chat bubble (issue #83, ADR-044).
+ * The same vocabulary plus images, rules and the table of contents (#228), for
+ * a page somebody is *reading* rather than a chat bubble (issue #83, ADR-044).
  *
  * The difference is one sentence long and worth stating: a chat bubble holds
  * text a model wrote, so an image in it would be a remote address chosen by
@@ -174,6 +174,12 @@ export function pruneForReading(document: ProseMirrorDocument): ProseMirrorDocum
       }
       if (node.type === 'horizontalRule') {
         result.push({ type: 'horizontalRule' });
+        continue;
+      }
+      // The table of contents carries nothing of its own: the reader draws it
+      // from the headings that survived (issue #228).
+      if (node.type === 'tableOfContents') {
+        result.push({ type: 'tableOfContents' });
         continue;
       }
       const pruned = pruneNode(node);
