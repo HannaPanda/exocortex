@@ -80,12 +80,59 @@ has made yet.
   the account were not a member, and a grant is no membership. That is the
   intended reading of "confined", and it is tested.
 - Text from a shared page counts as `internal` for ADR-030, like any page
-  written in this deployment. Whether text from another workspace should lock a
-  run's writes the way an uploaded document does is an open question, recorded
-  here rather than decided by default.
-- A cost the reader causes on the shared page through a tool, rather than
-  through the run itself, follows that tool's own rule (a cover is drawn on the
-  page's workspace key, ADR-090). That is unchanged by this decision.
+  written in this deployment. Decided on 2026-11-26 (issue #264), see below.
+- A cover the reader causes on the shared page is paid for by the reader, not
+  by the page's workspace (issue #264, below, and ADR-090's addendum).
+
+## Addendum 2026-11-28: what the reader's chat trusts, and who pays for a cover
+
+Issue #264 settled the two questions this record had left open. Both were
+decided by the person answering for the deployment on 2026-11-26.
+
+**A shared page's text is the reader's own material in the chat.** It is not
+foreign text in the sense of ADR-030: reading it does not mark the run, and a
+mutating tool call after it is not refused on that account. A `WRITE` grant
+means the reader's assistant may write on the page, as the reader could. That
+is how #234 built it (`resolveOpenPageReach` and the page tools hand the text
+over unfenced, and the tool runner learns nothing about grants), and it stays
+that way. The reasoning: a share is a deliberate act between two accounts of
+this deployment, comparable to a membership for the one page, and treating it
+as untrusted would make every shared page a place where the assistant cannot
+help the person who was invited to work on it.
+
+**The risk carried with it, named as a class.** Whoever may write on a page
+can put text there that the reader's assistant reads as part of its context,
+and a model can follow instructions it finds in its context. Through a shared
+page that is a person outside the reader's own workspace: anybody holding
+write access to the page, including the sharer and other grant holders. The
+reach of such text is bounded by what the reader's run may do anyway (the
+reader's own rights on every call, ADR-092 above, the write mode and the
+agent profile), and its writes can be reviewed and taken back (ADR-094); the
+bound is the reader's rights, not the page. This is the same class of risk a
+page written by another member of one's own workspace carries, which ADR-030
+also counts as internal; the decision is to accept it for shares on the same
+terms rather than to fence a whole category of collaboration. A reader who
+does not trust a page's other writers can chat about it from a workspace whose
+`ai.writeMode` is `propose` or `read_only`, so nothing is written without
+their decision, and a sharer who does not trust a reader gives a `READ`
+grant.
+
+**A cover the reader asks for is the reader's to pay.** A cover requested by
+somebody who reached the page through a share, and not through a membership
+of its workspace, is drawn on one of the reader's own workspaces: the asking
+run's workspace when an AI run asks (read from the run id signed into the
+service token, never from the request), otherwise the first workspace in the
+reader's own order that is not an agent memory area, which is the one the
+chat panel picks on a shared page by default. That workspace's settings
+decide whether a picture may be drawn, its key draws it (ADR-090, ADR-091:
+an unreadable key ends the cover, nothing steps in) and the `ai_run` row of
+kind `IMAGE` is written there. A reader without any workspace of their own
+is refused with `ai_image_no_own_workspace`: there is no key that could be
+asked, and the page's workspace does not pay for somebody else's picture. A
+member, and the page's owner, pay on the page's workspace exactly as before.
+The decision lives in `resolveCoverPayer`
+(`apps/api/src/documents/cover-payer.ts`) and travels to the worker as the
+job's `billingWorkspaceId`.
 
 ## Alternatives considered
 

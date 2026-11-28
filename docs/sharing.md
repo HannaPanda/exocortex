@@ -56,6 +56,16 @@ database's other rows, its views and its own title stay behind
 does not pass. A relation's linked rows are named only when the reader may read
 their database, otherwise the header shows their ids.
 
+A database shared as `PAGE_ONLY` hands over its rows with it, on purpose
+(issue #264): the rows are what a database is, so `GET` on its rows and views
+passes `requireDocumentContext` on the database and answers every row with its
+values. What stays behind the grant is each row as a page of its own: opening
+a row, reading its body, changing its values and reaching anything under it
+asks `requireDocumentContext` on the row, which only a `SUBTREE` grant
+passes. The share dialog says so under the scope whenever the page is a
+database (`scopeDatabaseRows` in the `shares` catalogue). A public link is
+different, because it serves the page's own body and no rows.
+
 `findMembershipRole` exists for the three questions that are about an _account_
 rather than about this request: whether the person a page is being shared with
 is already a member, what the realtime gateway should do with a socket, and what
@@ -81,6 +91,21 @@ Two things to keep in mind when changing it: the run's workspace is the
 reader's, so anything that reads `run.workspaceId` to find the open page has to
 go through `resolveOpenPageReach` instead; and a pinned source is still a page
 of the conversation's workspace, so a shared page is never offered as a pin.
+
+Three decisions of issue #264 (ADR-092's addendum) belong here too:
+
+- **The shared page's text is the reader's own material** for ADR-030: it does
+  not lock the run's writes, and a `WRITE` grant lets the reader's assistant
+  write on the page. The residual risk (whoever may write on the page can put
+  text in front of the reader's assistant) is carried knowingly and described
+  as a class in ADR-092; it is bounded by the reader's own rights on every call.
+- **A cover is paid for by whoever asks**, when they reached the page through
+  a share: the asking run's workspace (from the signed run id), otherwise the
+  reader's first own workspace, and never the page's workspace
+  (`resolveCoverPayer`, ADR-090's addendum). A reader with no workspace of
+  their own gets `ai_image_no_own_workspace`. Members pay as before.
+- **A database shares its rows, even as "only this page".** See the paragraph
+  after the access checklist above.
 
 ## Adding a kind of grant
 

@@ -14,7 +14,7 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     id: 'ki-chat-geteilte-seiten',
     area: 'ki',
     since: '2026-11-26',
-    references: ['#234', 'ADR-044', 'ADR-092'],
+    references: ['#234', '#264', 'ADR-044', 'ADR-092'],
     ui: { path: '/geteilt' },
   }),
   defineFeature({

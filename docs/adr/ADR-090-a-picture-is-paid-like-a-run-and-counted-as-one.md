@@ -74,3 +74,16 @@ model that also chats shows its pictures and its conversations apart.
   rather fail is a decision for whoever answers for the bill, not part of this
   record. (Decided since, in ADR-091: it fails. A cover ends with
   `key_unreadable`, nothing is asked of a model and no row is written.)
+
+## Addendum 2026-11-28: a page somebody else shared
+
+"The workspace it is drawn for" is the page's workspace when a member asks.
+A person who reached the page only through a share (ADR-044) is not drawing
+for that workspace but for themselves, and since issue #264 they pay: the
+cover is drawn on the asking AI run's workspace (the run id comes from the
+signed service token) or, outside a run, on the first workspace in the
+reader's own order that is not an agent memory area. That workspace's
+settings, key and usage apply in full, ADR-091 included; a reader with no
+workspace of their own is refused (`ai_image_no_own_workspace`). The cover
+is still installed on, and announced in, the page's workspace. See ADR-092's
+addendum for the reasoning.

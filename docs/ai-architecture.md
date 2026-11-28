@@ -222,7 +222,17 @@ be a second paid image.
 
 Who pays (issue #252, ADR-090): the processor asks `aiKeyFor(workspaceId)`
 like a run does, so a workspace with its own OpenRouter key pays for its
-covers, and the deployment key only draws for a workspace without one. A 401
+covers, and the deployment key only draws for a workspace without one. On a
+page the requester reached only through a share it is the requester's own
+workspace instead (issue #264, ADR-092's addendum): `resolveCoverPayer`
+(`apps/api/src/documents/cover-payer.ts`) takes the asking run's workspace
+from the run id signed into the service token, or outside a run the first
+non-memory workspace in the person's own order, and refuses a person with
+none (`ai_image_no_own_workspace`). The API checks that workspace's
+settings and puts it into the job as `billingWorkspaceId`; the processor
+reads the key, the settings and the usage row from it and still installs and
+announces the cover in the page's workspace. A member's job carries no
+`billingWorkspaceId` and reads as before. A 401
 or 402 from the image model ends the cover with `key_refused` (`invalid` or
 `credits`, plus whether it was the workspace's key); no second request is
 made with another key. A workspace key this deployment cannot read
@@ -419,7 +429,10 @@ system prompt.
   breadcrumb at the shared page and adds what the grant allows. A withdrawn
   grant leaves the page out of the prompt, and every tool call is decided by
   the grant again in the API. The run itself, its key and its budget stay the
-  conversation's workspace's.
+  conversation's workspace's, and so does a cover the run draws on the shared
+  page (issue #264). The shared page's text is not fenced: it counts as the
+  reader's own material, a decision with a named residual risk in ADR-092's
+  addendum.
 - **The breadcrumb is bounded.** Ancestors are walked up at most
   `MAX_PATH_DEPTH` (8) levels; a deeper path is rendered with a leading `…`
   so an elided path is not mistaken for a root-level one.
