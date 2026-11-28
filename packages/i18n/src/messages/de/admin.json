@@ -166,6 +166,8 @@
       "reasoning": "Denkstufen",
       "inputPrice": "Eingabepreis (USD je Mio. Tokens)",
       "outputPrice": "Ausgabepreis (USD je Mio. Tokens)",
+      "priceUnit": "$ je 1 Mio. Tokens",
+      "tokenUnit": "Tokens",
       "companion": "Vision-Begleitmodell",
       "companionNone": "Keines",
       "sortOrder": "Sortierung",

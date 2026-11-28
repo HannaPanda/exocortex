@@ -166,6 +166,8 @@
       "reasoning": "Livelli di ragionamento",
       "inputPrice": "Prezzo di input (USD per milione di token)",
       "outputPrice": "Prezzo di output (USD per milione di token)",
+      "priceUnit": "$ per 1 milione di token",
+      "tokenUnit": "Token",
       "companion": "Modello di visione associato",
       "companionNone": "Nessuno",
       "sortOrder": "Ordinamento",

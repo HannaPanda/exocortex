@@ -1,10 +1,12 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import type { SettingKey, Settings } from '@exocortex/contracts';
 import { Input } from '@exocortex/ui';
 
+import { WithUnit } from '@/components/with-unit';
 import { fractionOfPercent, percentOfFraction } from '@/lib/fraction';
 
 /**
@@ -28,6 +30,7 @@ export function FractionSettingField({
   described: { 'aria-describedby': string; 'aria-invalid': boolean };
   id: string;
 }) {
+  const t = useTranslations('settings.row.countUnits');
   const [draft, setDraft] = React.useState(() => ({
     text: String(percentOfFraction(value)),
     fraction: value,
@@ -38,7 +41,7 @@ export function FractionSettingField({
     setDraft({ text: String(percentOfFraction(value)), fraction: value });
 
   return (
-    <div className="flex items-center gap-2">
+    <WithUnit unit={t('percent')}>
       <Input
         id={id}
         name={settingKey}
@@ -58,9 +61,6 @@ export function FractionSettingField({
           if (fraction !== null) onChange(fraction);
         }}
       />
-      <span className="text-sm text-muted-foreground" aria-hidden="true">
-        %
-      </span>
-    </div>
+    </WithUnit>
   );
 }

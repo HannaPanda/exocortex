@@ -644,6 +644,13 @@
       "unlimited": "Onbeperkt",
       "noDecay": "Geen verval"
     },
+    "countAmount": "{amount, number} {unit}",
+    "countUnits": {
+      "percent": "%",
+      "chars": "{count, plural, one {teken} other {tekens}}",
+      "tokens": "{count, plural, one {token} other {tokens}}",
+      "days": "{count, plural, one {dag} other {dagen}}"
+    },
     "bytesInexact": "Dit levert geen geheel aantal bytes op. De laatst geldige waarde wordt opgeslagen.",
     "choices": {
       "pdfExtractor": {

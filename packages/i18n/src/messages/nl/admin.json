@@ -166,6 +166,8 @@
       "reasoning": "Redeneerniveaus",
       "inputPrice": "Invoerprijs (USD per miljoen tokens)",
       "outputPrice": "Uitvoerprijs (USD per miljoen tokens)",
+      "priceUnit": "$ per 1 mln. tokens",
+      "tokenUnit": "Tokens",
       "companion": "Vision-begeleidend model",
       "companionNone": "Geen",
       "sortOrder": "Volgorde",

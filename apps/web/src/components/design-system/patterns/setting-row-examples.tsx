@@ -143,3 +143,43 @@ export function DurationRowExample() {
     </div>
   );
 }
+
+export function CountUnitRowExample() {
+  const [chars, setChars] = React.useState(50_000);
+  const [tokens, setTokens] = React.useState(4_096);
+  const [weight, setWeight] = React.useState(50);
+  return (
+    <div className={SETTING_LIST_CLASS}>
+      <div className="max-sm:py-4">
+        <SettingRow
+          settingKey="agents.oversizedPageChars"
+          value={chars}
+          onChange={(value) => {
+            if (typeof value === 'number') setChars(value);
+          }}
+          models={[]}
+        />
+      </div>
+      <div className="max-sm:py-4">
+        <SettingRow
+          settingKey="ai.maxOutputTokens"
+          value={tokens}
+          onChange={(value) => {
+            if (typeof value === 'number') setTokens(value);
+          }}
+          models={[]}
+        />
+      </div>
+      <div className="max-sm:py-4">
+        <SettingRow
+          settingKey="search.semanticWeightPercent"
+          value={weight}
+          onChange={(value) => {
+            if (typeof value === 'number') setWeight(value);
+          }}
+          models={[]}
+        />
+      </div>
+    </div>
+  );
+}

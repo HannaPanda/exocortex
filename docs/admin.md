@@ -762,7 +762,11 @@ page at the group the tab became.
    bounds in units (`1 Minute bis 30 Tage`); a key ending in `Hour` is an
    hour of the day, picked from 24 whole hours. Keys ending in `Days` stay
    plain numbers, because a day is already the unit a retention period is
-   thought in. Money follows it too (issue #167): a key containing
+   thought in; like `Percent`, `Chars` and `Tokens` they are stored as shown
+   and only name their unit beside the field (`components/with-unit.tsx`,
+   `lib/setting-units.ts`, issue #203). That unit is drawn for the eye only;
+   the range in the description names it for a screen reader, grouped the
+   reader's way (`1.000 Zeichen bis 5.000.000 Zeichen`). Money follows it too (issue #167): a key containing
    `MicroUsd` is stored in millionths of a dollar and edited in dollars
    (`components/money-input.tsx`, `lib/money.ts`), shown as `2,00` in the
    reader's language, read exactly with a comma or a point, and refused

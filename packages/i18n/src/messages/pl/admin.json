@@ -166,6 +166,8 @@
       "reasoning": "Poziomy myślenia",
       "inputPrice": "Cena wejściowa (USD za mln tokenów)",
       "outputPrice": "Cena wyjściowa (USD za mln tokenów)",
+      "priceUnit": "$ za 1 mln tokenów",
+      "tokenUnit": "Tokeny",
       "companion": "Model towarzyszący do wizji",
       "companionNone": "Brak",
       "sortOrder": "Sortowanie",

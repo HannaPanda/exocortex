@@ -253,6 +253,34 @@ test.describe('design system decisions', () => {
     await expect(row.getByText(/bis 100,00\s\$\. Gespeichert/)).toBeVisible();
   });
 
+  test('names what a count counts, beside the field and in its description (#203)', async ({
+    page,
+  }) => {
+    await page.goto('/design-system#einstellungszeile-einheit');
+    const chars = page.getByTestId('setting-row-agents.oversizedPageChars');
+    const field = chars.getByRole('spinbutton');
+    // Stored as it is shown: the unit changes nothing about the value.
+    await expect(field).toHaveValue('50000');
+    await expect(chars.getByText('Zeichen', { exact: true })).toBeVisible();
+    // A screen reader hears the unit with the range, grouped the reader's way.
+    await expect(field).toHaveAccessibleDescription(
+      /Zulässig: 1\.000 Zeichen bis 5\.000\.000 Zeichen\./,
+    );
+
+    const tokens = page.getByTestId('setting-row-ai.maxOutputTokens');
+    await expect(tokens.getByText('Tokens', { exact: true })).toBeVisible();
+    await expect(tokens.getByRole('spinbutton')).toHaveAccessibleDescription(
+      /256 Tokens bis 200\.000 Tokens/,
+    );
+
+    const weight = page.getByTestId('setting-row-search.semanticWeightPercent');
+    await expect(weight.getByRole('spinbutton')).toHaveValue('50');
+    await expect(weight.getByText('%', { exact: true })).toBeVisible();
+    await expect(weight.getByRole('spinbutton')).toHaveAccessibleDescription(
+      /Zulässig: 0\s%\sbis 100\s%\./,
+    );
+  });
+
   test('says "unlimited" with a switch instead of a 0 (#202)', async ({ page }) => {
     await page.goto('/design-system#einstellungszeile-unbegrenzt');
     const row = page.getByTestId('setting-row-agents.journalRetentionDays');
@@ -260,7 +288,7 @@ test.describe('design system decisions', () => {
     const unlimited = row.getByRole('switch', { name: 'Unbegrenzt' });
     await expect(days).toHaveValue('90');
     await expect(unlimited).not.toBeChecked();
-    await expect(row.getByText('Zulässig: 1 bis 3.650.')).toBeVisible();
+    await expect(row.getByText('Zulässig: 1 Tag bis 3.650 Tage.')).toBeVisible();
 
     // Clearing the number to type a new one never switches the limit off.
     await days.fill('');

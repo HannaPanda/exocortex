@@ -736,6 +736,13 @@ interface. The decision is on trial until Johanna has
 used it for a while (issue #132): the native field, or a better component,
 may still replace it.
 
+A number that counts something names its unit after the field, in muted text
+(`WithUnit`: `%`, `Zeichen`, `Tokens`, `Tage`, `$ je 1 Mio. Tokens`, issue
+#203), and the stored value stays what the field shows. That unit is for the
+eye and hidden from assistive technology; the label or the description the
+field points at names it for a screen reader. An amount that is converted
+between units (bytes, durations) picks its unit from a select instead.
+
 Every other input type goes through the same `Input`, and
 `/design-system#feld-typen` shows each one the product uses. The parts the browser draws itself (the spin
 buttons, a range slider) are dark through

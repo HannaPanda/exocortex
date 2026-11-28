@@ -45,6 +45,7 @@ import { DsExample, DsSection, DsState, DsStates } from '../showcase';
 import {
   ByteRowExample,
   ContainerImageRowExample,
+  CountUnitRowExample,
   DurationRowExample,
   HostListRowExample,
   MoneyRowExample,
@@ -283,6 +284,16 @@ export function SettingRowPattern() {
         stageClassName="p-6 sm:p-6"
       >
         <ByteRowExample />
+      </DsExample>
+
+      <DsExample
+        id="einstellungszeile-einheit"
+        title="Zahl mit Einheit"
+        source="apps/web/src/components/with-unit.tsx"
+        note="Eine Einstellung, deren Schlüssel auf Percent, Chars, Tokens oder Days endet, wird so gespeichert, wie sie gezeigt wird, und nennt neben dem Feld, was sie zählt. Die Einheit hinter dem Feld ist nur fürs Auge; vorgelesen wird sie mit dem Hilfetext, dessen Bereich sie in der Sprache der Lesenden nennt (1.000 Zeichen bis 5.000.000 Zeichen). Dasselbe Muster trägt das Prozentfeld des Faktvertrauens und die Token- und Preisfelder im Modelldialog."
+        stageClassName="p-6 sm:p-6"
+      >
+        <CountUnitRowExample />
       </DsExample>
 
       <DsExample

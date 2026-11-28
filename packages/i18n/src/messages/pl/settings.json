@@ -644,6 +644,13 @@
       "unlimited": "Bez limitu",
       "noDecay": "Bez zanikania"
     },
+    "countAmount": "{amount, number} {unit}",
+    "countUnits": {
+      "percent": "%",
+      "chars": "{count, plural, one {znak} few {znaki} many {znaków} other {znaków}}",
+      "tokens": "{count, plural, one {token} few {tokeny} many {tokenów} other {tokenów}}",
+      "days": "{count, plural, one {dzień} few {dni} many {dni} other {dni}}"
+    },
     "bytesInexact": "Wynik nie daje całkowitej liczby bajtów. Zapisano ostatni prawidłowy stan.",
     "choices": {
       "pdfExtractor": {

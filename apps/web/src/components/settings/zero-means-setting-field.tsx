@@ -12,6 +12,9 @@ import {
 } from '@exocortex/contracts';
 import { Input, Label, Switch } from '@exocortex/ui';
 
+import { useCountUnitWord } from '@/components/settings/count-unit';
+import { WithUnit } from '@/components/with-unit';
+
 /** The text a stored value shows: nothing while the switch says there is no limit. */
 function textOf(value: number): string {
   return value === 0 ? '' : String(value);
@@ -41,6 +44,7 @@ export function ZeroMeansSettingField({
   id: string;
 }) {
   const t = useTranslations('settings.row.zeroMeans');
+  const unitWord = useCountUnitWord();
   const meaning = SETTING_ZERO_MEANS[settingKey] ?? 'unlimited';
   const max = SETTING_NUMBER_RANGES[settingKey]?.max;
   const [draft, setDraft] = React.useState(() => ({ text: textOf(value), value }));
@@ -49,34 +53,40 @@ export function ZeroMeansSettingField({
   if (draft.value !== value) setDraft({ text: textOf(value), value });
   const unlimited = value === 0;
   const switchId = `${id}-zero`;
+  // While the switch says there is no limit, the field is empty and the unit
+  // names the default count's plural.
+  const unit = unitWord(settingKey, unlimited ? limitedValueOf(settingKey) : value);
+  const input = (
+    <Input
+      id={id}
+      name={settingKey}
+      type="number"
+      inputMode="numeric"
+      autoComplete="off"
+      min={1}
+      {...(max === undefined ? {} : { max })}
+      step={1}
+      className="w-28"
+      disabled={unlimited}
+      value={draft.text}
+      {...described}
+      onChange={(event) => {
+        const text = event.target.value;
+        const next = Number(text);
+        const valid =
+          text.trim().length > 0 &&
+          Number.isInteger(next) &&
+          next >= 1 &&
+          (max === undefined || next <= max);
+        setDraft({ text, value: valid ? next : draft.value });
+        if (valid) onChange(next);
+      }}
+    />
+  );
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-      <Input
-        id={id}
-        name={settingKey}
-        type="number"
-        inputMode="numeric"
-        autoComplete="off"
-        min={1}
-        {...(max === undefined ? {} : { max })}
-        step={1}
-        className="w-28"
-        disabled={unlimited}
-        value={draft.text}
-        {...described}
-        onChange={(event) => {
-          const text = event.target.value;
-          const next = Number(text);
-          const valid =
-            text.trim().length > 0 &&
-            Number.isInteger(next) &&
-            next >= 1 &&
-            (max === undefined || next <= max);
-          setDraft({ text, value: valid ? next : draft.value });
-          if (valid) onChange(next);
-        }}
-      />
+      {unit === null ? input : <WithUnit unit={unit}>{input}</WithUnit>}
       <Label htmlFor={switchId} className="gap-2 font-normal">
         <Switch
           id={switchId}

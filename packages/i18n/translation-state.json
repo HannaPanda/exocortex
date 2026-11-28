@@ -1144,6 +1144,10 @@
       "source": "16dc3e205ac66a9a",
       "output": "562273d2d64e876c"
     },
+    "admin.modelDialog.fields.priceUnit": {
+      "source": "889cafa034d5af8b",
+      "output": "71cfbe36f649d4d6"
+    },
     "admin.modelDialog.fields.provider": {
       "source": "9080a78b3e99c70f",
       "output": "472590ae974d4c1f"
@@ -1171,6 +1175,10 @@
     "admin.modelDialog.fields.sortOrder": {
       "source": "59ff9eb120be9124",
       "output": "3c9b30285f90cf05"
+    },
+    "admin.modelDialog.fields.tokenUnit": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
     },
     "admin.modelDialog.fields.tools": {
       "source": "3f0eefe1fd3c2630",
@@ -21268,6 +21276,26 @@
       "source": "423690f0be964f04",
       "output": "a64f7b85955cffbb"
     },
+    "settings.row.countAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.countUnits.chars": {
+      "source": "3f8bfa8ee19d6389",
+      "output": "c32f794b500ed1f0"
+    },
+    "settings.row.countUnits.days": {
+      "source": "f89d3d4a83b59b57",
+      "output": "3a99a92f18aed133"
+    },
+    "settings.row.countUnits.percent": {
+      "source": "bbf3f11cb5b43e70",
+      "output": "bbf3f11cb5b43e70"
+    },
+    "settings.row.countUnits.tokens": {
+      "source": "c00227718b94a23d",
+      "output": "5e62d6224e19c062"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "c0db00661fc3181b"
@@ -27806,6 +27834,10 @@
       "source": "16dc3e205ac66a9a",
       "output": "5aa1adb44c918985"
     },
+    "admin.modelDialog.fields.priceUnit": {
+      "source": "889cafa034d5af8b",
+      "output": "1854bd91012aa71a"
+    },
     "admin.modelDialog.fields.provider": {
       "source": "9080a78b3e99c70f",
       "output": "e746643f4479d116"
@@ -27833,6 +27865,10 @@
     "admin.modelDialog.fields.sortOrder": {
       "source": "59ff9eb120be9124",
       "output": "997dfc14fbb1dc4f"
+    },
+    "admin.modelDialog.fields.tokenUnit": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
     },
     "admin.modelDialog.fields.tools": {
       "source": "3f0eefe1fd3c2630",
@@ -47930,6 +47966,26 @@
       "source": "423690f0be964f04",
       "output": "89585db5337fee59"
     },
+    "settings.row.countAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.countUnits.chars": {
+      "source": "3f8bfa8ee19d6389",
+      "output": "eadbf0421cfe8530"
+    },
+    "settings.row.countUnits.days": {
+      "source": "f89d3d4a83b59b57",
+      "output": "d5363672b8473f38"
+    },
+    "settings.row.countUnits.percent": {
+      "source": "bbf3f11cb5b43e70",
+      "output": "bbf3f11cb5b43e70"
+    },
+    "settings.row.countUnits.tokens": {
+      "source": "c00227718b94a23d",
+      "output": "c4a5627fcba77b70"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "06391a4c5c4a824b"
@@ -54468,6 +54524,10 @@
       "source": "16dc3e205ac66a9a",
       "output": "aceed10f1c2d85f2"
     },
+    "admin.modelDialog.fields.priceUnit": {
+      "source": "889cafa034d5af8b",
+      "output": "f741c75a9a63c95a"
+    },
     "admin.modelDialog.fields.provider": {
       "source": "9080a78b3e99c70f",
       "output": "08e6d9c4d8fa3de2"
@@ -54495,6 +54555,10 @@
     "admin.modelDialog.fields.sortOrder": {
       "source": "59ff9eb120be9124",
       "output": "6ab5e72aa97baf6f"
+    },
+    "admin.modelDialog.fields.tokenUnit": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
     },
     "admin.modelDialog.fields.tools": {
       "source": "3f0eefe1fd3c2630",
@@ -74592,6 +74656,26 @@
       "source": "423690f0be964f04",
       "output": "e6cd98deb4ba1e5e"
     },
+    "settings.row.countAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.countUnits.chars": {
+      "source": "3f8bfa8ee19d6389",
+      "output": "2fa3729156314ed2"
+    },
+    "settings.row.countUnits.days": {
+      "source": "f89d3d4a83b59b57",
+      "output": "98256e44a1abba88"
+    },
+    "settings.row.countUnits.percent": {
+      "source": "bbf3f11cb5b43e70",
+      "output": "bbf3f11cb5b43e70"
+    },
+    "settings.row.countUnits.tokens": {
+      "source": "c00227718b94a23d",
+      "output": "c4a5627fcba77b70"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "9738c22d6f8dfcc1"
@@ -81130,6 +81214,10 @@
       "source": "16dc3e205ac66a9a",
       "output": "f3765996d5fa3b42"
     },
+    "admin.modelDialog.fields.priceUnit": {
+      "source": "889cafa034d5af8b",
+      "output": "5d0310def219f180"
+    },
     "admin.modelDialog.fields.provider": {
       "source": "9080a78b3e99c70f",
       "output": "472590ae974d4c1f"
@@ -81157,6 +81245,10 @@
     "admin.modelDialog.fields.sortOrder": {
       "source": "59ff9eb120be9124",
       "output": "0f365524a217609e"
+    },
+    "admin.modelDialog.fields.tokenUnit": {
+      "source": "a039dfb9628b53dd",
+      "output": "d2089be672953d11"
     },
     "admin.modelDialog.fields.tools": {
       "source": "3f0eefe1fd3c2630",
@@ -101254,6 +101346,26 @@
       "source": "423690f0be964f04",
       "output": "d42b0333b970eab2"
     },
+    "settings.row.countAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.countUnits.chars": {
+      "source": "3f8bfa8ee19d6389",
+      "output": "09e0745b095df9ed"
+    },
+    "settings.row.countUnits.days": {
+      "source": "f89d3d4a83b59b57",
+      "output": "815a2e7de0b1cc2f"
+    },
+    "settings.row.countUnits.percent": {
+      "source": "bbf3f11cb5b43e70",
+      "output": "bbf3f11cb5b43e70"
+    },
+    "settings.row.countUnits.tokens": {
+      "source": "c00227718b94a23d",
+      "output": "dabeccefef8ca6e5"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "8f46d1e0530f8145"
@@ -107792,6 +107904,10 @@
       "source": "16dc3e205ac66a9a",
       "output": "a9aee3793a8a6471"
     },
+    "admin.modelDialog.fields.priceUnit": {
+      "source": "889cafa034d5af8b",
+      "output": "19733862a3912d51"
+    },
     "admin.modelDialog.fields.provider": {
       "source": "9080a78b3e99c70f",
       "output": "472590ae974d4c1f"
@@ -107819,6 +107935,10 @@
     "admin.modelDialog.fields.sortOrder": {
       "source": "59ff9eb120be9124",
       "output": "9bdd2be56113d5aa"
+    },
+    "admin.modelDialog.fields.tokenUnit": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
     },
     "admin.modelDialog.fields.tools": {
       "source": "3f0eefe1fd3c2630",
@@ -127916,6 +128036,26 @@
       "source": "423690f0be964f04",
       "output": "4e285ca86ad41c9f"
     },
+    "settings.row.countAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.countUnits.chars": {
+      "source": "3f8bfa8ee19d6389",
+      "output": "1b154c432e469b65"
+    },
+    "settings.row.countUnits.days": {
+      "source": "f89d3d4a83b59b57",
+      "output": "6a12df35f099f7d3"
+    },
+    "settings.row.countUnits.percent": {
+      "source": "bbf3f11cb5b43e70",
+      "output": "bbf3f11cb5b43e70"
+    },
+    "settings.row.countUnits.tokens": {
+      "source": "c00227718b94a23d",
+      "output": "5e62d6224e19c062"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "09c4eb041fedab78"
@@ -134454,6 +134594,10 @@
       "source": "16dc3e205ac66a9a",
       "output": "6d667839101f1468"
     },
+    "admin.modelDialog.fields.priceUnit": {
+      "source": "889cafa034d5af8b",
+      "output": "73d6d7e578aab477"
+    },
     "admin.modelDialog.fields.provider": {
       "source": "9080a78b3e99c70f",
       "output": "917e6aa3eaba26e1"
@@ -134481,6 +134625,10 @@
     "admin.modelDialog.fields.sortOrder": {
       "source": "59ff9eb120be9124",
       "output": "6eb1c61df0512109"
+    },
+    "admin.modelDialog.fields.tokenUnit": {
+      "source": "a039dfb9628b53dd",
+      "output": "9bb0dd2d0910b292"
     },
     "admin.modelDialog.fields.tools": {
       "source": "3f0eefe1fd3c2630",
@@ -154578,6 +154726,26 @@
       "source": "423690f0be964f04",
       "output": "5c8f537b666d2e89"
     },
+    "settings.row.countAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.countUnits.chars": {
+      "source": "3f8bfa8ee19d6389",
+      "output": "f51df010f5caf533"
+    },
+    "settings.row.countUnits.days": {
+      "source": "f89d3d4a83b59b57",
+      "output": "7eafaa4fb5eafa66"
+    },
+    "settings.row.countUnits.percent": {
+      "source": "bbf3f11cb5b43e70",
+      "output": "bbf3f11cb5b43e70"
+    },
+    "settings.row.countUnits.tokens": {
+      "source": "c00227718b94a23d",
+      "output": "c3aae06228b4abeb"
+    },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",
       "output": "a353dd2f15425ea0"
@@ -161116,6 +161284,10 @@
       "source": "16dc3e205ac66a9a",
       "output": "68ba1dcd31acd9f5"
     },
+    "admin.modelDialog.fields.priceUnit": {
+      "source": "889cafa034d5af8b",
+      "output": "0e90c046434af172"
+    },
     "admin.modelDialog.fields.provider": {
       "source": "9080a78b3e99c70f",
       "output": "07f24ce4889ab7fd"
@@ -161143,6 +161315,10 @@
     "admin.modelDialog.fields.sortOrder": {
       "source": "59ff9eb120be9124",
       "output": "63fbb2cee8cd14e9"
+    },
+    "admin.modelDialog.fields.tokenUnit": {
+      "source": "a039dfb9628b53dd",
+      "output": "a039dfb9628b53dd"
     },
     "admin.modelDialog.fields.tools": {
       "source": "3f0eefe1fd3c2630",
@@ -181239,6 +181415,26 @@
     "settings.row.containerImage.warning": {
       "source": "423690f0be964f04",
       "output": "4fb241a676f59e05"
+    },
+    "settings.row.countAmount": {
+      "source": "959630fc7d9784d7",
+      "output": "959630fc7d9784d7"
+    },
+    "settings.row.countUnits.chars": {
+      "source": "3f8bfa8ee19d6389",
+      "output": "0cb31f63d0031302"
+    },
+    "settings.row.countUnits.days": {
+      "source": "f89d3d4a83b59b57",
+      "output": "3a5fed52f42d222a"
+    },
+    "settings.row.countUnits.percent": {
+      "source": "bbf3f11cb5b43e70",
+      "output": "bbf3f11cb5b43e70"
+    },
+    "settings.row.countUnits.tokens": {
+      "source": "c00227718b94a23d",
+      "output": "c4a5627fcba77b70"
     },
     "settings.row.entityDatabase.columnsMissing": {
       "source": "fc365c99fc3b7e6c",

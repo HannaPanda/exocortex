@@ -166,6 +166,8 @@
       "reasoning": "Niveaux de raisonnement",
       "inputPrice": "Prix d’entrée (USD par million de tokens)",
       "outputPrice": "Prix de sortie (USD par million de tokens)",
+      "priceUnit": "$ par million de tokens",
+      "tokenUnit": "Tokens",
       "companion": "Modèle compagnon de vision",
       "companionNone": "Aucun",
       "sortOrder": "Ordre de tri",

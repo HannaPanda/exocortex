@@ -166,6 +166,8 @@
       "reasoning": "Reasoning levels",
       "inputPrice": "Input price (USD per million tokens)",
       "outputPrice": "Output price (USD per million tokens)",
+      "priceUnit": "$ per 1M tokens",
+      "tokenUnit": "Tokens",
       "companion": "Vision companion model",
       "companionNone": "None",
       "sortOrder": "Sort order",

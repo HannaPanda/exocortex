@@ -27,6 +27,7 @@ import {
 import { ProviderRoutingEditor } from '@/components/ai/provider-routing-editor';
 import { DurationInput, useDurationWords } from '@/components/duration-input';
 import { MoneyInput } from '@/components/money-input';
+import { useCountUnitWord } from '@/components/settings/count-unit';
 import { EntityDatabaseField } from '@/components/settings/entity-database-field';
 import { FractionSettingField } from '@/components/settings/fraction-setting-field';
 import { HourSettingField } from '@/components/settings/hour-setting-field';
@@ -34,6 +35,7 @@ import { ModelSettingField } from '@/components/settings/model-setting-field';
 import { useSettingCopy } from '@/components/settings/setting-copy';
 import { TextSettingField } from '@/components/settings/text-setting-field';
 import { ZeroMeansSettingField } from '@/components/settings/zero-means-setting-field';
+import { WithUnit } from '@/components/with-unit';
 import {
   amountInUnit,
   BYTE_UNITS,
@@ -49,6 +51,7 @@ import { isFractionSettingKey } from '@/lib/fraction';
 import { formatMicroUsd, isMoneySettingKey } from '@/lib/money';
 import { sameRouting } from '@/lib/provider-routing-form';
 import { type ModelCatalogs, modelFieldHasList, modelFieldOf } from '@/lib/setting-references';
+import { countUnitOfSettingKey } from '@/lib/setting-units';
 
 /**
  * The vocabulary of the settings forms, shared by both of them.
@@ -143,7 +146,9 @@ export function useSettingMessages(): {
     // (`1 KiB bis 50 MiB`), never as 52428800 (issue #174), and a duration in
     // its own (`1 Minute bis 30 Tage`, never 60 to 2592000, issue #169), and
     // money in dollars (`0,001 $ bis 50,00 $`, never 1000 to 50000000, #167),
-    // and a share as a percentage (`0 % bis 100 %`, never 0 to 1, #170).
+    // and a share as a percentage (`0 % bis 100 %`, never 0 to 1, #170). A
+    // count names what it counts, so the unit beside the field is read out
+    // with the description (`1.000 Zeichen bis 5.000.000 Zeichen`, #203).
     const bytes = (value: number): string => {
       const { amount, unit } = describeBytes(value);
       return t('byteAmount', { amount, unit: t(`byteUnits.${unit}`) });
@@ -154,6 +159,15 @@ export function useSettingMessages(): {
       if (isFractionSettingKey(key)) {
         return (value: number) =>
           format.number(value, { style: 'percent', maximumFractionDigits: 2 });
+      }
+      const counted = countUnitOfSettingKey(key);
+      if (counted === 'percent') {
+        return (value: number) =>
+          format.number(value / 100, { style: 'percent', maximumFractionDigits: 2 });
+      }
+      if (counted !== null) {
+        return (value: number) =>
+          t('countAmount', { amount: value, unit: t(`countUnits.${counted}`, { count: value }) });
       }
       const base = durationBaseOfSettingKey(key);
       return base === null ? null : (value: number) => duration(value, base);
@@ -341,7 +355,8 @@ function ByteSettingField({
 /**
  * A numeric setting: an amount with a unit for bytes and durations, dollars
  * for money, a percentage for a share, a number and a switch where 0 means no
- * limit, a time for an hour of the day, a plain number otherwise.
+ * limit, a time for an hour of the day, a plain number otherwise, followed by
+ * what it counts when its key says (`%`, `Zeichen`, `Tokens`, `Tage`).
  */
 function NumberSettingField({
   settingKey,
@@ -356,6 +371,7 @@ function NumberSettingField({
   described: { 'aria-describedby': string; 'aria-invalid': boolean };
   id: string;
 }) {
+  const unitWord = useCountUnitWord();
   if (isByteSettingKey(settingKey)) {
     return (
       <ByteSettingField
@@ -427,7 +443,8 @@ function NumberSettingField({
     );
   }
   const range = SETTING_NUMBER_RANGES[settingKey];
-  return (
+  const unit = unitWord(settingKey, value);
+  const input = (
     <Input
       id={id}
       name={settingKey}
@@ -437,6 +454,7 @@ function NumberSettingField({
       // autofill heuristic has ever seen before, so neither should offer to
       // fill it in.
       autoComplete="off"
+      className={unit === null ? undefined : 'min-w-0 flex-1'}
       value={value}
       // Bounds come from the schema (`SETTING_NUMBER_RANGES`), so the spinner
       // stops where the API does instead of offering values it will refuse.
@@ -448,6 +466,9 @@ function NumberSettingField({
       }}
     />
   );
+  // The unit beside the field is for the eye; the range in the description
+  // names it for a screen reader (`useSettingMessages`).
+  return unit === null ? input : <WithUnit unit={unit}>{input}</WithUnit>;
 }
 
 /**

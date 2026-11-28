@@ -644,6 +644,13 @@
       "unlimited": "Illimitato",
       "noDecay": "Nessun decadimento"
     },
+    "countAmount": "{amount, number} {unit}",
+    "countUnits": {
+      "percent": "%",
+      "chars": "{count, plural, one {carattere} many {caratteri} other {caratteri}}",
+      "tokens": "{count, plural, one {token} many {token} other {token}}",
+      "days": "{count, plural, one {giorno} many {giorni} other {giorni}}"
+    },
     "bytesInexact": "Questo non corrisponde a un numero intero di byte. Verrà mantenuto l’ultimo valore valido.",
     "choices": {
       "pdfExtractor": {
