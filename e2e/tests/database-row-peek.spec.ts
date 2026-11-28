@@ -295,3 +295,43 @@ test.describe('a row in the side panel (issue #239)', () => {
     await expect(peek).toHaveCount(0);
   });
 });
+
+test.describe('a database in the page tree (issue #221)', () => {
+  test('shows its row count instead of its rows, and keeps a row that has sub-pages', async ({
+    page,
+    baseURL,
+  }) => {
+    const { databaseId, rowIds } = await databaseWithRows(page, baseURL, [
+      'Zeile ohne Unterseite',
+      'Zeile mit Unterseite',
+    ]);
+    const plainRow = rowIds.get('Zeile ohne Unterseite') as string;
+    const branchRow = rowIds.get('Zeile mit Unterseite') as string;
+    const workspaceId = /\/arbeitsbereich\/([a-z0-9]+)/.exec(page.url())?.[1] ?? '';
+
+    const database = page.getByTestId(`tree-item-${databaseId}`);
+    await expect(page.getByTestId(`tree-row-count-${databaseId}`)).toContainText('2');
+    // Nothing to unfold: the rows live in the table.
+    await expect(database.getByRole('button', { name: 'Unterseiten ausklappen' })).toBeHidden();
+
+    // Opening a row unfolds nothing, and the path above the page says where it is.
+    await page.goto(`/arbeitsbereich/${workspaceId}/seite/${plainRow}`);
+    const path = page.getByRole('navigation', { name: 'Pfad' });
+    await expect(path).toContainText('Seitenleiste', { timeout: 30_000 });
+    await expect(page.getByTestId(`tree-item-${databaseId}`)).toBeVisible();
+    await expect(page.getByTestId(`tree-item-${plainRow}`)).toHaveCount(0);
+
+    // A row with a page of its own is a branch: it stays under its database.
+    const created = await page.request.post(`/api/workspaces/${workspaceId}/documents`, {
+      headers: { origin: baseURL ?? '' },
+      data: { title: 'Notizen zur Zeile', parentId: branchRow },
+    });
+    expect(created.ok(), await created.text()).toBe(true);
+    const subPage = ((await created.json()) as { id: string }).id;
+    await page.goto(`/arbeitsbereich/${workspaceId}/seite/${subPage}`);
+    await expect(page.getByTestId(`tree-item-${subPage}`)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId(`tree-item-${branchRow}`)).toBeVisible();
+    await expect(page.getByTestId(`tree-item-${plainRow}`)).toHaveCount(0);
+    await expect(page.getByTestId(`tree-row-count-${databaseId}`)).toContainText('2');
+  });
+});

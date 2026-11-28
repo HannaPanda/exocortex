@@ -90,7 +90,8 @@ What is deliberately still missing is listed under
   never over a person's value unless asked, paid and counted as a run, and
   on the column's say-so by itself for new or changed rows
   (ADR-099; from a column's menu, a cell, a selection, the palette and
-  the agents' tools)
+  the agents' tools); in the page tree a database is one entry with its row
+  count, however many rows it holds (issue #221)
 - entities, their candidates and page links, in their own workspace-wide screen
 - a knowledge map: every page of a workspace as a glowing point in a 3D room,
   joined by references, similar content nobody linked, entity mentions and the
