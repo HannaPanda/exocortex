@@ -192,19 +192,19 @@
       },
       "visionEnabled": {
         "label": "Activar descripción de imágenes",
-        "help": "Permite que un modelo de visión describa las imágenes antes de que responda el modelo principal."
+        "help": "Permite que un modelo de visión describa las imágenes de la página abierta y las imágenes del chat antes de que responda el modelo principal. Cada imagen se describe una vez y la descripción se guarda."
       },
       "visionMaxImagesPerRun": {
         "label": "Imágenes por solicitud",
-        "help": "Límite superior para la cantidad de imágenes descritas por ejecución."
+        "help": "Límite máximo por ejecución: se describe esta cantidad de imágenes de la página abierta y, como máximo, esa misma cantidad de imágenes del chat y de la página se envían juntas como imagen a un modelo con soporte visual. Las imágenes del chat tienen prioridad."
       },
       "fillMaxRowsPerRun": {
         "label": "Filas por ejecución de autorellenado con IA",
         "help": "Número máximo de celdas que rellena una ejecución de una columna con instrucciones de IA. Cada celda es una solicitud al modelo; una columna más grande se rellena en varias ejecuciones."
       },
       "sendImagesToModel": {
-        "label": "Enviar imágenes del chat directamente al modelo",
-        "help": "Activado: un modelo con capacidades visuales recibe las imágenes del chat como tales en cada respuesta mientras sigan en el historial. Es más preciso y cuesta más por respuesta. Desactivado: lee la descripción guardada como cualquier otro modelo. Las imágenes se describen en ambos casos, tanto para modelos sin visión como alternativa de reserva."
+        "label": "Imágenes directas al modelo",
+        "help": "Activado: un modelo con soporte visual recibe las imágenes del chat y de la página abierta como imágenes en cada respuesta. Esto es más preciso y cuesta más por respuesta. Desactivado: lee la descripción guardada, igual que cualquier otro modelo. La imagen se describe en ambos casos, tanto para modelos sin soporte visual como alternativa de reserva."
       },
       "pageContextEnabled": {
         "label": "Incluir el texto de la página abierta",

@@ -646,12 +646,12 @@
     "where": "The list on the left side of the Chats page."
   },
   "bilder-verstehen": {
-    "title": "Get descriptions of images",
-    "summary": "Images on a page are described before the actual call, so even a model without eyes knows what can be seen on them. The number of images per run is capped because each one costs.",
+    "title": "AI sees the images on the open page",
+    "summary": "If you ask the AI in the chat beside a page with images, it knows what is shown on them: a model that understands images receives the images themselves, while any other model receives a description. Each image is described only once, after which the description stays ready.",
     "details": {
-      "p1": "If a page contains images, they are described before the actual response, and the description goes along as text. That way, even a model without image comprehension can talk about a screenshot, a diagram, or a photographed letter.",
-      "p2": "Every image is an extra call and costs. That is why the number of images per run is capped, and the feature can be turned off entirely. For agents, this is also the way to check an image that they generated themselves.",
-      "p3": "An image description is third-party text in terms of the write block: after it, a run may no longer change anything. An image can contain an instruction, after all, and that instruction should not take effect just because someone uploads it."
+      "p1": "If there is an image on the open page, it is sent with your question to the AI. A model that understands images sees it just like an attached image in chat. Any other model reads a description that a vision model writes during the first run on the page and that remains saved afterwards. This allows every model to discuss a screenshot, diagram, or photographed letter without having each question describe the image anew.",
+      "p2": "The first images on the page are included, up to the limit allowed in the AI settings; chat images and page images share this limit, with chat images taking priority. If an image can neither be shown nor described, the AI learns that there is one it hasn’t seen, and tells you so instead of guessing. Describing and direct sending can be turned off separately.",
+      "p3": "What is in an image counts as page content, not an instruction. If you uploaded the image yourself and a check found no instructions for an AI in it, the AI may continue writing normally. An image uploaded by someone else, or one that looks suspicious, locks writing for the rest of the run, because an image could contain a smuggled instruction."
     },
     "where": "Administration, Settings, AI section."
   },

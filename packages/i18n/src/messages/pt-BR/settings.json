@@ -192,19 +192,19 @@
       },
       "visionEnabled": {
         "label": "Ativar descrição de imagens",
-        "help": "Permite que um modelo de visão descreva imagens antes que o modelo principal responda."
+        "help": "Permite que um modelo de visão descreva as imagens da página aberta e as imagens no chat antes de o modelo principal responder. Cada imagem é descrita uma vez, e a descrição fica salva."
       },
       "visionMaxImagesPerRun": {
         "label": "Imagens por requisição",
-        "help": "Limite máximo para a quantidade de imagens descritas por execução."
+        "help": "Limite por execução: esta quantidade de imagens da página aberta será descrita, e esta quantidade de imagens do chat e da página será enviada junta como imagem para um modelo que entende imagens. As imagens do chat têm prioridade."
       },
       "fillMaxRowsPerRun": {
         "label": "Linhas por execução de preenchimento por IA",
         "help": "Número máximo de células que uma única execução preenche em uma coluna com instrução de IA. Cada célula é uma solicitação ao modelo; uma coluna maior será preenchida em várias execuções."
       },
       "sendImagesToModel": {
-        "label": "Enviar imagens do chat diretamente ao modelo",
-        "help": "Ativado: Um modelo com suporte a visão recebe a imagem do chat como imagem em cada resposta, enquanto ela permanecer no histórico. Isso é mais preciso e custa mais por resposta. Desativado: Ele lê a descrição salva, assim como qualquer outro modelo. Em ambos os casos, a imagem recebe uma descrição para modelos sem suporte a visão e como contingência."
+        "label": "Imagens direto para o modelo",
+        "help": "Ativado: Um modelo com suporte a visão recebe as imagens do chat e as imagens da página aberta como imagem, a cada resposta. Isso é mais preciso e custa mais por resposta. Desativado: Ele lê a descrição salva, como qualquer outro modelo. A imagem é descrita em ambos os casos, servindo para modelos sem suporte a visão e como alternativa de contingência."
       },
       "pageContextEnabled": {
         "label": "Enviar texto da página aberta",

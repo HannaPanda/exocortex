@@ -646,12 +646,12 @@
     "where": "A lista à esquerda na página de chats."
   },
   "bilder-verstehen": {
-    "title": "Obter descrições de imagens",
-    "summary": "Imagens em uma página são descritas antes da chamada principal, para que até um modelo sem visão saiba o que há nelas. O número de imagens por execução é limitado, pois cada uma tem custo.",
+    "title": "A IA vê as imagens da página aberta",
+    "summary": "Se você perguntar à IA no chat ao lado de uma página com imagens, ela sabe o que há nelas: um modelo que compreende imagens recebe as próprias imagens; qualquer outro modelo recebe uma descrição. Cada imagem é descrita apenas uma vez e, depois disso, a descrição fica disponível.",
     "details": {
-      "p1": "Se uma página contém imagens, elas são descritas antes da resposta principal, e a descrição acompanha o texto. Assim, até um modelo sem capacidade visual consegue conversar sobre uma captura de tela, um diagrama ou uma foto de um documento.",
-      "p2": "Cada imagem representa uma chamada adicional e gera custos. Por isso, a quantidade de imagens por execução tem um teto, e o recurso pode ser totalmente desativado. Para agentes, esse também é o caminho para inspecionar uma imagem gerada por eles mesmos.",
-      "p3": "A descrição de uma imagem é considerada texto externo no contexto do bloqueio de escrita: após ela, a execução não pode alterar mais nada. Afinal, uma imagem pode conter uma instrução, e ela não deve passar a valer só porque alguém fez o upload."
+      "p1": "Se houver uma imagem na página aberta, ela é enviada à IA junto com a sua pergunta. Um modelo com visão de imagem vê o arquivo exatamente como veria uma imagem anexada no chat. Qualquer outro modelo lê uma descrição gerada por um modelo de visão na primeira execução da página, que depois fica salva. Assim, qualquer modelo pode comentar sobre uma captura de tela, um diagrama ou uma foto de um documento sem precisar gerar uma nova descrição a cada pergunta.",
+      "p2": "São consideradas as primeiras imagens da página, até o limite configurado nas opções de IA. As imagens do chat e as imagens da página compartilham esse limite, priorizando as do chat. Se uma imagem não puder ser exibida nem descrita, a IA é avisada de que há uma imagem ali que ela não viu e informa isso em vez de tentar adivinhar. A geração de descrições e o envio direto podem ser desativados separadamente.",
+      "p3": "O texto contido em uma imagem é tratado como conteúdo da página, e não como instrução. Se você mesmo enviou a imagem e a verificação não encontrou instruções para a IA, ela pode continuar escrevendo normalmente. Já uma imagem enviada por outra pessoa ou que levante suspeitas bloqueia a escrita pelo resto da execução, pois uma imagem pode conter instruções maliciosas ocultas."
     },
     "where": "Administração, Configurações, seção IA."
   },

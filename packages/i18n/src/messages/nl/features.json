@@ -646,12 +646,12 @@
     "where": "De lijst links op de Chats-pagina."
   },
   "bilder-verstehen": {
-    "title": "Afbeeldingen laten beschrijven",
-    "summary": "Afbeeldingen op een pagina worden vóór de daadwerkelijke aanroep beschreven, zodat ook een model zonder ogen weet wat erop te zien is. Het aantal afbeeldingen per run is begrensd, omdat elke afbeelding geld kost.",
+    "title": "De AI ziet de afbeeldingen op de geopende pagina",
+    "summary": "Als je de AI iets vraagt in de chat naast een pagina met afbeeldingen, weet ze wat erop te zien is: een model dat afbeeldingen begrijpt, ontvangt de afbeeldingen zelf; elk ander model krijgt een beschrijving. Elke afbeelding wordt slechts één keer beschreven, waarna de beschrijving bewaard blijft.",
     "details": {
-      "p1": "Bevat een pagina afbeeldingen, dan worden ze vóór het eigenlijke antwoord beschreven en de beschrijving gaat als tekst mee. Daardoor kan ook een model zonder beeldherkenning praten over een screenshot, een diagram of een gefotografeerde brief.",
-      "p2": "Elke afbeelding is een extra aanroep en kost geld. Daarom is het aantal afbeeldingen per run gemaximeerd, en de functie kan volledig worden uitgeschakeld. Voor agents is dit ook de manier om een afbeelding te controleren die ze zelf hebben gemaakt.",
-      "p3": "Een afbeeldingsbeschrijving is externe tekst in de zin van de schrijfvergrendeling: daarna mag een run niets meer wijzigen. Een afbeelding kan namelijk een instructie bevatten, en die mag niet werkzaam worden doordat iemand deze uploadt."
+      "p1": "Staat er op de geopende pagina een afbeelding, dan gaat deze met je vraag mee naar de AI. Een model dat afbeeldingen begrijpt, ziet deze net zoals een bijgevoegde afbeelding in de chat. Elk ander model leest een beschrijving die een beeldmodel bij de eerste keer op de pagina schrijft en die daarna opgeslagen blijft. Daardoor kan elk model meepraten over een screenshot, een diagram of een gefotografeerde brief, zonder dat de afbeelding bij elke vraag opnieuw moet worden beschreven.",
+      "p2": "Er wordt rekening gehouden met de eerste afbeeldingen van de pagina, tot het maximum dat is ingesteld in de AI-instellingen; afbeeldingen uit de chat en afbeeldingen van de pagina delen deze limiet, waarbij die uit de chat voorrang krijgen. Als een afbeelding niet kan worden getoond of beschreven, krijgt de AI te weten dat er een afbeelding staat die ze niet heeft kunnen zien, en geeft ze dat aan in plaats van te gokken. Het beschrijven en het rechtstreeks meesturen kunnen afzonderlijk worden uitgeschakeld.",
+      "p3": "Wat er in een afbeelding staat, telt als inhoud van de pagina en niet als instructie. Heb je de afbeelding zelf geüpload en heeft een controle er geen instructies voor een AI in gevonden, dan mag de AI daarna gewoon verder schrijven. Een afbeelding die iemand anders heeft geüpload, of eentje die opvalt, blokkeert het schrijven voor de rest van de sessie, omdat een afbeelding een verborgen instructie kan bevatten."
     },
     "where": "Beheer, Instellingen, sectie AI."
   },

@@ -13457,24 +13457,24 @@
       "output": "c668377724f673cf"
     },
     "features.bilder-verstehen.details.p1": {
-      "source": "af9c7eac59b36dc2",
-      "output": "df444ce4aa138ad6"
+      "source": "f82402770f75d3b3",
+      "output": "4f9fd20f139e7b55"
     },
     "features.bilder-verstehen.details.p2": {
-      "source": "958308f4f109d484",
-      "output": "3fec50f0134d221a"
+      "source": "ab5f4eb3231b0eeb",
+      "output": "b9bf3c5762e0efcc"
     },
     "features.bilder-verstehen.details.p3": {
-      "source": "3a0681ce463af4ef",
-      "output": "16d05a9c5c388842"
+      "source": "2b5db66dde116fb8",
+      "output": "e73d781a23792211"
     },
     "features.bilder-verstehen.summary": {
-      "source": "f3081107a4ebf287",
-      "output": "b9f9bd626a35dc33"
+      "source": "66f06ec882091d33",
+      "output": "b09817b0a985f1d3"
     },
     "features.bilder-verstehen.title": {
-      "source": "d29eab35dde2363b",
-      "output": "8394dcb93d55d46a"
+      "source": "c2c9ebfc1d93ceb3",
+      "output": "13bdda69e7e741b3"
     },
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
@@ -18297,8 +18297,8 @@
       "output": "052b83915260c6f9"
     },
     "runInspector.context.sections.images": {
-      "source": "98b285ab7eeaa9a6",
-      "output": "3edb6d7340f332e0"
+      "source": "c6e1c193a827367e",
+      "output": "e9b81c54bccc5c37"
     },
     "runInspector.context.sections.on_demand_rules": {
       "source": "d5dc668fe0ba0ce4",
@@ -18307,6 +18307,10 @@
     "runInspector.context.sections.open_page": {
       "source": "ecc7df97f22f34bb",
       "output": "af0303342a01d272"
+    },
+    "runInspector.context.sections.page_images": {
+      "source": "461f751240e82875",
+      "output": "2c7ed0a937d2e481"
     },
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
@@ -20265,12 +20269,12 @@
       "output": "88145d88bd086b76"
     },
     "settings.keys.ai.sendImagesToModel.help": {
-      "source": "594d4d0b1dac6f08",
-      "output": "9dbe3815e294fc73"
+      "source": "0525fce4e52dc84d",
+      "output": "d26faf54b5305d1a"
     },
     "settings.keys.ai.sendImagesToModel.label": {
-      "source": "0498c785e9239666",
-      "output": "0cc332c509aca869"
+      "source": "c8316b02c1a4aa4b",
+      "output": "c7d0708be8ee157e"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -20313,16 +20317,16 @@
       "output": "d54b1e6d6df47e48"
     },
     "settings.keys.ai.visionEnabled.help": {
-      "source": "dc69f62314554f49",
-      "output": "4f7860840121b088"
+      "source": "f627659f44d7421b",
+      "output": "80e886ee6f4eef26"
     },
     "settings.keys.ai.visionEnabled.label": {
       "source": "09ee888fa161c221",
       "output": "e11c84448d9abc82"
     },
     "settings.keys.ai.visionMaxImagesPerRun.help": {
-      "source": "01b8ac9d9ef9bd9c",
-      "output": "0f064242a7eff6d5"
+      "source": "cb07594512f0acb2",
+      "output": "5f5b21f350ed39dd"
     },
     "settings.keys.ai.visionMaxImagesPerRun.label": {
       "source": "3af91f6801318a79",
@@ -40063,24 +40067,24 @@
       "output": "9ba91f2a235c9caa"
     },
     "features.bilder-verstehen.details.p1": {
-      "source": "af9c7eac59b36dc2",
-      "output": "513e284e653043c8"
+      "source": "f82402770f75d3b3",
+      "output": "7e8fe06401509357"
     },
     "features.bilder-verstehen.details.p2": {
-      "source": "958308f4f109d484",
-      "output": "27fede4561b31b4a"
+      "source": "ab5f4eb3231b0eeb",
+      "output": "4ebf66e15476b3bd"
     },
     "features.bilder-verstehen.details.p3": {
-      "source": "3a0681ce463af4ef",
-      "output": "d2072369db25fd8a"
+      "source": "2b5db66dde116fb8",
+      "output": "2f5af503ce232826"
     },
     "features.bilder-verstehen.summary": {
-      "source": "f3081107a4ebf287",
-      "output": "ecc20bf2d6a47e47"
+      "source": "66f06ec882091d33",
+      "output": "97adcf54d52450d4"
     },
     "features.bilder-verstehen.title": {
-      "source": "d29eab35dde2363b",
-      "output": "769e9b15bd1826bb"
+      "source": "c2c9ebfc1d93ceb3",
+      "output": "31e5bb0422ebbfdc"
     },
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
@@ -44903,8 +44907,8 @@
       "output": "ef097f14de5b7942"
     },
     "runInspector.context.sections.images": {
-      "source": "98b285ab7eeaa9a6",
-      "output": "6b0b36ef35522c7b"
+      "source": "c6e1c193a827367e",
+      "output": "ea3000739cd6b2bb"
     },
     "runInspector.context.sections.on_demand_rules": {
       "source": "d5dc668fe0ba0ce4",
@@ -44913,6 +44917,10 @@
     "runInspector.context.sections.open_page": {
       "source": "ecc7df97f22f34bb",
       "output": "f1b1ba3301f0c671"
+    },
+    "runInspector.context.sections.page_images": {
+      "source": "461f751240e82875",
+      "output": "c67d06e49bb29438"
     },
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
@@ -46871,12 +46879,12 @@
       "output": "ec9514749d439064"
     },
     "settings.keys.ai.sendImagesToModel.help": {
-      "source": "594d4d0b1dac6f08",
-      "output": "0c80512c440c5508"
+      "source": "0525fce4e52dc84d",
+      "output": "b3099fe118df7f7b"
     },
     "settings.keys.ai.sendImagesToModel.label": {
-      "source": "0498c785e9239666",
-      "output": "43df492499aa375d"
+      "source": "c8316b02c1a4aa4b",
+      "output": "96f9293c153684c9"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -46919,16 +46927,16 @@
       "output": "63f407c6f0a8739f"
     },
     "settings.keys.ai.visionEnabled.help": {
-      "source": "dc69f62314554f49",
-      "output": "580ec3e625936dd3"
+      "source": "f627659f44d7421b",
+      "output": "eebffc7c4d34d344"
     },
     "settings.keys.ai.visionEnabled.label": {
       "source": "09ee888fa161c221",
       "output": "27c2efcdc4f538dd"
     },
     "settings.keys.ai.visionMaxImagesPerRun.help": {
-      "source": "01b8ac9d9ef9bd9c",
-      "output": "e078e087f9095f33"
+      "source": "cb07594512f0acb2",
+      "output": "376526c41521b6d3"
     },
     "settings.keys.ai.visionMaxImagesPerRun.label": {
       "source": "3af91f6801318a79",
@@ -66669,24 +66677,24 @@
       "output": "a787c37fa7a22b98"
     },
     "features.bilder-verstehen.details.p1": {
-      "source": "af9c7eac59b36dc2",
-      "output": "1f7cfe3415d6d61f"
+      "source": "f82402770f75d3b3",
+      "output": "b3da792eda43f79e"
     },
     "features.bilder-verstehen.details.p2": {
-      "source": "958308f4f109d484",
-      "output": "f7e82264b2f0a6e5"
+      "source": "ab5f4eb3231b0eeb",
+      "output": "790bc445efa8bc72"
     },
     "features.bilder-verstehen.details.p3": {
-      "source": "3a0681ce463af4ef",
-      "output": "4ecc9230955596ab"
+      "source": "2b5db66dde116fb8",
+      "output": "ade11e270eee47b1"
     },
     "features.bilder-verstehen.summary": {
-      "source": "f3081107a4ebf287",
-      "output": "37efa6d82e5cb402"
+      "source": "66f06ec882091d33",
+      "output": "3980af21e16e0277"
     },
     "features.bilder-verstehen.title": {
-      "source": "d29eab35dde2363b",
-      "output": "a0ccef749b18c23d"
+      "source": "c2c9ebfc1d93ceb3",
+      "output": "edd6a9af37500a15"
     },
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
@@ -71509,8 +71517,8 @@
       "output": "012739928362d0cb"
     },
     "runInspector.context.sections.images": {
-      "source": "98b285ab7eeaa9a6",
-      "output": "ed3339f54e6494a9"
+      "source": "c6e1c193a827367e",
+      "output": "56bba7ea34bbeb31"
     },
     "runInspector.context.sections.on_demand_rules": {
       "source": "d5dc668fe0ba0ce4",
@@ -71519,6 +71527,10 @@
     "runInspector.context.sections.open_page": {
       "source": "ecc7df97f22f34bb",
       "output": "4e94592a4f47a4b8"
+    },
+    "runInspector.context.sections.page_images": {
+      "source": "461f751240e82875",
+      "output": "a51725c687b4a053"
     },
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
@@ -73477,12 +73489,12 @@
       "output": "49b58d8f9f87d287"
     },
     "settings.keys.ai.sendImagesToModel.help": {
-      "source": "594d4d0b1dac6f08",
-      "output": "e31f93e2b845552b"
+      "source": "0525fce4e52dc84d",
+      "output": "a55c776d4145fb88"
     },
     "settings.keys.ai.sendImagesToModel.label": {
-      "source": "0498c785e9239666",
-      "output": "d7fe8c01cbea2cce"
+      "source": "c8316b02c1a4aa4b",
+      "output": "8a6008aa2f88871e"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -73525,16 +73537,16 @@
       "output": "dbbb81b54394c0e1"
     },
     "settings.keys.ai.visionEnabled.help": {
-      "source": "dc69f62314554f49",
-      "output": "52ab87d427730445"
+      "source": "f627659f44d7421b",
+      "output": "45d0bd405794674f"
     },
     "settings.keys.ai.visionEnabled.label": {
       "source": "09ee888fa161c221",
       "output": "aa2e5a9cf5867f94"
     },
     "settings.keys.ai.visionMaxImagesPerRun.help": {
-      "source": "01b8ac9d9ef9bd9c",
-      "output": "a69c1f9579a2cf42"
+      "source": "cb07594512f0acb2",
+      "output": "51c711b37dc2ccf4"
     },
     "settings.keys.ai.visionMaxImagesPerRun.label": {
       "source": "3af91f6801318a79",
@@ -93275,24 +93287,24 @@
       "output": "52229ccc00939a1d"
     },
     "features.bilder-verstehen.details.p1": {
-      "source": "af9c7eac59b36dc2",
-      "output": "06563b6183f12613"
+      "source": "f82402770f75d3b3",
+      "output": "8fb63c6371c26b43"
     },
     "features.bilder-verstehen.details.p2": {
-      "source": "958308f4f109d484",
-      "output": "b1d8ea3e1ca8eaf5"
+      "source": "ab5f4eb3231b0eeb",
+      "output": "c069d6b354d4319d"
     },
     "features.bilder-verstehen.details.p3": {
-      "source": "3a0681ce463af4ef",
-      "output": "1d5378ac1a1a6748"
+      "source": "2b5db66dde116fb8",
+      "output": "446325286229f280"
     },
     "features.bilder-verstehen.summary": {
-      "source": "f3081107a4ebf287",
-      "output": "8d1366bd1563acad"
+      "source": "66f06ec882091d33",
+      "output": "3d4e2dbc8994c509"
     },
     "features.bilder-verstehen.title": {
-      "source": "d29eab35dde2363b",
-      "output": "c46257dd85394a0d"
+      "source": "c2c9ebfc1d93ceb3",
+      "output": "9fd64d1ec2b28203"
     },
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
@@ -98115,8 +98127,8 @@
       "output": "8df36e0cb7f2785e"
     },
     "runInspector.context.sections.images": {
-      "source": "98b285ab7eeaa9a6",
-      "output": "f4db410c046b4fcd"
+      "source": "c6e1c193a827367e",
+      "output": "5a9162e13a50519a"
     },
     "runInspector.context.sections.on_demand_rules": {
       "source": "d5dc668fe0ba0ce4",
@@ -98125,6 +98137,10 @@
     "runInspector.context.sections.open_page": {
       "source": "ecc7df97f22f34bb",
       "output": "9a9e549ea6f48aa9"
+    },
+    "runInspector.context.sections.page_images": {
+      "source": "461f751240e82875",
+      "output": "a8333bb9521d888c"
     },
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
@@ -100083,12 +100099,12 @@
       "output": "1c435e1e8d4a5aeb"
     },
     "settings.keys.ai.sendImagesToModel.help": {
-      "source": "594d4d0b1dac6f08",
-      "output": "195c834d9942f5d2"
+      "source": "0525fce4e52dc84d",
+      "output": "a4fe419ff2cc1a7d"
     },
     "settings.keys.ai.sendImagesToModel.label": {
-      "source": "0498c785e9239666",
-      "output": "3330de2275fe7ad7"
+      "source": "c8316b02c1a4aa4b",
+      "output": "18b52315fe754889"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -100131,16 +100147,16 @@
       "output": "cade6e8b17a9d8dd"
     },
     "settings.keys.ai.visionEnabled.help": {
-      "source": "dc69f62314554f49",
-      "output": "0790fdb1d9a1b928"
+      "source": "f627659f44d7421b",
+      "output": "10324aa208a4928b"
     },
     "settings.keys.ai.visionEnabled.label": {
       "source": "09ee888fa161c221",
       "output": "42ae6ae229b334cb"
     },
     "settings.keys.ai.visionMaxImagesPerRun.help": {
-      "source": "01b8ac9d9ef9bd9c",
-      "output": "fb762b14fa60bedd"
+      "source": "cb07594512f0acb2",
+      "output": "6e2467e4a305d084"
     },
     "settings.keys.ai.visionMaxImagesPerRun.label": {
       "source": "3af91f6801318a79",
@@ -119881,24 +119897,24 @@
       "output": "b977c598243e6fdb"
     },
     "features.bilder-verstehen.details.p1": {
-      "source": "af9c7eac59b36dc2",
-      "output": "feefed24ce762d60"
+      "source": "f82402770f75d3b3",
+      "output": "84a27d652a1d4cb4"
     },
     "features.bilder-verstehen.details.p2": {
-      "source": "958308f4f109d484",
-      "output": "2c81985bfd91e773"
+      "source": "ab5f4eb3231b0eeb",
+      "output": "8b46d0f6f0136e0f"
     },
     "features.bilder-verstehen.details.p3": {
-      "source": "3a0681ce463af4ef",
-      "output": "519af0265b7134ca"
+      "source": "2b5db66dde116fb8",
+      "output": "60e1229c23ba4cbd"
     },
     "features.bilder-verstehen.summary": {
-      "source": "f3081107a4ebf287",
-      "output": "235a19219b7fa649"
+      "source": "66f06ec882091d33",
+      "output": "53089688f515a3f8"
     },
     "features.bilder-verstehen.title": {
-      "source": "d29eab35dde2363b",
-      "output": "46359561623633df"
+      "source": "c2c9ebfc1d93ceb3",
+      "output": "75ab394854775dda"
     },
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
@@ -124721,8 +124737,8 @@
       "output": "c9e6e1be1072aa7c"
     },
     "runInspector.context.sections.images": {
-      "source": "98b285ab7eeaa9a6",
-      "output": "3e62a712621485f6"
+      "source": "c6e1c193a827367e",
+      "output": "22d71364095ca0b5"
     },
     "runInspector.context.sections.on_demand_rules": {
       "source": "d5dc668fe0ba0ce4",
@@ -124731,6 +124747,10 @@
     "runInspector.context.sections.open_page": {
       "source": "ecc7df97f22f34bb",
       "output": "6659a1ef36fe8608"
+    },
+    "runInspector.context.sections.page_images": {
+      "source": "461f751240e82875",
+      "output": "1aa01102b823e156"
     },
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
@@ -126689,12 +126709,12 @@
       "output": "cd5c0d0f68a260ab"
     },
     "settings.keys.ai.sendImagesToModel.help": {
-      "source": "594d4d0b1dac6f08",
-      "output": "e6d2a1959f8dc456"
+      "source": "0525fce4e52dc84d",
+      "output": "a9b919bb8874708c"
     },
     "settings.keys.ai.sendImagesToModel.label": {
-      "source": "0498c785e9239666",
-      "output": "bae31eecbf046b06"
+      "source": "c8316b02c1a4aa4b",
+      "output": "0ef232c47526f3f2"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -126737,16 +126757,16 @@
       "output": "198dac66eb9de8a6"
     },
     "settings.keys.ai.visionEnabled.help": {
-      "source": "dc69f62314554f49",
-      "output": "212a9d2db2890aad"
+      "source": "f627659f44d7421b",
+      "output": "499254ac9df4e0dd"
     },
     "settings.keys.ai.visionEnabled.label": {
       "source": "09ee888fa161c221",
       "output": "5f8147272d0ed2f3"
     },
     "settings.keys.ai.visionMaxImagesPerRun.help": {
-      "source": "01b8ac9d9ef9bd9c",
-      "output": "05d918d2a41c2120"
+      "source": "cb07594512f0acb2",
+      "output": "ba01f67da278dfca"
     },
     "settings.keys.ai.visionMaxImagesPerRun.label": {
       "source": "3af91f6801318a79",
@@ -146487,24 +146507,24 @@
       "output": "683d33cd7691070f"
     },
     "features.bilder-verstehen.details.p1": {
-      "source": "af9c7eac59b36dc2",
-      "output": "91fa4922ee725e18"
+      "source": "f82402770f75d3b3",
+      "output": "24f73f4391f66a6f"
     },
     "features.bilder-verstehen.details.p2": {
-      "source": "958308f4f109d484",
-      "output": "68ff63f847fafb37"
+      "source": "ab5f4eb3231b0eeb",
+      "output": "608540a9675f334a"
     },
     "features.bilder-verstehen.details.p3": {
-      "source": "3a0681ce463af4ef",
-      "output": "1fd06c2ab5df9e9a"
+      "source": "2b5db66dde116fb8",
+      "output": "98a928b1aeed0d0d"
     },
     "features.bilder-verstehen.summary": {
-      "source": "f3081107a4ebf287",
-      "output": "f61ea99e70bd2a8e"
+      "source": "66f06ec882091d33",
+      "output": "170c720ea303c402"
     },
     "features.bilder-verstehen.title": {
-      "source": "d29eab35dde2363b",
-      "output": "7ee229cb645600fd"
+      "source": "c2c9ebfc1d93ceb3",
+      "output": "fbecfb22ecf92151"
     },
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
@@ -151327,8 +151347,8 @@
       "output": "5a2891a40c66e8ba"
     },
     "runInspector.context.sections.images": {
-      "source": "98b285ab7eeaa9a6",
-      "output": "fd4155a9da8e3932"
+      "source": "c6e1c193a827367e",
+      "output": "b66dcd7a69fb573d"
     },
     "runInspector.context.sections.on_demand_rules": {
       "source": "d5dc668fe0ba0ce4",
@@ -151337,6 +151357,10 @@
     "runInspector.context.sections.open_page": {
       "source": "ecc7df97f22f34bb",
       "output": "c80bc810d6abd5c7"
+    },
+    "runInspector.context.sections.page_images": {
+      "source": "461f751240e82875",
+      "output": "3a7d34ccdf0436c7"
     },
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
@@ -153295,12 +153319,12 @@
       "output": "faafbf96a7abb829"
     },
     "settings.keys.ai.sendImagesToModel.help": {
-      "source": "594d4d0b1dac6f08",
-      "output": "2d8c2fdaa42c5f2a"
+      "source": "0525fce4e52dc84d",
+      "output": "7a0550dc3e4b5683"
     },
     "settings.keys.ai.sendImagesToModel.label": {
-      "source": "0498c785e9239666",
-      "output": "709adfa1e320efa0"
+      "source": "c8316b02c1a4aa4b",
+      "output": "1f6e43efa16d01ba"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -153343,16 +153367,16 @@
       "output": "c041e9eb463d01a5"
     },
     "settings.keys.ai.visionEnabled.help": {
-      "source": "dc69f62314554f49",
-      "output": "0cb16ebbd1be5e08"
+      "source": "f627659f44d7421b",
+      "output": "7909be9f7d4ca123"
     },
     "settings.keys.ai.visionEnabled.label": {
       "source": "09ee888fa161c221",
       "output": "a97e95259d667efd"
     },
     "settings.keys.ai.visionMaxImagesPerRun.help": {
-      "source": "01b8ac9d9ef9bd9c",
-      "output": "26ce86f03516a76d"
+      "source": "cb07594512f0acb2",
+      "output": "2e6ad0e609438276"
     },
     "settings.keys.ai.visionMaxImagesPerRun.label": {
       "source": "3af91f6801318a79",
@@ -173093,24 +173117,24 @@
       "output": "d281cf41fd2e4589"
     },
     "features.bilder-verstehen.details.p1": {
-      "source": "af9c7eac59b36dc2",
-      "output": "c4473f0a8d0efa82"
+      "source": "f82402770f75d3b3",
+      "output": "f4a4b3d52204f10c"
     },
     "features.bilder-verstehen.details.p2": {
-      "source": "958308f4f109d484",
-      "output": "0de6e63f9bb3a49e"
+      "source": "ab5f4eb3231b0eeb",
+      "output": "bfd22b7c961066e9"
     },
     "features.bilder-verstehen.details.p3": {
-      "source": "3a0681ce463af4ef",
-      "output": "7177a2ac26a7dbbc"
+      "source": "2b5db66dde116fb8",
+      "output": "0c1ff9d3909a97f7"
     },
     "features.bilder-verstehen.summary": {
-      "source": "f3081107a4ebf287",
-      "output": "9d2ec955f8bc25bd"
+      "source": "66f06ec882091d33",
+      "output": "918d8cfcb490cbb5"
     },
     "features.bilder-verstehen.title": {
-      "source": "d29eab35dde2363b",
-      "output": "d91b73a60f484a15"
+      "source": "c2c9ebfc1d93ceb3",
+      "output": "fddd0a799f281f33"
     },
     "features.bilder-verstehen.where": {
       "source": "1196095f393aadcb",
@@ -177933,8 +177957,8 @@
       "output": "5ff9c12f7f0c1438"
     },
     "runInspector.context.sections.images": {
-      "source": "98b285ab7eeaa9a6",
-      "output": "0221ee707a7870e6"
+      "source": "c6e1c193a827367e",
+      "output": "f777ee5a63ea2969"
     },
     "runInspector.context.sections.on_demand_rules": {
       "source": "d5dc668fe0ba0ce4",
@@ -177943,6 +177967,10 @@
     "runInspector.context.sections.open_page": {
       "source": "ecc7df97f22f34bb",
       "output": "7633dd868db7a3f2"
+    },
+    "runInspector.context.sections.page_images": {
+      "source": "461f751240e82875",
+      "output": "8a479620a93c4c16"
     },
     "runInspector.context.sections.pinned_sources": {
       "source": "29943f39fdc4bb6e",
@@ -179901,12 +179929,12 @@
       "output": "1fbb8e94a939ee3c"
     },
     "settings.keys.ai.sendImagesToModel.help": {
-      "source": "594d4d0b1dac6f08",
-      "output": "87e7323157f82348"
+      "source": "0525fce4e52dc84d",
+      "output": "83ba41c4d549bff9"
     },
     "settings.keys.ai.sendImagesToModel.label": {
-      "source": "0498c785e9239666",
-      "output": "2f4b8ed70d7e31b1"
+      "source": "c8316b02c1a4aa4b",
+      "output": "67db90f77425ff8b"
     },
     "settings.keys.ai.subscriptionFallback.help": {
       "source": "fbc7444b2d9f073e",
@@ -179949,16 +179977,16 @@
       "output": "6548f65da67cae83"
     },
     "settings.keys.ai.visionEnabled.help": {
-      "source": "dc69f62314554f49",
-      "output": "ae095e0470b7b1a0"
+      "source": "f627659f44d7421b",
+      "output": "e88f25e45aa05fd1"
     },
     "settings.keys.ai.visionEnabled.label": {
       "source": "09ee888fa161c221",
       "output": "53da76c24af8f106"
     },
     "settings.keys.ai.visionMaxImagesPerRun.help": {
-      "source": "01b8ac9d9ef9bd9c",
-      "output": "ad2937450c3cad20"
+      "source": "cb07594512f0acb2",
+      "output": "3d9c2566c3af03f3"
     },
     "settings.keys.ai.visionMaxImagesPerRun.label": {
       "source": "3af91f6801318a79",

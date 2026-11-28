@@ -192,19 +192,19 @@
       },
       "visionEnabled": {
         "label": "Activer la description d’images",
-        "help": "Permet à un modèle de vision de décrire les images avant que le modèle principal ne réponde."
+        "help": "Permet à un modèle de vision de décrire les images de la page ouverte et celles du chat avant que le modèle principal ne réponde. Chaque image est décrite une seule fois, et la description reste enregistrée."
       },
       "visionMaxImagesPerRun": {
         "label": "Images par requête",
-        "help": "Limite supérieure pour le nombre d’images décrites par exécution."
+        "help": "Limite maximale par exécution : c’est le nombre d’images de la page ouverte qui seront décrites, et le nombre combiné d’images du chat et de la page transmises directement à un modèle capable de traiter les images. Les images du chat sont prioritaires."
       },
       "fillMaxRowsPerRun": {
         "label": "Lignes par passage de remplissage par l’IA",
         "help": "Nombre maximal de cellules qu’un passage d’une colonne avec consigne d’IA remplit. Chaque cellule correspond à une requête de modèle ; une colonne plus grande sera remplie en plusieurs passages."
       },
       "sendImagesToModel": {
-        "label": "Images dans le chat directement transmises au modèle",
-        "help": "Activé : Un modèle prenant en charge les images reçoit l’image du chat en tant qu’image, à chaque réponse, tant qu’elle figure dans l’historique. C’est plus précis et plus coûteux par réponse. Désactivé : Il lit la description enregistrée, comme tout autre modèle. L’image est décrite dans les deux cas, pour les modèles sans vision et comme solution de secours."
+        "label": "Images envoyées directement au modèle",
+        "help": "Activé : un modèle capable de traiter les images reçoit les images du chat et celles de la page ouverte sous forme d’images, à chaque réponse. C’est plus précis et coûte plus cher par réponse. Désactivé : il lit la description enregistrée, comme n’importe quel autre modèle. Dans les deux cas, une image est toujours décrite, pour les modèles sans vision et comme solution de secours."
       },
       "pageContextEnabled": {
         "label": "Envoyer le texte de la page ouverte",

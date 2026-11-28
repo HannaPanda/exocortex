@@ -192,19 +192,19 @@
       },
       "visionEnabled": {
         "label": "Abilita descrizione immagini",
-        "help": "Consente a un modello di visione di descrivere le immagini prima che il modello principale risponda."
+        "help": "Consente a un modello di visione di descrivere le immagini della pagina aperta e quelle nella chat prima che il modello principale risponda. Ogni immagine viene descritta una sola volta e la descrizione rimane salvata."
       },
       "visionMaxImagesPerRun": {
         "label": "Immagini per richiesta",
-        "help": "Limite massimo per il numero di immagini descritte per ciascuna esecuzione."
+        "help": "Limite massimo per esecuzione: indica quante immagini della pagina aperta vengono descritte e quante immagini tra chat e pagina vengono inviate insieme come immagine a un modello in grado di comprenderle. Le immagini della chat hanno la precedenza."
       },
       "fillMaxRowsPerRun": {
         "label": "Righe per ciclo di riempimento IA",
         "help": "Numero massimo di celle che un ciclo di una colonna con istruzioni IA può riempire. Ogni cella corrisponde a una richiesta al modello; una colonna più grande viene riempita in più cicli."
       },
       "sendImagesToModel": {
-        "label": "Immagini della chat inviate direttamente al modello",
-        "help": "Attivo: un modello con supporto visivo riceve un’immagine della chat come immagine vera e propria, a ogni risposta, finché rimane nella cronologia. È più preciso e costa di più per risposta. Disattivo: legge la descrizione salvata come qualsiasi altro modello. L’immagine viene comunque descritta in entrambi i casi, per i modelli senza supporto visivo e come soluzione di riserva."
+        "label": "Invia immagini direttamente al modello",
+        "help": "Attivo: un modello con supporto visivo riceve le immagini della chat e della pagina aperta direttamente come immagine a ogni risposta. È più preciso e costa di più per risposta. Disattivo: legge la descrizione salvata, come qualsiasi altro modello. L’immagine viene comunque descritta in entrambi i casi, sia per i modelli senza supporto visivo sia come soluzione di riserva."
       },
       "pageContextEnabled": {
         "label": "Includi il testo della pagina aperta",

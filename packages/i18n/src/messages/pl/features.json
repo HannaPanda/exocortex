@@ -646,12 +646,12 @@
     "where": "Lista po lewej stronie na karcie Czatów."
   },
   "bilder-verstehen": {
-    "title": "Opisywanie obrazów",
-    "summary": "Obrazy na stronie są opisywane przed właściwym wywołaniem, dzięki czemu nawet model bez oczu wie, co się na nich znajduje. Liczba obrazów na przebieg jest ograniczona, ponieważ każdy z nich generuje koszty.",
+    "title": "AI widzi obrazy na otwartej stronie",
+    "summary": "Gdy pytasz AI na czacie obok strony z obrazami, wie ona, co się na nich znajduje: model rozumiejący obrazy otrzymuje same obrazy, a każdy inny – ich opis. Każdy obraz jest opisywany tylko raz, po czym opis pozostaje zachowany.",
     "details": {
-      "p1": "Gdy strona zawiera obrazy, są one opisywane przed wygenerowaniem właściwej odpowiedzi, a opis jest dołączany jako tekst. Dzięki temu nawet model nierozumiejący obrazów może odnieść się do zrzutu ekranu, diagramu lub sfotografowanego pisma.",
-      "p2": "Każdy obraz to dodatkowe wywołanie i koszt. Z tego powodu liczba obrazów na przebieg jest ograniczona, a funkcję można całkowicie wyłączyć. Dla agentów jest to również sposób na sprawdzenie obrazu, który sami wygenerowali.",
-      "p3": "Opis obrazu jest tekstem obcym w rozumieniu blokady zapisu: po nim przebieg nie może już niczego zmieniać. Obraz może bowiem zawierać instrukcję, a ta nie powinna wejść w życie tylko dlatego, że ktoś go wgrał."
+      "p1": "Jeśli na otwartej stronie znajduje się obraz, trafia on wraz z twoim pytaniem do AI. Model rozumiejący obrazy widzi go tak, jak widzi obraz załączony na czacie. Każdy inny model czyta opis, który model wizyjny tworzy przy pierwszym uruchomieniu na stronie i który jest potem zapisywany. Dzięki temu każdy model może rozmawiać o zrzucie ekranu, diagramie czy sfotografowanym piśmie bez konieczności ponownego opisywania obrazu przy każdym pytaniu.",
+      "p2": "Uwzględniane są pierwsze obrazy na stronie, w liczbie dozwolonej przez limit w ustawieniach AI; obrazy z czatu i obrazy ze strony dzielą ten limit, przy czym obrazy z czatu mają pierwszeństwo. Jeśli obrazu nie da się ani pokazać, ani opisać, AI dowiaduje się, że jakiś obraz tam jest, ale go nie widziała, i informuje o tym, zamiast zgadywać. Tworzenie opisów i bezpośrednie przesyłanie można wyłączyć osobno.",
+      "p3": "To, co znajduje się na obrazie, jest traktowane jako treść strony, a nie instrukcja. Jeśli obraz został przesłany przez ciebie, a weryfikacja nie wykryła w nim instrukcji dla AI, AI może potem normalnie kontynuować pisanie. Obraz przesłany przez kogoś innego lub wzbudzający podejrzenia blokuje możliwość pisania do końca tego przebiegu, ponieważ obraz może zawierać ukrytą instrukcję."
     },
     "where": "Administracja, Ustawienia, sekcja AI."
   },

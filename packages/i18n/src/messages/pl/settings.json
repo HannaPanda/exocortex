@@ -192,19 +192,19 @@
       },
       "visionEnabled": {
         "label": "Włącz opisywanie obrazów",
-        "help": "Pozwala modelowi wizyjnemu opisywać obrazy, zanim odpowie model główny."
+        "help": "Pozwala modelowi wizyjnemu opisać obrazy z otwartej strony oraz obrazy na czacie, zanim odpowie główny model. Każdy obraz jest opisywany raz, a opis pozostaje zapisany."
       },
       "visionMaxImagesPerRun": {
         "label": "Obrazy na zapytanie",
-        "help": "Górny limit liczby opisywanych obrazów na uruchomienie."
+        "help": "Górny limit na uruchomienie: tyle obrazów z otwartej strony zostanie opisanych i tyle obrazów łącznie z czatu i strony trafi jako obraz do modelu obsługującego obrazy. Obrazy z czatu mają pierwszeństwo."
       },
       "fillMaxRowsPerRun": {
         "label": "Wiersze na jedno przejście autouzupełniania przez AI",
         "help": "Maksymalna liczba komórek wypełnianych w jednym przejściu kolumny z instrukcją AI. Każda komórka to jedno zapytanie do modelu; większa kolumna jest uzupełniana w kilku przejściach."
       },
       "sendImagesToModel": {
-        "label": "Obrazy na czacie bezpośrednio do modelu",
-        "help": "Włączone: model obsługujący obrazy otrzymuje obraz z czatu w formie graficznej przy każdej odpowiedzi, dopóki znajduje się on w historii. Jest to dokładniejsze i kosztuje więcej przy każdej odpowiedzi. Wyłączone: model czyta zapisany opis, tak jak każdy inny model. Opis obrazu jest generowany w obu przypadkach – dla modeli bez obsługi obrazów oraz jako rozwiązanie zapasowe."
+        "label": "Obrazy bezpośrednio do modelu",
+        "help": "Włączone: model z obsługą obrazów otrzymuje obrazy z czatu oraz obrazy z otwartej strony w formie obrazu przy każdej odpowiedzi. Jest to dokładniejsze i kosztuje więcej za każdą odpowiedź. Wyłączone: czyta zapisany opis tak jak każdy inny model. W obu przypadkach obraz i tak jest opisywany – dla modeli bez obsługi obrazów oraz jako rozwiązanie rezerwowe."
       },
       "pageContextEnabled": {
         "label": "Dołączaj tekst otwartej strony",

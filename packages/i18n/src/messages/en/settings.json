@@ -192,19 +192,19 @@
       },
       "visionEnabled": {
         "label": "Enable image description",
-        "help": "Lets a vision model describe images before the main model responds."
+        "help": "Lets a vision model describe images on the open page and images in the chat before the main model responds. Each image is described once; the description remains saved."
       },
       "visionMaxImagesPerRun": {
         "label": "Images per request",
-        "help": "Upper limit for the number of described images per run."
+        "help": "Upper limit per run: this many images on the open page are described, and this many images from the chat and page combined are sent as images to a vision-capable model. Images from the chat take priority."
       },
       "fillMaxRowsPerRun": {
         "label": "Rows per AI fill run",
         "help": "The maximum number of cells a single run fills for a column with an AI prompt. Each cell is a model request; a larger column is filled across multiple runs."
       },
       "sendImagesToModel": {
-        "label": "Send chat images directly to the model",
-        "help": "On: A vision-capable model receives an image from the chat as an image, with every reply, as long as it remains in the history. This is more accurate and costs more per reply. Off: Like any other model, it reads the saved description. An image is described in both cases, for models without vision capabilities and as a fallback."
+        "label": "Send images directly to model",
+        "help": "On: A vision-capable model receives the images from the chat and the images on the open page as images with every response. This is more accurate and costs more per response. Off: Like any other model, it reads the saved description. An image is described in both cases, for models without vision capabilities and as a fallback."
       },
       "pageContextEnabled": {
         "label": "Include text of the open page",

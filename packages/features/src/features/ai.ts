@@ -105,9 +105,12 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
   defineFeature({
     id: 'bilder-verstehen',
     area: 'ki',
-    since: '2026-08-06',
+    // Since #207 a model that sees gets the open page's pictures too, which
+    // is what the default model never had: new for every reader.
+    since: '2026-11-28',
+    references: ['ADR-012', '#207', 'ADR-102', 'ADR-096', 'ADR-097'],
     ui: {},
-    settings: ['ai.visionEnabled', 'ai.visionMaxImagesPerRun'],
+    settings: ['ai.visionEnabled', 'ai.visionMaxImagesPerRun', 'ai.sendImagesToModel'],
   }),
   defineFeature({
     id: 'bilder-im-chat',

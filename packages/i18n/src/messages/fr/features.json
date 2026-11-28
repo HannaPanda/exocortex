@@ -646,12 +646,12 @@
     "where": "La liste à gauche sur la page des chats."
   },
   "bilder-verstehen": {
-    "title": "Faire décrire des images",
-    "summary": "Les images d’une page sont décrites avant l’appel proprement dit, afin que même un modèle sans vision sache ce qui s’y trouve. Le nombre d’images par exécution est limité, car chacune a un coût.",
+    "title": "L’IA voit les images de la page ouverte",
+    "summary": "Si tu poses une question à l’IA dans le chat à côté d’une page contenant des images, elle sait ce qui s’y trouve : un modèle qui comprend les images reçoit les images elles-mêmes, tout autre modèle en reçoit une description. Chaque image n’est décrite qu’une seule fois, après quoi la description reste prête à l’emploi.",
     "details": {
-      "p1": "Si une page contient des images, elles sont décrites avant la réponse proprement dite, et la description est transmise sous forme de texte. Ainsi, même un modèle sans vision peut discuter d’une capture d’écran, d’un diagramme ou d’une photo de document.",
-      "p2": "Chaque image constitue un appel supplémentaire et a un coût. Le nombre d’images par exécution est donc plafonné, et la fonctionnalité peut être entièrement désactivée. Pour les agents, c’est aussi le moyen de vérifier une image qu’ils ont eux-mêmes générée.",
-      "p3": "Une description d’image est un texte tiers au sens du verrouillage d’écriture : après elle, une exécution ne peut plus rien modifier. Une image peut en effet contenir une instruction, et celle-ci ne doit pas devenir active du simple fait que quelqu’un l’a téléversée."
+      "p1": "Si la page ouverte contient une image, celle-ci accompagne ta question à l’IA. Un modèle qui comprend les images la voit de la même façon qu’une image jointe dans le chat. Tout autre modèle lit une description rédigée par un modèle de vision lors du premier passage sur la page, conservée ensuite. Ainsi, chaque modèle peut échanger sur une capture d’écran, un diagramme ou une lettre prise en photo, sans que chaque question ne relance la description de l’image.",
+      "p2": "Les premières images de la page sont prises en compte, dans la limite définie par le plafond des paramètres de l’IA ; les images du chat et celles de la page partagent cette limite, celles du chat étant prioritaires. S’il est impossible d’afficher ou de décrire une image, l’IA apprend qu’une image est présente mais qu’elle ne l’a pas vue, et l’indique au lieu de deviner. La description et l’envoi direct peuvent être désactivés séparément.",
+      "p3": "Ce qui figure dans une image est considéré comme du contenu de la page et non comme une instruction. Si tu as mis en ligne l’image toi-même et qu’une vérification n’y a trouvé aucune instruction destinée à une IA, l’IA peut ensuite continuer à écrire normalement. Une image mise en ligne par une autre personne, ou une image suspecte, bloque l’écriture pour le reste de l’exécution, car une image peut dissimuler une instruction piégée."
     },
     "where": "Administration, Paramètres, section IA."
   },

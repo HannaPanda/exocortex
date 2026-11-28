@@ -83,8 +83,11 @@ export const settingsSchema = z.object({
   'ai.maxToolIterations': z.number().int().min(0).max(1_000).default(8),
   'ai.visionEnabled': z.boolean().default(true),
   /**
-   * Images described before the main answer. Each one is a paid vision call, so
-   * the ceiling is high rather than tight and the run budget does the limiting.
+   * Pictures one run looks at: the open page's first ones are described (each
+   * once, then kept on its row, ADR-102), a chat message may carry this many,
+   * and chat and page pictures together go as pixels up to this count, the
+   * chat's first. A description is a paid vision call, so the ceiling is high
+   * rather than tight and the run budget does the limiting.
    */
   'ai.visionMaxImagesPerRun': z.number().int().min(0).max(64).default(4),
   /**
@@ -94,12 +97,13 @@ export const settingsSchema = z.object({
    */
   'ai.fillMaxRowsPerRun': z.number().int().min(1).max(500).default(100),
   /**
-   * Whether a picture on a chat message goes to a model that sees images as
-   * the picture itself, on every turn it is in the context (issue #223,
-   * ADR-097). Off, every model reads the stored description, which is cheaper
-   * per turn and what a text-only model always gets. The description is
-   * written either way: it is what compaction, the screening and a refused
-   * picture fall back to.
+   * Whether a picture on a chat message, and since issue #207 a picture on
+   * the open page (ADR-102), goes to a model that sees images as the picture
+   * itself, on every turn it is in the context (issue #223, ADR-097). Off,
+   * every model reads the stored description, which is cheaper per turn and
+   * what a text-only model always gets. The description is written either
+   * way: it is what compaction, the screening and a refused picture fall
+   * back to.
    */
   'ai.sendImagesToModel': z.boolean().default(true),
   /**

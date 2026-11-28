@@ -192,19 +192,19 @@
       },
       "visionEnabled": {
         "label": "Afbeeldingsbeschrijving inschakelen",
-        "help": "Laat een vision-model afbeeldingen beschrijven voordat het hoofdmodel antwoordt."
+        "help": "Laat een beeldmodel de afbeeldingen op de geopende pagina en in de chat beschrijven voordat het hoofdmodel antwoordt. Elke afbeelding wordt één keer beschreven, de beschrijving blijft bewaard."
       },
       "visionMaxImagesPerRun": {
         "label": "Afbeeldingen per verzoek",
-        "help": "Bovengrens voor het aantal beschreven afbeeldingen per run."
+        "help": "Bovengrens per run: zoveel afbeeldingen van de geopende pagina worden beschreven, en zoveel afbeeldingen uit de chat en van de pagina gaan samen als afbeelding naar een model dat afbeeldingen begrijpt. De afbeeldingen uit de chat hebben voorrang."
       },
       "fillMaxRowsPerRun": {
         "label": "Rijen per AI-invulsessie",
         "help": "Zoveel cellen vult één sessie van een kolom met AI-instructie maximaal. Elke cel is een modelaanvraag; een grotere kolom wordt in meerdere sessies gevuld."
       },
       "sendImagesToModel": {
-        "label": "Afbeeldingen in de chat direct naar het model",
-        "help": "Aan: Een model dat overweg kan met afbeeldingen ontvangt een afbeelding uit de chat als afbeelding, bij elk antwoord, zolang deze in de geschiedenis staat. Dat is nauwkeuriger en kost per antwoord meer. Uit: Het leest net als elk ander model de opgeslagen beschrijving. Een afbeelding wordt in beide gevallen beschreven, voor modellen zonder beeldverwerking en als terugvaloptie."
+        "label": "Afbeeldingen direct naar het model sturen",
+        "help": "Aan: Een beeldvaardig model ontvangt de afbeeldingen uit de chat en van de geopende pagina als afbeelding, bij elk antwoord. Dat is nauwkeuriger en kost per antwoord meer. Uit: Het leest net als elk ander model de opgeslagen beschrijving. Een afbeelding wordt in beide gevallen beschreven, voor modellen zonder beeldinzicht en als terugvaloptie."
       },
       "pageContextEnabled": {
         "label": "Tekst van de geopende pagina meesturen",

@@ -646,12 +646,12 @@
     "where": "Die Liste links auf der Chats-Seite."
   },
   "bilder-verstehen": {
-    "title": "Bilder beschreiben lassen",
-    "summary": "Bilder auf einer Seite werden vor dem eigentlichen Aufruf beschrieben, sodass auch ein Modell ohne Augen weiß, was darauf zu sehen ist. Die Zahl der Bilder pro Lauf ist begrenzt, weil jedes davon kostet.",
+    "title": "Die KI sieht die Bilder der geöffneten Seite",
+    "summary": "Fragst du die KI im Chat neben einer Seite mit Bildern, weiß sie, was darauf zu sehen ist: ein Modell, das Bilder versteht, bekommt die Bilder selbst, jedes andere eine Beschreibung. Beschrieben wird jedes Bild nur einmal, danach liegt die Beschreibung bereit.",
     "details": {
-      "p1": "Enthält eine Seite Bilder, werden sie vor der eigentlichen Antwort beschrieben, und die Beschreibung geht als Text mit. Dadurch kann auch ein Modell ohne Bildverständnis über einen Screenshot, ein Diagramm oder ein abfotografiertes Schreiben reden.",
-      "p2": "Jedes Bild ist ein zusätzlicher Aufruf und kostet. Deshalb ist die Zahl der Bilder pro Lauf gedeckelt, und die Funktion lässt sich ganz abschalten. Für Agenten ist das auch der Weg, ein Bild zu prüfen, das sie selbst erzeugt haben.",
-      "p3": "Eine Bildbeschreibung ist fremder Text im Sinne der Schreibsperre: nach ihr darf ein Lauf nichts mehr ändern. Ein Bild kann nämlich eine Anweisung enthalten, und die soll nicht dadurch wirksam werden, dass jemand es hochlädt."
+      "p1": "Steht auf der geöffneten Seite ein Bild, geht es mit deiner Frage an die KI. Ein Modell, das Bilder versteht, sieht es so, wie es im Chat ein angehängtes Bild sieht. Jedes andere Modell liest eine Beschreibung, die ein Bildmodell beim ersten Lauf auf der Seite schreibt und die danach gespeichert bleibt. Dadurch kann jedes Modell über einen Screenshot, ein Diagramm oder ein abfotografiertes Schreiben reden, ohne dass jede Frage das Bild neu beschreiben lässt.",
+      "p2": "Berücksichtigt werden die ersten Bilder der Seite, so viele, wie die Obergrenze in den KI-Einstellungen erlaubt; Bilder aus dem Chat und Bilder der Seite teilen sich diese Grenze, die aus dem Chat zuerst. Lässt sich ein Bild weder zeigen noch beschreiben, erfährt die KI, dass dort eines ist, das sie nicht gesehen hat, und sagt das, statt zu raten. Beschreiben und das direkte Senden lassen sich getrennt abschalten.",
+      "p3": "Was in einem Bild steht, gilt als Inhalt der Seite und nicht als Anweisung. Hast du das Bild selbst hochgeladen und hat eine Prüfung keine Anweisungen an eine KI darin gefunden, darf die KI danach normal weiterschreiben. Ein Bild, das jemand anderes hochgeladen hat, oder eines, das auffällt, sperrt für den Rest des Laufs das Schreiben, weil ein Bild eine untergeschobene Anweisung enthalten kann."
     },
     "where": "Verwaltung, Einstellungen, Abschnitt KI."
   },
