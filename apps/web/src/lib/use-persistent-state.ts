@@ -18,6 +18,24 @@ interface Store {
 
 const stores = new Map<string, Store>();
 
+// A private window, blocked site data or a full quota make the storage throw.
+// What is kept here is a convenience, so the value then lives for the tab only.
+function readStorage(key: string): string | null {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeStorage(key: string, raw: string): void {
+  try {
+    window.localStorage.setItem(key, raw);
+  } catch {
+    // Kept in memory by the store; nothing else to do.
+  }
+}
+
 function storeFor(key: string): Store {
   const existing = stores.get(key);
   if (existing !== undefined) return existing;
@@ -44,7 +62,7 @@ function storeFor(key: string): Store {
     },
     getSnapshot: () => {
       if (!initialized) {
-        cached = window.localStorage.getItem(key);
+        cached = readStorage(key);
         initialized = true;
       }
       return cached;
@@ -52,7 +70,7 @@ function storeFor(key: string): Store {
     set: (raw) => {
       cached = raw;
       initialized = true;
-      window.localStorage.setItem(key, raw);
+      writeStorage(key, raw);
       for (const listener of listeners) listener();
     },
   };
