@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import { idSchema } from '@exocortex/contracts';
-
 /**
  * Response shapes that exist on live `apps/api` routes but have no named export
  * in `@exocortex/contracts` yet.
@@ -17,12 +15,6 @@ export {
   databasePropertyListResponseSchema,
   databaseViewListResponseSchema,
 } from '@exocortex/contracts';
-
-/** `POST /api/documents/:documentId/snapshots/:snapshotId/restore` response. */
-export const restoreSnapshotResultSchema = z.object({
-  documentId: idSchema,
-  restoredFrom: idSchema,
-});
 
 /** Shared shape of the `DELETE` responses on properties, options and views. */
 export const deletedResultSchema = z.object({ deleted: z.literal(true) });

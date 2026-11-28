@@ -27,6 +27,7 @@ import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentTrashService } from './document-trash.service';
 import { DocumentWriteCommitService } from './document-write-commit.service';
 import { DocumentsService } from './documents.service';
+import { PageHistoryService } from './page-history.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
 
 /** `DocumentContentService` reads one value from the environment: the origin
@@ -53,6 +54,7 @@ let documents: DocumentsService;
 let content: DocumentContentService;
 let snapshots: DocumentSnapshotService;
 let diffs: DocumentDiffService;
+let history: PageHistoryService;
 let workspaceId: string;
 let ownerId: string;
 let outsiderId: string;
@@ -126,6 +128,7 @@ beforeAll(async () => {
     settingsStub(),
   );
   diffs = new DocumentDiffService(prisma, logger, access, snapshots);
+  history = new PageHistoryService(prisma, logger, access);
 
   const suffix = Date.now().toString(36);
   const [owner, outsider] = await Promise.all([
@@ -394,5 +397,93 @@ describe('DocumentDiffService.restoreBlocks', () => {
 
     expect(result.snapshotBeforeId).toBeNull();
     expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(before);
+  });
+});
+
+describe('PageHistoryService (issue #235)', () => {
+  it('lists the versions with their author, a write series folded into one entry', async () => {
+    const documentId = await createPage('Verlauf');
+    await write(documentId, `Eins ^${A}`);
+    await write(documentId, `Eins ^${A}\n\nZwei ^${B}`);
+    await write(documentId, `Eins ^${A}\n\nZwei ^${B}\n\nDrei ^${C}`);
+
+    const result = await history.history({ documentId, userId: ownerId, limit: 300 });
+
+    const total = result.groups.reduce((sum, group) => sum + group.versions.length, 0);
+    expect(total).toBe(result.versionCount);
+    const writes = result.groups.find((group) => group.kind === 'write');
+    expect(writes?.versions.length).toBeGreaterThanOrEqual(3);
+    expect(writes?.author).toEqual({ kind: 'person', userId: ownerId, name: 'Owner' });
+    // The series stands for the page before it began: its oldest version.
+    expect(writes?.representativeId).toBe(writes?.versions.at(-1)?.id);
+    expect(result.nextBefore).toBeNull();
+  });
+
+  it('pages older versions behind `before`', async () => {
+    const documentId = await createPage('Verlauf blättern');
+    for (const text of ['Eins', 'Zwei', 'Drei']) await write(documentId, `${text} ^${A}`);
+
+    const first = await history.history({ documentId, userId: ownerId, limit: 2 });
+    expect(first.versionCount).toBe(2);
+    expect(first.nextBefore).not.toBeNull();
+    const second = await history.history({
+      documentId,
+      userId: ownerId,
+      limit: 2,
+      before: first.nextBefore ?? undefined,
+    });
+    const firstIds = first.groups.flatMap((group) => group.versions.map((version) => version.id));
+    const secondIds = second.groups.flatMap((group) => group.versions.map((version) => version.id));
+    expect(secondIds.some((id) => firstIds.includes(id))).toBe(false);
+  });
+
+  it('reads one version back as it was, and its map over the budget', async () => {
+    const documentId = await createPage('Verlauf lesen');
+    await write(documentId, `Damals ^${A}`);
+    const snapshot = await snapshots.create({ documentId, userId: ownerId, reason: 'manual' });
+    await write(documentId, `Heute ^${A}`);
+
+    const read = await history.read({
+      documentId,
+      snapshotId: snapshot.id,
+      userId: ownerId,
+      withContent: true,
+    });
+    expect(read.view).toBe('content');
+    expect(read.markdown).toContain('Damals');
+    expect(read.proseMirrorJson?.type).toBe('doc');
+    expect(read.version.reason).toBe('manual');
+
+    const elsewhere = await createPage('Anderswo');
+    await expect(
+      history.read({
+        documentId: elsewhere,
+        snapshotId: snapshot.id,
+        userId: ownerId,
+        withContent: false,
+      }),
+    ).rejects.toThrow();
+    await expect(history.history({ documentId, userId: outsiderId, limit: 10 })).rejects.toThrow();
+  });
+
+  it('restores a version and names the saved state that takes it back', async () => {
+    const documentId = await createPage('Verlauf zurück');
+    await write(documentId, `Alt ^${A}`);
+    const snapshot = await snapshots.create({ documentId, userId: ownerId, reason: 'manual' });
+    await write(documentId, `Neu ^${A}`);
+
+    const restored = await snapshots.restore({
+      snapshotId: snapshot.id,
+      userId: ownerId,
+      correlationId,
+    });
+    expect(await plainTextOf(documentId)).toContain('Alt');
+
+    await snapshots.restore({
+      snapshotId: restored.snapshotBeforeId,
+      userId: ownerId,
+      correlationId,
+    });
+    expect(await plainTextOf(documentId)).toContain('Neu');
   });
 });

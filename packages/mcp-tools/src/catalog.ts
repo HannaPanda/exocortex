@@ -24,6 +24,7 @@ import { MEMORY_TOOLS } from './tools/memory.js';
 import { MEMORY_FACT_TOOLS } from './tools/memory-facts.js';
 import { NOTIFICATION_TOOLS } from './tools/notifications.js';
 import { OVERVIEW_TOOLS } from './tools/overviews.js';
+import { PAGE_HISTORY_TOOLS } from './tools/page-history.js';
 import { PAGE_TOOLS } from './tools/pages.js';
 import { PLACEMENT_TOOLS } from './tools/placement.js';
 import { PREFERENCE_TOOLS } from './tools/preferences.js';
@@ -59,6 +60,7 @@ const CATALOGUED_TOOLS: readonly AnyToolDefinition[] = [
   ...WORKSPACE_TOOLS,
   ...FEATURE_TOOLS,
   ...PAGE_TOOLS,
+  ...PAGE_HISTORY_TOOLS,
   ...TRANSCLUSION_TOOLS,
   ...INBOX_TOOLS,
   ...TEMPLATE_TOOLS,

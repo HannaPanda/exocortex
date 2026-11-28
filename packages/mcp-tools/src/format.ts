@@ -24,7 +24,7 @@ export const PAGE_CONTENT_BUDGET_CHARS = 10_000;
 export const PAGE_MAP_MAX_ENTRIES = 40;
 
 /** `12345` as `12.345`, because a size is read by a person as often as by a model. */
-function groupDigits(value: number): string {
+export function groupDigits(value: number): string {
   return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 

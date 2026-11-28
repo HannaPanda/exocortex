@@ -31,6 +31,8 @@ import { DocumentTreeService } from './document-tree.service';
 import { DocumentWriteCommitService } from './document-write-commit.service';
 import { DocumentsController, WorkspaceDocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
+import { PageHistoryController } from './page-history.controller';
+import { PageHistoryService } from './page-history.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
 import { RelatedDocumentsService } from './related-documents.service';
 
@@ -43,6 +45,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentsController,
     DocumentOverviewController,
     DocumentDiffController,
+    PageHistoryController,
     DocumentFragmentController,
     DocumentEditController,
     DocumentExportController,
@@ -57,6 +60,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentMarkdownService,
     DocumentSnapshotService,
     DocumentDiffService,
+    PageHistoryService,
     DocumentFragmentService,
     DocumentActivityService,
     DocumentContentService,

@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-323 routes are reachable from at least one client; 188 from all three.
+325 routes are reachable from at least one client; 190 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -96,6 +96,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/documents/:x/deletion-preview` | · | · | ✓ | `exo_page_delete` |
 | `GET /api/documents/:x/export/markdown` | ✓ | ✓ | ✓ | `exo_page_read`, `exo_rules_load`, `fetch` |
 | `GET /api/documents/:x/fragment` | ✓ | ✓ | ✓ | `exo_page_block_read` |
+| `GET /api/documents/:x/history` | ✓ | ✓ | ✓ | `exo_page_history` |
 | `GET /api/documents/:x/inherited-shares` | ✓ | ✓ | ✓ | `exo_share_inherited` |
 | `GET /api/documents/:x/links` | ✓ | ✓ | ✓ | `exo_page_backlinks` |
 | `GET /api/documents/:x/overview` | ✓ | ✓ | ✓ | `exo_page_overview_read` |
@@ -104,6 +105,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/documents/:x/row` | ✓ | ✓ | ✓ | `exo_database_row_get` |
 | `GET /api/documents/:x/shares` | ✓ | ✓ | ✓ | `exo_share_list` |
 | `GET /api/documents/:x/snapshots` | · | ✓ | ✓ | `exo_page_snapshots` |
+| `GET /api/documents/:x/snapshots/:x` | ✓ | ✓ | ✓ | `exo_page_snapshot_read` |
 | `GET /api/documents/:x/snapshots/:x/diff` | ✓ | ✓ | ✓ | `exo_page_snapshot_diff` |
 | `GET /api/documents/:x/views` | ✓ | ✓ | ✓ | `exo_database_schema` |
 | `GET /api/entities` | ✓ | ✓ | ✓ | `exo_entity_list` |

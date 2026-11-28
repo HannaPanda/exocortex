@@ -77,6 +77,8 @@ import {
   resolveDocumentLinkRequestSchema,
   type ResolveDocumentLinkResponse,
   resolveDocumentLinkResponseSchema,
+  type RestoreSnapshotResponse,
+  restoreSnapshotResponseSchema,
   type SuggestParentRequest,
   suggestParentRequestSchema,
   type SuggestParentResponse,
@@ -510,11 +512,11 @@ export class DocumentsController {
   }
 
   @Post(':documentId/snapshots/:snapshotId/restore')
-  @ApiOkResponse({ description: 'Snapshot restored' })
+  @ApiOkResponse({ schema: openApiResponseSchema(restoreSnapshotResponseSchema) })
   async restoreSnapshot(
     @CurrentSession() session: VerifiedSession,
     @Param('snapshotId') snapshotId: string,
-  ): Promise<{ documentId: string; restoredFrom: string }> {
+  ): Promise<RestoreSnapshotResponse> {
     return this.snapshots.restore({
       snapshotId,
       userId: session.userId,

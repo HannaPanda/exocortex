@@ -6,7 +6,11 @@ import {
   canRestoreSnapshot,
   WorkspaceAccessService,
 } from '@exocortex/auth';
-import { type DocumentSnapshot, QUEUE_NAMES } from '@exocortex/contracts';
+import {
+  type DocumentSnapshot,
+  QUEUE_NAMES,
+  type RestoreSnapshotResponse,
+} from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 import {
   applyProseMirrorDocumentToState,
@@ -26,7 +30,7 @@ import { RealtimeService } from '../realtime/realtime.service';
 import { CollaborationBridgeService } from './collaboration-bridge.service';
 import { DOCUMENT_SELECT, toSummary } from './documents.service';
 
-const REASON_MAP = {
+export const SNAPSHOT_REASON_MAP = {
   MANUAL: 'manual',
   SCHEDULED: 'scheduled',
   PRE_RESTORE: 'pre_restore',
@@ -40,8 +44,8 @@ const REASON_MAP = {
  *
  * Snapshots store the binary Yjs state verbatim, so what a restore puts back is
  * exact. It puts it back as an edit rather than as bytes, for the reason in
- * `restore`. A full version-history UI is out of scope for this version; the
- * services below are what it will be built on.
+ * `restore`. The page history of issue #235 (`PageHistoryService`) reads these
+ * rows; every restore it offers lands here.
  */
 @Injectable()
 export class DocumentSnapshotService {
@@ -95,7 +99,7 @@ export class DocumentSnapshotService {
       schemaVersion: snapshot.schemaVersion,
       createdById: snapshot.createdById,
       createdByName: snapshot.createdBy?.name ?? null,
-      reason: REASON_MAP[snapshot.reason],
+      reason: SNAPSHOT_REASON_MAP[snapshot.reason],
       createdAt: snapshot.createdAt.toISOString(),
       byteSize: snapshot.yjsState.byteLength,
     };
@@ -128,7 +132,7 @@ export class DocumentSnapshotService {
       schemaVersion: snapshot.schemaVersion,
       createdById: snapshot.createdById,
       createdByName: snapshot.createdBy?.name ?? null,
-      reason: REASON_MAP[snapshot.reason],
+      reason: SNAPSHOT_REASON_MAP[snapshot.reason],
       createdAt: snapshot.createdAt.toISOString(),
       byteSize: snapshot.yjsState.byteLength,
     }));
@@ -225,7 +229,7 @@ export class DocumentSnapshotService {
     snapshotId: string;
     userId: string;
     correlationId: string;
-  }): Promise<{ documentId: string; restoredFrom: string }> {
+  }): Promise<RestoreSnapshotResponse> {
     const snapshot = await this.prisma.documentSnapshot.findUnique({
       where: { id: input.snapshotId },
       select: { id: true, documentId: true, yjsState: true, schemaVersion: true },
@@ -270,7 +274,11 @@ export class DocumentSnapshotService {
       schemaVersion: snapshot.schemaVersion === EXOCORTEX_SCHEMA_VERSION ? 'current' : 'legacy',
     });
 
-    return { documentId: snapshot.documentId, restoredFrom: snapshot.id };
+    return {
+      documentId: snapshot.documentId,
+      restoredFrom: snapshot.id,
+      snapshotBeforeId: live.snapshotBeforeId,
+    };
   }
 
   /**

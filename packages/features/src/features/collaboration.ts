@@ -43,6 +43,15 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_page_snapshot_diff', 'exo_page_restore_blocks'],
   }),
   defineFeature({
+    id: 'seitenverlauf',
+    area: 'zusammenarbeit',
+    since: '2026-11-28',
+    references: ['ADR-016', 'ADR-022'],
+    ui: {},
+    shortcuts: ['Strg+K "Seitenverlauf öffnen"'],
+    tools: ['exo_page_history', 'exo_page_snapshot_read'],
+  }),
+  defineFeature({
     id: 'agenten-journal',
     area: 'zusammenarbeit',
     since: '2026-09-13',

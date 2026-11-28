@@ -46,6 +46,7 @@ export * from './memory-checkpoint';
 export * from './memory-facts';
 export * from './notifications';
 export * from './overviews';
+export * from './page-history';
 export * from './primitives';
 export * from './projects';
 export * from './provider-routing';

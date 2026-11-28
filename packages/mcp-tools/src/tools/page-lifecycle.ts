@@ -11,11 +11,11 @@ import {
   documentSummarySchema,
   idSchema,
   restoreSnapshotBlocksResponseSchema,
+  restoreSnapshotResponseSchema,
   type TrashEntry,
   trashResponseSchema,
 } from '@exocortex/contracts';
 
-import { restoreSnapshotResultSchema } from '../local-schemas.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
 import { formatDocumentSummary } from './page-render.js';
@@ -245,7 +245,10 @@ export const pageSnapshotsTool: AnyToolDefinition = defineTool({
 
 export const pageRestoreSnapshotTool: AnyToolDefinition = defineTool({
   name: 'exo_page_restore_snapshot',
-  description: 'Stellt eine Seite auf den Stand eines früheren Snapshots zurück.',
+  description:
+    'Stellt eine Seite auf den Stand eines früheren Snapshots zurück. Der Stand davor wird vorher ' +
+    'gesichert; die Antwort nennt diesen Snapshot, und ihn wiederherzustellen nimmt das ' +
+    'Zurücksetzen zurück. Offene Editoren sehen die Änderung sofort.',
   inputSchema: z.object({ documentId: idSchema, snapshotId: idSchema }),
   surfaces: ['mcp', 'ai'],
   domain: 'history',
@@ -256,10 +259,12 @@ export const pageRestoreSnapshotTool: AnyToolDefinition = defineTool({
     const result = await client.request({
       method: 'POST',
       path: `/api/documents/${input.documentId}/snapshots/${input.snapshotId}/restore`,
-      responseSchema: restoreSnapshotResultSchema,
+      responseSchema: restoreSnapshotResponseSchema,
     });
     return {
-      text: `Seite ${result.documentId} auf Snapshot ${result.restoredFrom} zurückgesetzt.`,
+      text:
+        `Seite ${result.documentId} auf Snapshot ${result.restoredFrom} zurückgesetzt. ` +
+        `Der Stand davor ist Snapshot ${result.snapshotBeforeId}; ihn wiederherzustellen nimmt das zurück.`,
       data: result,
     };
   },

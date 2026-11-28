@@ -30,6 +30,11 @@ export function runSessionExternalId(runId: string): string {
   return `${SESSION_PREFIX}${runId}`;
 }
 
+/** The run behind an agent session, or `null` when the session is not a run's (issue #235). */
+export function runIdFromSessionExternalId(externalId: string): string | null {
+  return externalId.startsWith(SESSION_PREFIX) ? externalId.slice(SESSION_PREFIX.length) : null;
+}
+
 /** One journal row, as far as an undo needs it. */
 export interface RunJournalRow {
   documentId: string;
