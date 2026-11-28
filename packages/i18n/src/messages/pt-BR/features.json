@@ -1143,9 +1143,19 @@
       "p1": "Alguns clientes rodam no seu computador e podem iniciar um processo local; outros rodam na nuvem e só conhecem um endereço. Para o segundo tipo, há MCP via HTTP em um endereço fixo, protegido por um servidor de login próprio.",
       "p2": "Ao conectar, você chega a uma página de consentimento que indica quem deseja se conectar e a quê. O acesso só é concedido com o seu clique. Essa página é o bloqueio real, não o protocolo: sem ela, qualquer pessoa que conhecesse o endereço chegaria pelo menos até a tela de login.",
       "p3": "As conexões autorizadas aparecem na sua lista e podem ser encerradas a qualquer momento. O acesso via HTTP aceita apenas tokens de acesso, nunca o cookie de sessão do seu navegador, para que uma página web de terceiros não possa agir em seu nome.",
-      "p4": "O ChatGPT rejeita o catálogo completo de ferramentas e, por isso, recebe um endereço enxuto com as ferramentas do dia a dia. O que faltar lá, ele pode pesquisar com exo_tool_search. Por enquanto, só é possível executar por meio dele uma pequena seleção (a lista de entidades e a largura da página), com as mesmas permissões de uma chamada direta e nunca nada que apague ou que não possa ser desfeito."
+      "p4": "O ChatGPT rejeita o catálogo completo de ferramentas e, por isso, recebe um endereço reduzido com as ferramentas do dia a dia. O que faltar lá, ele consulta conforme necessário (consulte „Consultar ferramentas ausentes”)."
     },
     "where": "A página de consentimento aparece durante a conexão."
+  },
+  "werkzeuge-nachschlagen": {
+    "title": "Consultar ferramentas ausentes",
+    "summary": "Pelo endereço reduzido, o ChatGPT só vê as ferramentas do dia a dia. Ele encontra o restante por meio de uma busca por palavras-chave e o executa por dois caminhos: um apenas para leitura e outro para escrita. Tudo o que exclui, não pode ser desfeito ou afeta acessos fica de fora.",
+    "details": {
+      "p1": "A busca também compreende palavras compostas e outros idiomas: „Seitenbreite” encontra a ferramenta para o layout da página, assim como „page width”. Para isso, ela lê nomes e descrições das ferramentas e os termos com os quais esta visão geral de recursos as explica.",
+      "p2": "A leitura e a escrita funcionam separadamente para que o ChatGPT não precise pedir confirmação em acessos que são puramente de leitura. O caminho de leitura rejeita qualquer ferramenta que faça alterações. Ambos verificam em cada execução as mesmas permissões de uma chamada direta, e cada chamada é registrada no histórico com a ferramenta realmente executada.",
+      "p3": "Só é possível executar o que regras fixas permitem: nada que exclua ou sobrescreva, nada sobre contas, convites, compartilhamentos ou configurações do servidor, nenhuma regra de automação, nenhuma busca na web e nada que o eXocortex reserve a uma pessoa, como aceitar sugestões de alteração ou responder a dúvidas. A busca também encontra essas ferramentas e informa que não podem ser executadas por aqui."
+    },
+    "where": "Nenhuma tela: o ChatGPT busca e executa por conta própria."
   },
   "deep-research-connector": {
     "title": "Uma interface reduzida para conectores de pesquisa",

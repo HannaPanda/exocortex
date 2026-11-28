@@ -1143,9 +1143,19 @@
       "p1": "Niektórzy klienci działają na twoim komputerze i mogą uruchomić lokalny proces, inni działają w chmurze i znają tylko adres. Dla tego drugiego typu dostępny jest protokół MCP przez HTTP pod stałym adresem, poprzedzony osobnym serwerem logowania.",
       "p2": "Podczas łączenia trafiasz na stronę zgody z informacją, kto i do czego chce się połączyć. Dostęp zostaje przyznany dopiero po twoim kliknięciu. To ta strona stanowi właściwą blokadę, a nie protokół: bez niej każdy, kto zna adres, dotarłby przynajmniej do etapu logowania.",
       "p3": "Zatwierdzone połączenia trafiają na twoją listę i można je w każdej chwili przerwać. Dostęp przez HTTP przyjmuje wyłącznie tokeny dostępu, nigdy ciasteczko sesyjne przeglądarki, dzięki czemu obca strona internetowa nie może działać w twoim imieniu.",
-      "p4": "ChatGPT odrzuca cały katalog narzędzi, dlatego otrzymuje ograniczony adres z narzędziami codziennego użytku. To, czego tam brakuje, może wyszukać za pomocą exo_tool_search. Na razie można za jego pośrednictwem wykonać tylko niewielki wybór (listę encji i szerokość strony), z tymi samymi uprawnieniami co bezpośrednie wywołanie i nigdy nic, co usuwa dane lub czego nie da się cofnąć."
+      "p4": "ChatGPT odrzuca pełny katalog narzędzi, dlatego otrzymuje ograniczony adres z narzędziami codziennego użytku. To, czego tam brakuje, wyszukuje w razie potrzeby (patrz „Wyszukiwanie brakujących narzędzi”)."
     },
     "where": "Strona zgody pojawia się podczas łączenia."
+  },
+  "werkzeuge-nachschlagen": {
+    "title": "Wyszukiwanie brakujących narzędzi",
+    "summary": "ChatGPT widzi pod ograniczonym adresem tylko narzędzia codziennego użytku. Resztę znajduje za pomocą wyszukiwania słów kluczowych i wywołuje na dwa sposoby: jeden tylko do odczytu, drugi do zapisu. Wszystko, co usuwa, czego nie da się cofnąć lub co dotyczy uprawnień dostępu, pozostaje wykluczone.",
+    "details": {
+      "p1": "Wyszukiwarka rozumie również wyrazy złożone i inne języki: „szerokość strony” znajdzie narzędzie do układu strony, tak samo jak „page width”. W tym celu czyta nazwy i opisy narzędzi oraz słowa, którymi wyjaśnia je ten przegląd funkcji.",
+      "p2": "Odczyt i zapis działają oddzielnie, aby ChatGPT nie musiał pytać o potwierdzenie przy samym dostępie do odczytu. Ścieżka odczytu odrzuca każde narzędzie, które wprowadza zmiany. Obie sprawdzają przy każdym wywołaniu te same uprawnienia co wywołanie bezpośrednie, a każde wywołanie trafia do rejestru wraz z rzeczywiście wykonanym narzędziem.",
+      "p3": "Wywołać można tylko to, na co pozwalają ścisłe reguły: nic, co usuwa lub nadpisuje, nic związanego z kontami, zaproszeniami, udostępnieniami, zatwierdzeniami ani ustawieniami serwera, żadnych reguł automatyzacji, żadnego wyszukiwania w sieci i niczego, co eXocortex rezerwuje dla człowieka, na przykład akceptowania propozycji zmian czy odpowiadania na pytania kontrolne. Wyszukiwarka znajduje również te narzędzia i informuje wtedy, że nie można ich tutaj wywołać."
+    },
+    "where": "Brak widoku w interfejsie: ChatGPT wyszukuje i wywołuje samodzielnie."
   },
   "deep-research-connector": {
     "title": "Niewielki interfejs dla łączników badawczych",

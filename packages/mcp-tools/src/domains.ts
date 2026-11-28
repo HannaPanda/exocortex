@@ -66,22 +66,6 @@ export const COMPACT_ENDPOINT_DOMAINS: readonly ToolDomain[] = [
 ];
 
 /**
- * What `exo_tool_execute` may run on `/api/mcp/compact` (issue #256).
- *
- * A spike's allowlist: one harmless read and one write a second call undoes,
- * both outside `COMPACT_ENDPOINT_DOMAINS`, so the question "can ChatGPT find
- * and call a tool it was not listed" is answered on tools it could not reach
- * before. `exo_tool_search` finds the rest of the catalogue too and says that
- * it cannot be called here. A tool that destroys or cannot be undone is never
- * dispatched, whatever this list says, and the list is not an authorization
- * either: the call runs with the connection's own credential and scopes.
- */
-export const COMPACT_ENDPOINT_EXECUTABLE: readonly string[] = [
-  'exo_entity_list',
-  'exo_page_set_layout',
-];
-
-/**
  * What each domain is, in the words the model is shown when it asks.
  *
  * German, because it is read by the model inside a German prompt and by a
@@ -400,6 +384,15 @@ const DOMAIN_SPECS: Readonly<Record<ToolDomain, DomainSpec>> = {
 /** What a domain is, for the toolbox listing and for a log line. */
 export function domainLabel(domain: ToolDomain): string {
   return DOMAIN_SPECS[domain].label;
+}
+
+/**
+ * The words that switch a domain on, for `exo_tool_search` to look through
+ * as well (issue #265): a word that selects the domain for the built-in loop
+ * is a word that should find its tools for a client searching for one.
+ */
+export function domainKeywords(domain: ToolDomain): readonly string[] {
+  return DOMAIN_SPECS[domain].keywords;
 }
 
 export interface ToolSelectionInput {

@@ -190,9 +190,19 @@ const SURFACE_EXEMPT = [
       'Finds tools the connection was not listed (issue #256). Only `/api/mcp/compact` is listed less than its surface, because ChatGPT refuses the whole catalogue; the full MCP endpoint and stdio list everything and have nothing to find, and the built-in loop opens a missing domain with `exo_toolbox`. It reaches no route and is built per connection, never put in the catalogue.',
   },
   {
+    tool: 'exo_tool_read',
+    reason:
+      "Runs a reading tool `exo_tool_search` found, through the connection's own dispatcher, and only what passes the criteria of `packages/mcp-tools/src/compact-executable.ts` (issue #265). Same reason as the search: a surface that lists everything has nothing to reach indirectly, and the built-in loop calls an opened tool directly. It reaches no route of its own; every call is the target tool's.",
+  },
+  {
+    tool: 'exo_tool_write',
+    reason:
+      "Runs a writing tool `exo_tool_search` found, through the connection's own dispatcher, and only what passes the criteria of `packages/mcp-tools/src/compact-executable.ts` (issue #265). Same reason as the search and `exo_tool_read`; split from it so a client can tell a read from a write by `readOnlyHint`. It reaches no route of its own; every call is the target tool's.",
+  },
+  {
     tool: 'exo_tool_execute',
     reason:
-      "Runs a tool `exo_tool_search` found, through the connection's own dispatcher, and only the short list `COMPACT_ENDPOINT_EXECUTABLE` names (issue #256). Same reason as the search: a surface that lists everything has nothing to reach indirectly, and the built-in loop calls an opened tool directly. It reaches no route of its own; every call is the target tool's.",
+      "The spike's single dispatcher (issue #256), kept callable but unlisted for ChatGPT connectors that cached their tool list before issue #265; it is `exo_tool_write` under its old name, with the same checks. Same reason as the pair: nothing to reach indirectly on any other surface.",
   },
   {
     tool: 'exo_attachment_upload_ticket',

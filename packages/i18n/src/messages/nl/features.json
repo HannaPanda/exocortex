@@ -1143,9 +1143,19 @@
       "p1": "Sommige clients draaien op je computer en kunnen een lokaal proces starten, andere draaien in de cloud en kennen alleen een adres. Voor die tweede soort is er MCP via HTTP onder een vast adres, met een eigen inlogserver ervoor.",
       "p2": "Bij het verbinden kom je op een toestemmingspagina terecht waarop staat wie er verbinding wil maken en waarmee. Pas jouw klik verleent toegang. Deze pagina is de eigenlijke blokkade, niet het protocol: zonder deze pagina zou iedereen die het adres kent op z’n minst tot het inloggen komen.",
       "p3": "Verleende verbindingen staan daarna in je lijst en kunnen op elk moment worden verbroken. De HTTP-toegang accepteert uitsluitend toegangstokens, nooit je browser-sessiecookie, zodat een externe webpagina niet namens jou kan meepraten.",
-      "p4": "ChatGPT wijst de volledige toolcatalogus af en krijgt daarom een beknopt adres met de alledaagse tools. Wat daar ontbreekt, kan het opzoeken met exo_tool_search. Voorlopig kan daarmee slechts een kleine selectie worden uitgevoerd (de lijst met entiteiten en de paginabreedte), met dezelfde rechten als een directe aanroep en nooit iets dat verwijdert of niet ongedaan kan worden gemaakt."
+      "p4": "ChatGPT weigert de volledige gereedschapscatalogus en krijgt daarom een beknopt adres met de alledaagse gereedschappen. Wat daar ontbreekt, zoekt het indien nodig op (zie „Ontbrekende gereedschappen opzoeken”)."
     },
     "where": "De toestemmingspagina verschijnt bij het verbinden."
+  },
+  "werkzeuge-nachschlagen": {
+    "title": "Ontbrekende gereedschappen opzoeken",
+    "summary": "ChatGPT ziet via het beknopte adres alleen de alledaagse gereedschappen. De rest vindt het met een zoekopdracht op trefwoord en roept het op via twee routes: één alleen voor lezen, één voor schrijven. Wat verwijdert, niet ongedaan kan worden gemaakt of over toegangsrechten gaat, blijft daarbij buiten beschouwing.",
+    "details": {
+      "p1": "De zoekfunctie begrijpt ook samengestelde woorden en andere talen: „paginabreedte” vindt het gereedschap voor de paginalay-out, net als „page width”. Het leest hiervoor de namen en beschrijvingen van de gereedschappen en de woorden waarmee dit functieoverzicht ze uitlegt.",
+      "p2": "Lezen en schrijven verlopen gescheiden, zodat ChatGPT bij alleen-lezen niet hoeft na te vragen. De leesroute weigert elk gereedschap dat iets wijzigt. Beide controleren bij elke aanroep dezelfde rechten als een directe aanroep, en elke aanroep staat met het daadwerkelijk uitgevoerde gereedschap in het logboek.",
+      "p3": "Oproepbaar is wat vaste regels toestaan: niets dat verwijdert of overschrijft, niets over accounts, uitnodigingen, delingen of instellingen van de server, geen automatiseringsregels, geen zoekopdrachten op het web, en niets dat eXocortex voorbehoudt aan een persoon, zoals het overnemen van wijzigingsvoorstellen of het beantwoorden van verduidelijkingsvragen. De zoekfunctie vindt deze gereedschappen ook en geeft dan aan dat ze hier niet oproepbaar zijn."
+    },
+    "where": "Geen scherm: ChatGPT zoekt en roept uit zichzelf aan."
   },
   "deep-research-connector": {
     "title": "Een compacte interface voor research-connectors",

@@ -1143,9 +1143,19 @@
       "p1": "Manche Clients laufen auf deinem Rechner und können einen lokalen Prozess starten, andere laufen in der Cloud und kennen nur eine Adresse. Für die zweite Sorte gibt es MCP über HTTP unter einer festen Adresse, mit einem eigenen Anmeldeserver davor.",
       "p2": "Beim Verbinden landest du auf einer Zustimmungsseite, auf der steht, wer sich verbinden will und worauf. Erst dein Klick erteilt den Zugang. Diese Seite ist die eigentliche Sperre, nicht das Protokoll: ohne sie käme jeder, der die Adresse kennt, wenigstens bis zur Anmeldung.",
       "p3": "Erteilte Verbindungen stehen danach in deiner Liste und lassen sich jederzeit kappen. Der HTTP-Zugang nimmt ausschließlich Zugangstoken an, nie dein Browser-Sitzungscookie, damit eine fremde Webseite nicht in deinem Namen mitreden kann.",
-      "p4": "ChatGPT lehnt den ganzen Werkzeugkatalog ab und bekommt deshalb eine schmale Adresse mit den alltäglichen Werkzeugen. Was dort fehlt, kann es mit exo_tool_search nachschlagen. Ausführen lässt sich darüber vorerst nur eine kleine Auswahl (die Liste der Entitäten und die Seitenbreite), mit denselben Rechten wie ein direkter Aufruf und nie etwas, das löscht oder sich nicht zurücknehmen lässt."
+      "p4": "ChatGPT lehnt den ganzen Werkzeugkatalog ab und bekommt deshalb eine schmale Adresse mit den alltäglichen Werkzeugen. Was dort fehlt, schlägt es bei Bedarf nach (siehe „Fehlende Werkzeuge nachschlagen“)."
     },
     "where": "Die Zustimmungsseite erscheint beim Verbinden."
+  },
+  "werkzeuge-nachschlagen": {
+    "title": "Fehlende Werkzeuge nachschlagen",
+    "summary": "ChatGPT sieht über die schmale Adresse nur die alltäglichen Werkzeuge. Den Rest findet es mit einer Stichwortsuche und ruft ihn über zwei Wege auf: einen nur zum Lesen, einen zum Schreiben. Was löscht, sich nicht zurücknehmen lässt oder Zugänge betrifft, bleibt dabei außen vor.",
+    "details": {
+      "p1": "Die Suche versteht auch zusammengesetzte Wörter und andere Sprachen: „Seitenbreite“ findet das Werkzeug für das Seitenlayout, „page width“ ebenso. Sie liest dafür Namen und Beschreibungen der Werkzeuge und die Worte, mit denen diese Funktionsübersicht sie erklärt.",
+      "p2": "Lesen und Schreiben laufen getrennt, damit ChatGPT bei einem reinen Lesezugriff nicht nachfragen muss. Der Leseweg lehnt jedes Werkzeug ab, das etwas ändert. Beide prüfen bei jedem Aufruf dieselben Rechte wie ein direkter Aufruf, und jeder Aufruf steht mit dem tatsächlich ausgeführten Werkzeug im Protokoll.",
+      "p3": "Aufrufbar ist, was feste Regeln erlauben: nichts, was löscht oder überschreibt, nichts zu Konten, Einladungen, Freigaben oder Einstellungen des Servers, keine Automationsregeln, keine Websuche, und nichts, was eXocortex einer Person vorbehält, etwa Änderungsvorschläge übernehmen oder Rückfragen beantworten. Die Suche findet auch diese Werkzeuge und sagt dann, dass sie hier nicht aufrufbar sind."
+    },
+    "where": "Kein Bildschirm: ChatGPT sucht und ruft von sich aus auf."
   },
   "deep-research-connector": {
     "title": "Eine kleine Oberfläche für Recherche-Connectoren",

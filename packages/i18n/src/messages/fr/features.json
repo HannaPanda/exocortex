@@ -1143,9 +1143,19 @@
       "p1": "Certains clients s’exécutent sur ton ordinateur et peuvent lancer un processus local, d’autres tournent dans le cloud et ne connaissent qu’une adresse. Pour cette seconde catégorie, il existe MCP via HTTP à une adresse fixe, précédé de son propre serveur d’authentification.",
       "p2": "Lors de la connexion, tu arrives sur une page de consentement qui indique qui souhaite se connecter et à quoi. Seul ton clic accorde l’accès. Cette page constitue le véritable verrou, pas le protocole : sans elle, quiconque connaît l’adresse parviendrait au moins jusqu’à l’écran de connexion.",
       "p3": "Les connexions accordées apparaissent ensuite dans ta liste et peuvent être coupées à tout moment. L’accès HTTP n’accepte que des jetons d’accès, jamais le cookie de session de ton navigateur, afin qu’un site web tiers ne puisse pas agir en ton nom.",
-      "p4": "ChatGPT refuse l’ensemble du catalogue d’outils et reçoit donc une adresse allégée contenant les outils du quotidien. Ce qui y manque peut être recherché avec exo_tool_search. Pour l’instant, seule une sélection restreinte peut être exécutée par ce biais (la liste des entités et la largeur de page), avec les mêmes droits qu’un appel direct et jamais rien qui supprime ou soit irréversible."
+      "p4": "ChatGPT refuse l’intégralité du catalogue d’outils et reçoit donc une adresse allégée avec les outils du quotidien. En cas de besoin, il recherche ce qui lui manque (voir « Rechercher les outils manquants »)."
     },
     "where": "La page de consentement apparaît lors de la connexion."
+  },
+  "werkzeuge-nachschlagen": {
+    "title": "Rechercher les outils manquants",
+    "summary": "Via l’adresse allégée, ChatGPT ne voit que les outils du quotidien. Il trouve le reste grâce à une recherche par mots-clés et y accède par deux canaux : l’un en lecture seule, l’autre en écriture. Ce qui supprime, ne peut pas être annulé ou concerne les accès reste exclu.",
+    "details": {
+      "p1": "La recherche comprend aussi les mots composés et d’autres langues : « Seitenbreite » trouve l’outil pour la mise en page, tout comme « page width ». Pour cela, elle parcourt les noms et descriptions des outils ainsi que les termes avec lesquels ce récapitulatif des fonctionnalités les explique.",
+      "p2": "La lecture et l’écriture sont séparées pour que ChatGPT n’ait pas à demander confirmation lors d’un simple accès en lecture. Le canal de lecture rejette tout outil qui modifie quoi que ce soit. Tous deux vérifient à chaque appel les mêmes droits qu’un appel direct, et chaque exécution apparaît dans le journal avec l’outil réellement utilisé.",
+      "p3": "Seul est exécutable ce que des règles strictes autorisent : rien qui supprime ou écrase, rien concernant les comptes, les invitations, les partages ou les paramètres du serveur, aucune règle d’automatisation, aucune recherche web, et rien de ce qu’eXocortex réserve à une personne, comme accepter des suggestions de modification ou répondre à des questions. La recherche trouve également ces outils et indique alors qu’ils ne sont pas exécutables ici."
+    },
+    "where": "Aucun écran : ChatGPT cherche et exécute de lui-même."
   },
   "deep-research-connector": {
     "title": "Une interface réduite pour les connecteurs de recherche",

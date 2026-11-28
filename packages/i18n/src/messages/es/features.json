@@ -1143,9 +1143,19 @@
       "p1": "Algunos clientes se ejecutan en tu equipo y pueden iniciar un proceso local; otros funcionan en la nube y solo conocen una dirección. Para este segundo grupo existe MCP sobre HTTP en una dirección fija, protegido por su propio servidor de inicio de sesión.",
       "p2": "Al conectarte, accedes a una página de consentimiento donde se indica quién quiere conectarse y a qué. Solo tu clic concede el acceso. Esta página es el auténtico filtro, no el protocolo: sin ella, cualquiera que conociera la dirección llegaría al menos hasta la pantalla de inicio de sesión.",
       "p3": "Las conexiones autorizadas aparecen después en tu lista y pueden revocarse en cualquier momento. El acceso por HTTP solo admite tokens de acceso, nunca la cookie de sesión de tu navegador, evitando así que un sitio web ajeno actúe en tu nombre.",
-      "p4": "ChatGPT rechaza el catálogo de herramientas completo, por lo que recibe una dirección reducida con las herramientas habituales. Lo que falte ahí, puede buscarlo con exo_tool_search. Por ahora, a través de él solo se puede ejecutar una pequeña selección (la lista de entidades y el ancho de página), con los mismos permisos que una llamada directa y nunca nada que elimine contenido o no se pueda deshacer."
+      "p4": "ChatGPT rechaza el catálogo completo de herramientas y, por tanto, recibe una dirección reducida con las herramientas cotidianas. Lo que falte allí lo busca cuando lo necesita (consulta «Buscar herramientas que faltan»)."
     },
     "where": "La página de consentimiento aparece al conectar."
+  },
+  "werkzeuge-nachschlagen": {
+    "title": "Buscar herramientas que faltan",
+    "summary": "A través de la dirección reducida, ChatGPT solo ve las herramientas cotidianas. Encuentra el resto mediante una búsqueda por palabras clave y las ejecuta por dos vías: una de solo lectura y otra de escritura. Todo lo que elimine, sea irreversible o afecte a accesos queda excluido.",
+    "details": {
+      "p1": "La búsqueda también entiende palabras compuestas y otros idiomas: «ancho de página» encuentra la herramienta para el diseño de la página, y «page width» también. Para ello, lee los nombres y descripciones de las herramientas, así como los términos con los que este resumen de funciones las explica.",
+      "p2": "La lectura y la escritura van por separado para que ChatGPT no tenga que pedir confirmación ante un acceso de solo lectura. La vía de lectura rechaza cualquier herramienta que modifique algo. Ambas comprueban en cada llamada los mismos permisos que una llamada directa, y cada ejecución queda registrada en el registro con la herramienta que realmente se ejecutó.",
+      "p3": "Solo se puede ejecutar lo que permiten reglas fijas: nada que elimine o sobrescriba, nada relacionado con cuentas, invitaciones, uso compartido o ajustes del servidor, ninguna regla de automatización, ninguna búsqueda web y nada que eXocortex reserve a una persona, como aceptar sugerencias de cambios o responder a preguntas. La búsqueda también encuentra estas herramientas y avisa de que aquí no se pueden ejecutar."
+    },
+    "where": "Sin pantalla: ChatGPT busca y ejecuta por iniciativa propia."
   },
   "deep-research-connector": {
     "title": "Una interfaz reducida para conectores de investigación",

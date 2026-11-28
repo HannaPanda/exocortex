@@ -14401,8 +14401,8 @@
       "output": "56a537f9e4ee369b"
     },
     "features.mcp-ueber-http.details.p4": {
-      "source": "28ed5063f5d24578",
-      "output": "52095a0f9c1581bf"
+      "source": "48f9a19672538767",
+      "output": "dcc7e1b8da412bcc"
     },
     "features.mcp-ueber-http.summary": {
       "source": "c6ad2f112b883bd3",
@@ -15343,6 +15343,30 @@
     "features.werkzeugauswahl-jev.where": {
       "source": "7add4037a410d42f",
       "output": "f2aa1066a734e28d"
+    },
+    "features.werkzeuge-nachschlagen.details.p1": {
+      "source": "636a84062f46c525",
+      "output": "dfb02d068838664f"
+    },
+    "features.werkzeuge-nachschlagen.details.p2": {
+      "source": "781cc979b9d60ed5",
+      "output": "e0ef72df595ddc35"
+    },
+    "features.werkzeuge-nachschlagen.details.p3": {
+      "source": "81d89a0ef4e428fe",
+      "output": "2e8fb41ceb4a30e8"
+    },
+    "features.werkzeuge-nachschlagen.summary": {
+      "source": "2ea06f05f38b95bb",
+      "output": "ab0e4b4e82a294e6"
+    },
+    "features.werkzeuge-nachschlagen.title": {
+      "source": "e0d8e2e943df206e",
+      "output": "ba2f737f4ea85013"
+    },
+    "features.werkzeuge-nachschlagen.where": {
+      "source": "5dde50b3ea217ac7",
+      "output": "482556a6050f025a"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -40343,8 +40367,8 @@
       "output": "4c6bed8f80afd7ea"
     },
     "features.mcp-ueber-http.details.p4": {
-      "source": "28ed5063f5d24578",
-      "output": "28fcb38a77aebef5"
+      "source": "48f9a19672538767",
+      "output": "3c62299c20470e87"
     },
     "features.mcp-ueber-http.summary": {
       "source": "c6ad2f112b883bd3",
@@ -41285,6 +41309,30 @@
     "features.werkzeugauswahl-jev.where": {
       "source": "7add4037a410d42f",
       "output": "293d2d9db59a0362"
+    },
+    "features.werkzeuge-nachschlagen.details.p1": {
+      "source": "636a84062f46c525",
+      "output": "746458d597efb2f8"
+    },
+    "features.werkzeuge-nachschlagen.details.p2": {
+      "source": "781cc979b9d60ed5",
+      "output": "6311e71e9777291b"
+    },
+    "features.werkzeuge-nachschlagen.details.p3": {
+      "source": "81d89a0ef4e428fe",
+      "output": "23fa22bf0d0beed6"
+    },
+    "features.werkzeuge-nachschlagen.summary": {
+      "source": "2ea06f05f38b95bb",
+      "output": "5ace7a4925257e62"
+    },
+    "features.werkzeuge-nachschlagen.title": {
+      "source": "e0d8e2e943df206e",
+      "output": "865b5b5587d419f8"
+    },
+    "features.werkzeuge-nachschlagen.where": {
+      "source": "5dde50b3ea217ac7",
+      "output": "84fe69d23d8428d4"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -66285,8 +66333,8 @@
       "output": "b24cbcfa3c11c658"
     },
     "features.mcp-ueber-http.details.p4": {
-      "source": "28ed5063f5d24578",
-      "output": "c0439812c910c494"
+      "source": "48f9a19672538767",
+      "output": "fc3b0f34a48c7c05"
     },
     "features.mcp-ueber-http.summary": {
       "source": "c6ad2f112b883bd3",
@@ -67227,6 +67275,30 @@
     "features.werkzeugauswahl-jev.where": {
       "source": "7add4037a410d42f",
       "output": "7b8affd26259c36a"
+    },
+    "features.werkzeuge-nachschlagen.details.p1": {
+      "source": "636a84062f46c525",
+      "output": "22dbc449977a3ba7"
+    },
+    "features.werkzeuge-nachschlagen.details.p2": {
+      "source": "781cc979b9d60ed5",
+      "output": "7d43a77bcf379843"
+    },
+    "features.werkzeuge-nachschlagen.details.p3": {
+      "source": "81d89a0ef4e428fe",
+      "output": "75c5de9105b1a64b"
+    },
+    "features.werkzeuge-nachschlagen.summary": {
+      "source": "2ea06f05f38b95bb",
+      "output": "5958146b7b39d6f5"
+    },
+    "features.werkzeuge-nachschlagen.title": {
+      "source": "e0d8e2e943df206e",
+      "output": "b96f8854bbb61ac3"
+    },
+    "features.werkzeuge-nachschlagen.where": {
+      "source": "5dde50b3ea217ac7",
+      "output": "1ee209a9cb810d02"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -92227,8 +92299,8 @@
       "output": "feebbb4105223fc6"
     },
     "features.mcp-ueber-http.details.p4": {
-      "source": "28ed5063f5d24578",
-      "output": "a74f0ce1f9d1c2b5"
+      "source": "48f9a19672538767",
+      "output": "08caabbcded45221"
     },
     "features.mcp-ueber-http.summary": {
       "source": "c6ad2f112b883bd3",
@@ -93169,6 +93241,30 @@
     "features.werkzeugauswahl-jev.where": {
       "source": "7add4037a410d42f",
       "output": "c8618647c79c7ba4"
+    },
+    "features.werkzeuge-nachschlagen.details.p1": {
+      "source": "636a84062f46c525",
+      "output": "fe0a80ac9abc86ff"
+    },
+    "features.werkzeuge-nachschlagen.details.p2": {
+      "source": "781cc979b9d60ed5",
+      "output": "104552d84f2d2faf"
+    },
+    "features.werkzeuge-nachschlagen.details.p3": {
+      "source": "81d89a0ef4e428fe",
+      "output": "880ffd33dde2f390"
+    },
+    "features.werkzeuge-nachschlagen.summary": {
+      "source": "2ea06f05f38b95bb",
+      "output": "8404d175928ac948"
+    },
+    "features.werkzeuge-nachschlagen.title": {
+      "source": "e0d8e2e943df206e",
+      "output": "94d0450fdf8e2f38"
+    },
+    "features.werkzeuge-nachschlagen.where": {
+      "source": "5dde50b3ea217ac7",
+      "output": "2c10e0ada5d48c9e"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -118169,8 +118265,8 @@
       "output": "34b3801239d200a6"
     },
     "features.mcp-ueber-http.details.p4": {
-      "source": "28ed5063f5d24578",
-      "output": "37e63a94f6b4fa2a"
+      "source": "48f9a19672538767",
+      "output": "e10d568402978853"
     },
     "features.mcp-ueber-http.summary": {
       "source": "c6ad2f112b883bd3",
@@ -119111,6 +119207,30 @@
     "features.werkzeugauswahl-jev.where": {
       "source": "7add4037a410d42f",
       "output": "75cf1c4d6a1e0573"
+    },
+    "features.werkzeuge-nachschlagen.details.p1": {
+      "source": "636a84062f46c525",
+      "output": "8bd504e4670ecfa1"
+    },
+    "features.werkzeuge-nachschlagen.details.p2": {
+      "source": "781cc979b9d60ed5",
+      "output": "631800398b90a736"
+    },
+    "features.werkzeuge-nachschlagen.details.p3": {
+      "source": "81d89a0ef4e428fe",
+      "output": "9d54e24de20668a0"
+    },
+    "features.werkzeuge-nachschlagen.summary": {
+      "source": "2ea06f05f38b95bb",
+      "output": "d140af063ed458da"
+    },
+    "features.werkzeuge-nachschlagen.title": {
+      "source": "e0d8e2e943df206e",
+      "output": "a6e6869e352c4001"
+    },
+    "features.werkzeuge-nachschlagen.where": {
+      "source": "5dde50b3ea217ac7",
+      "output": "67ceb01233e9a46a"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -144111,8 +144231,8 @@
       "output": "a6eace91e8aa6745"
     },
     "features.mcp-ueber-http.details.p4": {
-      "source": "28ed5063f5d24578",
-      "output": "72b9c1770e858b7f"
+      "source": "48f9a19672538767",
+      "output": "c7a8961d02cf107a"
     },
     "features.mcp-ueber-http.summary": {
       "source": "c6ad2f112b883bd3",
@@ -145053,6 +145173,30 @@
     "features.werkzeugauswahl-jev.where": {
       "source": "7add4037a410d42f",
       "output": "a984505922887ea4"
+    },
+    "features.werkzeuge-nachschlagen.details.p1": {
+      "source": "636a84062f46c525",
+      "output": "06b97dc20e9a17bc"
+    },
+    "features.werkzeuge-nachschlagen.details.p2": {
+      "source": "781cc979b9d60ed5",
+      "output": "6a1bb28b9dfb6c9d"
+    },
+    "features.werkzeuge-nachschlagen.details.p3": {
+      "source": "81d89a0ef4e428fe",
+      "output": "70c777fbd6d80338"
+    },
+    "features.werkzeuge-nachschlagen.summary": {
+      "source": "2ea06f05f38b95bb",
+      "output": "bb5066b374a23ed5"
+    },
+    "features.werkzeuge-nachschlagen.title": {
+      "source": "e0d8e2e943df206e",
+      "output": "a1e47a065fb90550"
+    },
+    "features.werkzeuge-nachschlagen.where": {
+      "source": "5dde50b3ea217ac7",
+      "output": "5b1b2a67483d67b2"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -170053,8 +170197,8 @@
       "output": "fe6334d7b1ce959e"
     },
     "features.mcp-ueber-http.details.p4": {
-      "source": "28ed5063f5d24578",
-      "output": "a31a0de9061b8f94"
+      "source": "48f9a19672538767",
+      "output": "927c4c2c0d6eecbc"
     },
     "features.mcp-ueber-http.summary": {
       "source": "c6ad2f112b883bd3",
@@ -170995,6 +171139,30 @@
     "features.werkzeugauswahl-jev.where": {
       "source": "7add4037a410d42f",
       "output": "cf6b828c5f6b05eb"
+    },
+    "features.werkzeuge-nachschlagen.details.p1": {
+      "source": "636a84062f46c525",
+      "output": "659f65058cba2ffb"
+    },
+    "features.werkzeuge-nachschlagen.details.p2": {
+      "source": "781cc979b9d60ed5",
+      "output": "26c557bc7c8c39d6"
+    },
+    "features.werkzeuge-nachschlagen.details.p3": {
+      "source": "81d89a0ef4e428fe",
+      "output": "b30685d5428e4767"
+    },
+    "features.werkzeuge-nachschlagen.summary": {
+      "source": "2ea06f05f38b95bb",
+      "output": "13411eb325545f74"
+    },
+    "features.werkzeuge-nachschlagen.title": {
+      "source": "e0d8e2e943df206e",
+      "output": "afd4852b7647be39"
+    },
+    "features.werkzeuge-nachschlagen.where": {
+      "source": "5dde50b3ea217ac7",
+      "output": "29b2f84a2e7e6032"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",

@@ -145,17 +145,24 @@ export interface McpRequestHandlerOptions {
    */
   agentSession?: { externalId: string; transport: 'stdio' | 'http' };
   /**
-   * Finding and calling tools this connection is not listed (issue #256).
+   * Finding and calling tools this connection is not listed (issues #256,
+   * #265).
    *
    * Set, the connection also lists `exo_tool_search`, which looks through
-   * the tools of `catalogue` that `tools` left out, and `exo_tool_execute`,
-   * which runs the ones named in `executable` through this handler's own
-   * `callTool`. Everything else stays where `tools` puts it: a name that is
-   * neither listed nor executable is still not callable. Only the compact
-   * endpoint sets it; a connection that lists the whole surface has nothing
-   * to discover.
+   * the tools of `catalogue` that `tools` left out, and the two dispatchers
+   * `exo_tool_read` and `exo_tool_write`, which run the ones named in
+   * `executable` through this handler's own `callTool` (and `exo_tool_execute`,
+   * callable but unlisted, for connectors that cached the spike's name).
+   * Everything else stays where `tools` puts it: a name that is neither listed
+   * nor executable is still not callable. `searchText` adds words per tool
+   * name to the search. Only the compact endpoint sets it; a connection that
+   * lists the whole surface has nothing to discover.
    */
-  discovery?: { catalogue: readonly AnyToolDefinition[]; executable: readonly string[] };
+  discovery?: {
+    catalogue: readonly AnyToolDefinition[];
+    executable: readonly string[];
+    searchText?: ReadonlyMap<string, string>;
+  };
   serverInfo?: { name: string; version: string };
   logger?: McpProtocolLogger;
 }
@@ -193,21 +200,23 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
   const context = options.context ?? false;
   const confirm = options.confirm ?? 'irreversible';
   const serverInfo = options.serverInfo ?? DEFAULT_SERVER_INFO;
-  const listed: readonly AnyToolDefinition[] =
+  const discovery =
     options.discovery === undefined
-      ? tools
-      : [
-          ...tools,
-          ...createToolDiscoveryTools({
-            catalogue: options.discovery.catalogue,
-            listed: tools.map((tool) => tool.name),
-            executable: options.discovery.executable,
-            // The same function a direct `tools/call` ends in, so an indirect
-            // call is validated, gated and journalled exactly like one.
-            dispatch: callTool,
-          }),
-        ];
-  const byName = new Map(listed.map((tool) => [tool.name, tool]));
+      ? { listed: [], aliases: [] }
+      : createToolDiscoveryTools({
+          catalogue: options.discovery.catalogue,
+          listed: tools.map((tool) => tool.name),
+          executable: options.discovery.executable,
+          ...(options.discovery.searchText === undefined
+            ? {}
+            : { searchText: options.discovery.searchText }),
+          // The same function a direct `tools/call` ends in, so an indirect
+          // call is validated, gated and journalled exactly like one.
+          dispatch: callTool,
+        });
+  const listed: readonly AnyToolDefinition[] = [...tools, ...discovery.listed];
+  // An alias is resolved like a listed tool and simply not announced.
+  const byName = new Map([...listed, ...discovery.aliases].map((tool) => [tool.name, tool]));
 
   // Stamped here rather than only at `initialize`, because over HTTP every
   // message arrives as its own request with its own handler and its own
