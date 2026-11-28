@@ -14,7 +14,6 @@ import {
   documentTitleSchema,
   documentTreeRequestSchema,
   documentTreeResponseSchema,
-  generateDocumentCoverResponseSchema,
   idSchema,
   markdownExportResponseSchema,
   type markdownImportRequestSchema,
@@ -34,6 +33,7 @@ import {
 } from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
+import { pageGenerateCoverTool } from './page-cover.js';
 import {
   HOW_TO_LINK_A_SECTION,
   HOW_TO_PLACE_A_TABLE_OF_CONTENTS,
@@ -53,6 +53,8 @@ import {
 } from './page-lifecycle.js';
 import { formatDocumentSummary, renderTree, summarize } from './page-render.js';
 import { filingHint } from './placement.js';
+
+export { pageGenerateCoverTool } from './page-cover.js';
 
 const MAX_PAGE_READ_CHARS = 60_000;
 
@@ -581,40 +583,6 @@ export const pageSetCoverTool: AnyToolDefinition = defineTool({
         ? `Titelbild entfernt: ${formatDocumentSummary(result)}`
         : `Titelbild gesetzt: ${formatDocumentSummary(result)}`;
     return { text, data: result };
-  },
-});
-
-const pageGenerateCoverInputSchema = z.object({
-  documentId: idSchema,
-  /** What to draw, in the user's own words. Any language. */
-  prompt: z.string().trim().min(3).max(1_000),
-});
-
-export const pageGenerateCoverTool: AnyToolDefinition = defineTool({
-  name: 'exo_page_generate_cover',
-  description:
-    'Lässt die KI ein Titelbild für eine Seite malen und setzt es. Das Bild entsteht im ' +
-    'Hintergrund und ist nicht sofort fertig: der Aufruf bestätigt nur den Auftrag. ' +
-    'Braucht ein eingerichtetes Bildmodell, sonst antwortet die API mit ai_image_unavailable. ' +
-    'Es zahlt der Arbeitsbereich der Seite; auf einer nur geteilten Seite dein eigener (im Chat ' +
-    'der des Chats, sonst dein erster; ohne einen: ai_image_no_own_workspace). Geteilt reicht ' +
-    'eine Freigabe zum Bearbeiten, auch für die Seite allein.',
-  inputSchema: pageGenerateCoverInputSchema,
-  surfaces: ['mcp', 'ai'],
-  domain: 'appearance',
-  mutating: true,
-  target: (input) => `document:${input.documentId}`,
-  async execute(client, input) {
-    const result = await client.request({
-      method: 'POST',
-      path: `/api/documents/${input.documentId}/cover/generate`,
-      body: { prompt: input.prompt },
-      responseSchema: generateDocumentCoverResponseSchema,
-    });
-    return {
-      text: `Titelbild wird erzeugt für Seite ${result.documentId}. Es erscheint, sobald es fertig ist.`,
-      data: result,
-    };
   },
 });
 

@@ -636,10 +636,35 @@ describe('pageGenerateCoverTool', () => {
         kind: 'request',
         method: 'POST',
         path: '/api/documents/doc123456/cover/generate',
-        body: { prompt: 'Berge im Morgennebel' },
+        body: { prompt: 'Berge im Morgennebel', pageContext: false },
       },
     ]);
     expect(result.text).toContain('wird erzeugt');
+  });
+
+  it('draws from the page alone and says what of it went to the model (#224)', async () => {
+    const { client, calls } = createFakeClient({
+      status: 'pending',
+      documentId: 'doc123456',
+      pageContext: { title: 'Setup', topics: ['Linux', 'bash'], source: 'summary' },
+    });
+
+    const result = await pageGenerateCoverTool.run(client, {
+      documentId: 'doc123456',
+      pageContext: true,
+    });
+
+    expect(calls).toEqual([
+      {
+        kind: 'request',
+        method: 'POST',
+        path: '/api/documents/doc123456/cover/generate',
+        body: { prompt: '', pageContext: true },
+      },
+    ]);
+    expect(result.text).toContain(
+      'Aus der Seite gingen mit: der Titel, die Hauptthemen Linux, bash und ihre Zusammenfassung.',
+    );
   });
 
   it('refuses a prompt too short to mean anything', async () => {
