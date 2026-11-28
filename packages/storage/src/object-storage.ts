@@ -24,6 +24,16 @@ export interface DeleteObjectInput {
   key: string;
 }
 
+export interface CopyObjectInput {
+  /** The object that already exists. */
+  sourceKey: string;
+  /** The new object. The source is left as it was. */
+  key: string;
+  contentType: string;
+  filename?: string;
+  metadata?: Record<string, string>;
+}
+
 export interface DownloadUrlInput {
   key: string;
   /** Seconds the URL stays valid. */
@@ -42,6 +52,11 @@ export interface ObjectStorage {
   putObject(input: PutObjectInput): Promise<StoredObject>;
   getObject(input: GetObjectInput): Promise<Readable>;
   deleteObject(input: DeleteObjectInput): Promise<void>;
+  /**
+   * A second object with the bytes of an existing one, copied by the storage
+   * itself: the bytes never pass through the application (issue #316).
+   */
+  copyObject(input: CopyObjectInput): Promise<void>;
   /** Pre-signed, time-limited URL. Never a public bucket URL. */
   createDownloadUrl(input: DownloadUrlInput): Promise<string>;
   /** Readiness probe used by `GET /health/ready`. */

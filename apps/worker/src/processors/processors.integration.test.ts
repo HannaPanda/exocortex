@@ -3381,6 +3381,9 @@ function recordingStorage(deleted: string[] = []): ObjectStorage {
     deleteObject: async ({ key }) => {
       deleted.push(key);
     },
+    copyObject: () => {
+      throw new Error('not used in this test');
+    },
     createDownloadUrl: async () => 'unused',
     healthCheck: async () => true,
   };
@@ -3394,6 +3397,9 @@ function fakeStorage(bytes: Buffer): ObjectStorage {
     getObject: async () => Readable.from([bytes]),
     deleteObject: async () => {
       /* not used in this test */
+    },
+    copyObject: () => {
+      throw new Error('not used in this test');
     },
     createDownloadUrl: async () => 'unused',
     healthCheck: async () => true,

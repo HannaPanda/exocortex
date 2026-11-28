@@ -373,7 +373,9 @@ switching (`deploy/README.md`, "Object storage").
 Anything else implements `ObjectStorage` (`packages/storage/src/object-storage.ts`)
 and is provided in `apps/api/src/platform/platform.module.ts` and in
 `apps/worker/src/runtime.ts`. Object keys must stay server-derived
-(`buildAttachmentKey`); clients never choose keys. The backup
+(`buildAttachmentKey`); clients never choose keys. `copyObject` has to copy
+inside the backend (S3 `CopyObject`) rather than through the application,
+because a copied database row copies its files that way (issue #316). The backup
 (`deploy/backup-to-mega.sh`) speaks S3 through `mc` and would need a path of its
 own.
 

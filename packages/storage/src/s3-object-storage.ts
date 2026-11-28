@@ -1,6 +1,7 @@
 import { type Readable } from 'node:stream';
 
 import {
+  CopyObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
   HeadBucketCommand,
@@ -12,6 +13,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { type Logger } from '@exocortex/logger';
 
 import {
+  type CopyObjectInput,
   type DeleteObjectInput,
   type DownloadUrlInput,
   type GetObjectInput,
@@ -112,6 +114,33 @@ export class S3ObjectStorage implements ObjectStorage {
     } catch (error) {
       this.logger.error('Failed to delete object', error, { key: input.key });
       throw new ObjectStorageError(`Failed to delete object "${input.key}"`, { cause: error });
+    }
+  }
+
+  async copyObject(input: CopyObjectInput): Promise<void> {
+    try {
+      await this.client.send(
+        new CopyObjectCommand({
+          Bucket: this.bucket,
+          Key: input.key,
+          // Keys are built server-side from ids and dates, so encoding each
+          // segment is all the escaping `CopySource` needs.
+          CopySource: `${this.bucket}/${input.sourceKey.split('/').map(encodeURIComponent).join('/')}`,
+          // REPLACE, so the copy carries its own disposition and metadata
+          // rather than the source's.
+          MetadataDirective: 'REPLACE',
+          ContentType: input.contentType,
+          ContentDisposition: contentDisposition(input.filename),
+          Metadata: input.metadata,
+        }),
+      );
+      this.logger.debug('Object copied', { sourceKey: input.sourceKey, key: input.key });
+    } catch (error) {
+      this.logger.error('Failed to copy object', error, {
+        sourceKey: input.sourceKey,
+        key: input.key,
+      });
+      throw new ObjectStorageError(`Failed to copy object "${input.sourceKey}"`, { cause: error });
     }
   }
 
