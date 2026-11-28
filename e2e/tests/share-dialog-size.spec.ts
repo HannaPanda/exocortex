@@ -172,7 +172,7 @@ for (const viewport of [
       expect(scrolls).toBe(true);
       await page.getByTestId('share-row').last().scrollIntoViewIfNeeded();
       await expect(page.getByTestId('share-row').last()).toBeInViewport();
-      await expect(dialog.getByRole('heading')).toBeInViewport();
+      await expect(dialog.locator('[data-slot="dialog-title"]')).toBeInViewport();
       await expect(dialog.getByRole('button', { name: 'Schließen' }).last()).toBeInViewport();
     });
 
