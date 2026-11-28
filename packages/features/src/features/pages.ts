@@ -146,6 +146,14 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_page_set_cover', 'exo_page_set_layout', 'exo_page_generate_cover'],
   }),
   defineFeature({
+    id: 'titelbild-aus-der-seite',
+    area: 'seiten',
+    since: '2026-11-28',
+    references: ['#224', 'ADR-090'],
+    ui: {},
+    settings: ['ai.imageGenerationEnabled', 'ai.imageModelSlug'],
+  }),
+  defineFeature({
     id: 'arbeitsbereiche',
     area: 'struktur',
     since: '2026-08-05',

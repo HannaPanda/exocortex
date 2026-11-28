@@ -205,9 +205,19 @@
     "details": {
       "p1": "Passe o cursor sobre a área acima do título da página: ali surgem os botões para ícone, imagem de capa e largura. O ícone é um emoji da seleção ou uma imagem enviada e reaparece em todos os lugares onde a página for citada, como na navegação, na busca e nas referências. Para uma página que você busca diariamente, um ícone é mais rápido do que o título.",
       "p2": "A largura tem dois níveis: estreita mantém as linhas curtas o bastante para uma boa leitura do texto corrido; ampla aproveita a janela e é pensada para tabelas, calendários e bancos de dados. Essa configuração pertence à página, não a você, então todos a veem da mesma forma.",
-      "p3": "Se houver um modelo de imagem configurado, \"Gerar imagem de capa\" cria uma com base no conteúdo da página, em vez de você ter que procurar uma. Sem um modelo configurado, apenas esse botão fica ausente; você ainda pode fazer o envio manualmente."
+      "p3": "Se houver um modelo de imagem configurado, a opção „Gerar com IA” cria uma imagem de capa de acordo com a sua descrição ou, se desejar, a partir do tema da página, sem que você precise procurar uma. Sem um modelo configurado, apenas esse botão fica indisponível; você ainda pode fazer upload normalmente."
     },
     "where": "Os botões surgem ao passar o cursor sobre o título da página."
+  },
+  "titelbild-aus-der-seite": {
+    "title": "Imagem de capa a partir do tema da página, com descrição salva",
+    "summary": "Ao gerar uma imagem de capa, você pode marcar „Contexto da página”: assim, o modelo de imagem cria uma ilustração adequada ao tema da página, mesmo sem uma descrição própria. A sua descrição fica salva para a página, e a imagem existente permanece visível até que a nova esteja pronta.",
+    "details": {
+      "p1": "Com a opção marcada, um resumo do conteúdo é enviado ao modelo de imagem: o título, os cabeçalhos como temas principais (no máximo dez) e o resumo da página — ou o início dela, caso ainda não haja resumo. Uma nota de reunião com „Pauta” e „Decisões” tende a se transformar em uma sala de reunião; uma página com scripts shell, em um terminal. Códigos, fórmulas, imagens e anexos nunca são enviados. Sem marcar a opção, o modelo vê apenas a sua própria descrição.",
+      "p2": "A sua descrição e a seleção da caixa ficam salvas para esta página neste navegador, mesmo após fechar, enviar ou recarregar. Se não gostar da imagem, basta alterar uma palavra e gerar novamente. A descrição é esquecida quando você limpa o campo; em outro dispositivo ou navegador, você começa do zero.",
+      "p3": "Enquanto a nova imagem está sendo gerada, a antiga continua visível com o aviso „Gerando nova imagem de capa”. Ela só é substituída quando a nova estiver pronta; se falhar, a imagem e a descrição permanecem como estavam, e o motivo é exibido abaixo. Agentes escolhem o mesmo comportamento via exo_page_generate_cover com pageContext: true, e a resposta informa o que foi enviado da página."
+    },
+    "where": "Acima do título da página em „Gerar com IA”, ou sobre uma imagem de capa em „Gerar novamente”."
   },
   "vorlagen": {
     "title": "Modelos de página",

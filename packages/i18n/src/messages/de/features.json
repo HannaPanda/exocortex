@@ -205,9 +205,19 @@
     "details": {
       "p1": "Fahre mit der Maus über den Bereich oberhalb des Seitentitels: dort erscheinen die Schaltflächen für Symbol, Titelbild und Breite. Das Symbol ist ein Emoji aus der Auswahl oder ein hochgeladenes Bild und taucht überall wieder auf, wo die Seite genannt wird, also in der Navigation, in der Suche und in Verweisen. Für eine Seite, die du täglich suchst, ist ein Symbol schneller als ihr Titel.",
       "p2": "Die Breite hat zwei Stufen: schmal hält die Zeilen kurz genug, dass sich Fließtext gut liest, breit nutzt das Fenster aus und ist für Tabellen, Kalender und Datenbanken gedacht. Die Einstellung gehört zur Seite, nicht zu dir, also sieht sie jeder gleich.",
-      "p3": "Ist ein Bildmodell eingerichtet, erzeugt \"Titelbild erzeugen\" eines aus dem Inhalt der Seite, statt dass du eines suchen musst. Ohne eingerichtetes Modell fehlt nur dieser eine Knopf; hochladen kannst du weiterhin."
+      "p3": "Ist ein Bildmodell eingerichtet, malt „Mit KI erzeugen“ ein Titelbild nach deiner Beschreibung, auf Wunsch auch aus dem, worum es auf der Seite geht, statt dass du eines suchen musst. Ohne eingerichtetes Modell fehlt nur dieser eine Knopf; hochladen kannst du weiterhin."
     },
     "where": "Über dem Seitentitel erscheinen die Schaltflächen beim Überfahren."
+  },
+  "titelbild-aus-der-seite": {
+    "title": "Titelbild aus dem Thema der Seite, mit gemerkter Beschreibung",
+    "summary": "Beim Erzeugen eines Titelbilds kannst du „Kontext aus der Seite“ ankreuzen: dann malt das Bildmodell passend zu dem, worum es auf der Seite geht, auch ohne eigene Beschreibung. Deine Beschreibung bleibt für die Seite gespeichert, und ein vorhandenes Bild bleibt stehen, bis das neue da ist.",
+    "details": {
+      "p1": "Mit dem Haken geht gekürzt an das Bildmodell, worum es geht: der Titel, die Überschriften als Hauptthemen (höchstens zehn) und die Zusammenfassung der Seite, oder ihr Anfang, solange es noch keine gibt. Eine Besprechungsnotiz mit „Agenda“ und „Beschlüsse“ wird so eher zu einem Besprechungsraum, eine Seite mit Shell-Skripten eher zu einem Terminal. Code, Formeln, Bilder und Anhänge gehen nie mit. Ohne Haken sieht das Modell nur deine eigene Beschreibung.",
+      "p2": "Deine Beschreibung und der Haken bleiben für diese Seite in diesem Browser gespeichert, auch über Schließen, Senden und Neuladen hinweg. Gefällt ein Bild nicht, änderst du also nur ein Wort und erzeugst es neu. Vergessen wird die Beschreibung, wenn du das Feld leerst; auf einem anderen Gerät oder in einem anderen Browser fängst du leer an.",
+      "p3": "Während das neue Bild entsteht, bleibt das alte sichtbar und trägt den Hinweis „Neues Titelbild wird erzeugt“. Erst wenn das neue fertig ist, tauscht es sich aus; scheitert es, bleiben Bild und Beschreibung, wie sie waren, und darunter steht der Grund. Agenten wählen dasselbe über exo_page_generate_cover mit pageContext: true, und die Antwort nennt, was von der Seite mitging."
+    },
+    "where": "Über dem Seitentitel unter „Mit KI erzeugen“, oder auf einem Titelbild unter „Neu erzeugen“."
   },
   "vorlagen": {
     "title": "Seitenvorlagen",

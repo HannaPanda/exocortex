@@ -205,9 +205,19 @@
     "details": {
       "p1": "Survole la zone située au-dessus du titre de la page : les boutons pour l’icône, l’image de couverture et la largeur y apparaissent. L’icône est un émoji issu de la sélection ou une image importée, et réapparaît partout où la page est mentionnée, c’est-à-dire dans la navigation, la recherche et les liens. Pour une page que tu cherches tous les jours, une icône est plus rapide que son titre.",
       "p2": "La largeur propose deux niveaux : étroite garde les lignes assez courtes pour faciliter la lecture du texte courant, large exploite toute la fenêtre et convient aux tableaux, calendriers et bases de données. Ce réglage appartient à la page, pas à toi : tout le monde la voit donc de la même manière.",
-      "p3": "Si un modèle d’image est configuré, « Générer une image de couverture » en crée une à partir du contenu de la page, sans que tu aies besoin d’en chercher une. Sans modèle configuré, seul ce bouton est absent ; tu peux toujours importer une image."
+      "p3": "Si un modèle d’image est configuré, « Générer avec l’IA » crée une image de couverture d’après ta description, ou même à partir du sujet de la page si tu le souhaites, sans que tu aies besoin d’en chercher une. Sans modèle configuré, seul ce bouton disparaît ; tu peux toujours téléverser une image."
     },
     "where": "Les boutons apparaissent au survol au-dessus du titre de la page."
+  },
+  "titelbild-aus-der-seite": {
+    "title": "Image de couverture d’après le sujet de la page, avec description mémorisée",
+    "summary": "Lors de la création d’une image de couverture, tu peux cocher « Contexte de la page » : le modèle d’image génère alors une illustration adaptée au sujet de la page, même sans description de ta part. Ta description reste enregistrée pour cette page, et l’image existante reste affichée jusqu’à ce que la nouvelle soit prête.",
+    "details": {
+      "p1": "En cochant cette case, un résumé du contenu est transmis au modèle d’image : le titre, les sous-titres comme thèmes principaux (dix au maximum) et le résumé de la page, ou son début s’il n’y en a pas encore. Une note de réunion avec « Ordre du jour » et « Décisions » évoquera plutôt une salle de réunion, une page de scripts shell plutôt un terminal. Le code, les formules, les images et les pièces jointes ne sont jamais transmis. Sans la case cochée, le modèle ne voit que ta propre description.",
+      "p2": "Ta description et l’état de la case restent enregistrés pour cette page dans ce navigateur, même après fermeture, envoi ou rechargement. Si une image ne te convient pas, il te suffit de modifier un mot et de relancer la génération. La description est oubliée si tu vides le champ ; sur un autre appareil ou dans un autre navigateur, tu repars de zéro.",
+      "p3": "Pendant la génération de la nouvelle image, l’ancienne reste visible avec la mention « Nouvelle image de couverture en cours de génération ». Elle n’est remplacée que lorsque la nouvelle est prête ; en cas d’échec, l’image et la description restent inchangées, et la raison s’affiche en dessous. Les agents utilisent la même fonction via exo_page_generate_cover avec pageContext: true, et la réponse précise ce qui a été transmis depuis la page."
+    },
+    "where": "Au-dessus du titre de la page sous « Générer avec l’IA », ou sur une image de couverture sous « Régénérer »."
   },
   "vorlagen": {
     "title": "Modèles de page",

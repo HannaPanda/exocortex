@@ -205,9 +205,19 @@
     "details": {
       "p1": "Pasa el ratón sobre el área situada encima del título de la página: allí aparecen los botones para icono, imagen de portada y ancho. El icono es un emoji de la selección o una imagen subida, y vuelve a aparecer en todos los lugares donde se mencione la página, como en la navegación, en la búsqueda y en las referencias. Para una página que buscas a diario, un icono es más rápido que su título.",
       "p2": "El ancho tiene dos niveles: estrecho mantiene las líneas lo bastante cortas como para que el texto continuo se lea bien; ancho aprovecha la ventana y está pensado para tablas, calendarios y bases de datos. El ajuste pertenece a la página, no a ti, por lo que todo el mundo lo ve igual.",
-      "p3": "Si hay un modelo de imagen configurado, \"Generar imagen de portada\" crea una a partir del contenido de la página, en lugar de que tengas que buscar una. Sin un modelo configurado solo falta este botón; puedes seguir subiendo imágenes."
+      "p3": "Si hay un modelo de imagen configurado, «Generar con IA» crea una imagen de portada a partir de tu descripción o, si lo prefieres, basándose en el contenido de la página, sin que tengas que buscar una. Sin un modelo configurado, solo falta este botón; puedes seguir subiendo imágenes."
     },
     "where": "Los botones aparecen al pasar el ratón por encima del título de la página."
+  },
+  "titelbild-aus-der-seite": {
+    "title": "Imagen de portada a partir del tema de la página, con descripción recordada",
+    "summary": "Al generar una imagen de portada, puedes marcar «Contexto de la página»: el modelo de imagen creará algo adecuado al contenido de la página, incluso sin descripción propia. Tu descripción se guarda para la página, y la imagen actual se mantiene visible hasta que la nueva esté lista.",
+    "details": {
+      "p1": "Al marcar la casilla, se envía al modelo de imagen un resumen de qué trata la página: el título, los encabezados como temas principales (diez como máximo) y el resumen de la página, o su inicio si aún no tiene resumen. Así, una nota de reunión con «Orden del día» y «Acuerdos» tenderá a convertirse en una sala de reuniones; una página con scripts de shell, en un terminal. El código, las fórmulas, las imágenes y los adjuntos nunca se envían. Sin la casilla marcada, el modelo solo ve tu propia descripción.",
+      "p2": "Tu descripción y la casilla se guardan para esta página en este navegador, incluso tras cerrar, enviar o recargar. Si no te gusta una imagen, solo tienes que cambiar una palabra y volver a generarla. La descripción se olvida si vacías el campo; en otro dispositivo o en otro navegador empezarás desde cero.",
+      "p3": "Mientras se crea la nueva imagen, la anterior sigue visible con el aviso «Generando nueva imagen de portada». Solo se sustituye cuando la nueva está lista; si falla, la imagen y la descripción se quedan como estaban y debajo se muestra el motivo. Los agentes eligen lo mismo mediante exo_page_generate_cover con pageContext: true, y la respuesta indica qué parte de la página se envió."
+    },
+    "where": "Encima del título de la página en «Generar con IA», o sobre una imagen de portada en «Regenerar»."
   },
   "vorlagen": {
     "title": "Plantillas de página",

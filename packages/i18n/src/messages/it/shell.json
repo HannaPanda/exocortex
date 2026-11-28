@@ -453,7 +453,7 @@
       "replaceCover": "Sostituisci copertina",
       "coverKeywords": "copertina cover immagine carica modifica",
       "generateCover": "Genera copertina con l’IA",
-      "generateCoverKeywords": "copertina cover immagine ia generare crea",
+      "generateCoverKeywords": "copertina cover immagine ia generare crea contesto tema pagina",
       "layout": "Modifica layout",
       "layoutPlaceholder": "Quale larghezza?",
       "layoutNarrow": "Stretta",

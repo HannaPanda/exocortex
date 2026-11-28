@@ -3,6 +3,7 @@
 import {
   CheckIcon,
   ImageIcon,
+  LoaderCircleIcon,
   MoveVerticalIcon,
   SparklesIcon,
   Trash2Icon,
@@ -14,6 +15,7 @@ import * as React from 'react';
 import { type DocumentCoverErrorDetail } from '@exocortex/contracts';
 import {
   Button,
+  Checkbox,
   cn,
   Dialog,
   DialogContent,
@@ -29,6 +31,7 @@ import { usePaletteRequest } from '@/components/palette/palette-requests';
 import { useGenerateDocumentCover, useUploadDocumentCover } from '@/lib/api/cover-queries';
 import { useUpdateDocument } from '@/lib/api/document-queries';
 import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
+import { usePersistentState } from '@/lib/use-persistent-state';
 
 /**
  * The `accept` filter is the image half of `ALLOWED_ATTACHMENT_MIME_TYPES`. It
@@ -139,11 +142,15 @@ function useCoverGeneration(documentId: string) {
     );
   });
 
-  const start = async (prompt: string): Promise<void> => {
+  const start = async (draft: CoverDraft): Promise<void> => {
     setFailure(null);
     setPending(true);
     try {
-      await generate.mutateAsync({ documentId, prompt });
+      await generate.mutateAsync({
+        documentId,
+        prompt: draft.prompt.trim(),
+        pageContext: draft.pageContext,
+      });
     } catch (cause) {
       setPending(false);
       setFailure({ text: cause instanceof Error ? cause.message : t('requestFailed') });
@@ -156,16 +163,58 @@ function useCoverGeneration(documentId: string) {
   return { pending, error, start };
 }
 
-interface CoverPromptDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (prompt: string) => void;
+/** What the prompt dialog remembers for a page (issue #224). */
+interface CoverDraft {
+  prompt: string;
+  /** "Kontext aus der Seite": title, headings and summary go to the model too. */
+  pageContext: boolean;
 }
 
-/** Asks what the picture should show. One field, because there is one input. */
-function CoverPromptDialog({ open, onOpenChange, onSubmit }: CoverPromptDialogProps) {
+const EMPTY_DRAFT: CoverDraft = { prompt: '', pageContext: false };
+
+function parseDraft(raw: string): CoverDraft {
+  const value: unknown = JSON.parse(raw);
+  if (typeof value !== 'object' || value === null) return EMPTY_DRAFT;
+  const { prompt, pageContext } = value as Record<string, unknown>;
+  return {
+    prompt: typeof prompt === 'string' ? prompt.slice(0, 1_000) : '',
+    pageContext: pageContext === true,
+  };
+}
+
+/**
+ * The prompt and the context choice, kept per page in this browser (issue
+ * #224). A prompt survives closing the dialog, sending it, a failed picture,
+ * the swap from "add" to "regenerate" once the first cover is there, and a
+ * reload, so trying a variation means changing a word rather than retyping
+ * the idea. It stays on the device and never reaches the server until it is
+ * sent; where the browser refuses storage, it lives for the tab
+ * (`usePersistentState`). An empty field is how a person forgets it.
+ */
+function useCoverDraft(documentId: string): [CoverDraft, (draft: CoverDraft) => void] {
+  return usePersistentState(`exocortex.cover.draft.${documentId}`, EMPTY_DRAFT, parseDraft);
+}
+
+/** The shortest prompt the API accepts on its own, without the page context. */
+const MIN_PROMPT_CHARS = 3;
+
+interface CoverPromptDialogProps {
+  documentId: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (draft: CoverDraft) => void;
+}
+
+/**
+ * Asks what the picture should show: in the person's words, from the page
+ * itself, or both. The page context is a choice made each time it is wanted
+ * and remembered with the prompt, never a default, because it sends page text
+ * to the image model.
+ */
+function CoverPromptDialog({ documentId, open, onOpenChange, onSubmit }: CoverPromptDialogProps) {
   const t = useTranslations('document.cover');
-  const [prompt, setPrompt] = React.useState('');
+  const [draft, setDraft] = useCoverDraft(documentId);
+  const ready = draft.pageContext || draft.prompt.trim().length >= MIN_PROMPT_CHARS;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -175,27 +224,46 @@ function CoverPromptDialog({ open, onOpenChange, onSubmit }: CoverPromptDialogPr
           <DialogDescription>{t('promptDescription')}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="cover-prompt">{t('promptLabel')}</Label>
+          <Label htmlFor="cover-prompt">
+            {draft.pageContext ? t('promptLabelOptional') : t('promptLabel')}
+          </Label>
           <Textarea
             id="cover-prompt"
             rows={4}
             maxLength={1_000}
             data-testid="cover-prompt-input"
             placeholder={t('promptPlaceholder')}
-            value={prompt}
-            onChange={(event) => setPrompt(event.target.value)}
+            value={draft.prompt}
+            onChange={(event) => setDraft({ ...draft, prompt: event.target.value })}
           />
         </div>
+        {/* One label around box and words, so the whole line is the hit target. */}
+        <label className="flex items-start gap-2">
+          <Checkbox
+            className="mt-0.5"
+            checked={draft.pageContext}
+            data-testid="cover-page-context"
+            aria-describedby="cover-page-context-hint"
+            onCheckedChange={(checked) => setDraft({ ...draft, pageContext: checked === true })}
+          />
+          <span className="flex flex-col gap-1">
+            <span className="text-sm leading-none font-medium">{t('pageContextLabel')}</span>
+            <span id="cover-page-context-hint" className="text-xs text-muted-foreground">
+              {t('pageContextHint')}
+            </span>
+          </span>
+        </label>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             {t('cancel')}
           </Button>
           <Button
-            disabled={prompt.trim().length < 3}
+            disabled={!ready}
             data-testid="cover-prompt-submit"
             onClick={() => {
-              onSubmit(prompt.trim());
-              setPrompt('');
+              // The draft stays: a picture that did not turn out is retried by
+              // changing a word, not by typing the idea again.
+              onSubmit(draft);
               onOpenChange(false);
             }}
           >
@@ -262,9 +330,10 @@ export function PageCoverAddButton({
         <SparklesIcon /> {generation.pending ? t('generating') : t('generateWithAi')}
       </Button>
       <CoverPromptDialog
+        documentId={documentId}
         open={promptOpen}
         onOpenChange={setPromptOpen}
-        onSubmit={(prompt) => void generation.start(prompt)}
+        onSubmit={(draft) => void generation.start(draft)}
       />
       {upload.isError || generation.error !== null ? (
         <span role="alert" className="text-xs text-destructive-text">
@@ -414,7 +483,7 @@ export function PageCover({
         // Notion's ~30vh, kept inside a range so the cover neither disappears on
         // a laptop nor pushes the title off a tall screen.
         className={cn(
-          'h-[clamp(9rem,30vh,17rem)] w-full overflow-hidden bg-surface',
+          'relative h-[clamp(9rem,30vh,17rem)] w-full overflow-hidden bg-surface',
           repositioning && 'cursor-grab ring-2 ring-ring active:cursor-grabbing',
         )}
         {...(repositioning
@@ -447,6 +516,26 @@ export function PageCover({
           className="size-full touch-none object-cover select-none"
           style={{ objectPosition: `50% ${shown}%` }}
         />
+        {/* Always mounted, so a screen reader hears the text arrive in it. */}
+        <span role="status" className="sr-only">
+          {generation.pending ? t('generatingOverlay') : ''}
+        </span>
+        {generation.pending ? (
+          // The old picture stays until the new one is there (issue #224): it
+          // is what the page has, and a failure leaves it exactly as it was.
+          // The veil says that it is about to change on the picture itself,
+          // not only in the menu, which hides once the pointer leaves.
+          <div
+            aria-hidden
+            data-testid="cover-generating"
+            className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-[2px]"
+          >
+            <span className="flex items-center gap-2 rounded-md bg-card/90 px-3 py-1.5 text-sm text-foreground shadow-sm">
+              <LoaderCircleIcon className="size-4 motion-safe:animate-spin" />
+              {t('generatingOverlay')}
+            </span>
+          </div>
+        ) : null}
       </div>
 
       {readOnly ? null : (
@@ -525,9 +614,10 @@ export function PageCover({
       )}
 
       <CoverPromptDialog
+        documentId={documentId}
         open={promptOpen}
         onOpenChange={setPromptOpen}
-        onSubmit={(prompt) => void generation.start(prompt)}
+        onSubmit={(draft) => void generation.start(draft)}
       />
 
       {upload.isError || generation.error !== null ? (

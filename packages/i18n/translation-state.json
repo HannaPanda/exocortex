@@ -8044,6 +8044,10 @@
       "source": "ea92dc61df535cf1",
       "output": "1db4c56d22b18994"
     },
+    "document.cover.generatingOverlay": {
+      "source": "17c9554d23462301",
+      "output": "8a44aa5b0ac45ce5"
+    },
     "document.cover.generationErrors.failed": {
       "source": "32eba09ae77db242",
       "output": "dc7e5769b44edf5b"
@@ -8080,6 +8084,14 @@
       "source": "4475c80e0bd2fe45",
       "output": "dc4eceed23ba2128"
     },
+    "document.cover.pageContextHint": {
+      "source": "f87eab621cad0a5f",
+      "output": "dbc65c84ac16176e"
+    },
+    "document.cover.pageContextLabel": {
+      "source": "22b2e6b07015edcb",
+      "output": "35d60a76d61e10d5"
+    },
     "document.cover.positionHint": {
       "source": "b29f97451c30e2ea",
       "output": "882320f8ddf2bba4"
@@ -8093,12 +8105,16 @@
       "output": "65dfd5bad2fbd457"
     },
     "document.cover.promptDescription": {
-      "source": "936469b5f895fec0",
-      "output": "d654a37043d77b8a"
+      "source": "1f91eea15a1da9a7",
+      "output": "5033467fdb748230"
     },
     "document.cover.promptLabel": {
       "source": "e9262f007dfbc513",
       "output": "526e0087cc3f254d"
+    },
+    "document.cover.promptLabelOptional": {
+      "source": "39b8c225867720ae",
+      "output": "f6cbe2f0c1f8a38b"
     },
     "document.cover.promptPlaceholder": {
       "source": "56e60b00ed8f76f8",
@@ -15417,8 +15433,8 @@
       "output": "16a603010484e592"
     },
     "features.seiten-layout.details.p3": {
-      "source": "f6c43f40632796a7",
-      "output": "fd6f49744d48bbfc"
+      "source": "2325f1b24c37f44b",
+      "output": "fd0e78513160c701"
     },
     "features.seiten-layout.summary": {
       "source": "e5666a7e5b4bb544",
@@ -15723,6 +15739,30 @@
     "features.texterkennung.where": {
       "source": "fb78690193c53655",
       "output": "5b2698f311c16c4c"
+    },
+    "features.titelbild-aus-der-seite.details.p1": {
+      "source": "4f882f236c3a682a",
+      "output": "f496f866d58ad2ca"
+    },
+    "features.titelbild-aus-der-seite.details.p2": {
+      "source": "af8b61100651ecad",
+      "output": "7d80bab2c2214757"
+    },
+    "features.titelbild-aus-der-seite.details.p3": {
+      "source": "8a4962be44cd598c",
+      "output": "49161f7490f21749"
+    },
+    "features.titelbild-aus-der-seite.summary": {
+      "source": "43cbfb255db7adf4",
+      "output": "fc36cb24f22b2e70"
+    },
+    "features.titelbild-aus-der-seite.title": {
+      "source": "9cb0128070d4fe61",
+      "output": "8d8b0c93172899b8"
+    },
+    "features.titelbild-aus-der-seite.where": {
+      "source": "410f1488a3d7d97e",
+      "output": "b1e14ce72f787202"
     },
     "features.token-seitenbereiche.details.p1": {
       "source": "6f29168a46ad5920",
@@ -23345,8 +23385,8 @@
       "output": "117ddf9ffa5234aa"
     },
     "shell.paletteCommands.page.generateCoverKeywords": {
-      "source": "60000365d8b346e7",
-      "output": "b2e42610bdaeec8c"
+      "source": "9da515febc7cfdfe",
+      "output": "629c2e81ed0967fc"
     },
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
@@ -34958,6 +34998,10 @@
       "source": "ea92dc61df535cf1",
       "output": "8e987914d156f52e"
     },
+    "document.cover.generatingOverlay": {
+      "source": "17c9554d23462301",
+      "output": "b494f716b05b0530"
+    },
     "document.cover.generationErrors.failed": {
       "source": "32eba09ae77db242",
       "output": "1b8069254ceecf18"
@@ -34994,6 +35038,14 @@
       "source": "4475c80e0bd2fe45",
       "output": "ded03d3538090a10"
     },
+    "document.cover.pageContextHint": {
+      "source": "f87eab621cad0a5f",
+      "output": "9ac7f417fb857b28"
+    },
+    "document.cover.pageContextLabel": {
+      "source": "22b2e6b07015edcb",
+      "output": "15950d8ef4684fa4"
+    },
     "document.cover.positionHint": {
       "source": "b29f97451c30e2ea",
       "output": "9575b3a18aa3d713"
@@ -35007,12 +35059,16 @@
       "output": "ec7441907447ccca"
     },
     "document.cover.promptDescription": {
-      "source": "936469b5f895fec0",
-      "output": "fd5df26bd7976843"
+      "source": "1f91eea15a1da9a7",
+      "output": "261f65ccc6f81986"
     },
     "document.cover.promptLabel": {
       "source": "e9262f007dfbc513",
       "output": "ee00b96fff266fe2"
+    },
+    "document.cover.promptLabelOptional": {
+      "source": "39b8c225867720ae",
+      "output": "6ad71d0a2d9a94a7"
     },
     "document.cover.promptPlaceholder": {
       "source": "56e60b00ed8f76f8",
@@ -42331,8 +42387,8 @@
       "output": "c728ebf69231cf09"
     },
     "features.seiten-layout.details.p3": {
-      "source": "f6c43f40632796a7",
-      "output": "17af942fa42e76b4"
+      "source": "2325f1b24c37f44b",
+      "output": "f31fa3d3d89d0e4f"
     },
     "features.seiten-layout.summary": {
       "source": "e5666a7e5b4bb544",
@@ -42637,6 +42693,30 @@
     "features.texterkennung.where": {
       "source": "fb78690193c53655",
       "output": "fb2246ef8fa430ab"
+    },
+    "features.titelbild-aus-der-seite.details.p1": {
+      "source": "4f882f236c3a682a",
+      "output": "d31e4952801f92d0"
+    },
+    "features.titelbild-aus-der-seite.details.p2": {
+      "source": "af8b61100651ecad",
+      "output": "f9489966f890560e"
+    },
+    "features.titelbild-aus-der-seite.details.p3": {
+      "source": "8a4962be44cd598c",
+      "output": "8b58f72924f0e20f"
+    },
+    "features.titelbild-aus-der-seite.summary": {
+      "source": "43cbfb255db7adf4",
+      "output": "4dd964a1bcdcc383"
+    },
+    "features.titelbild-aus-der-seite.title": {
+      "source": "9cb0128070d4fe61",
+      "output": "2c9d6fbcdf771e44"
+    },
+    "features.titelbild-aus-der-seite.where": {
+      "source": "410f1488a3d7d97e",
+      "output": "acf9857f1c9f3d4a"
     },
     "features.token-seitenbereiche.details.p1": {
       "source": "6f29168a46ad5920",
@@ -50259,8 +50339,8 @@
       "output": "24b5c5b94850e216"
     },
     "shell.paletteCommands.page.generateCoverKeywords": {
-      "source": "60000365d8b346e7",
-      "output": "1d89239fbe752036"
+      "source": "9da515febc7cfdfe",
+      "output": "d7c7d1383843fe4a"
     },
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
@@ -61872,6 +61952,10 @@
       "source": "ea92dc61df535cf1",
       "output": "fb2cd1ad14d03f50"
     },
+    "document.cover.generatingOverlay": {
+      "source": "17c9554d23462301",
+      "output": "545054c819d7fee8"
+    },
     "document.cover.generationErrors.failed": {
       "source": "32eba09ae77db242",
       "output": "d9afa71cdf3ddf75"
@@ -61908,6 +61992,14 @@
       "source": "4475c80e0bd2fe45",
       "output": "882b056e1a6648bb"
     },
+    "document.cover.pageContextHint": {
+      "source": "f87eab621cad0a5f",
+      "output": "71fbdca8ad1eb02c"
+    },
+    "document.cover.pageContextLabel": {
+      "source": "22b2e6b07015edcb",
+      "output": "8fe71cb474bb4881"
+    },
     "document.cover.positionHint": {
       "source": "b29f97451c30e2ea",
       "output": "d93bd08602019220"
@@ -61921,12 +62013,16 @@
       "output": "140aaafbc3098239"
     },
     "document.cover.promptDescription": {
-      "source": "936469b5f895fec0",
-      "output": "ee4e3f367ab01c32"
+      "source": "1f91eea15a1da9a7",
+      "output": "d7ba1a49a5b3c91a"
     },
     "document.cover.promptLabel": {
       "source": "e9262f007dfbc513",
       "output": "526e0087cc3f254d"
+    },
+    "document.cover.promptLabelOptional": {
+      "source": "39b8c225867720ae",
+      "output": "345cb10f59b1b18d"
     },
     "document.cover.promptPlaceholder": {
       "source": "56e60b00ed8f76f8",
@@ -69245,8 +69341,8 @@
       "output": "7c9f745f6dace5bd"
     },
     "features.seiten-layout.details.p3": {
-      "source": "f6c43f40632796a7",
-      "output": "a175dd7f57effd51"
+      "source": "2325f1b24c37f44b",
+      "output": "2c2392cb6895f9fb"
     },
     "features.seiten-layout.summary": {
       "source": "e5666a7e5b4bb544",
@@ -69551,6 +69647,30 @@
     "features.texterkennung.where": {
       "source": "fb78690193c53655",
       "output": "daa6180685fc1dd3"
+    },
+    "features.titelbild-aus-der-seite.details.p1": {
+      "source": "4f882f236c3a682a",
+      "output": "f0683b70f01ed977"
+    },
+    "features.titelbild-aus-der-seite.details.p2": {
+      "source": "af8b61100651ecad",
+      "output": "a8ac634d6e425ddd"
+    },
+    "features.titelbild-aus-der-seite.details.p3": {
+      "source": "8a4962be44cd598c",
+      "output": "53752f9fb1e6badc"
+    },
+    "features.titelbild-aus-der-seite.summary": {
+      "source": "43cbfb255db7adf4",
+      "output": "1081a1a9a98984e3"
+    },
+    "features.titelbild-aus-der-seite.title": {
+      "source": "9cb0128070d4fe61",
+      "output": "0e659b6d1f2eaf4d"
+    },
+    "features.titelbild-aus-der-seite.where": {
+      "source": "410f1488a3d7d97e",
+      "output": "b9fa731d7efbdd2c"
     },
     "features.token-seitenbereiche.details.p1": {
       "source": "6f29168a46ad5920",
@@ -77173,8 +77293,8 @@
       "output": "c4bdc7c1d3e5de84"
     },
     "shell.paletteCommands.page.generateCoverKeywords": {
-      "source": "60000365d8b346e7",
-      "output": "7d2e2fd10b14f841"
+      "source": "9da515febc7cfdfe",
+      "output": "134aff6dfcb14b65"
     },
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
@@ -88786,6 +88906,10 @@
       "source": "ea92dc61df535cf1",
       "output": "937ccfef36e935b7"
     },
+    "document.cover.generatingOverlay": {
+      "source": "17c9554d23462301",
+      "output": "d08d8fff4889c4f9"
+    },
     "document.cover.generationErrors.failed": {
       "source": "32eba09ae77db242",
       "output": "834ee58fc1b00482"
@@ -88822,6 +88946,14 @@
       "source": "4475c80e0bd2fe45",
       "output": "f20f8fba748ba48f"
     },
+    "document.cover.pageContextHint": {
+      "source": "f87eab621cad0a5f",
+      "output": "8d6967737c7e3fc8"
+    },
+    "document.cover.pageContextLabel": {
+      "source": "22b2e6b07015edcb",
+      "output": "5773ebb7024db4de"
+    },
     "document.cover.positionHint": {
       "source": "b29f97451c30e2ea",
       "output": "5f1ce625b499f91d"
@@ -88835,12 +88967,16 @@
       "output": "b19b4014e2438717"
     },
     "document.cover.promptDescription": {
-      "source": "936469b5f895fec0",
-      "output": "f70d3665f1358b95"
+      "source": "1f91eea15a1da9a7",
+      "output": "efc86a6ff62c4242"
     },
     "document.cover.promptLabel": {
       "source": "e9262f007dfbc513",
       "output": "6fb818621896d9df"
+    },
+    "document.cover.promptLabelOptional": {
+      "source": "39b8c225867720ae",
+      "output": "037b6b70cfef4220"
     },
     "document.cover.promptPlaceholder": {
       "source": "56e60b00ed8f76f8",
@@ -96159,8 +96295,8 @@
       "output": "7683617c2b79602c"
     },
     "features.seiten-layout.details.p3": {
-      "source": "f6c43f40632796a7",
-      "output": "09058163dc722c56"
+      "source": "2325f1b24c37f44b",
+      "output": "436179a7b34a90ad"
     },
     "features.seiten-layout.summary": {
       "source": "e5666a7e5b4bb544",
@@ -96465,6 +96601,30 @@
     "features.texterkennung.where": {
       "source": "fb78690193c53655",
       "output": "7b38ea06d49817a1"
+    },
+    "features.titelbild-aus-der-seite.details.p1": {
+      "source": "4f882f236c3a682a",
+      "output": "6287cd92d455c191"
+    },
+    "features.titelbild-aus-der-seite.details.p2": {
+      "source": "af8b61100651ecad",
+      "output": "7e1670dffc670ca6"
+    },
+    "features.titelbild-aus-der-seite.details.p3": {
+      "source": "8a4962be44cd598c",
+      "output": "07a8a331a4953b09"
+    },
+    "features.titelbild-aus-der-seite.summary": {
+      "source": "43cbfb255db7adf4",
+      "output": "73675ad1bb1ab3e1"
+    },
+    "features.titelbild-aus-der-seite.title": {
+      "source": "9cb0128070d4fe61",
+      "output": "350f134587c6c5a3"
+    },
+    "features.titelbild-aus-der-seite.where": {
+      "source": "410f1488a3d7d97e",
+      "output": "59c0034f5f45894a"
     },
     "features.token-seitenbereiche.details.p1": {
       "source": "6f29168a46ad5920",
@@ -104087,8 +104247,8 @@
       "output": "8444abd2858e10cb"
     },
     "shell.paletteCommands.page.generateCoverKeywords": {
-      "source": "60000365d8b346e7",
-      "output": "ea9ce9faf0cce521"
+      "source": "9da515febc7cfdfe",
+      "output": "f8c33f5746ad9c76"
     },
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
@@ -115700,6 +115860,10 @@
       "source": "ea92dc61df535cf1",
       "output": "506c765dad40d2b2"
     },
+    "document.cover.generatingOverlay": {
+      "source": "17c9554d23462301",
+      "output": "bdfb87d729ea1ce9"
+    },
     "document.cover.generationErrors.failed": {
       "source": "32eba09ae77db242",
       "output": "d9d416713828646e"
@@ -115736,6 +115900,14 @@
       "source": "4475c80e0bd2fe45",
       "output": "85e3413faf7c590b"
     },
+    "document.cover.pageContextHint": {
+      "source": "f87eab621cad0a5f",
+      "output": "bc01e2e9cf71637f"
+    },
+    "document.cover.pageContextLabel": {
+      "source": "22b2e6b07015edcb",
+      "output": "9be835423e972711"
+    },
     "document.cover.positionHint": {
       "source": "b29f97451c30e2ea",
       "output": "20cbea43853b377c"
@@ -115749,12 +115921,16 @@
       "output": "e20e14611ad74bd5"
     },
     "document.cover.promptDescription": {
-      "source": "936469b5f895fec0",
-      "output": "0d29e8234f43ae89"
+      "source": "1f91eea15a1da9a7",
+      "output": "042c9283f81c0078"
     },
     "document.cover.promptLabel": {
       "source": "e9262f007dfbc513",
       "output": "1d6e3b45e9b1ebcb"
+    },
+    "document.cover.promptLabelOptional": {
+      "source": "39b8c225867720ae",
+      "output": "baee46a42fe44ad9"
     },
     "document.cover.promptPlaceholder": {
       "source": "56e60b00ed8f76f8",
@@ -123073,8 +123249,8 @@
       "output": "9dded0ae2a405bec"
     },
     "features.seiten-layout.details.p3": {
-      "source": "f6c43f40632796a7",
-      "output": "7c5585ae6c317a33"
+      "source": "2325f1b24c37f44b",
+      "output": "e4e09be34f03313b"
     },
     "features.seiten-layout.summary": {
       "source": "e5666a7e5b4bb544",
@@ -123379,6 +123555,30 @@
     "features.texterkennung.where": {
       "source": "fb78690193c53655",
       "output": "8066d65161573fd7"
+    },
+    "features.titelbild-aus-der-seite.details.p1": {
+      "source": "4f882f236c3a682a",
+      "output": "ea234b99f511938b"
+    },
+    "features.titelbild-aus-der-seite.details.p2": {
+      "source": "af8b61100651ecad",
+      "output": "4bf5c3f477567da6"
+    },
+    "features.titelbild-aus-der-seite.details.p3": {
+      "source": "8a4962be44cd598c",
+      "output": "ebf18e1e155708af"
+    },
+    "features.titelbild-aus-der-seite.summary": {
+      "source": "43cbfb255db7adf4",
+      "output": "1729021c9371e926"
+    },
+    "features.titelbild-aus-der-seite.title": {
+      "source": "9cb0128070d4fe61",
+      "output": "5a594aa864cdddee"
+    },
+    "features.titelbild-aus-der-seite.where": {
+      "source": "410f1488a3d7d97e",
+      "output": "838729e615fa42cd"
     },
     "features.token-seitenbereiche.details.p1": {
       "source": "6f29168a46ad5920",
@@ -131001,8 +131201,8 @@
       "output": "d9d4da69ac5a13dc"
     },
     "shell.paletteCommands.page.generateCoverKeywords": {
-      "source": "60000365d8b346e7",
-      "output": "36d265f527334289"
+      "source": "9da515febc7cfdfe",
+      "output": "2110636121b19e71"
     },
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
@@ -142614,6 +142814,10 @@
       "source": "ea92dc61df535cf1",
       "output": "9b98d83459b478a0"
     },
+    "document.cover.generatingOverlay": {
+      "source": "17c9554d23462301",
+      "output": "2431b28e9f7fbf1f"
+    },
     "document.cover.generationErrors.failed": {
       "source": "32eba09ae77db242",
       "output": "f806cea237564768"
@@ -142650,6 +142854,14 @@
       "source": "4475c80e0bd2fe45",
       "output": "9663633310c6a819"
     },
+    "document.cover.pageContextHint": {
+      "source": "f87eab621cad0a5f",
+      "output": "06c97d98e4159ae0"
+    },
+    "document.cover.pageContextLabel": {
+      "source": "22b2e6b07015edcb",
+      "output": "f178497694b61fdc"
+    },
     "document.cover.positionHint": {
       "source": "b29f97451c30e2ea",
       "output": "862dd3978b449c81"
@@ -142663,12 +142875,16 @@
       "output": "3084a31eca8879df"
     },
     "document.cover.promptDescription": {
-      "source": "936469b5f895fec0",
-      "output": "43b93b8b6e7c8e59"
+      "source": "1f91eea15a1da9a7",
+      "output": "22eb2f9ad018ceda"
     },
     "document.cover.promptLabel": {
       "source": "e9262f007dfbc513",
       "output": "9bca8282a1b12c39"
+    },
+    "document.cover.promptLabelOptional": {
+      "source": "39b8c225867720ae",
+      "output": "c18e8e80bbf9faaf"
     },
     "document.cover.promptPlaceholder": {
       "source": "56e60b00ed8f76f8",
@@ -149987,8 +150203,8 @@
       "output": "4409b0b879e2737c"
     },
     "features.seiten-layout.details.p3": {
-      "source": "f6c43f40632796a7",
-      "output": "99cb9cfd34ff0ecb"
+      "source": "2325f1b24c37f44b",
+      "output": "0e5f0cdc46b4c8f8"
     },
     "features.seiten-layout.summary": {
       "source": "e5666a7e5b4bb544",
@@ -150293,6 +150509,30 @@
     "features.texterkennung.where": {
       "source": "fb78690193c53655",
       "output": "ca7a0a7efbbb30b9"
+    },
+    "features.titelbild-aus-der-seite.details.p1": {
+      "source": "4f882f236c3a682a",
+      "output": "5f0f27954b933506"
+    },
+    "features.titelbild-aus-der-seite.details.p2": {
+      "source": "af8b61100651ecad",
+      "output": "1cc4726814fe6de5"
+    },
+    "features.titelbild-aus-der-seite.details.p3": {
+      "source": "8a4962be44cd598c",
+      "output": "39084edea5e67cc6"
+    },
+    "features.titelbild-aus-der-seite.summary": {
+      "source": "43cbfb255db7adf4",
+      "output": "97bf5b197bb5e630"
+    },
+    "features.titelbild-aus-der-seite.title": {
+      "source": "9cb0128070d4fe61",
+      "output": "2ee729d7839fae53"
+    },
+    "features.titelbild-aus-der-seite.where": {
+      "source": "410f1488a3d7d97e",
+      "output": "ef10b1c78901c9aa"
     },
     "features.token-seitenbereiche.details.p1": {
       "source": "6f29168a46ad5920",
@@ -157915,8 +158155,8 @@
       "output": "706be69de147352c"
     },
     "shell.paletteCommands.page.generateCoverKeywords": {
-      "source": "60000365d8b346e7",
-      "output": "64b9cc5d79d4114f"
+      "source": "9da515febc7cfdfe",
+      "output": "d0066651d8c815ef"
     },
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
@@ -169528,6 +169768,10 @@
       "source": "ea92dc61df535cf1",
       "output": "c229c338ef366c1d"
     },
+    "document.cover.generatingOverlay": {
+      "source": "17c9554d23462301",
+      "output": "febd4b92961b1ed8"
+    },
     "document.cover.generationErrors.failed": {
       "source": "32eba09ae77db242",
       "output": "168cb430f815d1bf"
@@ -169564,6 +169808,14 @@
       "source": "4475c80e0bd2fe45",
       "output": "24cbc9d1b750895d"
     },
+    "document.cover.pageContextHint": {
+      "source": "f87eab621cad0a5f",
+      "output": "6a30a7813bbd31a8"
+    },
+    "document.cover.pageContextLabel": {
+      "source": "22b2e6b07015edcb",
+      "output": "d1451b3378faa210"
+    },
     "document.cover.positionHint": {
       "source": "b29f97451c30e2ea",
       "output": "09c4695a97cb6a89"
@@ -169577,12 +169829,16 @@
       "output": "1894d752cf339b44"
     },
     "document.cover.promptDescription": {
-      "source": "936469b5f895fec0",
-      "output": "3e3bcb76a881bd0f"
+      "source": "1f91eea15a1da9a7",
+      "output": "c8658aa045cbae05"
     },
     "document.cover.promptLabel": {
       "source": "e9262f007dfbc513",
       "output": "46332f9d834ef8dd"
+    },
+    "document.cover.promptLabelOptional": {
+      "source": "39b8c225867720ae",
+      "output": "3c26d4a09e8d695b"
     },
     "document.cover.promptPlaceholder": {
       "source": "56e60b00ed8f76f8",
@@ -176901,8 +177157,8 @@
       "output": "bedf1fe7deb30b5d"
     },
     "features.seiten-layout.details.p3": {
-      "source": "f6c43f40632796a7",
-      "output": "2e918391d17653d7"
+      "source": "2325f1b24c37f44b",
+      "output": "5ff9e0b247bc2ed5"
     },
     "features.seiten-layout.summary": {
       "source": "e5666a7e5b4bb544",
@@ -177207,6 +177463,30 @@
     "features.texterkennung.where": {
       "source": "fb78690193c53655",
       "output": "0e12d76049794061"
+    },
+    "features.titelbild-aus-der-seite.details.p1": {
+      "source": "4f882f236c3a682a",
+      "output": "d997d687dbe5007e"
+    },
+    "features.titelbild-aus-der-seite.details.p2": {
+      "source": "af8b61100651ecad",
+      "output": "ea5add7c9f8239a5"
+    },
+    "features.titelbild-aus-der-seite.details.p3": {
+      "source": "8a4962be44cd598c",
+      "output": "c2af8ccdbc1158b3"
+    },
+    "features.titelbild-aus-der-seite.summary": {
+      "source": "43cbfb255db7adf4",
+      "output": "ffa332ee8cc853b0"
+    },
+    "features.titelbild-aus-der-seite.title": {
+      "source": "9cb0128070d4fe61",
+      "output": "2117c3fc958f4620"
+    },
+    "features.titelbild-aus-der-seite.where": {
+      "source": "410f1488a3d7d97e",
+      "output": "06cdbc2990a983dd"
     },
     "features.token-seitenbereiche.details.p1": {
       "source": "6f29168a46ad5920",
@@ -184829,8 +185109,8 @@
       "output": "0cf2f1d78717e042"
     },
     "shell.paletteCommands.page.generateCoverKeywords": {
-      "source": "60000365d8b346e7",
-      "output": "2dfbef87d0f629a0"
+      "source": "9da515febc7cfdfe",
+      "output": "34b6c11ada8576cf"
     },
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",

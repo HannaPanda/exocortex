@@ -205,9 +205,19 @@
     "details": {
       "p1": "Najedź kursorem na obszar powyżej tytułu strony: pojawią się tam przyciski ikony, okładki i szerokości. Ikona to emoji z listy wyboru lub przesłany obraz i pojawia się wszędzie tam, gdzie wymieniona jest strona – czyli w nawigacji, w wyszukiwaniu i w odnośnikach. W przypadku strony, której szukasz codziennie, ikona jest szybsza niż jej tytuł.",
       "p2": "Szerokość ma dwa stopnie: wąska utrzymuje wiersze na tyle krótkie, że tekst ciągły czyta się wygodnie, szeroka wykorzystuje całe okno i jest przeznaczona dla tabel, kalendarzy i baz danych. Ustawienie to jest przypisane do strony, a nie do ciebie, więc u każdego wygląda tak samo.",
-      "p3": "Gdy skonfigurowany jest model graficzny, funkcja „Generuj okładkę” tworzy obraz na podstawie zawartości strony, zamiast zmuszać cię do jego szukania. Bez skonfigurowanego modelu brakuje tylko tego jednego przycisku; przesyłanie plików nadal działa."
+      "p3": "Jeśli skonfigurowano model obrazów, opcja „Generuj z AI” stworzy obraz nagłówka na podstawie twojego opisu, a na życzenie także na podstawie treści strony, dzięki czemu nie musisz niczego szukać. Bez skonfigurowanego modelu brakuje tylko tego jednego przycisku; przesyłanie plików nadal działa."
     },
     "where": "Przyciski pojawiają się po najechaniu kursorem nad tytułem strony."
+  },
+  "titelbild-aus-der-seite": {
+    "title": "Obraz nagłówka z tematu strony, z zapamiętanym opisem",
+    "summary": "Podczas generowania obrazu nagłówka możesz zaznaczyć „Kontekst ze strony”: wtedy model obrazów stworzy grafikę pasującą do tematu strony, nawet bez twojego własnego opisu. Twój opis pozostaje zapisany dla tej strony, a dotychczasowy obraz jest widoczny do momentu pojawienia się nowego.",
+    "details": {
+      "p1": "Po zaznaczeniu opcji do modelu obrazów trafia skrócony zarys treści: tytuł, nagłówki jako główne tematy (maksymalnie dziesięć) oraz podsumowanie strony lub jej początek, jeśli podsumowanie jeszcze nie istnieje. Notatka ze spotkania z „Agendą” i „Ustaleniami” stanie się dzięki temu raczej salą konferencyjną, a strona ze skryptami powłoki raczej terminalem. Kod, wzory, obrazy i załączniki nigdy nie są przesyłane. Bez zaznaczenia model widzi wyłącznie twój własny opis.",
+      "p2": "Twój opis i stan zaznaczenia pozostają zapisane dla tej strony w tej przeglądarce – nawet po jej zamknięciu, wysłaniu czy odświeżeniu. Jeśli obraz ci się nie spodoba, wystarczy zmienić jedno słowo i wygenerować go ponownie. Opis zostanie zapomniany, gdy wyczyścisz pole; na innym urządzeniu lub w innej przeglądarce zaczynasz z pustym polem.",
+      "p3": "Podczas tworzenia nowego obrazu stary pozostaje widoczny i ma oznaczenie „Generowanie nowego obrazu nagłówka”. Zostaje podmieniony dopiero wtedy, gdy nowy jest gotowy; w przypadku niepowodzenia obraz i opis pozostają bez zmian, a pod spodem wyświetla się przyczyna. Agenci wybierają to samo przez exo_page_generate_cover z pageContext: true, a odpowiedź zawiera informację o tym, co ze strony zostało przekazane."
+    },
+    "where": "Nad tytułem strony w sekcji „Generuj z AI” lub na obrazie nagłówka pod „Wygeneruj ponownie”."
   },
   "vorlagen": {
     "title": "Szablony stron",

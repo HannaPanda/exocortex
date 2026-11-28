@@ -205,9 +205,19 @@
     "details": {
       "p1": "Beweeg met de muis over het gedeelte boven de paginatitel: daar verschijnen de knoppen voor icoon, omslagafbeelding en breedte. Het icoon is een emoji uit het overzicht of een geüploade afbeelding en verschijnt overal weer waar de pagina wordt genoemd, dus in de navigatie, in de zoekfunctie en in verwijzingen. Voor een pagina die je dagelijks zoekt, werkt een icoon sneller dan de titel.",
       "p2": "De breedte heeft twee standen: smal houdt de regels kort genoeg om doorlopende tekst prettig leesbaar te houden, breed benut het venster optimaal en is bedoeld voor tabellen, kalenders en databases. De instelling hoort bij de pagina, niet bij jou, dus iedereen ziet hetzelfde.",
-      "p3": "Als er een beeldmodel is ingesteld, maakt \"Omslagafbeelding genereren\" er een op basis van de inhoud van de pagina, zonder dat je zelf hoeft te zoeken. Zonder ingesteld model ontbreekt alleen die ene knop; uploaden kun je nog steeds."
+      "p3": "Is er een beeldmodel ingesteld, dan tekent „Met AI genereren” een omslagafbeelding op basis van je beschrijving – desgewenst ook op basis van waar de pagina over gaat, zodat je er niet zelf een hoeft te zoeken. Zonder ingesteld model ontbreekt alleen deze ene knop; uploaden kun je nog steeds."
     },
     "where": "Boven de paginatitel verschijnen de knoppen als je eroverheen beweegt."
+  },
+  "titelbild-aus-der-seite": {
+    "title": "Omslagafbeelding op basis van het paginathema, met onthouden beschrijving",
+    "summary": "Bij het genereren van een omslagafbeelding kun je „Context uit de pagina” aanvinken: dan tekent het beeldmodel passend bij waar de pagina over gaat, ook zonder eigen beschrijving. Je beschrijving blijft voor de pagina bewaard en een bestaande afbeelding blijft staan tot de nieuwe er is.",
+    "details": {
+      "p1": "Met het vinkje gaat een samenvatting van de inhoud naar het beeldmodel: de titel, de tussenkopjes als hoofdthema’s (maximaal tien) en de samenvatting van de pagina, of het begin ervan zolang er nog geen samenvatting is. Een vergadernotitie met „Agenda” en „Besluiten” wordt zo eerder een vergaderruimte, een pagina met shellscripts eerder een terminal. Code, formules, afbeeldingen en bijlagen gaan nooit mee. Zonder vinkje ziet het model alleen je eigen beschrijving.",
+      "p2": "Je beschrijving en het vinkje blijven voor deze pagina in deze browser bewaard, ook na sluiten, verzenden en opnieuw laden. Bevalt een afbeelding niet, dan pas je simpelweg een woord aan en genereer je opnieuw. De beschrijving wordt vergeten zodra je het veld leegmaakt; op een ander apparaat of in een andere browser begin je met een leeg veld.",
+      "p3": "Terwijl de nieuwe afbeelding wordt gemaakt, blijft de oude zichtbaar met de melding „Nieuwe omslagafbeelding wordt gegenereerd”. Pas wanneer de nieuwe klaar is, wordt deze vervangen; mislukt het, dan blijven de afbeelding en beschrijving zoals ze waren en staat de reden eronder vermeld. Agenten kiezen hetzelfde via exo_page_generate_cover met pageContext: true, en het antwoord vermeldt wat er van de pagina is meegestuurd."
+    },
+    "where": "Boven de paginatitel onder „Met AI genereren”, of op een omslagafbeelding onder „Opnieuw genereren”."
   },
   "vorlagen": {
     "title": "Paginasjablonen",

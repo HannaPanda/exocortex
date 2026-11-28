@@ -453,7 +453,7 @@
       "replaceCover": "Substituir imagem de capa",
       "coverKeywords": "capa imagem de capa imagem enviar alterar",
       "generateCover": "Gerar imagem de capa com IA",
-      "generateCoverKeywords": "capa imagem de capa imagem ia gerar criar",
+      "generateCoverKeywords": "capa imagem ia gerar criar contexto tema página",
       "layout": "Alterar layout",
       "layoutPlaceholder": "Qual largura?",
       "layoutNarrow": "Estreito",

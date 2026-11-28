@@ -453,7 +453,7 @@
       "replaceCover": "Replace cover image",
       "coverKeywords": "cover image picture upload change",
       "generateCover": "Generate cover image with AI",
-      "generateCoverKeywords": "cover image picture ai generate create",
+      "generateCoverKeywords": "cover image picture ai generate create context theme page",
       "layout": "Change layout",
       "layoutPlaceholder": "Which width?",
       "layoutNarrow": "Narrow",

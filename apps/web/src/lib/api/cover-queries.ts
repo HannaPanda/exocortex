@@ -34,10 +34,10 @@ export function useUploadDocumentCover(workspaceId: string | undefined) {
  */
 export function useGenerateDocumentCover() {
   return useMutation({
-    mutationFn: (input: { documentId: string; prompt: string }) =>
+    mutationFn: (input: { documentId: string; prompt: string; pageContext: boolean }) =>
       apiRequest<GenerateDocumentCoverResponse>(
         `/api/documents/${input.documentId}/cover/generate`,
-        { method: 'POST', body: { prompt: input.prompt } },
+        { method: 'POST', body: { prompt: input.prompt, pageContext: input.pageContext } },
       ),
   });
 }

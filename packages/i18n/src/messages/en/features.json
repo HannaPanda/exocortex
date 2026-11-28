@@ -205,9 +205,19 @@
     "details": {
       "p1": "Hover over the area above the page title: the buttons for icon, cover image, and width appear there. The icon is an emoji from the picker or an uploaded image, and reappears wherever the page is referenced—in the navigation, search, and links. For a page you look up every day, an icon is faster than its title.",
       "p2": "Width has two settings: narrow keeps lines short enough for running text to read comfortably; wide uses the full window and is intended for tables, calendars, and databases. The setting belongs to the page, not to you, so everyone sees it the same way.",
-      "p3": "If an image model is configured, “Generate cover image” creates one from the content of the page instead of making you search for one. Without a configured model, only that single button is missing; you can still upload your own."
+      "p3": "If an image model is configured, “Generate with AI” paints a cover image according to your description—optionally also based on what the page is about—instead of you having to search for one. Without a configured model, only this one button is missing; you can still upload images."
     },
     "where": "Buttons appear above the page title on hover."
+  },
+  "titelbild-aus-der-seite": {
+    "title": "Cover image from the page topic, with remembered description",
+    "summary": "When generating a cover image, you can check “Context from page”: the image model then paints something fitting what the page is about, even without your own description. Your description stays saved for the page, and an existing image remains in place until the new one is ready.",
+    "details": {
+      "p1": "With the checkbox checked, a shortened summary of what it is about is sent to the image model: the title, the headings as main topics (at most ten), and the page summary, or its beginning if there is no summary yet. A meeting note with “Agenda” and “Decisions” is thus more likely to become a meeting room, a page with shell scripts more likely a terminal. Code, formulas, images, and attachments are never included. Without the checkbox checked, the model only sees your own description.",
+      "p2": "Your description and the checkbox state stay saved for this page in this browser, even across closing, sending, and reloading. If you do not like an image, you only need to change a single word and generate it again. The description is forgotten when you clear the field; on another device or in another browser, you start blank.",
+      "p3": "While the new image is being generated, the old one remains visible and displays the note “Generating new cover image”. It is only replaced once the new one is finished; if it fails, the image and description stay as they were, and the reason is shown underneath. Agents choose the same via exo_page_generate_cover with pageContext: true, and the response mentions what was included from the page."
+    },
+    "where": "Above the page title under “Generate with AI”, or on a cover image under “Regenerate”."
   },
   "vorlagen": {
     "title": "Page templates",

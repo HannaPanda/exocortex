@@ -453,7 +453,7 @@
       "replaceCover": "Sustituir portada",
       "coverKeywords": "portada encabezado imagen subir cambiar",
       "generateCover": "Generar portada con IA",
-      "generateCoverKeywords": "portada encabezado imagen ia generar crear",
+      "generateCoverKeywords": "portada encabezado imagen ia generar crear contexto tema página",
       "layout": "Cambiar diseño",
       "layoutPlaceholder": "¿Qué ancho?",
       "layoutNarrow": "Estrecho",

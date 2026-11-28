@@ -220,6 +220,80 @@ test.describe('documents', () => {
     await expect(page.getByTestId('add-cover')).toBeAttached();
   });
 
+  /**
+   * Issue #224. The image model is never reached: the generate request is
+   * answered in the browser, once as a refusal and once as "pending", so the
+   * test proves what the page shows around a picture without paying for one.
+   */
+  test('remembers the cover prompt and keeps the old cover while a new one is drawn', async ({
+    page,
+  }) => {
+    const path = join(mkdtempSync(join(tmpdir(), 'exo-cover-')), 'titelbild.png');
+    writeFileSync(path, ONE_PIXEL_PNG);
+
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await createPage(page, `Titelbild-Entwurf ${Date.now().toString(36)}`);
+    await page.setInputFiles('[data-testid="cover-file-input"]', path);
+    await expect(page.getByTestId('page-cover-image')).toBeVisible({ timeout: 30_000 });
+
+    const prompt = page.getByTestId('cover-prompt-input');
+    const context = page.getByTestId('cover-page-context');
+
+    // Typed, ticked and closed without sending: both are still there.
+    await page.getByTestId('generate-cover').click();
+    await prompt.fill('Sonnenaufgang am See');
+    await context.click();
+    await expect(context).toBeChecked();
+    await page.getByRole('dialog').getByRole('button', { name: 'Abbrechen' }).click();
+    await page.getByTestId('generate-cover').click();
+    await expect(prompt).toHaveValue('Sonnenaufgang am See');
+    await expect(context).toBeChecked();
+    await page.keyboard.press('Escape');
+
+    // And after a reload, because the draft is kept per page in this browser.
+    await page.reload();
+    await expect(page.getByTestId('page-cover-image')).toBeVisible({ timeout: 30_000 });
+    await page.getByTestId('generate-cover').click();
+    await expect(prompt).toHaveValue('Sonnenaufgang am See');
+    await expect(context).toBeChecked();
+
+    // The page context alone is enough to send.
+    await prompt.fill('');
+    await expect(page.getByTestId('cover-prompt-submit')).toBeEnabled();
+    await context.click();
+    await expect(page.getByTestId('cover-prompt-submit')).toBeDisabled();
+    await prompt.fill('Sonnenaufgang am See');
+
+    // A refused request leaves the cover and the prompt as they were.
+    await page.route('**/cover/generate', (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: 'application/json',
+        body: JSON.stringify({ code: 'ai_image_unavailable', message: 'off' }),
+      }),
+    );
+    await page.getByTestId('cover-prompt-submit').click();
+    await expect(page.getByTestId('page-cover').getByRole('alert')).toBeVisible();
+    await expect(page.getByTestId('page-cover-image')).toBeVisible();
+    await page.getByTestId('generate-cover').click();
+    await expect(prompt).toHaveValue('Sonnenaufgang am See');
+
+    // While a picture is drawn, the old one stays and says it is about to change.
+    await page.unroute('**/cover/generate');
+    await page.route('**/cover/generate', (route) =>
+      route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ status: 'pending', documentId: 'x', pageContext: null }),
+      }),
+    );
+    await page.getByTestId('cover-prompt-submit').click();
+    await expect(page.getByTestId('cover-generating')).toBeVisible();
+    await expect(page.getByTestId('page-cover-image')).toBeVisible();
+    await expect(page.getByTestId('page-cover').getByRole('alert')).toHaveCount(0);
+  });
+
   test('gives a page a coloured symbol, an emoji, and takes it away again', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });

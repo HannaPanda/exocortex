@@ -205,9 +205,19 @@
     "details": {
       "p1": "Passa con il cursore sull’area sopra il titolo della pagina: lì compaiono i pulsanti per l’icona, l’immagine di copertina e la larghezza. L’icona è un’emoji scelta dalla selezione o un’immagine caricata e riappare ovunque venga menzionata la pagina, quindi nella navigazione, nella ricerca e nei collegamenti. Per una pagina che cerchi ogni giorno, un’icona è più veloce del suo titolo.",
       "p2": "La larghezza ha due livelli: stretta mantiene le righe abbastanza corte per leggere bene il testo continuo, larga sfrutta tutta la finestra ed è pensata per tabelle, calendari e database. L’impostazione appartiene alla pagina, non a te, quindi tutti la vedono nello stesso modo.",
-      "p3": "Se è configurato un modello di immagini, \"Genera immagine di copertina\" ne crea una dal contenuto della pagina, invece di doverne cercare una. Senza un modello configurato manca solo questo singolo pulsante; puoi comunque continuare a caricare immagini."
+      "p3": "Se è configurato un modello di immagini, «Genera con IA» crea un’immagine di copertina in base alla tua descrizione o, se vuoi, a partire dall’argomento della pagina, senza doverne cercare una. Senza un modello configurato manca solo questo pulsante; puoi comunque caricare immagini."
     },
     "where": "I pulsanti compaiono passando con il cursore sopra il titolo della pagina."
+  },
+  "titelbild-aus-der-seite": {
+    "title": "Immagine di copertina dal tema della pagina, con descrizione memorizzata",
+    "summary": "Quando generi un’immagine di copertina puoi spuntare «Contesto dalla pagina»: il modello di immagini creerà qualcosa di adatto al tema della pagina, anche senza una descrizione da parte tua. La tua descrizione rimane salvata per la pagina, e l’immagine attuale rimane visibile finché la nuova non è pronta.",
+    "details": {
+      "p1": "Con la spunta attiva, al modello di immagini viene inviato un riassunto dei contenuti: il titolo, le intestazioni come argomenti principali (al massimo dieci) e il riassunto della pagina, oppure l’inizio del testo se il riassunto non c’è ancora. Una nota di riunione con «Ordine del giorno» e «Decisioni» tenderà così ad assomigliare a una sala riunioni, una pagina con script di shell a un terminale. Codice, formule, immagini e allegati non vengono mai inviati. Senza la spunta, il modello vede solo la tua descrizione.",
+      "p2": "La tua descrizione e la spunta rimangono salvate per questa pagina in questo browser, anche chiudendo, inviando o ricaricando. Se un’immagine non ti piace, basta cambiare una parola e rigenerarla. La descrizione viene dimenticata solo se svuoti il campo; su un altro dispositivo o in un altro browser ricomincerai da capo.",
+      "p3": "Mentre la nuova immagine viene generata, quella precedente rimane visibile con l’avviso «Generazione della nuova immagine di copertina in corso». Solo quando la nuova è pronta viene sostituita; se l’operazione fallisce, l’immagine e la descrizione restano invariate e sotto ne viene mostrato il motivo. Gli agenti ottengono lo stesso risultato tramite exo_page_generate_cover con pageContext: true, e la risposta indica quali parti della pagina sono state inviate."
+    },
+    "where": "Sopra il titolo della pagina sotto «Genera con IA», oppure su un’immagine di copertina sotto «Rigenera»."
   },
   "vorlagen": {
     "title": "Modelli di pagina",
