@@ -11,6 +11,7 @@ import {
   type DatabasePropertyOption,
   type DatabaseRow,
   type DatabaseRowsResponse,
+  type DatabaseSort,
   type DatabaseView,
   type DocumentRowResponse,
   type DuplicateDatabaseRowsResponse,
@@ -193,6 +194,49 @@ export function useUpdateDatabaseView(documentId: string) {
       void client.invalidateQueries({ queryKey: ['database', documentId, 'rows'] });
     },
   });
+}
+
+/**
+ * A view's order, written the moment it changes (issue #296).
+ *
+ * Optimistic on purpose: reordering by keyboard is several presses in a row,
+ * and each one has to start from where the previous one left the list, not
+ * from where the server last answered. So the new list goes into the views
+ * cache synchronously, before the request is even queued, and every reader
+ * (the sort bar, the column headers, the editor) shows it at once. The writes
+ * of one view run one after another (`scope`), because each carries the whole
+ * list and two of them overtaking each other would leave the older one stored;
+ * only the last one to settle reads the server's answer back, so an earlier
+ * answer never flickers over a newer intent. A refused write is corrected by
+ * that same read.
+ */
+export function useUpdateDatabaseViewSorts(documentId: string, viewId: string) {
+  const client = useQueryClient();
+  const viewsKey = databaseQueryKeys.views(documentId);
+  const mutationKey = ['database', documentId, 'view-sorts', viewId];
+  const mutation = useMutation({
+    mutationKey,
+    scope: { id: `database-view-sorts-${viewId}` },
+    mutationFn: (sorts: DatabaseSort[]) =>
+      apiRequest<DatabaseView>(`/api/documents/${documentId}/views/${viewId}`, {
+        method: 'PATCH',
+        body: { sorts },
+      }),
+    onSettled: () => {
+      // This mutation still counts as running while its own callback runs.
+      if (client.isMutating({ mutationKey }) > 1) return;
+      void client.invalidateQueries({ queryKey: viewsKey });
+      void client.invalidateQueries({ queryKey: ['database', documentId, 'rows'] });
+    },
+  });
+
+  return (sorts: DatabaseSort[]) => {
+    void client.cancelQueries({ queryKey: viewsKey });
+    client.setQueryData<DatabaseView[]>(viewsKey, (views) =>
+      views?.map((entry) => (entry.id === viewId ? { ...entry, sorts } : entry)),
+    );
+    mutation.mutate(sorts);
+  };
 }
 
 export function useReorderDatabaseView(documentId: string) {

@@ -6060,10 +6060,6 @@
       "source": "0ebbc437d9f377d3",
       "output": "e520df698000f85f"
     },
-    "database.filters.ascending": {
-      "source": "f97b8e9f5b6accc4",
-      "output": "77184595bde3befc"
-    },
     "database.filters.checkedChoice": {
       "source": "7a9dd317c04a85bf",
       "output": "0efd92a335901ac9"
@@ -6071,10 +6067,6 @@
     "database.filters.checkedValue": {
       "source": "fcd8918c35de68a4",
       "output": "e61a3d78c65133c7"
-    },
-    "database.filters.descending": {
-      "source": "3bd13fe23d66e6d2",
-      "output": "79479a6c76d8416a"
     },
     "database.filters.filter": {
       "source": "638e249f4a15ebb8",
@@ -6127,14 +6119,6 @@
     "database.filters.removeFilter": {
       "source": "2fb0556b006fad01",
       "output": "23c5cdc6269ef451"
-    },
-    "database.filters.removeSort": {
-      "source": "447db1d644bfa6e2",
-      "output": "d5001dd4aab39b12"
-    },
-    "database.filters.sort": {
-      "source": "61192695b8811678",
-      "output": "bec69036aa27e7fa"
     },
     "database.filters.uncheckedChoice": {
       "source": "aa5f03b01360a9c8",
@@ -6691,6 +6675,86 @@
     "database.shell.loading": {
       "source": "93a39d63d84a9928",
       "output": "d57e293fb2adbad8"
+    },
+    "database.sorts.add": {
+      "source": "f36a98b1d28278ed",
+      "output": "6ad8e0b7b4c919e2"
+    },
+    "database.sorts.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "77184595bde3befc"
+    },
+    "database.sorts.clear": {
+      "source": "55a058187c0406df",
+      "output": "ef7b7e6abe66ba37"
+    },
+    "database.sorts.column": {
+      "source": "d5dea2c1a65e4b02",
+      "output": "3fdc9a587693f9e6"
+    },
+    "database.sorts.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "79479a6c76d8416a"
+    },
+    "database.sorts.direction": {
+      "source": "73ea47c950babdb5",
+      "output": "9c8a9579abe55bdc"
+    },
+    "database.sorts.editLabel": {
+      "source": "cd2fea00305e3990",
+      "output": "bc6737b000cc6773"
+    },
+    "database.sorts.empty": {
+      "source": "fac0e94e5ae2bc6c",
+      "output": "0e28a1d98fd1ff92"
+    },
+    "database.sorts.heading": {
+      "source": "188ca34adc8e4a15",
+      "output": "c9129025bd3ff652"
+    },
+    "database.sorts.hint": {
+      "source": "ee489b69fbc3a6b3",
+      "output": "7fd6a42e14630c13"
+    },
+    "database.sorts.indicator": {
+      "source": "9bc3a4f054925f50",
+      "output": "0d590631948bafca"
+    },
+    "database.sorts.move": {
+      "source": "07ad7d20cb41af20",
+      "output": "1b03e9d88da7df02"
+    },
+    "database.sorts.moved": {
+      "source": "12161b6835a3743d",
+      "output": "55365796d8499a25"
+    },
+    "database.sorts.remove": {
+      "source": "430cca4e5f7af17d",
+      "output": "9453c4b1d9298f32"
+    },
+    "database.sorts.removeColumnSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "d5001dd4aab39b12"
+    },
+    "database.sorts.ruleLabel": {
+      "source": "c4c888a64bb80d61",
+      "output": "cc0faa71fe4147c3"
+    },
+    "database.sorts.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "ec3c9c77806c5b64"
+    },
+    "database.sorts.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "8993b788afbe1634"
+    },
+    "database.sorts.summary": {
+      "source": "5e5f19c8b679acee",
+      "output": "7a5211b697129d23"
+    },
+    "database.sorts.trigger": {
+      "source": "61192695b8811678",
+      "output": "bec69036aa27e7fa"
     },
     "database.table.emptyDescription": {
       "source": "377bb1ffe6a7e9e4",
@@ -13631,6 +13695,34 @@
     "features.datenbank-personen.where": {
       "source": "60495d8a459d77e6",
       "output": "5c1eacb9afbaddb2"
+    },
+    "features.datenbank-sortieren.details.p1": {
+      "source": "af7e721bd484ffe4",
+      "output": "0860eeb0d7991215"
+    },
+    "features.datenbank-sortieren.details.p2": {
+      "source": "ff86aac6866f4057",
+      "output": "579827a87cf0579b"
+    },
+    "features.datenbank-sortieren.details.p3": {
+      "source": "7c47866607e56658",
+      "output": "72fa736e65adc4ea"
+    },
+    "features.datenbank-sortieren.details.p4": {
+      "source": "09e35935e1af5670",
+      "output": "aa8783f97b671852"
+    },
+    "features.datenbank-sortieren.summary": {
+      "source": "8db41a84f86d6ec9",
+      "output": "6daa834d2809ee76"
+    },
+    "features.datenbank-sortieren.title": {
+      "source": "0342d6df53e5f051",
+      "output": "fc36d6292e8dd9c3"
+    },
+    "features.datenbank-sortieren.where": {
+      "source": "b6a091c4d2585752",
+      "output": "4db6d13be75716fe"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -32462,10 +32554,6 @@
       "source": "0ebbc437d9f377d3",
       "output": "275565b4db1d5349"
     },
-    "database.filters.ascending": {
-      "source": "f97b8e9f5b6accc4",
-      "output": "acd97185d0c9e16b"
-    },
     "database.filters.checkedChoice": {
       "source": "7a9dd317c04a85bf",
       "output": "f948e59ec0e9c3f8"
@@ -32473,10 +32561,6 @@
     "database.filters.checkedValue": {
       "source": "fcd8918c35de68a4",
       "output": "63675edea33d1b7a"
-    },
-    "database.filters.descending": {
-      "source": "3bd13fe23d66e6d2",
-      "output": "c4132759d88a12c3"
     },
     "database.filters.filter": {
       "source": "638e249f4a15ebb8",
@@ -32529,14 +32613,6 @@
     "database.filters.removeFilter": {
       "source": "2fb0556b006fad01",
       "output": "be8e93de80995655"
-    },
-    "database.filters.removeSort": {
-      "source": "447db1d644bfa6e2",
-      "output": "b12bf0cb4399eaa4"
-    },
-    "database.filters.sort": {
-      "source": "61192695b8811678",
-      "output": "39f93451ee48b979"
     },
     "database.filters.uncheckedChoice": {
       "source": "aa5f03b01360a9c8",
@@ -33093,6 +33169,86 @@
     "database.shell.loading": {
       "source": "93a39d63d84a9928",
       "output": "c8d306ff53824f98"
+    },
+    "database.sorts.add": {
+      "source": "f36a98b1d28278ed",
+      "output": "af03d386f3365c64"
+    },
+    "database.sorts.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "acd97185d0c9e16b"
+    },
+    "database.sorts.clear": {
+      "source": "55a058187c0406df",
+      "output": "888e25bd22c22a5a"
+    },
+    "database.sorts.column": {
+      "source": "d5dea2c1a65e4b02",
+      "output": "9a389d295223201b"
+    },
+    "database.sorts.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "c4132759d88a12c3"
+    },
+    "database.sorts.direction": {
+      "source": "73ea47c950babdb5",
+      "output": "d717bda403af936a"
+    },
+    "database.sorts.editLabel": {
+      "source": "cd2fea00305e3990",
+      "output": "f0ba78ffddc952e3"
+    },
+    "database.sorts.empty": {
+      "source": "fac0e94e5ae2bc6c",
+      "output": "d4411b31f7e11f95"
+    },
+    "database.sorts.heading": {
+      "source": "188ca34adc8e4a15",
+      "output": "1b8d52ae1c040316"
+    },
+    "database.sorts.hint": {
+      "source": "ee489b69fbc3a6b3",
+      "output": "74c65bd9c0d59977"
+    },
+    "database.sorts.indicator": {
+      "source": "9bc3a4f054925f50",
+      "output": "a6bf837cb5a75afc"
+    },
+    "database.sorts.move": {
+      "source": "07ad7d20cb41af20",
+      "output": "508e55d4228f81f1"
+    },
+    "database.sorts.moved": {
+      "source": "12161b6835a3743d",
+      "output": "6bc39aa471cde9a2"
+    },
+    "database.sorts.remove": {
+      "source": "430cca4e5f7af17d",
+      "output": "22fe81d5bd38b23e"
+    },
+    "database.sorts.removeColumnSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "b12bf0cb4399eaa4"
+    },
+    "database.sorts.ruleLabel": {
+      "source": "c4c888a64bb80d61",
+      "output": "26874a3a59a666f8"
+    },
+    "database.sorts.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "e3417b3a7b61d844"
+    },
+    "database.sorts.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "910fb68191843069"
+    },
+    "database.sorts.summary": {
+      "source": "5e5f19c8b679acee",
+      "output": "6c2b2f258565b497"
+    },
+    "database.sorts.trigger": {
+      "source": "61192695b8811678",
+      "output": "39f93451ee48b979"
     },
     "database.table.emptyDescription": {
       "source": "377bb1ffe6a7e9e4",
@@ -40033,6 +40189,34 @@
     "features.datenbank-personen.where": {
       "source": "60495d8a459d77e6",
       "output": "60eb838745fb4d0e"
+    },
+    "features.datenbank-sortieren.details.p1": {
+      "source": "af7e721bd484ffe4",
+      "output": "a5792d09ae7d22c8"
+    },
+    "features.datenbank-sortieren.details.p2": {
+      "source": "ff86aac6866f4057",
+      "output": "fbcb45e8ba6d0e5e"
+    },
+    "features.datenbank-sortieren.details.p3": {
+      "source": "7c47866607e56658",
+      "output": "e655e4ffc47ee117"
+    },
+    "features.datenbank-sortieren.details.p4": {
+      "source": "09e35935e1af5670",
+      "output": "c1865bbf5c1d6f0f"
+    },
+    "features.datenbank-sortieren.summary": {
+      "source": "8db41a84f86d6ec9",
+      "output": "b6f7971cd07072eb"
+    },
+    "features.datenbank-sortieren.title": {
+      "source": "0342d6df53e5f051",
+      "output": "1fdc46a34046544c"
+    },
+    "features.datenbank-sortieren.where": {
+      "source": "b6a091c4d2585752",
+      "output": "852089fe8059b7cf"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -58864,10 +59048,6 @@
       "source": "0ebbc437d9f377d3",
       "output": "2f882b9a7b9104f2"
     },
-    "database.filters.ascending": {
-      "source": "f97b8e9f5b6accc4",
-      "output": "f7bf740c0c96de33"
-    },
     "database.filters.checkedChoice": {
       "source": "7a9dd317c04a85bf",
       "output": "050d62df806b1b11"
@@ -58875,10 +59055,6 @@
     "database.filters.checkedValue": {
       "source": "fcd8918c35de68a4",
       "output": "c511d8dce76d166d"
-    },
-    "database.filters.descending": {
-      "source": "3bd13fe23d66e6d2",
-      "output": "951c6c43bdfc5d0f"
     },
     "database.filters.filter": {
       "source": "638e249f4a15ebb8",
@@ -58931,14 +59107,6 @@
     "database.filters.removeFilter": {
       "source": "2fb0556b006fad01",
       "output": "170701157d8c43e3"
-    },
-    "database.filters.removeSort": {
-      "source": "447db1d644bfa6e2",
-      "output": "2c1d60b1e56c37a5"
-    },
-    "database.filters.sort": {
-      "source": "61192695b8811678",
-      "output": "fa9a9adc0b0b88c9"
     },
     "database.filters.uncheckedChoice": {
       "source": "aa5f03b01360a9c8",
@@ -59495,6 +59663,86 @@
     "database.shell.loading": {
       "source": "93a39d63d84a9928",
       "output": "018d6ddff5c3af49"
+    },
+    "database.sorts.add": {
+      "source": "f36a98b1d28278ed",
+      "output": "e09a1ae39f717c7b"
+    },
+    "database.sorts.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "f7bf740c0c96de33"
+    },
+    "database.sorts.clear": {
+      "source": "55a058187c0406df",
+      "output": "ade1bf5a69f3502e"
+    },
+    "database.sorts.column": {
+      "source": "d5dea2c1a65e4b02",
+      "output": "543718c57fac927d"
+    },
+    "database.sorts.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "951c6c43bdfc5d0f"
+    },
+    "database.sorts.direction": {
+      "source": "73ea47c950babdb5",
+      "output": "741e8c5450cd04da"
+    },
+    "database.sorts.editLabel": {
+      "source": "cd2fea00305e3990",
+      "output": "758426e7abedf190"
+    },
+    "database.sorts.empty": {
+      "source": "fac0e94e5ae2bc6c",
+      "output": "84ccf688b150eccf"
+    },
+    "database.sorts.heading": {
+      "source": "188ca34adc8e4a15",
+      "output": "cdcede56427e5757"
+    },
+    "database.sorts.hint": {
+      "source": "ee489b69fbc3a6b3",
+      "output": "05a04a161eec2f3e"
+    },
+    "database.sorts.indicator": {
+      "source": "9bc3a4f054925f50",
+      "output": "0794544bf16c8866"
+    },
+    "database.sorts.move": {
+      "source": "07ad7d20cb41af20",
+      "output": "6ff4e338af0d049b"
+    },
+    "database.sorts.moved": {
+      "source": "12161b6835a3743d",
+      "output": "7d10bd143ca7fe44"
+    },
+    "database.sorts.remove": {
+      "source": "430cca4e5f7af17d",
+      "output": "1bf91edcee5d2423"
+    },
+    "database.sorts.removeColumnSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "2c1d60b1e56c37a5"
+    },
+    "database.sorts.ruleLabel": {
+      "source": "c4c888a64bb80d61",
+      "output": "b2b3576fd502aef6"
+    },
+    "database.sorts.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "ba09100e03ab620c"
+    },
+    "database.sorts.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "7a1829aaef6b00c1"
+    },
+    "database.sorts.summary": {
+      "source": "5e5f19c8b679acee",
+      "output": "698a4529ae64e216"
+    },
+    "database.sorts.trigger": {
+      "source": "61192695b8811678",
+      "output": "fa9a9adc0b0b88c9"
     },
     "database.table.emptyDescription": {
       "source": "377bb1ffe6a7e9e4",
@@ -66435,6 +66683,34 @@
     "features.datenbank-personen.where": {
       "source": "60495d8a459d77e6",
       "output": "8415a080866ce2a1"
+    },
+    "features.datenbank-sortieren.details.p1": {
+      "source": "af7e721bd484ffe4",
+      "output": "867aa10aa6d98bd2"
+    },
+    "features.datenbank-sortieren.details.p2": {
+      "source": "ff86aac6866f4057",
+      "output": "385682225579ff51"
+    },
+    "features.datenbank-sortieren.details.p3": {
+      "source": "7c47866607e56658",
+      "output": "add53d186ea750d5"
+    },
+    "features.datenbank-sortieren.details.p4": {
+      "source": "09e35935e1af5670",
+      "output": "d8ae57c866612374"
+    },
+    "features.datenbank-sortieren.summary": {
+      "source": "8db41a84f86d6ec9",
+      "output": "350fa6497c4f7447"
+    },
+    "features.datenbank-sortieren.title": {
+      "source": "0342d6df53e5f051",
+      "output": "81739104d7285a53"
+    },
+    "features.datenbank-sortieren.where": {
+      "source": "b6a091c4d2585752",
+      "output": "92f149a0f1ae5540"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -85266,10 +85542,6 @@
       "source": "0ebbc437d9f377d3",
       "output": "b8a53064d4e85f42"
     },
-    "database.filters.ascending": {
-      "source": "f97b8e9f5b6accc4",
-      "output": "67a398b360a215f3"
-    },
     "database.filters.checkedChoice": {
       "source": "7a9dd317c04a85bf",
       "output": "2a56e287b7355207"
@@ -85277,10 +85549,6 @@
     "database.filters.checkedValue": {
       "source": "fcd8918c35de68a4",
       "output": "230f062ce59299fa"
-    },
-    "database.filters.descending": {
-      "source": "3bd13fe23d66e6d2",
-      "output": "6e9ed7660b8ae709"
     },
     "database.filters.filter": {
       "source": "638e249f4a15ebb8",
@@ -85333,14 +85601,6 @@
     "database.filters.removeFilter": {
       "source": "2fb0556b006fad01",
       "output": "d45b7cce7f6302a0"
-    },
-    "database.filters.removeSort": {
-      "source": "447db1d644bfa6e2",
-      "output": "a54ad9eb0487ef21"
-    },
-    "database.filters.sort": {
-      "source": "61192695b8811678",
-      "output": "e3eb32a752001be7"
     },
     "database.filters.uncheckedChoice": {
       "source": "aa5f03b01360a9c8",
@@ -85897,6 +86157,86 @@
     "database.shell.loading": {
       "source": "93a39d63d84a9928",
       "output": "2e1fd48a92b3981a"
+    },
+    "database.sorts.add": {
+      "source": "f36a98b1d28278ed",
+      "output": "b23f14c1ecd90f83"
+    },
+    "database.sorts.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "67a398b360a215f3"
+    },
+    "database.sorts.clear": {
+      "source": "55a058187c0406df",
+      "output": "0007e22cbbaf4989"
+    },
+    "database.sorts.column": {
+      "source": "d5dea2c1a65e4b02",
+      "output": "c581f2403c86a587"
+    },
+    "database.sorts.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "6e9ed7660b8ae709"
+    },
+    "database.sorts.direction": {
+      "source": "73ea47c950babdb5",
+      "output": "cafd2a4bc1a72f07"
+    },
+    "database.sorts.editLabel": {
+      "source": "cd2fea00305e3990",
+      "output": "6e7390d17f87f61a"
+    },
+    "database.sorts.empty": {
+      "source": "fac0e94e5ae2bc6c",
+      "output": "70400e9cc7fa0db2"
+    },
+    "database.sorts.heading": {
+      "source": "188ca34adc8e4a15",
+      "output": "cd038f8efe768d89"
+    },
+    "database.sorts.hint": {
+      "source": "ee489b69fbc3a6b3",
+      "output": "c455730e2c696599"
+    },
+    "database.sorts.indicator": {
+      "source": "9bc3a4f054925f50",
+      "output": "5d3a3803d0c9d340"
+    },
+    "database.sorts.move": {
+      "source": "07ad7d20cb41af20",
+      "output": "6647f0638d404638"
+    },
+    "database.sorts.moved": {
+      "source": "12161b6835a3743d",
+      "output": "7df58e2cdeed216a"
+    },
+    "database.sorts.remove": {
+      "source": "430cca4e5f7af17d",
+      "output": "a584229cba7aa887"
+    },
+    "database.sorts.removeColumnSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "a54ad9eb0487ef21"
+    },
+    "database.sorts.ruleLabel": {
+      "source": "c4c888a64bb80d61",
+      "output": "02d34a4ac617a4e2"
+    },
+    "database.sorts.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "cb874f4879a0e889"
+    },
+    "database.sorts.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "51ae78d647c77e35"
+    },
+    "database.sorts.summary": {
+      "source": "5e5f19c8b679acee",
+      "output": "96373ef14ed7c747"
+    },
+    "database.sorts.trigger": {
+      "source": "61192695b8811678",
+      "output": "e3eb32a752001be7"
     },
     "database.table.emptyDescription": {
       "source": "377bb1ffe6a7e9e4",
@@ -92837,6 +93177,34 @@
     "features.datenbank-personen.where": {
       "source": "60495d8a459d77e6",
       "output": "36edc1c6b9b63839"
+    },
+    "features.datenbank-sortieren.details.p1": {
+      "source": "af7e721bd484ffe4",
+      "output": "83cb628e4f8ebac6"
+    },
+    "features.datenbank-sortieren.details.p2": {
+      "source": "ff86aac6866f4057",
+      "output": "794d0980432ddf13"
+    },
+    "features.datenbank-sortieren.details.p3": {
+      "source": "7c47866607e56658",
+      "output": "03642d7f5359a756"
+    },
+    "features.datenbank-sortieren.details.p4": {
+      "source": "09e35935e1af5670",
+      "output": "b6f8e0dfcf22b2e7"
+    },
+    "features.datenbank-sortieren.summary": {
+      "source": "8db41a84f86d6ec9",
+      "output": "1deae51a371cd3df"
+    },
+    "features.datenbank-sortieren.title": {
+      "source": "0342d6df53e5f051",
+      "output": "02ced25cadea1368"
+    },
+    "features.datenbank-sortieren.where": {
+      "source": "b6a091c4d2585752",
+      "output": "ece32ab52ef1d8a6"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -111668,10 +112036,6 @@
       "source": "0ebbc437d9f377d3",
       "output": "73a3ab0c88e53ddf"
     },
-    "database.filters.ascending": {
-      "source": "f97b8e9f5b6accc4",
-      "output": "01fc822b52b8a04c"
-    },
     "database.filters.checkedChoice": {
       "source": "7a9dd317c04a85bf",
       "output": "7928427c990d486b"
@@ -111679,10 +112043,6 @@
     "database.filters.checkedValue": {
       "source": "fcd8918c35de68a4",
       "output": "80baa5ab46ca1a39"
-    },
-    "database.filters.descending": {
-      "source": "3bd13fe23d66e6d2",
-      "output": "21877b0689a69c12"
     },
     "database.filters.filter": {
       "source": "638e249f4a15ebb8",
@@ -111735,14 +112095,6 @@
     "database.filters.removeFilter": {
       "source": "2fb0556b006fad01",
       "output": "072b6e5fc6ca39b5"
-    },
-    "database.filters.removeSort": {
-      "source": "447db1d644bfa6e2",
-      "output": "f40bd809bc4f276c"
-    },
-    "database.filters.sort": {
-      "source": "61192695b8811678",
-      "output": "5d300cba40ba3b7e"
     },
     "database.filters.uncheckedChoice": {
       "source": "aa5f03b01360a9c8",
@@ -112299,6 +112651,86 @@
     "database.shell.loading": {
       "source": "93a39d63d84a9928",
       "output": "c510caf9dbeadfec"
+    },
+    "database.sorts.add": {
+      "source": "f36a98b1d28278ed",
+      "output": "3dfc4d40b2ceb980"
+    },
+    "database.sorts.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "01fc822b52b8a04c"
+    },
+    "database.sorts.clear": {
+      "source": "55a058187c0406df",
+      "output": "4c20f066cca24241"
+    },
+    "database.sorts.column": {
+      "source": "d5dea2c1a65e4b02",
+      "output": "b1c443b3ea6a1d9e"
+    },
+    "database.sorts.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "21877b0689a69c12"
+    },
+    "database.sorts.direction": {
+      "source": "73ea47c950babdb5",
+      "output": "2b667342e75b75f3"
+    },
+    "database.sorts.editLabel": {
+      "source": "cd2fea00305e3990",
+      "output": "6e707c4ce2caea3f"
+    },
+    "database.sorts.empty": {
+      "source": "fac0e94e5ae2bc6c",
+      "output": "a698719bef4b56c0"
+    },
+    "database.sorts.heading": {
+      "source": "188ca34adc8e4a15",
+      "output": "7819c26d474c72b8"
+    },
+    "database.sorts.hint": {
+      "source": "ee489b69fbc3a6b3",
+      "output": "f54f5e6ad1a47495"
+    },
+    "database.sorts.indicator": {
+      "source": "9bc3a4f054925f50",
+      "output": "50926c4a30582b28"
+    },
+    "database.sorts.move": {
+      "source": "07ad7d20cb41af20",
+      "output": "2147741f3d06a38d"
+    },
+    "database.sorts.moved": {
+      "source": "12161b6835a3743d",
+      "output": "b0bcaa23f7248a91"
+    },
+    "database.sorts.remove": {
+      "source": "430cca4e5f7af17d",
+      "output": "c9ac66470c5e5e32"
+    },
+    "database.sorts.removeColumnSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "f40bd809bc4f276c"
+    },
+    "database.sorts.ruleLabel": {
+      "source": "c4c888a64bb80d61",
+      "output": "c284ef287f80d826"
+    },
+    "database.sorts.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "abb69ce51d71a21d"
+    },
+    "database.sorts.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "0c03abbf7949cc27"
+    },
+    "database.sorts.summary": {
+      "source": "5e5f19c8b679acee",
+      "output": "d11f69dcd22477df"
+    },
+    "database.sorts.trigger": {
+      "source": "61192695b8811678",
+      "output": "5d300cba40ba3b7e"
     },
     "database.table.emptyDescription": {
       "source": "377bb1ffe6a7e9e4",
@@ -119239,6 +119671,34 @@
     "features.datenbank-personen.where": {
       "source": "60495d8a459d77e6",
       "output": "be5eb46b60faba84"
+    },
+    "features.datenbank-sortieren.details.p1": {
+      "source": "af7e721bd484ffe4",
+      "output": "b146507b4b2cbcf3"
+    },
+    "features.datenbank-sortieren.details.p2": {
+      "source": "ff86aac6866f4057",
+      "output": "ce606393a9c614b2"
+    },
+    "features.datenbank-sortieren.details.p3": {
+      "source": "7c47866607e56658",
+      "output": "8aa376299f9b52fb"
+    },
+    "features.datenbank-sortieren.details.p4": {
+      "source": "09e35935e1af5670",
+      "output": "9c151cfc3ea388c5"
+    },
+    "features.datenbank-sortieren.summary": {
+      "source": "8db41a84f86d6ec9",
+      "output": "88552b06d2d68e7f"
+    },
+    "features.datenbank-sortieren.title": {
+      "source": "0342d6df53e5f051",
+      "output": "8f20b23e6b1cb290"
+    },
+    "features.datenbank-sortieren.where": {
+      "source": "b6a091c4d2585752",
+      "output": "bd1c9e6aca1bf471"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -138070,10 +138530,6 @@
       "source": "0ebbc437d9f377d3",
       "output": "a125da12cec272ff"
     },
-    "database.filters.ascending": {
-      "source": "f97b8e9f5b6accc4",
-      "output": "3590463acaa89dda"
-    },
     "database.filters.checkedChoice": {
       "source": "7a9dd317c04a85bf",
       "output": "9189051f83bae14d"
@@ -138081,10 +138537,6 @@
     "database.filters.checkedValue": {
       "source": "fcd8918c35de68a4",
       "output": "9a061afc526bcdfa"
-    },
-    "database.filters.descending": {
-      "source": "3bd13fe23d66e6d2",
-      "output": "9c20d52cff935380"
     },
     "database.filters.filter": {
       "source": "638e249f4a15ebb8",
@@ -138137,14 +138589,6 @@
     "database.filters.removeFilter": {
       "source": "2fb0556b006fad01",
       "output": "5db59d9a7d16c268"
-    },
-    "database.filters.removeSort": {
-      "source": "447db1d644bfa6e2",
-      "output": "c4cadfaf2cf4ffc0"
-    },
-    "database.filters.sort": {
-      "source": "61192695b8811678",
-      "output": "9fdfc3450def1e4d"
     },
     "database.filters.uncheckedChoice": {
       "source": "aa5f03b01360a9c8",
@@ -138701,6 +139145,86 @@
     "database.shell.loading": {
       "source": "93a39d63d84a9928",
       "output": "491f3b068402d978"
+    },
+    "database.sorts.add": {
+      "source": "f36a98b1d28278ed",
+      "output": "991ec8c2742cf646"
+    },
+    "database.sorts.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "3590463acaa89dda"
+    },
+    "database.sorts.clear": {
+      "source": "55a058187c0406df",
+      "output": "c20600a688dc3243"
+    },
+    "database.sorts.column": {
+      "source": "d5dea2c1a65e4b02",
+      "output": "f8c3dc769a64e532"
+    },
+    "database.sorts.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "9c20d52cff935380"
+    },
+    "database.sorts.direction": {
+      "source": "73ea47c950babdb5",
+      "output": "808c293d6b71ce9a"
+    },
+    "database.sorts.editLabel": {
+      "source": "cd2fea00305e3990",
+      "output": "9cad3345c37853de"
+    },
+    "database.sorts.empty": {
+      "source": "fac0e94e5ae2bc6c",
+      "output": "1d99a5f1165f62a3"
+    },
+    "database.sorts.heading": {
+      "source": "188ca34adc8e4a15",
+      "output": "ff8ce6db320d5cc9"
+    },
+    "database.sorts.hint": {
+      "source": "ee489b69fbc3a6b3",
+      "output": "206a3d4ea3b475a6"
+    },
+    "database.sorts.indicator": {
+      "source": "9bc3a4f054925f50",
+      "output": "49d73bc63bee1553"
+    },
+    "database.sorts.move": {
+      "source": "07ad7d20cb41af20",
+      "output": "d6a8bbd358f91b7d"
+    },
+    "database.sorts.moved": {
+      "source": "12161b6835a3743d",
+      "output": "0665f6f6d00f6aba"
+    },
+    "database.sorts.remove": {
+      "source": "430cca4e5f7af17d",
+      "output": "a8e6d4d2ae00a060"
+    },
+    "database.sorts.removeColumnSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "c4cadfaf2cf4ffc0"
+    },
+    "database.sorts.ruleLabel": {
+      "source": "c4c888a64bb80d61",
+      "output": "d39edd601ea3ff68"
+    },
+    "database.sorts.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "2bfb01c9cbd96504"
+    },
+    "database.sorts.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "e6a29b0822301090"
+    },
+    "database.sorts.summary": {
+      "source": "5e5f19c8b679acee",
+      "output": "cc33284f1a555809"
+    },
+    "database.sorts.trigger": {
+      "source": "61192695b8811678",
+      "output": "9fdfc3450def1e4d"
     },
     "database.table.emptyDescription": {
       "source": "377bb1ffe6a7e9e4",
@@ -145641,6 +146165,34 @@
     "features.datenbank-personen.where": {
       "source": "60495d8a459d77e6",
       "output": "1e925d686fd92ceb"
+    },
+    "features.datenbank-sortieren.details.p1": {
+      "source": "af7e721bd484ffe4",
+      "output": "cba1ce47a1df2a7d"
+    },
+    "features.datenbank-sortieren.details.p2": {
+      "source": "ff86aac6866f4057",
+      "output": "29b48a4a3e8b3cfc"
+    },
+    "features.datenbank-sortieren.details.p3": {
+      "source": "7c47866607e56658",
+      "output": "d6704c82a3d231f6"
+    },
+    "features.datenbank-sortieren.details.p4": {
+      "source": "09e35935e1af5670",
+      "output": "06a20b7da9980a5b"
+    },
+    "features.datenbank-sortieren.summary": {
+      "source": "8db41a84f86d6ec9",
+      "output": "a52c3fcc3ff68028"
+    },
+    "features.datenbank-sortieren.title": {
+      "source": "0342d6df53e5f051",
+      "output": "d0fa0388ad49c89e"
+    },
+    "features.datenbank-sortieren.where": {
+      "source": "b6a091c4d2585752",
+      "output": "3213f25c3e06ccec"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",
@@ -164472,10 +165024,6 @@
       "source": "0ebbc437d9f377d3",
       "output": "90086102a30daaeb"
     },
-    "database.filters.ascending": {
-      "source": "f97b8e9f5b6accc4",
-      "output": "67a398b360a215f3"
-    },
     "database.filters.checkedChoice": {
       "source": "7a9dd317c04a85bf",
       "output": "f948e59ec0e9c3f8"
@@ -164483,10 +165031,6 @@
     "database.filters.checkedValue": {
       "source": "fcd8918c35de68a4",
       "output": "63675edea33d1b7a"
-    },
-    "database.filters.descending": {
-      "source": "3bd13fe23d66e6d2",
-      "output": "6e9ed7660b8ae709"
     },
     "database.filters.filter": {
       "source": "638e249f4a15ebb8",
@@ -164539,14 +165083,6 @@
     "database.filters.removeFilter": {
       "source": "2fb0556b006fad01",
       "output": "dca74592532003cf"
-    },
-    "database.filters.removeSort": {
-      "source": "447db1d644bfa6e2",
-      "output": "6cc893fcf5762b34"
-    },
-    "database.filters.sort": {
-      "source": "61192695b8811678",
-      "output": "39f93451ee48b979"
     },
     "database.filters.uncheckedChoice": {
       "source": "aa5f03b01360a9c8",
@@ -165103,6 +165639,86 @@
     "database.shell.loading": {
       "source": "93a39d63d84a9928",
       "output": "9bcfd6cac78a4068"
+    },
+    "database.sorts.add": {
+      "source": "f36a98b1d28278ed",
+      "output": "5e2cae748624492e"
+    },
+    "database.sorts.ascending": {
+      "source": "f97b8e9f5b6accc4",
+      "output": "67a398b360a215f3"
+    },
+    "database.sorts.clear": {
+      "source": "55a058187c0406df",
+      "output": "aee08de8e9d670c8"
+    },
+    "database.sorts.column": {
+      "source": "d5dea2c1a65e4b02",
+      "output": "862f07361d45d0ec"
+    },
+    "database.sorts.descending": {
+      "source": "3bd13fe23d66e6d2",
+      "output": "6e9ed7660b8ae709"
+    },
+    "database.sorts.direction": {
+      "source": "73ea47c950babdb5",
+      "output": "0de75005faf5da6a"
+    },
+    "database.sorts.editLabel": {
+      "source": "cd2fea00305e3990",
+      "output": "304b8f44cd89b411"
+    },
+    "database.sorts.empty": {
+      "source": "fac0e94e5ae2bc6c",
+      "output": "460b3bd348fc578f"
+    },
+    "database.sorts.heading": {
+      "source": "188ca34adc8e4a15",
+      "output": "1b8d52ae1c040316"
+    },
+    "database.sorts.hint": {
+      "source": "ee489b69fbc3a6b3",
+      "output": "f67804eebd40ce71"
+    },
+    "database.sorts.indicator": {
+      "source": "9bc3a4f054925f50",
+      "output": "4e7c0a72dfe0f336"
+    },
+    "database.sorts.move": {
+      "source": "07ad7d20cb41af20",
+      "output": "508e55d4228f81f1"
+    },
+    "database.sorts.moved": {
+      "source": "12161b6835a3743d",
+      "output": "73d808e42195d5db"
+    },
+    "database.sorts.remove": {
+      "source": "430cca4e5f7af17d",
+      "output": "e448ef61eb7a5789"
+    },
+    "database.sorts.removeColumnSort": {
+      "source": "447db1d644bfa6e2",
+      "output": "6cc893fcf5762b34"
+    },
+    "database.sorts.ruleLabel": {
+      "source": "c4c888a64bb80d61",
+      "output": "02d34a4ac617a4e2"
+    },
+    "database.sorts.sortAscending": {
+      "source": "b6b017a979274adc",
+      "output": "a04ff56b9154373b"
+    },
+    "database.sorts.sortDescending": {
+      "source": "bf985f47a210350c",
+      "output": "febc9a4a7bd01386"
+    },
+    "database.sorts.summary": {
+      "source": "5e5f19c8b679acee",
+      "output": "d7573511f8a2521c"
+    },
+    "database.sorts.trigger": {
+      "source": "61192695b8811678",
+      "output": "39f93451ee48b979"
     },
     "database.table.emptyDescription": {
       "source": "377bb1ffe6a7e9e4",
@@ -172043,6 +172659,34 @@
     "features.datenbank-personen.where": {
       "source": "60495d8a459d77e6",
       "output": "a2510f4bb7db7922"
+    },
+    "features.datenbank-sortieren.details.p1": {
+      "source": "af7e721bd484ffe4",
+      "output": "02cfbaba40bb2704"
+    },
+    "features.datenbank-sortieren.details.p2": {
+      "source": "ff86aac6866f4057",
+      "output": "8d3e87c9bb356238"
+    },
+    "features.datenbank-sortieren.details.p3": {
+      "source": "7c47866607e56658",
+      "output": "8ba577018e85051b"
+    },
+    "features.datenbank-sortieren.details.p4": {
+      "source": "09e35935e1af5670",
+      "output": "255d81a932393e74"
+    },
+    "features.datenbank-sortieren.summary": {
+      "source": "8db41a84f86d6ec9",
+      "output": "5a6214bbe09343f8"
+    },
+    "features.datenbank-sortieren.title": {
+      "source": "0342d6df53e5f051",
+      "output": "be34847d8a35ba27"
+    },
+    "features.datenbank-sortieren.where": {
+      "source": "b6a091c4d2585752",
+      "output": "09538d88d309a0eb"
     },
     "features.datenbank-verknuepfungen.details.p1": {
       "source": "6db087e998ccbb2d",

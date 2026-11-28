@@ -87,11 +87,29 @@
     "filter": "Filter",
     "removeFilter": "Filter entfernen",
     "value": "Wert",
-    "addFilter": "Filter hinzufügen",
-    "sort": "Sortieren",
-    "removeSort": "Sortierung entfernen",
+    "addFilter": "Filter hinzufügen"
+  },
+  "sorts": {
+    "trigger": "Sortieren",
+    "editLabel": "Sortierung bearbeiten: {rules}",
+    "summary": "Sortiert nach {rules}",
+    "ruleLabel": "{name} {direction, select, asc {aufsteigend} other {absteigend}}",
+    "heading": "Sortieren nach",
+    "empty": "Noch keine Sortierung. Die Zeilen stehen in der Reihenfolge, in der sie angelegt wurden.",
+    "hint": "Die oberste Sortierung zählt zuerst, jede weitere entscheidet nur bei Gleichstand. Zum Umordnen am Griff ziehen oder Alt mit Pfeil nach oben oder unten drücken.",
+    "column": "Spalte",
+    "direction": "Richtung",
     "ascending": "Aufsteigend",
-    "descending": "Absteigend"
+    "descending": "Absteigend",
+    "add": "Sortierung hinzufügen",
+    "clear": "Alle entfernen",
+    "remove": "Sortierung nach {name} entfernen",
+    "move": "{name} verschieben",
+    "moved": "{name} steht jetzt an Stelle {position} von {count}.",
+    "sortAscending": "Aufsteigend sortieren",
+    "sortDescending": "Absteigend sortieren",
+    "removeColumnSort": "Sortierung entfernen",
+    "indicator": "Sortiert {direction, select, asc {aufsteigend} other {absteigend}}, Stelle {position} von {count}"
   },
   "table": {
     "loading": "Zeilen werden geladen",

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowDownIcon, ArrowUpIcon, FilterIcon, XIcon } from 'lucide-react';
+import { FilterIcon, XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
@@ -8,7 +8,6 @@ import {
   type DatabaseFilterCondition,
   type DatabaseFilterOperator,
   type DatabaseProperty,
-  type DatabaseSort,
   type DatabaseView,
   type WorkspacePerson,
 } from '@exocortex/contracts';
@@ -27,10 +26,12 @@ import {
   SelectValue,
 } from '@exocortex/ui';
 
-import { useUpdateDatabaseView } from '@/lib/api/database-queries';
+import { useUpdateDatabaseView, useUpdateDatabaseViewSorts } from '@/lib/api/database-queries';
 import { useWorkspacePeople } from '@/lib/api/workspace-queries';
 
 import { operatorsForType, useFilterWording } from './property-types';
+import { SortEditor } from './sort-editor';
+import { sortableColumns } from './sort-rules';
 import { ViewOptionsMenu } from './view-options-menu';
 
 interface FilterSortBarProps {
@@ -60,11 +61,16 @@ export function FilterSortBar({
   readOnly,
 }: FilterSortBarProps) {
   const t = useTranslations('database.filters');
+  const tTable = useTranslations('database.table');
   // A Person filter names members rather than account ids (issue #314).
   const people = useWorkspacePeople(workspaceId).members;
   const wording = useFilterWording(people);
   const updateView = useUpdateDatabaseView(documentId);
+  const updateSorts = useUpdateDatabaseViewSorts(documentId, view.id);
   const conditions = leafConditions(view);
+  // The row's name sorts too (issue #296), so a database without a single
+  // property still has something to order by.
+  const columns = sortableColumns(tTable('nameColumn'), properties);
 
   const removeCondition = (index: number) => {
     const next = conditions.filter((_, entryIndex) => entryIndex !== index);
@@ -81,18 +87,7 @@ export function FilterSortBar({
     });
   };
 
-  const removeSort = (index: number) => {
-    const next = view.sorts.filter((_, entryIndex) => entryIndex !== index);
-    updateView.mutate({ viewId: view.id, request: { sorts: next } });
-  };
-
-  const addSort = (sort: DatabaseSort) => {
-    // A property can only be sorted once; replace an existing sort for it.
-    const next = [...view.sorts.filter((entry) => entry.propertyId !== sort.propertyId), sort];
-    updateView.mutate({ viewId: view.id, request: { sorts: next } });
-  };
-
-  if (properties.length === 0) return null;
+  if (readOnly && conditions.length === 0 && view.sorts.length === 0) return null;
 
   return (
     <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-3 py-1.5">
@@ -116,26 +111,17 @@ export function FilterSortBar({
           )}
         </Badge>
       ))}
-      {view.sorts.map((sort, index) => (
-        <Badge key={`${sort.propertyId}-sort`} variant="secondary" className="gap-1">
-          {sort.direction === 'asc' ? (
-            <ArrowUpIcon className="size-3" />
-          ) : (
-            <ArrowDownIcon className="size-3" />
-          )}
-          {propertyName(properties, sort.propertyId)}
-          {readOnly ? null : (
-            <button type="button" aria-label={t('removeSort')} onClick={() => removeSort(index)}>
-              <XIcon className="size-3" />
-            </button>
-          )}
-        </Badge>
-      ))}
-
-      {readOnly ? null : (
+      {readOnly ? (
+        <SortEditor sorts={view.sorts} columns={columns} readOnly onChange={updateSorts} />
+      ) : (
         <>
           <AddFilterPopover properties={properties} people={people} onAdd={addCondition} />
-          <AddSortPopover properties={properties} onAdd={addSort} />
+          <SortEditor
+            sorts={view.sorts}
+            columns={columns}
+            readOnly={false}
+            onChange={updateSorts}
+          />
           {/* Row height and column visibility only describe a table. */}
           {view.type === 'TABLE' ? (
             <ViewOptionsMenu documentId={documentId} view={view} properties={properties} />
@@ -287,70 +273,6 @@ function AddFilterPopover({
             {t('addFilter')}
           </Button>
         </form>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-function AddSortPopover({
-  properties,
-  onAdd,
-}: {
-  properties: DatabaseProperty[];
-  onAdd: (sort: DatabaseSort) => void;
-}) {
-  const t = useTranslations('database.filters');
-  const [open, setOpen] = React.useState(false);
-  const [propertyId, setPropertyId] = React.useState(properties[0]?.id ?? '');
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        render={
-          <Button variant="ghost" size="sm" data-testid="add-sort">
-            <ArrowUpIcon /> {t('sort')}
-          </Button>
-        }
-      />
-      <PopoverContent align="start" className="w-64">
-        <div className="flex flex-col gap-2">
-          <Select value={propertyId} onValueChange={(next) => setPropertyId(next ?? '')}>
-            <SelectTrigger className="w-full" data-testid="sort-property">
-              <SelectValue>{() => propertyName(properties, propertyId)}</SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {properties.map((entry) => (
-                <SelectItem key={entry.id} value={entry.id}>
-                  {entry.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="flex-1"
-              onClick={() => {
-                onAdd({ propertyId, direction: 'asc' });
-                setOpen(false);
-              }}
-            >
-              <ArrowUpIcon /> {t('ascending')}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="flex-1"
-              onClick={() => {
-                onAdd({ propertyId, direction: 'desc' });
-                setOpen(false);
-              }}
-            >
-              <ArrowDownIcon /> {t('descending')}
-            </Button>
-          </div>
-        </div>
       </PopoverContent>
     </Popover>
   );

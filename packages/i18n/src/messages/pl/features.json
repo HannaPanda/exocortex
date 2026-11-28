@@ -336,6 +336,17 @@
     },
     "where": "W widoku tabeli kliknij „+ Właściwość”, a następnie wybierz Powiązanie, Rollup lub Formułę."
   },
+  "datenbank-sortieren": {
+    "title": "Sortowanie według wielu kolumn",
+    "summary": "Widok można sortować według kilku kolumn naraz – na przykład najpierw według daty, a przy tej samej dacie według nazwy. Każde sortowanie ma własny kierunek, a ich kolejność ustalisz, przeciągając je.",
+    "details": {
+      "p1": "Najszybciej zrobisz to przez nagłówek kolumny: kliknięcie nazwy kolumny otwiera jej menu z opcjami „Sortuj rosnąco” i „Sortuj malejąco”. Dotyczy to także kolumny „Nazwa”. Jeśli posortujesz potem drugą kolumnę, zostanie dodana na końcu i zadecyduje tylko tam, gdzie wartości w pierwszej są takie same. Mała strzałka w nagłówku pokazuje kierunek, a przy wielu sortowaniach – także pozycję.",
+      "p2": "Przycisk „Sortuj” nad tabelą pokazuje wszystkie sortowania po kolei i pozwala je edytować: wybrać kolumnę i kierunek, a także usunąć lub dodać sortowanie. Najwyższe ma pierwszeństwo. Aby zmienić kolejność, przeciągnij sortowanie za uchwyt po lewej stronie w górę lub w dół myszą albo palcem; z klawiatury zrobisz to za pomocą klawisza Alt i strzałki w górę lub w dół na uchwycie.",
+      "p3": "Sortowanie jest częścią widoku i obowiązuje każdego, kto go otworzy. Tablica, galeria i kalendarz sortują tak samo. Puste wartości zawsze trafiają na koniec. Jeśli kolumna zostanie usunięta, znika z sortowań i filtrów we wszystkich widokach, a pozostałe zostają.",
+      "p4": "Agent ustawia tę samą listę za pomocą exo_database_view_update (sorts, w kolejności priorytetu, „title” oznacza nazwę) i odczytuje posortowane dane za pomocą exo_database_query."
+    },
+    "where": "W bazie danych: menu nagłówka kolumny lub „Sortuj” na pasku nad widokiem."
+  },
   "kalenderansicht": {
     "title": "Kalendarz z widokiem dnia, tygodnia, miesiąca, roku i listy",
     "summary": "Kolumna z datą przekształca bazę danych w kalendarz – do wyboru w widoku dnia, tygodnia, miesiąca, roku lub listy. Wydarzenia z datą mogą wywoływać przypomnienia, jeśli przypomnienia są włączone.",

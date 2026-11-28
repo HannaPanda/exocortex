@@ -87,11 +87,29 @@
     "filter": "Filtro",
     "removeFilter": "Eliminar filtro",
     "value": "Valor",
-    "addFilter": "Añadir filtro",
-    "sort": "Ordenar",
-    "removeSort": "Eliminar ordenación",
+    "addFilter": "Añadir filtro"
+  },
+  "sorts": {
+    "trigger": "Ordenar",
+    "editLabel": "Editar ordenación: {rules}",
+    "summary": "Ordenado por {rules}",
+    "ruleLabel": "{name} {direction, select, asc {ascendente} other {descendente}}",
+    "heading": "Ordenar por",
+    "empty": "Aún no hay ordenación. Las filas aparecen en el orden en que se crearon.",
+    "hint": "La primera ordenación tiene prioridad; las siguientes solo desempatan. Para reordenar, arrastra el tirador o pulsa Alt con Flecha arriba o Flecha abajo.",
+    "column": "Columna",
+    "direction": "Sentido",
     "ascending": "Ascendente",
-    "descending": "Descendente"
+    "descending": "Descendente",
+    "add": "Añadir ordenación",
+    "clear": "Eliminar todas",
+    "remove": "Eliminar ordenación por {name}",
+    "move": "Mover {name}",
+    "moved": "{name} está ahora en la posición {position} de {count}.",
+    "sortAscending": "Ordenar en sentido ascendente",
+    "sortDescending": "Ordenar en sentido descendente",
+    "removeColumnSort": "Eliminar ordenación",
+    "indicator": "Ordenación {direction, select, asc {ascendente} other {descendente}}, posición {position} de {count}"
   },
   "table": {
     "loading": "Cargando filas",

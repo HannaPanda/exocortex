@@ -336,6 +336,17 @@
     },
     "where": "En la vista de tabla, selecciona «+ Propiedad» y luego elige Relación, Rollup o Fórmula."
   },
+  "datenbank-sortieren": {
+    "title": "Ordenar por varias columnas",
+    "summary": "Puedes ordenar una vista por varias columnas a la vez; por ejemplo, primero por fecha y, en caso de coincidencia, por nombre. Cada ordenación tiene su propia dirección y puedes cambiar su orden arrastrándolas.",
+    "details": {
+      "p1": "La forma más rápida es a través del encabezado de columna: al hacer clic en el nombre de una columna se abre su menú con «Orden ascendente» y «Orden descendente». Esto también se aplica a la columna «Nombre». Si luego ordenas por una segunda columna, esta se añade al final y solo desempata cuando la primera coincide. Una pequeña flecha en el encabezado muestra la dirección y, si hay varias ordenaciones, su posición numérica.",
+      "p2": "El botón «Ordenar» encima de la tabla muestra todas las ordenaciones en orden y permite editarlas: elegir columna y dirección, o eliminar y añadir ordenaciones. La superior es la que tiene mayor prioridad. Para reordenarlas, arrastra una ordenación hacia arriba o hacia abajo usando el tirador de la izquierda, ya sea con el ratón o con el dedo; con el teclado, puedes hacerlo con Alt y Flecha arriba o Flecha abajo sobre el tirador.",
+      "p3": "La ordenación pertenece a la vista y se aplica a cualquiera que la abra. Las vistas de tablero, galería y calendario se ordenan de la misma manera. Los valores vacíos aparecen siempre al final. Si se elimina una columna, desaparece de las ordenaciones y filtros de todas las vistas, manteniéndose las demás.",
+      "p4": "Los agentes configuran esta misma lista con exo_database_view_update (sorts, en orden de prioridad, «title» representa el nombre) y leen los datos ordenados con exo_database_query."
+    },
+    "where": "En una base de datos: el menú del encabezado de una columna, o «Ordenar» en la barra situada sobre la vista."
+  },
   "kalenderansicht": {
     "title": "Calendario con día, semana, mes, año y lista",
     "summary": "Una columna de fecha convierte una base de datos en un calendario, a elegir entre día, semana, mes, año o lista. Los eventos con fecha pueden activar un recordatorio si los recordatorios están activados.",

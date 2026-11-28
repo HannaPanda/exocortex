@@ -87,11 +87,29 @@
     "filter": "Filter",
     "removeFilter": "Filter verwijderen",
     "value": "Waarde",
-    "addFilter": "Filter toevoegen",
-    "sort": "Sorteren",
-    "removeSort": "Sortering verwijderen",
+    "addFilter": "Filter toevoegen"
+  },
+  "sorts": {
+    "trigger": "Sorteren",
+    "editLabel": "Sortering bewerken: {rules}",
+    "summary": "Gesorteerd op {rules}",
+    "ruleLabel": "{name} {direction, select, asc {oplopend} other {aflopend}}",
+    "heading": "Sorteren op",
+    "empty": "Nog geen sortering. De rijen staan in de volgorde waarin ze zijn aangemaakt.",
+    "hint": "De bovenste sortering telt eerst, elke volgende beslist alleen bij gelijke stand. Sleep de greep om te verplaatsen of druk op Alt met pijl-omhoog of pijl-omlaag.",
+    "column": "Kolom",
+    "direction": "Richting",
     "ascending": "Oplopend",
-    "descending": "Aflopend"
+    "descending": "Aflopend",
+    "add": "Sortering toevoegen",
+    "clear": "Alles verwijderen",
+    "remove": "Sortering op {name} verwijderen",
+    "move": "{name} verplaatsen",
+    "moved": "{name} staat nu op positie {position} van {count}.",
+    "sortAscending": "Oplopend sorteren",
+    "sortDescending": "Aflopend sorteren",
+    "removeColumnSort": "Sortering verwijderen",
+    "indicator": "Gesorteerd {direction, select, asc {oplopend} other {aflopend}}, positie {position} van {count}"
   },
   "table": {
     "loading": "Rijen worden geladen",

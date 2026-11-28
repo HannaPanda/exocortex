@@ -336,6 +336,17 @@
     },
     "where": "In de tabelweergave „+ Eigenschap”, daarna koppeling, Rollup of formule kiezen."
   },
+  "datenbank-sortieren": {
+    "title": "Sorteren op meerdere kolommen",
+    "summary": "Een weergave kan op meerdere kolommen tegelijk worden gesorteerd, bijvoorbeeld eerst op datum en bij een gelijke datum op naam. Elke sortering heeft een eigen richting, en de volgorde bepaal je door te slepen.",
+    "details": {
+      "p1": "Het snelst gaat het via de kolomkop: een klik op de naam van een kolom opent het menu met „Oplopend sorteren” en „Aflopend sorteren”. Dat geldt ook voor de kolom „Naam”. Sorteer je daarna op een tweede kolom, dan wordt deze achteraan toegevoegd en bepaalt deze alleen de volgorde waar de eerste gelijk is. Een klein pijltje in de kop toont de richting, en bij meerdere sorteringen ook de rangorde.",
+      "p2": "„Sorteren” boven de tabel toont alle sorteringen op volgorde en opent ze om te bewerken: kolom en richting kiezen, een sortering verwijderen of toevoegen. De bovenste telt eerst. Om de volgorde te wijzigen sleep je een sortering aan de greep links omhoog of omlaag, met de muis of je vinger; met het toetsenbord gebruik je Alt en pijl-omhoog of pijl-omlaag op de greep.",
+      "p3": "De sortering hoort bij de weergave en geldt voor iedereen die deze opent. Bord, galerij en kalender sorteren op dezelfde manier. Lege waarden staan altijd onderaan. Wordt een kolom verwijderd, dan verdwijnt deze uit de sorteringen en filters van alle weergaven; de overige blijven behouden.",
+      "p4": "Agents stellen dezelfde lijst in met exo_database_view_update (sorts, op prioriteitsvolgorde, „title” staat voor de naam) en lezen gesorteerd uit met exo_database_query."
+    },
+    "where": "In een database: het menu van een kolomkop, of „Sorteren” in de balk boven de weergave."
+  },
   "kalenderansicht": {
     "title": "Kalender met dag, week, maand, jaar en lijst",
     "summary": "Een datumkolom maakt van een database een kalender, naar keuze per dag, week, maand, jaar of lijst. Afspraken met datum kunnen een herinnering activeren wanneer herinneringen zijn ingeschakeld.",

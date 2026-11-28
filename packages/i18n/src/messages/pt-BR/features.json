@@ -336,6 +336,17 @@
     },
     "where": "Na visualização em tabela, clicar em “+ Propriedade” e escolher Relação, Rollup ou Fórmula."
   },
+  "datenbank-sortieren": {
+    "title": "Classificar por várias colunas",
+    "summary": "Uma visualização pode ser classificada por várias colunas ao mesmo tempo, por exemplo, primeiro por data e, em caso de empate, por nome. Cada classificação tem sua própria direção, e você define a ordem arrastando.",
+    "details": {
+      "p1": "O jeito mais rápido é pelo cabeçalho da coluna: um clique no nome de uma coluna abre seu menu com „Classificar em ordem crescente“ e „Classificar em ordem decrescente“. Isso também vale para a coluna „Nome“. Se você classificar uma segunda coluna depois, ela será adicionada ao final e decidirá apenas onde a primeira empatar. Uma pequena seta no cabeçalho mostra a direção e, no caso de várias classificações, a posição dela.",
+      "p2": "„Classificar“ acima da tabela mostra todas as classificações em ordem e as abre para edição: escolha a coluna e a direção, remova ou adicione uma classificação. A do topo tem prioridade. Para reordenar, arraste uma classificação pela alça à esquerda para cima ou para baixo, usando o mouse ou o dedo; no teclado, use Alt e a seta para cima ou para baixo sobre a alça.",
+      "p3": "A classificação pertence à visualização e se aplica a todas as pessoas que a abrirem. Quadro, galeria e calendário funcionam da mesma forma. Valores vazios ficam sempre no final. Se uma coluna for excluída, ela desaparecerá das classificações e dos filtros de todas as visualizações, mantendo-se as restantes.",
+      "p4": "Os agentes definem a mesma lista com exo_database_view_update (sorts, em ordem de prioridade, onde „title“ representa o nome) e leem os dados classificados com exo_database_query."
+    },
+    "where": "Em um banco de dados: o menu de um cabeçalho de coluna ou „Classificar“ na barra acima da visualização."
+  },
   "kalenderansicht": {
     "title": "Calendário com dia, semana, mês, ano e lista",
     "summary": "Uma coluna de data transforma um banco de dados em um calendário, opcionalmente por dia, semana, mês, ano ou lista. Compromissos com data podem disparar um lembrete se os lembretes estiverem ativados.",

@@ -87,11 +87,29 @@
     "filter": "Filtro",
     "removeFilter": "Rimuovi filtro",
     "value": "Valore",
-    "addFilter": "Aggiungi filtro",
-    "sort": "Ordina",
-    "removeSort": "Rimuovi ordinamento",
+    "addFilter": "Aggiungi filtro"
+  },
+  "sorts": {
+    "trigger": "Ordina",
+    "editLabel": "Modifica ordinamento: {rules}",
+    "summary": "Ordinato per {rules}",
+    "ruleLabel": "{name} {direction, select, asc {crescente} other {decrescente}}",
+    "heading": "Ordina per",
+    "empty": "Nessun ordinamento. Le righe compaiono nell’ordine in cui sono state create.",
+    "hint": "Il primo ordinamento ha la priorità, quelli successivi decidono solo in caso di parità. Trascina la maniglia per riordinare oppure premi Alt con Freccia su o Freccia giù.",
+    "column": "Colonna",
+    "direction": "Direzione",
     "ascending": "Crescente",
-    "descending": "Decrescente"
+    "descending": "Decrescente",
+    "add": "Aggiungi ordinamento",
+    "clear": "Rimuovi tutti",
+    "remove": "Rimuovi ordinamento per {name}",
+    "move": "Sposta {name}",
+    "moved": "{name} si trova ora in posizione {position} di {count}.",
+    "sortAscending": "Ordina in modo crescente",
+    "sortDescending": "Ordina in modo decrescente",
+    "removeColumnSort": "Rimuovi ordinamento",
+    "indicator": "Ordinamento {direction, select, asc {crescente} other {decrescente}}, posizione {position} di {count}"
   },
   "table": {
     "loading": "Caricamento delle righe",

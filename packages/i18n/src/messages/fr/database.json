@@ -87,11 +87,29 @@
     "filter": "Filtrer",
     "removeFilter": "Supprimer le filtre",
     "value": "Valeur",
-    "addFilter": "Ajouter un filtre",
-    "sort": "Trier",
-    "removeSort": "Supprimer le tri",
+    "addFilter": "Ajouter un filtre"
+  },
+  "sorts": {
+    "trigger": "Trier",
+    "editLabel": "Modifier le tri : {rules}",
+    "summary": "Trié par {rules}",
+    "ruleLabel": "{name} {direction, select, asc {croissant} other {décroissant}}",
+    "heading": "Trier par",
+    "empty": "Aucun tri pour le moment. Les lignes apparaissent dans leur ordre de création.",
+    "hint": "Le premier tri s’applique en priorité, les suivants départagent les égalités. Glisse la poignée pour réorganiser ou utilise Alt avec la flèche haut ou bas.",
+    "column": "Colonne",
+    "direction": "Sens",
     "ascending": "Croissant",
-    "descending": "Décroissant"
+    "descending": "Décroissant",
+    "add": "Ajouter un tri",
+    "clear": "Tout supprimer",
+    "remove": "Supprimer le tri par {name}",
+    "move": "Déplacer {name}",
+    "moved": "{name} se trouve maintenant en position {position} sur {count}.",
+    "sortAscending": "Trier par ordre croissant",
+    "sortDescending": "Trier par ordre décroissant",
+    "removeColumnSort": "Supprimer le tri",
+    "indicator": "Trié par ordre {direction, select, asc {croissant} other {décroissant}}, position {position} sur {count}"
   },
   "table": {
     "loading": "Chargement des lignes",

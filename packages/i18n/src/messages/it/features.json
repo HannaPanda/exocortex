@@ -336,6 +336,17 @@
     },
     "where": "Nella vista tabella seleziona «+ Proprietà», poi scegli Relazione, Rollup o Formula."
   },
+  "datenbank-sortieren": {
+    "title": "Ordina per più colonne",
+    "summary": "Puoi ordinare una vista per più colonne contemporaneamente, ad esempio prima per data e, a parità di data, per nome. Ogni ordinamento ha la propria direzione e puoi definirne l’ordine trascinandoli.",
+    "details": {
+      "p1": "Il modo più rapido è tramite l’intestazione della colonna: un clic sul nome di una colonna apre il suo menu con „Ordinamento crescente“ e „Ordinamento decrescente“. Questo vale anche per la colonna „Nome“. Se poi ordini una seconda colonna, questa si aggiunge in coda e interviene solo in caso di parità nella prima. Una piccola freccia nell’intestazione mostra la direzione, accompagnata dalla posizione se ci sono più ordinamenti.",
+      "p2": "„Ordina“ sopra la tabella mostra tutti gli ordinamenti in sequenza e consente di modificarli: seleziona colonna e direzione, rimuovi o aggiungi un ordinamento. Il primo in alto ha la priorità. Per riordinare, trascina un ordinamento verso l’alto o verso il basso afferrando la maniglia a sinistra, con il mouse o con il dito; da tastiera puoi usare Alt insieme a Freccia su o Freccia giù posizionandoti sulla maniglia.",
+      "p3": "L’ordinamento appartiene alla vista e vale per chiunque la apra. Anche le viste bacheca, galleria e calendario si ordinano allo stesso modo. I valori vuoti compaiono sempre alla fine. Se una colonna viene eliminata, scompare dagli ordinamenti e dai filtri di tutte le viste, mentre gli altri rimangono.",
+      "p4": "Gli agenti impostano lo stesso elenco con exo_database_view_update (sorts, in ordine di priorità; „title“ indica il nome) e leggono i dati ordinati con exo_database_query."
+    },
+    "where": "In un database: il menu dell’intestazione di colonna, oppure „Ordina“ nella barra sopra la vista."
+  },
   "kalenderansicht": {
     "title": "Calendario con vista giorno, settimana, mese, anno ed elenco",
     "summary": "Una colonna di tipo data trasforma un database in un calendario, a scelta per giorno, settimana, mese, anno o elenco. Le scadenze con una data possono attivare un promemoria, se i promemoria sono abilitati.",

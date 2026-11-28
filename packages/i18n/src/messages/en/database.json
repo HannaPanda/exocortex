@@ -87,11 +87,29 @@
     "filter": "Filter",
     "removeFilter": "Remove filter",
     "value": "Value",
-    "addFilter": "Add filter",
-    "sort": "Sort",
-    "removeSort": "Remove sort",
+    "addFilter": "Add filter"
+  },
+  "sorts": {
+    "trigger": "Sort",
+    "editLabel": "Edit sort: {rules}",
+    "summary": "Sorted by {rules}",
+    "ruleLabel": "{name} {direction, select, asc {ascending} other {descending}}",
+    "heading": "Sort by",
+    "empty": "No sort applied yet. Rows appear in the order they were created.",
+    "hint": "The top sort applies first; each subsequent sort only breaks ties. Drag by the handle to reorder, or press Alt with Up or Down arrow.",
+    "column": "Column",
+    "direction": "Direction",
     "ascending": "Ascending",
-    "descending": "Descending"
+    "descending": "Descending",
+    "add": "Add sort",
+    "clear": "Remove all",
+    "remove": "Remove sort by {name}",
+    "move": "Move {name}",
+    "moved": "{name} is now at position {position} of {count}.",
+    "sortAscending": "Sort ascending",
+    "sortDescending": "Sort descending",
+    "removeColumnSort": "Remove sort",
+    "indicator": "Sorted {direction, select, asc {ascending} other {descending}}, position {position} of {count}"
   },
   "table": {
     "loading": "Loading rows",

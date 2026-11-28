@@ -87,11 +87,29 @@
     "filter": "Filtr",
     "removeFilter": "Usuń filtr",
     "value": "Wartość",
-    "addFilter": "Dodaj filtr",
-    "sort": "Sortuj",
-    "removeSort": "Usuń sortowanie",
+    "addFilter": "Dodaj filtr"
+  },
+  "sorts": {
+    "trigger": "Sortuj",
+    "editLabel": "Edytuj sortowanie: {rules}",
+    "summary": "Posortowano według: {rules}",
+    "ruleLabel": "{name} {direction, select, asc {rosnąco} other {malejąco}}",
+    "heading": "Sortuj według",
+    "empty": "Brak reguł sortowania. Wiersze są ułożone w kolejności ich utworzenia.",
+    "hint": "Sortowanie u góry ma pierwszeństwo, każde kolejne decyduje w przypadku remisu. Aby zmienić kolejność, przeciągnij uchwyt lub naciśnij Alt ze strzałką w górę lub w dół.",
+    "column": "Kolumna",
+    "direction": "Kierunek",
     "ascending": "Rosnąco",
-    "descending": "Malejąco"
+    "descending": "Malejąco",
+    "add": "Dodaj sortowanie",
+    "clear": "Usuń wszystkie",
+    "remove": "Usuń sortowanie według: {name}",
+    "move": "Przenieś: {name}",
+    "moved": "{name} jest teraz na pozycji {position} z {count}.",
+    "sortAscending": "Sortuj rosnąco",
+    "sortDescending": "Sortuj malejąco",
+    "removeColumnSort": "Usuń sortowanie",
+    "indicator": "Sortowanie {direction, select, asc {rosnąco} other {malejąco}}, pozycja {position} z {count}"
   },
   "table": {
     "loading": "Wczytywanie wierszy",

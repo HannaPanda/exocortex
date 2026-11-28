@@ -336,6 +336,17 @@
     },
     "where": "Dans la vue en tableau, « + Propriété », puis choisir Relation, Rollup ou Formule."
   },
+  "datenbank-sortieren": {
+    "title": "Trier par plusieurs colonnes",
+    "summary": "Tu peux trier une vue selon plusieurs colonnes à la fois, par exemple d’abord par date puis, en cas d’égalité, par nom. Chaque tri a sa propre direction, et tu définis leur ordre de priorité par glisser-déposer.",
+    "details": {
+      "p1": "Le plus rapide est de passer par l’en-tête de colonne : un clic sur le nom d’une colonne ouvre son menu avec « Trier par ordre croissant » et « Trier par ordre décroissant ». Cela fonctionne aussi pour la colonne « Nom ». Si tu tries ensuite une deuxième colonne, elle s’ajoute à la suite et ne départage les éléments que là où la première a des valeurs identiques. Une petite flèche dans l’en-tête indique la direction, accompagnée de sa position en cas de tris multiples.",
+      "p2": "Le bouton « Trier » au-dessus du tableau affiche tous les tris dans l’ordre et permet de les modifier : choisir la colonne et la direction, supprimer ou ajouter un tri. Le premier de la liste est prioritaire. Pour les réorganiser, fais glisser un tri vers le haut ou le bas à l’aide de la poignée située à gauche, à la souris ou au doigt ; au clavier, utilise Alt avec la flèche Haut ou Bas sur la poignée.",
+      "p3": "Le tri fait partie de la vue et s’applique à toutes les personnes qui l’ouvrent. Les vues Tableau, Galerie et Calendrier se trient de la même manière. Les valeurs vides apparaissent toujours à la fin. Si une colonne est supprimée, elle disparaît des tris et des filtres de toutes les vues, tandis que les autres restent en place.",
+      "p4": "Les agents définissent cette même liste avec exo_database_view_update (sorts, par ordre de priorité, « title » désignant le nom) et lisent les résultats triés avec exo_database_query."
+    },
+    "where": "Dans une base de données : le menu d’un en-tête de colonne, ou « Trier » dans la barre au-dessus de la vue."
+  },
   "kalenderansicht": {
     "title": "Calendrier par jour, semaine, mois, année et liste",
     "summary": "Une colonne de date transforme une base de données en calendrier, au choix par jour, semaine, mois, année ou liste. Les rendez-vous avec date peuvent déclencher un rappel lorsque les rappels sont activés.",

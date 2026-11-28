@@ -336,6 +336,17 @@
     },
     "where": "In der Tabellenansicht „+ Eigenschaft\", dann Verknüpfung, Rollup oder Formel wählen."
   },
+  "datenbank-sortieren": {
+    "title": "Nach mehreren Spalten sortieren",
+    "summary": "Eine Ansicht lässt sich nach mehreren Spalten zugleich sortieren, zum Beispiel erst nach Datum und bei gleichem Datum nach Name. Jede Sortierung hat ihre eigene Richtung, und ihre Reihenfolge bestimmst du durch Ziehen.",
+    "details": {
+      "p1": "Am schnellsten geht es über den Spaltenkopf: ein Klick auf den Namen einer Spalte öffnet ihr Menü mit „Aufsteigend sortieren“ und „Absteigend sortieren“. Das gilt auch für die Spalte „Name“. Sortierst du danach eine zweite Spalte, kommt sie hinten dazu und entscheidet nur dort, wo die erste gleich ist. Ein kleiner Pfeil im Kopf zeigt die Richtung, bei mehreren Sortierungen mit ihrer Stelle.",
+      "p2": "„Sortieren“ über der Tabelle zeigt alle Sortierungen der Reihe nach und öffnet sie zum Bearbeiten: Spalte und Richtung wählen, eine Sortierung entfernen oder hinzufügen. Die oberste zählt zuerst. Zum Umordnen ziehst du eine Sortierung am Griff links nach oben oder unten, mit der Maus oder dem Finger; mit der Tastatur geht es mit Alt und Pfeil nach oben oder unten auf dem Griff.",
+      "p3": "Die Sortierung gehört zur Ansicht und gilt für alle, die sie öffnen. Board, Galerie und Kalender sortieren genauso. Leere Werte stehen immer am Ende. Wird eine Spalte gelöscht, verschwindet sie aus den Sortierungen und Filtern aller Ansichten, die übrigen bleiben.",
+      "p4": "Agenten setzen dieselbe Liste mit exo_database_view_update (sorts, in Prioritätsfolge, „title“ steht für den Namen) und lesen sortiert mit exo_database_query."
+    },
+    "where": "In einer Datenbank: das Menü eines Spaltenkopfs, oder „Sortieren“ in der Leiste über der Ansicht."
+  },
   "kalenderansicht": {
     "title": "Kalender mit Tag, Woche, Monat, Jahr und Liste",
     "summary": "Eine Datumsspalte macht aus einer Datenbank einen Kalender, wahlweise als Tag, Woche, Monat, Jahr oder Liste. Termine mit Datum können eine Erinnerung auslösen, wenn die Erinnerungen eingeschaltet sind.",

@@ -33,6 +33,7 @@ import {
   useDatabaseRows,
   useUpdateDatabaseRowValues,
   useUpdateDatabaseView,
+  useUpdateDatabaseViewSorts,
 } from '@/lib/api/database-queries';
 import { useDocumentHrefs } from '@/lib/document-href-context';
 
@@ -40,6 +41,7 @@ import { AddPropertyButton } from './add-property-button';
 import { AiCellMark, useAiFillControls } from './ai-fill';
 import { AiFillProgress } from './ai-fill-progress';
 import { PropertyCell } from './cells';
+import { type ColumnSortControls, TitleColumnHeader } from './column-sort';
 import { PropertyMenu } from './property-menu';
 import { RowHandle, type RowHandleActions } from './row-handle';
 import { PEEK_TRIGGER_ATTRIBUTE, useRowPeek } from './row-peek';
@@ -145,6 +147,8 @@ export function TableView({
   );
 
   const ai = useAiFillControls(documentId);
+  const updateSorts = useUpdateDatabaseViewSorts(documentId, view.id);
+  const sort: ColumnSortControls = { sorts: view.sorts, onChange: updateSorts };
   const rowActions = useRowActions({
     workspaceId,
     documentId,
@@ -239,7 +243,12 @@ export function TableView({
                       onCheckedChange={() => rowActions.toggleAll()}
                     />
                   )}
-                  <span className="min-w-0 flex-1 truncate">{t('nameColumn')}</span>
+                  <TitleColumnHeader
+                    label={t('nameColumn')}
+                    columnKey={DATABASE_TITLE_COLUMN_KEY}
+                    controls={sort}
+                    readOnly={readOnly}
+                  />
                   {readOnly ? null : (
                     <ColumnResizeHandle
                       width={widthOf(DATABASE_TITLE_COLUMN_KEY)}
@@ -264,6 +273,7 @@ export function TableView({
                       columns={columns}
                       readOnly={readOnly}
                       ai={ai}
+                      sort={sort}
                     />
                     {readOnly ? null : (
                       <ColumnResizeHandle

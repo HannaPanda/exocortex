@@ -336,6 +336,17 @@
     },
     "where": "In the table view, select “+ Property”, then choose Relation, Rollup, or Formula."
   },
+  "datenbank-sortieren": {
+    "title": "Sort by multiple columns",
+    "summary": "A view can be sorted by multiple columns at once, for example first by date and, when dates match, by name. Each sort has its own direction, and you set their order by dragging.",
+    "details": {
+      "p1": "The quickest way is via the column header: clicking a column’s name opens its menu with “Sort ascending” and “Sort descending”. This also applies to the “Name” column. If you sort a second column afterward, it is added to the end and only breaks ties where the first column matches. A small arrow in the header shows the direction, along with its position when there are multiple sorts.",
+      "p2": "“Sort” above the table shows all sorts in order and opens them for editing: choose column and direction, or remove and add a sort. The top one takes precedence. To reorder, drag a sort up or down using the handle on the left, with the mouse or your finger; with the keyboard, use Alt and the Up or Down arrow on the handle.",
+      "p3": "The sort order belongs to the view and applies to everyone who opens it. Board, gallery, and calendar sort the same way. Empty values always appear at the end. If a column is deleted, it disappears from the sorts and filters of all views, while the remaining ones stay.",
+      "p4": "Agents set the same list with exo_database_view_update (sorts, in order of priority, “title” stands for the name) and read sorted results with exo_database_query."
+    },
+    "where": "In a database: the menu of a column header, or “Sort” in the bar above the view."
+  },
   "kalenderansicht": {
     "title": "Calendar with day, week, month, year, and list views",
     "summary": "A date column turns a database into a calendar, optionally as day, week, month, year, or list. Entries with a date can trigger a reminder when reminders are turned on.",

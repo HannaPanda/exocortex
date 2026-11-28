@@ -53,6 +53,7 @@ import {
 } from '@/lib/api/database-queries';
 
 import { type AiFillControls } from './ai-fill';
+import { type ColumnSortControls, ColumnSortIndicator, ColumnSortItems } from './column-sort';
 import {
   isPropertyConfigComplete,
   type PropertyConfig,
@@ -85,6 +86,8 @@ interface PropertyMenuProps {
   readOnly: boolean;
   /** The AI fill's dialogs (issue #237); absent where a header offers none. */
   ai?: AiFillControls;
+  /** The view's order, sortable from the header (issue #296). */
+  sort: ColumnSortControls;
 }
 
 /** Column header: name, icon-labelled type, and the manage/delete menu. */
@@ -96,6 +99,7 @@ export function PropertyMenu({
   columns,
   readOnly,
   ai,
+  sort,
 }: PropertyMenuProps) {
   const t = useTranslations('database.propertyMenu');
   const typeLabel = usePropertyTypeLabel();
@@ -130,6 +134,7 @@ export function PropertyMenu({
       >
         <span className="truncate">{property.name}</span>
         {aiMarker}
+        <ColumnSortIndicator sorts={sort.sorts} columnKey={property.id} />
       </span>
     );
   }
@@ -147,12 +152,15 @@ export function PropertyMenu({
               <span className="flex min-w-0 items-center gap-1">
                 <span className="truncate">{property.name}</span>
                 {aiMarker}
+                <ColumnSortIndicator sorts={sort.sorts} columnKey={property.id} />
               </span>
               <MoreVerticalIcon className="size-3.5 shrink-0 text-muted-foreground" />
             </button>
           }
         />
         <DropdownMenuContent align="start">
+          <ColumnSortItems controls={sort} columnKey={property.id} />
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setRenaming(true)}>{t('rename')}</DropdownMenuItem>
           <DropdownMenuItem
             disabled={!move.can(property.id, 'left')}
