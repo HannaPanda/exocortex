@@ -42,6 +42,7 @@
     "ai_model_disabled": "Ten model AI jest obecnie wyłączony.",
     "ai_tools_unavailable": "Narzędzia są w tej chwili niedostępne dla AI.",
     "ai_image_unavailable": "Generowanie obrazów nie jest skonfigurowane dla tej instancji. Model generowania obrazów można ustawić w panelu administratora.",
+    "ai_image_no_own_workspace": "Za obrazek tytułowy na udostępnionej stronie płaci własny obszar roboczy, a ty jeszcze żadnego nie masz.",
     "ai_tool_limit_exceeded": "AI wykonała zbyt wiele wywołań narzędzi.",
     "ai_conversation_locked": "W tym czacie trwa jeszcze generowanie odpowiedzi.",
     "ai_conversation_compacting": "Historia tego czatu jest właśnie podsumowywana. Za chwilę możesz pisać dalej.",

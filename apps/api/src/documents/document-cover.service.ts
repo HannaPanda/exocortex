@@ -11,9 +11,11 @@ import { QueueRegistry } from '@exocortex/queue';
 
 import { AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
+import { confinedMembershipWhere, currentAiRunId } from '../common/correlation';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
+import { type CoverPayer, resolveCoverPayer } from './cover-payer';
 import { DocumentsService } from './documents.service';
 
 /**
@@ -107,9 +109,14 @@ export class DocumentCoverService {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canEditDocument(context.role, context.document));
 
-    // This workspace's configuration, not the deployment's: whether covers may
-    // be drawn and which model draws them are workspace-scoped (ADR-023).
-    const settings = await this.settings.getForWorkspace(context.document.workspaceId);
+    // Who pays: the page's workspace for a member, the reader's own for
+    // somebody who reached the page through a share (issue #264).
+    const payer = await this.coverPayer(context, input.userId);
+
+    // The paying workspace's configuration, not the deployment's: whether
+    // covers may be drawn and which model draws them are workspace-scoped
+    // (ADR-023), and the workspace that pays is the one that decides.
+    const settings = await this.settings.getForWorkspace(payer.workspaceId);
     if (!settings['ai.enabled'] || !settings['ai.imageGenerationEnabled']) {
       throw new AppError(
         'ai_image_unavailable',
@@ -129,6 +136,10 @@ export class DocumentCoverService {
         correlationId: input.correlationId,
         documentId: input.documentId,
         workspaceId: context.workspaceId,
+        // Only when it differs, so a member's job reads exactly as before.
+        ...(payer.workspaceId === context.workspaceId
+          ? {}
+          : { billingWorkspaceId: payer.workspaceId }),
         userId: input.userId,
         prompt: input.prompt,
       },
@@ -139,5 +150,40 @@ export class DocumentCoverService {
     );
 
     return { status: 'pending', documentId: input.documentId };
+  }
+
+  /**
+   * The workspace a cover is paid for by (issue #264). The run is read from
+   * the signed service token, never from the request, so a run cannot name a
+   * workspace of somebody else's to pay with.
+   */
+  private coverPayer(
+    context: Parameters<typeof resolveCoverPayer>[0]['context'],
+    userId: string,
+  ): Promise<CoverPayer> {
+    return resolveCoverPayer(
+      { context, userId, runId: currentAiRunId() },
+      {
+        runWorkspace: (runId) =>
+          this.prisma.aiRun.findUnique({
+            where: { id: runId },
+            select: { workspaceId: true, createdById: true },
+          }),
+        firstOwnWorkspace: async (ownerId) => {
+          // The order of the reader's own list, as `listForUser` keeps it, so
+          // this is the workspace the chat panel offers first on a shared page.
+          const membership = await this.prisma.workspaceMember.findFirst({
+            where: {
+              userId: ownerId,
+              workspace: { archivedAt: null, isMemory: false },
+              ...confinedMembershipWhere(),
+            },
+            orderBy: [{ position: { sort: 'asc', nulls: 'last' } }, { createdAt: 'asc' }],
+            select: { workspaceId: true },
+          });
+          return membership?.workspaceId ?? null;
+        },
+      },
+    );
   }
 }

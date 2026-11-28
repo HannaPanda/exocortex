@@ -112,7 +112,9 @@ export function coverFailure(error: unknown, model: string, ownKey: boolean): Co
  *
  * The picture is paid for like a run (issue #252, ADR-090): with the
  * workspace's own OpenRouter key when it has one, the deployment's only when
- * it has none. A key the provider refuses ends the cover with that reason, and
+ * it has none. That workspace is the page's for a member and the reader's own
+ * for somebody who reached the page through a share (issue #264), which the
+ * API decided and put into the job as `billingWorkspaceId`. A key the provider refuses ends the cover with that reason, and
  * so does a key of the workspace's that this deployment cannot read (issue
  * #260); no other key steps in.
  *
@@ -155,13 +157,18 @@ export function createDocumentCoverProcessor(dependencies: DocumentCoverDependen
       });
     };
 
-    const settings = await dependencies.settings(payload.workspaceId);
+    // The workspace that pays (issue #264): the reader's own for a page they
+    // reached through a share, otherwise the page's. It decides whether a
+    // picture may be drawn, whose key draws it and whose usage counts it; the
+    // page's workspace only receives the cover and the announcement.
+    const billingWorkspaceId = payload.billingWorkspaceId ?? payload.workspaceId;
+    const settings = await dependencies.settings(billingWorkspaceId);
     const enabled = settings['ai.enabled'] && settings['ai.imageGenerationEnabled'];
     const modelSlug = settings['ai.imageModelSlug'];
 
     let key: Awaited<ReturnType<AiKeyResolver>>;
     try {
-      key = await dependencies.aiKeyFor(payload.workspaceId);
+      key = await dependencies.aiKeyFor(billingWorkspaceId);
     } catch (error: unknown) {
       // A workspace key that cannot be read ends the cover, and the
       // deployment's key does not step in (issue #260, ADR-091). Nothing was
@@ -205,7 +212,7 @@ export function createDocumentCoverProcessor(dependencies: DocumentCoverDependen
     let usage: AiUsage | null = null;
     const record = (outcome: Pick<ImageRunRecord, 'status' | 'errorCode' | 'diagnosis'>) =>
       dependencies.recordImageRun({
-        workspaceId: payload.workspaceId,
+        workspaceId: billingWorkspaceId,
         documentId: payload.documentId,
         userId: payload.userId,
         prompt: payload.prompt,

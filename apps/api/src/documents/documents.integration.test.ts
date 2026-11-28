@@ -26,6 +26,7 @@ import { type ObjectStorage } from '@exocortex/storage';
 
 import { type AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
+import { runWithRequestContext } from '../common/correlation';
 import { OutboxService } from '../common/outbox.service';
 import { type SettingsService } from '../platform/settings.service';
 import { settingsStub } from '../platform/settings.test-support';
@@ -769,7 +770,166 @@ describe('generating a cover', () => {
     expect(job?.data.userId).toBe(ownerId);
     // One attempt on purpose: a retry would be a second paid image.
     expect(job?.opts.attempts).toBe(1);
+    // A member asks on the page's own workspace, as before issue #264.
+    expect(job?.data.workspaceId).toBe(workspaceId);
+    expect(job?.data.billingWorkspaceId).toBeUndefined();
     await job?.remove();
+  });
+
+  /**
+   * Who pays for a cover on a page reached through a share (issue #264): the
+   * reader, never the page's workspace. The outsider holds a WRITE grant on
+   * one page and has two workspaces of their own; the run is read from the
+   * request context, which only a signed service token can fill.
+   */
+  describe('on a page shared with the caller', () => {
+    let readerFirstId: string;
+    let readerSecondId: string;
+    let sharedPageId: string;
+
+    async function queuedJobFor(documentId: string) {
+      const queue = queues.getQueue(QUEUE_NAMES.documentCover);
+      const jobs = await queue.getJobs(['waiting', 'delayed', 'active', 'completed', 'failed']);
+      return jobs.find((entry) => entry.data.documentId === documentId);
+    }
+
+    const enabled = { 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' } as const;
+
+    beforeAll(async () => {
+      const suffix = `${Date.now().toString(36)}-cover`;
+      // Created second-first, then placed: the reader's own order decides,
+      // not the join date.
+      const second = await prisma.workspace.create({
+        data: {
+          name: `Reader B ${suffix}`,
+          slug: `reader-b-${suffix}`,
+          members: { create: { userId: outsiderId, role: 'OWNER', position: 1 } },
+        },
+      });
+      const first = await prisma.workspace.create({
+        data: {
+          name: `Reader A ${suffix}`,
+          slug: `reader-a-${suffix}`,
+          members: { create: { userId: outsiderId, role: 'OWNER', position: 0 } },
+        },
+      });
+      readerFirstId = first.id;
+      readerSecondId = second.id;
+
+      sharedPageId = await createPage('Geteilt mit Titelbild');
+      await prisma.documentShare.create({
+        data: {
+          workspaceId,
+          documentId: sharedPageId,
+          kind: 'USER',
+          permission: 'WRITE',
+          scope: 'PAGE_ONLY',
+          granteeId: outsiderId,
+          createdById: ownerId,
+        },
+      });
+    });
+
+    afterAll(async () => {
+      await prisma.workspace.deleteMany({ where: { id: { in: [readerFirstId, readerSecondId] } } });
+    });
+
+    it("bills the reader's first own workspace when no run asks", async () => {
+      await coverService(enabled).requestGeneration({
+        documentId: sharedPageId,
+        userId: outsiderId,
+        prompt: 'Ein Leuchtturm',
+        correlationId,
+      });
+
+      const job = await queuedJobFor(sharedPageId);
+      expect(job?.data.workspaceId).toBe(workspaceId);
+      expect(job?.data.billingWorkspaceId).toBe(readerFirstId);
+      await job?.remove();
+    });
+
+    it("bills the asking run's workspace, read from the signed run id", async () => {
+      const run = await prisma.aiRun.create({
+        data: {
+          workspaceId: readerSecondId,
+          createdById: outsiderId,
+          status: 'RUNNING',
+          provider: 'mock',
+          model: 'mock-model',
+          messages: [{ role: 'user', content: 'Mal ein Titelbild' }],
+          startedAt: new Date(),
+          heartbeatAt: new Date(),
+        },
+      });
+
+      await runWithRequestContext({ correlationId, aiRunId: run.id }, () =>
+        coverService(enabled).requestGeneration({
+          documentId: sharedPageId,
+          userId: outsiderId,
+          prompt: 'Ein Leuchtturm im Sturm',
+          correlationId,
+        }),
+      );
+
+      const job = await queuedJobFor(sharedPageId);
+      expect(job?.data.billingWorkspaceId).toBe(readerSecondId);
+      await job?.remove();
+    });
+
+    it("refuses a run id that is not the caller's own, rather than billing anyone", async () => {
+      const foreign = await prisma.aiRun.create({
+        data: {
+          workspaceId,
+          createdById: ownerId,
+          status: 'RUNNING',
+          provider: 'mock',
+          model: 'mock-model',
+          messages: [{ role: 'user', content: 'Fremder Lauf' }],
+        },
+      });
+
+      await expect(
+        runWithRequestContext({ correlationId, aiRunId: foreign.id }, () =>
+          coverService(enabled).requestGeneration({
+            documentId: sharedPageId,
+            userId: outsiderId,
+            prompt: 'Ein Leuchtturm',
+            correlationId,
+          }),
+        ),
+      ).rejects.toMatchObject({ code: 'forbidden' });
+      expect(await queuedJobFor(sharedPageId)).toBeUndefined();
+    });
+
+    it("decides by the paying workspace's settings, not the page's", async () => {
+      const resolved = resolveSettings({ rows: [], env: {} }).settings;
+      const asked: string[] = [];
+      const perWorkspace = {
+        get: async (): Promise<Settings> => resolved,
+        getForWorkspace: async (id: string): Promise<Settings> => {
+          asked.push(id);
+          return { ...resolved, 'ai.imageGenerationEnabled': false };
+        },
+      } as unknown as SettingsService;
+      const cover = new DocumentCoverService(
+        prisma,
+        queues,
+        new WorkspaceAccessService(prisma),
+        {} as unknown as AttachmentsService,
+        service,
+        perWorkspace,
+      );
+
+      await expect(
+        cover.requestGeneration({
+          documentId: sharedPageId,
+          userId: outsiderId,
+          prompt: 'Ein Leuchtturm',
+          correlationId,
+        }),
+      ).rejects.toMatchObject({ code: 'ai_image_unavailable' });
+      expect(asked).toEqual([readerFirstId]);
+    });
   });
 });
 

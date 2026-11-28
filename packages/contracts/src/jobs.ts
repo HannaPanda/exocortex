@@ -387,7 +387,16 @@ export type AttachmentTextJob = z.infer<typeof attachmentTextJobSchema>;
  */
 export const documentCoverJobSchema = jobBase.extend({
   documentId: idSchema,
+  /** The page's workspace: where the cover is installed and announced. */
   workspaceId: idSchema,
+  /**
+   * The workspace that pays, when it is not the page's (issue #264): the
+   * reader's own, for somebody who reached the page only through a share. Its
+   * key draws the picture, its settings decide whether one may be drawn, and
+   * its usage records the `ai_run`. Absent means the page's workspace, which
+   * is also how every job enqueued before this field existed reads.
+   */
+  billingWorkspaceId: idSchema.optional(),
   userId: idSchema,
   prompt: z.string().trim().min(1).max(1_000),
 });

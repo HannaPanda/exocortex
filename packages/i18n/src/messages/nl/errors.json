@@ -42,6 +42,7 @@
     "ai_model_disabled": "Dit AI-model is momenteel uitgeschakeld.",
     "ai_tools_unavailable": "Tools zijn momenteel niet beschikbaar voor de AI.",
     "ai_image_unavailable": "Afbeeldingen genereren is niet ingesteld voor deze instantie. In het beheergedeelte kan een afbeeldingsmodel worden ingesteld.",
+    "ai_image_no_own_workspace": "Een omslagafbeelding op een gedeelde pagina wordt betaald door een eigen werkruimte, en je hebt er nog geen.",
     "ai_tool_limit_exceeded": "De AI heeft te veel tool-aanroepen gebruikt.",
     "ai_conversation_locked": "Er loopt in deze chat nog een antwoord.",
     "ai_conversation_compacting": "De geschiedenis van deze chat wordt momenteel samengevat. Je kunt zo weer verder schrijven.",

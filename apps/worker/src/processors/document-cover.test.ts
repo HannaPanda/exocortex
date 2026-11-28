@@ -46,7 +46,7 @@ const logger = {
   error: vi.fn(),
 };
 
-function job() {
+function job(extra: { billingWorkspaceId?: string } = {}) {
   return {
     payload: {
       correlationId: 'c1',
@@ -54,6 +54,7 @@ function job() {
       workspaceId: 'ws1',
       userId: 'u1',
       prompt: 'Berge im Morgennebel',
+      ...extra,
     },
     logger,
   } as unknown as Parameters<ReturnType<typeof createDocumentCoverProcessor>>[0];
@@ -73,26 +74,39 @@ function setup(input: {
 }) {
   const records: ImageRunRecord[] = [];
   const published: unknown[] = [];
+  const announcedIn: string[] = [];
   const imageGeneratorFor = vi.fn((_slug: string | null, _apiKey?: string) => input.generator);
   const upload = vi.fn(async () => ({ coverAttachmentId: 'att1' }));
+  const aiKeyFor = vi.fn(async (_workspaceId: string) => {
+    if (input.key instanceof WorkspaceKeyUnreadableError) throw input.key;
+    return input.key;
+  });
+  const settingsFor = vi.fn(async (_workspaceId?: string) => input.settings ?? settings);
   const processor = createDocumentCoverProcessor({
     imageGeneratorFor,
-    aiKeyFor: vi.fn(async () => {
-      if (input.key instanceof WorkspaceKeyUnreadableError) throw input.key;
-      return input.key;
-    }),
+    aiKeyFor,
     recordImageRun: vi.fn(async (record: ImageRunRecord) => {
       records.push(record);
     }),
     apiClientFor: () => ({ upload }) as unknown as ExocortexApiClient,
     bus: {
-      publish: vi.fn(async (event: { payload: unknown }) => {
+      publish: vi.fn(async (event: { payload: unknown; workspaceId: string }) => {
         published.push(event.payload);
+        announcedIn.push(event.workspaceId);
       }),
     } as unknown as RedisEventBus,
-    settings: async () => input.settings ?? settings,
+    settings: settingsFor,
   });
-  return { processor, records, published, imageGeneratorFor, upload };
+  return {
+    processor,
+    records,
+    published,
+    announcedIn,
+    imageGeneratorFor,
+    upload,
+    aiKeyFor,
+    settingsFor,
+  };
 }
 
 const picture = async () => ({
@@ -261,5 +275,59 @@ describe('createDocumentCoverProcessor', () => {
     await processor(job());
 
     expect(records[0]).toMatchObject({ provider: 'mock', usedOwnKey: false });
+  });
+
+  describe('on a page the reader reached through a share (issue #264)', () => {
+    it("draws with the reader's workspace key, by its settings, and records it there", async () => {
+      const { processor, records, published, aiKeyFor, settingsFor, imageGeneratorFor } = setup({
+        key: { apiKey: WORKSPACE_KEY, usedOwnKey: true },
+        generator: generatorThat(picture),
+      });
+
+      await processor(job({ billingWorkspaceId: 'reader-ws' }));
+
+      expect(aiKeyFor).toHaveBeenCalledWith('reader-ws');
+      expect(aiKeyFor).not.toHaveBeenCalledWith('ws1');
+      expect(settingsFor).toHaveBeenCalledWith('reader-ws');
+      expect(imageGeneratorFor).toHaveBeenCalledWith('test/image', WORKSPACE_KEY);
+      // The cost lands with the reader; the page is still the one it is about.
+      expect(records[0]).toMatchObject({
+        workspaceId: 'reader-ws',
+        documentId: 'doc1',
+        userId: 'u1',
+        usedOwnKey: true,
+      });
+      expect(published).toEqual([expect.objectContaining({ status: 'ready' })]);
+    });
+
+    it("stops when the reader's own key cannot be read, and the page's key does not step in", async () => {
+      const { processor, records, published, aiKeyFor, imageGeneratorFor } = setup({
+        key: new WorkspaceKeyUnreadableError('undecryptable'),
+        generator: generatorThat(picture),
+      });
+
+      await processor(job({ billingWorkspaceId: 'reader-ws' }));
+
+      expect(aiKeyFor).toHaveBeenCalledTimes(1);
+      expect(aiKeyFor).toHaveBeenCalledWith('reader-ws');
+      expect(imageGeneratorFor).not.toHaveBeenCalled();
+      expect(records).toHaveLength(0);
+      expect(published).toEqual([
+        expect.objectContaining({
+          errorDetail: { code: 'key_unreadable', reason: 'undecryptable' },
+        }),
+      ]);
+    });
+
+    it("still announces the outcome in the page's workspace", async () => {
+      const { processor, announcedIn } = setup({
+        key: { apiKey: DEPLOYMENT_KEY, usedOwnKey: false },
+        generator: generatorThat(picture),
+      });
+
+      await processor(job({ billingWorkspaceId: 'reader-ws' }));
+
+      expect(announcedIn).toEqual(['ws1']);
+    });
   });
 });

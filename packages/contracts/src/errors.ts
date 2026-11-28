@@ -78,6 +78,11 @@ export const API_ERROR_CODES = [
   'ai_model_disabled',
   'ai_tools_unavailable',
   'ai_image_unavailable',
+  /**
+   * A cover on a page reached only through a share is paid for by one of the
+   * reader's own workspaces, and the reader has none (issue #264).
+   */
+  'ai_image_no_own_workspace',
   'ai_tool_limit_exceeded',
   'ai_conversation_locked',
   /** The conversation's history is being summarised on request (issue #287). */
@@ -393,6 +398,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   ai_model_disabled: 409,
   ai_tools_unavailable: 503,
   ai_image_unavailable: 503,
+  ai_image_no_own_workspace: 409,
   ai_tool_limit_exceeded: 429,
   ai_conversation_locked: 409,
   ai_conversation_compacting: 409,

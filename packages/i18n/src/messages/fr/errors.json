@@ -42,6 +42,7 @@
     "ai_model_disabled": "Ce modèle d’IA est actuellement désactivé.",
     "ai_tools_unavailable": "Les outils ne sont pas disponibles pour l’IA pour le moment.",
     "ai_image_unavailable": "La génération d’images n’est pas configurée pour cette instance. Il est possible d’ajouter un modèle d’image dans l’espace d’administration.",
+    "ai_image_no_own_workspace": "Une image de couverture sur une page partagée est prise en charge par un espace de travail personnel, et tu n’en as pas encore.",
     "ai_tool_limit_exceeded": "L’IA a effectué trop d’appels d’outils.",
     "ai_conversation_locked": "Une réponse est encore en cours dans ce chat.",
     "ai_conversation_compacting": "L’historique de ce chat est en train d’être résumé. Tu pourras continuer à écrire dans un instant.",

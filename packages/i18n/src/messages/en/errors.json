@@ -42,6 +42,7 @@
     "ai_model_disabled": "This AI model is currently disabled.",
     "ai_tools_unavailable": "Tools are currently not available for the AI.",
     "ai_image_unavailable": "Image generation is not set up for this instance. An image model can be configured in the administration area.",
+    "ai_image_no_own_workspace": "A cover image on a shared page is paid for by your own workspace, and you don’t have one yet.",
     "ai_tool_limit_exceeded": "The AI used too many tool calls.",
     "ai_conversation_locked": "A response is still in progress in this chat.",
     "ai_conversation_compacting": "This chat’s history is currently being compacted. You can continue writing in a moment.",
