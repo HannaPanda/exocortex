@@ -14,7 +14,6 @@ import {
 import {
   Alert,
   AlertDescription,
-  AppPage,
   ErrorState,
   Label,
   LoadingState,
@@ -53,7 +52,7 @@ const noSubscription = () => () => {};
  * the server components again, so the page answers in the new language
  * without a reload.
  */
-export function LanguagePage() {
+export function LanguageSettings() {
   const t = useTranslations('settings.language');
   const router = useRouter();
   const query = useUserPreferences();
@@ -89,12 +88,7 @@ export function LanguagePage() {
     isLocale(value) ? LOCALE_ENDONYMS[value] : t('followBrowser');
 
   return (
-    <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-6">
-      <div>
-        <h1 className="exocortex-page-title">{t('title')}</h1>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
-      </div>
-
+    <div className="flex flex-col gap-6">
       {failed ? (
         <Alert variant="destructive">
           <AlertDescription>{t('saveFailed')}</AlertDescription>
@@ -135,6 +129,6 @@ export function LanguagePage() {
           <TimeFormatField onFailed={() => setFailed(true)} />
         </div>
       )}
-    </AppPage>
+    </div>
   );
 }

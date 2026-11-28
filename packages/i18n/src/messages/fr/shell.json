@@ -30,11 +30,7 @@
     "entities": "Entités",
     "shares": "Partages",
     "memory": "Mémoire",
-    "connections": "Connexions",
-    "notifications": "Notifications",
-    "language": "Langue et heure",
-    "aiChat": "Chat IA",
-    "editor": "Éditeur",
+    "settings": "Paramètres",
     "admin": "Administration",
     "menuLabel": "Compte et espaces",
     "menuLabelWithNew": "{count, plural, one {Compte et espaces (# nouvelle fonctionnalité)} many {Compte et espaces (# nouvelles fonctionnalités)} other {Compte et espaces (# nouvelles fonctionnalités)}}",
@@ -236,26 +232,6 @@
         "label": "Ouvrir la mémoire",
         "keywords": "mémoire memory agents faits souvenirs"
       },
-      "connections": {
-        "label": "Ouvrir les connexions",
-        "keywords": "connexion connecteur plugin intégration mcp token api clé claude chatgpt"
-      },
-      "notifications": {
-        "label": "Configurer les notifications",
-        "keywords": "notification e-mail push alerte paramètres"
-      },
-      "language": {
-        "label": "Définir la langue et l’heure",
-        "keywords": "langue language traduction paramètres réglages français english allemand heure format d’heure 24 heures 12 heures am pm fuseau horaire"
-      },
-      "aiChat": {
-        "label": "Paramètres du chat IA",
-        "keywords": "ia chat assistant paramètres défilement suivre début réponse"
-      },
-      "editorSettings": {
-        "label": "Paramètres de l’éditeur",
-        "keywords": "éditeur paramètres plan sommaire table des matières épingler superposer transparence translucide esquiver déplier survol échelle"
-      },
       "workspaces": {
         "label": "Afficher tous les espaces de travail",
         "keywords": "espace de travail workspace changer vue d’ensemble liste"
@@ -371,6 +347,28 @@
       "menuAccount": "Compte",
       "menuWorkspace": "Espace de travail",
       "menuAdmin": "Administration"
+    },
+    "settingsSections": {
+      "language": {
+        "label": "Régler la langue et l’heure",
+        "keywords": "langue language traduction paramètres français english heure format d’heure 24 heures 12 heures am pm fuseau horaire"
+      },
+      "editor": {
+        "label": "Paramètres de l’éditeur",
+        "keywords": "éditeur paramètres plan table des matières épingler superposer transparence translucide esquiver déplier survol échelle"
+      },
+      "chat": {
+        "label": "Paramètres du chat IA",
+        "keywords": "ia chat assistant paramètres défilement suivre début de réponse"
+      },
+      "notifications": {
+        "label": "Régler les notifications",
+        "keywords": "notification e-mail push alerte paramètres appareil appareils mobile appareil push commentaire rendez-vous rappel"
+      },
+      "connections": {
+        "label": "Ouvrir les connexions",
+        "keywords": "connexion connecteur plugin intégration mcp jeton api clé claude chatgpt jeton d’accès oauth application déconnecter hermes codex configurer"
+      }
     },
     "create": {
       "page": "Créer une nouvelle page",

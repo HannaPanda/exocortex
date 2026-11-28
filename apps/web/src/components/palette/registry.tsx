@@ -1,11 +1,13 @@
 'use client';
 
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type UserRole } from '@exocortex/contracts';
 
 import { useSettingGroupLabel } from '@/components/settings/setting-copy';
+import { settingsAddress, type SettingsSectionId } from '@/components/settings-dialog/sections';
 import { useWorkspaceDetail, useWorkspaces } from '@/lib/api/workspace-queries';
 
 import { useChatScrollCommands } from './chat-scroll-commands';
@@ -14,7 +16,7 @@ import { useCreateCommands } from './create-commands';
 import { navigationCommands } from './navigation-commands';
 import { useOutlinePreferenceCommands } from './outline-preference-commands';
 import { type PaletteCommand, type PaletteContext } from './palette-command';
-import { settingsCommands, settingsMenu } from './settings-commands';
+import { settingsCommands, settingsMenu, settingsSectionCommands } from './settings-commands';
 import { useTimeFormatCommands } from './time-format-commands';
 import { workspaceCommands } from './workspace-commands';
 
@@ -51,6 +53,11 @@ export function usePaletteCommands({
 }): PaletteCommand[] {
   const tNavigation = useTranslations('shell.paletteCommands.navigation');
   const tSettings = useTranslations('shell.paletteCommands.settings');
+  const tSections = useTranslations('shell.paletteCommands.settingsSections');
+  // A settings group opens over the page being read, so its address is this
+  // one with the dialog's parameter added (issue #279).
+  const pathname = usePathname();
+  const searchString = useSearchParams().toString();
   const tWorkspace = useTranslations('shell.paletteCommands.workspace');
   const groupLabel = useSettingGroupLabel();
   const create = useCreateCommands(workspaceId, open);
@@ -68,17 +75,21 @@ export function usePaletteCommands({
     const context: PaletteContext = { workspaceId, documentId, role, workspaceRole };
     const navigation = navigationCommands(context, tNavigation);
     const settings = settingsCommands(context, tSettings, groupLabel);
+    const sections = settingsSectionCommands(context, tSections, (section: SettingsSectionId) =>
+      settingsAddress({ pathname, search: searchString }, section),
+    );
     return [
       ...contributed,
       ...create,
       ...shell,
       ...navigation,
       ...workspaceCommands(context, workspaces.data ?? [], tWorkspace),
+      ...sections,
       ...settings,
       ...chatScroll,
       ...outline,
       ...timeFormat,
-      ...settingsMenu(navigation, settings, tSettings, groupLabel),
+      ...settingsMenu(navigation, sections, settings, tSettings, groupLabel),
     ];
   }, [
     chatScroll,
@@ -87,9 +98,12 @@ export function usePaletteCommands({
     documentId,
     groupLabel,
     outline,
+    pathname,
     role,
+    searchString,
     shell,
     tNavigation,
+    tSections,
     tSettings,
     tWorkspace,
     timeFormat,

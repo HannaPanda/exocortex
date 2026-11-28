@@ -1,7 +1,38 @@
 {
+  "dialog": {
+    "title": "Impostazioni",
+    "description": "Il tuo account, l’area di lavoro e l’amministrazione in un unico posto. La pagina sottostante rimane invariata.",
+    "navigation": "Sezioni delle impostazioni",
+    "backToList": "Tutte le impostazioni",
+    "areas": {
+      "account": "Account",
+      "workspace": "Area di lavoro",
+      "admin": "Amministrazione"
+    },
+    "sections": {
+      "language": {
+        "label": "Lingua e ora",
+        "intro": "La lingua con cui eXocortex ti parla e il formato dell’ora. La scelta vale per il tuo account, quindi su ogni dispositivo su cui hai effettuato l’accesso. I tuoi contenuti personali non vengono mai tradotti."
+      },
+      "editor": {
+        "label": "Editor",
+        "intro": "Il comportamento delle pagine durante la lettura e la scrittura. La scelta vale per il tuo account, quindi su ogni dispositivo su cui hai effettuato l’accesso."
+      },
+      "chat": {
+        "label": "Chat IA",
+        "intro": "Il comportamento della chat IA. La scelta vale per il tuo account, quindi su ogni dispositivo su cui hai effettuato l’accesso."
+      },
+      "notifications": {
+        "label": "Notifiche",
+        "intro": "Quando e in che modo eXocortex può contattarti di sua iniziativa. Per i tuoi dispositivi decidi singolarmente, per le email a livello di intero account."
+      },
+      "connections": {
+        "label": "Connessioni",
+        "intro": "Qui i tuoi agenti si collegano a eXocortex: applicazioni che accedono a tuo nome, token per tutto il resto e i comandi pronti per la configurazione. Per scegliere quando eXocortex può contattarti di sua iniziativa, vedi <link>Notifiche</link>."
+      }
+    }
+  },
   "language": {
-    "title": "Lingua e ora",
-    "intro": "La lingua utilizzata da eXocortex e il formato dell’ora. L’impostazione si applica al tuo account, quindi su ogni dispositivo in cui hai effettuato l’accesso. I tuoi contenuti personali non vengono mai tradotti.",
     "legend": "Lingua dell’interfaccia",
     "followBrowser": "Come il mio browser",
     "followBrowserHint": "Finché non scegli nulla, eXocortex segue il tuo browser, al momento quindi {browser}.",
@@ -15,8 +46,6 @@
     "timeFormatHint": "Vale per tutti gli orari in eXocortex, compresi i database e il calendario. Le date senza orario non subiscono modifiche. Gli orari sono mostrati nel fuso orario del tuo dispositivo, attualmente {zone}."
   },
   "chat": {
-    "title": "Chat IA",
-    "intro": "Come si comporta la chat IA per te. La scelta vale per il tuo account, quindi su ogni dispositivo su cui hai effettuato l’accesso.",
     "scrollLegend": "Mentre viene generata una risposta",
     "follow": "Segui",
     "answerStart": "Rimani all’inizio della risposta",
@@ -27,8 +56,6 @@
     "loadError": "Impossibile caricare le impostazioni"
   },
   "editor": {
-    "title": "Editor",
-    "intro": "Come si comportano le pagine per te durante la lettura e la scrittura. La scelta vale per il tuo account, quindi su ogni dispositivo su cui hai effettuato l’accesso.",
     "outlineHeading": "Struttura appuntata",
     "outlineIntro": "La struttura di una pagina si può appuntare con la puntina in cima al suo elenco. Qui decidi come posizionarla accanto al testo.",
     "pinnedLegend": "Spazio per la struttura",

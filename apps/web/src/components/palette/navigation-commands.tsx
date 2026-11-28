@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  BellIcon,
   BotIcon,
   BrainIcon,
   ChartColumnIcon,
@@ -12,20 +11,16 @@ import {
   GitPullRequestIcon,
   HandIcon,
   HouseIcon,
-  KeyIcon,
-  LanguagesIcon,
   LayoutGridIcon,
   LayoutTemplateIcon,
   MessagesSquareIcon,
   NetworkIcon,
   OrbitIcon,
   PaletteIcon,
-  PenLineIcon,
   Settings2Icon,
   Share2Icon,
   ShieldIcon,
   SlidersHorizontalIcon,
-  SparklesIcon,
   UserCogIcon,
   UsersIcon,
   WaypointsIcon,
@@ -60,11 +55,6 @@ interface Place {
     | 'entities'
     | 'shares'
     | 'memory'
-    | 'connections'
-    | 'notifications'
-    | 'language'
-    | 'aiChat'
-    | 'editorSettings'
     | 'workspaces'
     | 'workspaceHome'
     | 'knowledgeMap'
@@ -110,26 +100,8 @@ const PLACES: readonly Place[] = [
   { key: 'entities', screen: '/entitaeten', audience: 'everyone', icon: NetworkIcon },
   { key: 'shares', screen: '/geteilt', audience: 'everyone', icon: Share2Icon },
   { key: 'memory', screen: '/gedaechtnis', audience: 'everyone', icon: BrainIcon },
-  {
-    key: 'connections',
-    screen: '/einstellungen/verbindungen',
-    audience: 'everyone',
-    icon: KeyIcon,
-  },
-  {
-    key: 'notifications',
-    screen: '/einstellungen/benachrichtigungen',
-    audience: 'everyone',
-    icon: BellIcon,
-  },
-  { key: 'language', screen: '/einstellungen/sprache', audience: 'everyone', icon: LanguagesIcon },
-  { key: 'aiChat', screen: '/einstellungen/ki-chat', audience: 'everyone', icon: SparklesIcon },
-  {
-    key: 'editorSettings',
-    screen: '/einstellungen/editor',
-    audience: 'everyone',
-    icon: PenLineIcon,
-  },
+  // The account's settings are groups of the settings dialog now (issue
+  // #279): `settings-commands.tsx` opens each over the page being read.
   { key: 'workspaces', screen: '/arbeitsbereich', audience: 'everyone', icon: LayoutGridIcon },
   { key: 'workspaceHome', screen: '/arbeitsbereich/:x', audience: 'workspace', icon: HouseIcon },
   {

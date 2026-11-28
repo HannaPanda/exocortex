@@ -1,7 +1,38 @@
 {
+  "dialog": {
+    "title": "Settings",
+    "description": "Your account, workspace, and administration in one place. The page underneath stays as it is.",
+    "navigation": "Settings sections",
+    "backToList": "All settings",
+    "areas": {
+      "account": "Account",
+      "workspace": "Workspace",
+      "admin": "Administration"
+    },
+    "sections": {
+      "language": {
+        "label": "Language and time",
+        "intro": "Which language eXocortex speaks with you and how it displays times. This choice applies to your account, so on every device where you are signed in. Your own content is never translated."
+      },
+      "editor": {
+        "label": "Editor",
+        "intro": "How pages behave for you when reading and writing. This choice applies to your account, so on every device where you are signed in."
+      },
+      "chat": {
+        "label": "AI chat",
+        "intro": "How the AI chat behaves for you. This choice applies to your account, so on every device where you are signed in."
+      },
+      "notifications": {
+        "label": "Notifications",
+        "intro": "When eXocortex reaches out to you, and how. On your devices you choose per device; for email, it applies to your entire account."
+      },
+      "connections": {
+        "label": "Connections",
+        "intro": "This is where your agents connect to eXocortex: applications that sign in on your behalf, tokens for everything else, and ready-to-use setup commands. When eXocortex reaches out to you is configured under <link>Notifications</link>."
+      }
+    }
+  },
   "language": {
-    "title": "Language and time",
-    "intro": "Which language eXocortex speaks with you and how it writes times. Your choice applies to your account, so on every device where you’re signed in. Your own content is never translated.",
     "legend": "Interface language",
     "followBrowser": "Match my browser",
     "followBrowserHint": "As long as you don’t choose one, eXocortex follows your browser, which is currently {browser}.",
@@ -15,8 +46,6 @@
     "timeFormatHint": "Applies to every time in eXocortex, including in databases and in the calendar. A date without a time stays as it is. Times are shown in your device’s time zone, currently {zone}."
   },
   "chat": {
-    "title": "AI chat",
-    "intro": "How the AI chat behaves for you. This choice applies to your account, so on every device where you are signed in.",
     "scrollLegend": "While a response is generating",
     "follow": "Follow along",
     "answerStart": "Stay at the start of the response",
@@ -27,8 +56,6 @@
     "loadError": "Could not load settings"
   },
   "editor": {
-    "title": "Editor",
-    "intro": "How pages behave for you when reading and writing. This choice applies to your account, across every device you are signed in on.",
     "outlineHeading": "Pinned outline",
     "outlineIntro": "A page’s outline can be pinned using the pin at the top of its list. Choose here how it sits next to the text.",
     "pinnedLegend": "Space for the outline",

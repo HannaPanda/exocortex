@@ -30,11 +30,7 @@
     "entities": "Entità",
     "shares": "Condivisioni",
     "memory": "Memoria",
-    "connections": "Connessioni",
-    "notifications": "Notifiche",
-    "language": "Lingua e ora",
-    "aiChat": "Chat IA",
-    "editor": "Editor",
+    "settings": "Impostazioni",
     "admin": "Amministrazione",
     "menuLabel": "Account e aree",
     "menuLabelWithNew": "{count, plural, one {Account e aree (# nuova funzione)} many {Account e aree (# nuove funzioni)} other {Account e aree (# nuove funzioni)}}",
@@ -236,26 +232,6 @@
         "label": "Apri memoria",
         "keywords": "memoria memory agenti fatti ricordi"
       },
-      "connections": {
-        "label": "Apri connessioni",
-        "keywords": "connessione connettore plugin integrazione mcp token api chiave claude chatgpt"
-      },
-      "notifications": {
-        "label": "Imposta notifiche",
-        "keywords": "notifica notificazione mail push avviso impostazioni"
-      },
-      "language": {
-        "label": "Imposta lingua e ora",
-        "keywords": "lingua language traduzione impostazioni italiano english ora formato ora 24 ore 12 ore am pm fuso orario"
-      },
-      "aiChat": {
-        "label": "Impostazioni chat IA",
-        "keywords": "ia chat assistente impostazioni scorrere seguire inizio risposta"
-      },
-      "editorSettings": {
-        "label": "Impostazioni editor",
-        "keywords": "editor impostazioni struttura sommario indice fissa sovrapponi trasparenza traslucido sposta espandi passaggio cursore scala"
-      },
       "workspaces": {
         "label": "Mostra tutte le aree di lavoro",
         "keywords": "area di lavoro workspace cambia panoramica elenco lista"
@@ -371,6 +347,28 @@
       "menuAccount": "Account",
       "menuWorkspace": "Area di lavoro",
       "menuAdmin": "Amministrazione"
+    },
+    "settingsSections": {
+      "language": {
+        "label": "Imposta lingua e ora",
+        "keywords": "lingua language traduzione impostazioni italiano english ora formato orario 24 ore 12 ore am pm fuso orario"
+      },
+      "editor": {
+        "label": "Impostazioni dell’editor",
+        "keywords": "editor impostazioni struttura sommario fissa sovrapponi trasparenza traslucido evita espandi passaggio del mouse scala"
+      },
+      "chat": {
+        "label": "Impostazioni chat IA",
+        "keywords": "ia chat assistente impostazioni scorrimento segui inizio risposta"
+      },
+      "notifications": {
+        "label": "Imposta le notifiche",
+        "keywords": "notifica email push avviso impostazioni dispositivo dispositivi smartphone dispositivo push commento scadenza promemoria"
+      },
+      "connections": {
+        "label": "Apri le connessioni",
+        "keywords": "connessione connettore plugin integrazione mcp token api chiave claude chatgpt token di accesso oauth applicazione disconnetti hermes codex configura"
+      }
     },
     "create": {
       "page": "Crea nuova pagina",

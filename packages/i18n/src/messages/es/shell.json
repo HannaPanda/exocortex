@@ -30,11 +30,7 @@
     "entities": "Entidades",
     "shares": "Usos compartidos",
     "memory": "Memoria",
-    "connections": "Conexiones",
-    "notifications": "Notificaciones",
-    "language": "Idioma y hora",
-    "aiChat": "Chat de IA",
-    "editor": "Editor",
+    "settings": "Ajustes",
     "admin": "Administración",
     "menuLabel": "Cuenta y espacios",
     "menuLabelWithNew": "{count, plural, one {Cuenta y espacios (# función nueva)} many {Cuenta y espacios (# funciones nuevas)} other {Cuenta y espacios (# funciones nuevas)}}",
@@ -236,26 +232,6 @@
         "label": "Abrir memoria",
         "keywords": "memoria memory agentes hechos recuerdos"
       },
-      "connections": {
-        "label": "Abrir conexiones",
-        "keywords": "conexión conector plugin integración mcp token api clave claude chatgpt"
-      },
-      "notifications": {
-        "label": "Configurar notificaciones",
-        "keywords": "notificación correo push aviso ajustes configuración"
-      },
-      "language": {
-        "label": "Configurar idioma y hora",
-        "keywords": "idioma language traducción ajustes configuración español english hora formato de hora 24 horas 12 horas am pm zona horaria"
-      },
-      "aiChat": {
-        "label": "Ajustes del chat de IA",
-        "keywords": "ia chat asistente ajustes configuracion desplazar seguir inicioderespuesta"
-      },
-      "editorSettings": {
-        "label": "Ajustes del editor",
-        "keywords": "editor ajustes configuración esquema índice fijar superponer transparencia translúcido apartar esquivar desplegar pasar el cursor escala"
-      },
       "workspaces": {
         "label": "Mostrar todos los espacios de trabajo",
         "keywords": "espacio de trabajo workspace cambiar resumen lista"
@@ -371,6 +347,28 @@
       "menuAccount": "Cuenta",
       "menuWorkspace": "Espacio de trabajo",
       "menuAdmin": "Administración"
+    },
+    "settingsSections": {
+      "language": {
+        "label": "Configurar idioma y hora",
+        "keywords": "idioma language traducción ajustes español english hora formato de hora 24 horas 12 horas am pm zona horaria"
+      },
+      "editor": {
+        "label": "Ajustes del editor",
+        "keywords": "editor ajustes esquema tabla de contenidos fijar superponer transparencia translúcido esquivar desplegar pasar por encima escala"
+      },
+      "chat": {
+        "label": "Ajustes del chat de IA",
+        "keywords": "ia chat asistente ajustes desplazamiento seguir inicio de respuesta"
+      },
+      "notifications": {
+        "label": "Configurar notificaciones",
+        "keywords": "notificación correo push aviso ajustes dispositivo dispositivos móvil dispositivo push comentario cita recordatorio"
+      },
+      "connections": {
+        "label": "Abrir conexiones",
+        "keywords": "conexión conector plugin integración mcp token api clave claude chatgpt token de acceso oauth aplicación desconectar hermes codex configurar"
+      }
     },
     "create": {
       "page": "Crear nueva página",

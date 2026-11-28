@@ -1,8 +1,4 @@
 {
-  "connections": {
-    "title": "Conexiones",
-    "intro": "Aquí se conectan tus agentes a eXocortex: aplicaciones que inician sesión en tu nombre, tokens para todo lo demás y comandos listos para configurar. Cuándo se pone en contacto contigo eXocortex por su cuenta se define en <link>Notificaciones</link>."
-  },
   "connectedApps": {
     "title": "Aplicaciones conectadas",
     "intro": "Programas a los que has concedido acceso en la página de consentimiento, como ChatGPT. Inician sesión en tu nombre sin necesidad de un token tuyo. Desconectar tiene efecto inmediato: las sesiones en curso finalizan y para volver a acceder requerirán tu consentimiento desde el principio.",
@@ -154,8 +150,6 @@
     "rightsAdmin": "<strong>Acceso total: a nadie.</strong> Ninguna herramienta del catálogo de MCP lo necesita y es el único permiso con el que un token puede emitir otros tokens."
   },
   "notifications": {
-    "title": "Notificaciones",
-    "intro": "Cuándo se comunica eXocortex contigo por iniciativa propia y por qué vía. En tus dispositivos decides por cada dispositivo; por correo, para toda la cuenta.",
     "failed": "No ha funcionado.",
     "kinds": {
       "SHARE": {

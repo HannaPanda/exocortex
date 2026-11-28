@@ -7,7 +7,6 @@ import { CHAT_SCROLL_MODES, type ChatScrollMode } from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
-  AppPage,
   ErrorState,
   Label,
   LoadingState,
@@ -32,7 +31,7 @@ function isChatScrollMode(value: unknown): value is ChatScrollMode {
  * underneath, because the two names only say what happens once one has seen
  * both. The same choice sits in the chat panel's menu and in the palette.
  */
-export function ChatSettingsPage() {
+export function ChatSettings() {
   const t = useTranslations('settings.chat');
   const query = useUserPreferences();
   const preference = useChatScrollPreference();
@@ -47,12 +46,7 @@ export function ChatSettingsPage() {
   const labelOf = (mode: ChatScrollMode) => (mode === 'follow' ? t('follow') : t('answerStart'));
 
   return (
-    <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-6">
-      <div>
-        <h1 className="exocortex-page-title">{t('title')}</h1>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
-      </div>
-
+    <div className="flex flex-col gap-6">
       {failed ? (
         <Alert variant="destructive">
           <AlertDescription>{t('saveFailed')}</AlertDescription>
@@ -83,6 +77,6 @@ export function ChatSettingsPage() {
           </p>
         </div>
       )}
-    </AppPage>
+    </div>
   );
 }

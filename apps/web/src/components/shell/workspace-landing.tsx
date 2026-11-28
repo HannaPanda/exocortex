@@ -1,12 +1,13 @@
 'use client';
 
 import { LayersIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
+import { settingsAddress, settingsRequestOf } from '@/components/settings-dialog/sections';
 import { useCreateWorkspace, useWorkspaces } from '@/lib/api/workspace-queries';
 
 /** Resolves the workspace to open, or offers to create the first one. */
@@ -15,11 +16,21 @@ export function WorkspaceLanding() {
   const router = useRouter();
   const workspaces = useWorkspaces();
   const createWorkspace = useCreateWorkspace();
+  const search = useSearchParams();
+  const request = settingsRequestOf(search);
+  const carried = request.open ? (request.section ?? '') : null;
 
   React.useEffect(() => {
     const first = workspaces.data?.[0];
-    if (first !== undefined) router.replace(`/arbeitsbereich/${first.id}`);
-  }, [router, workspaces.data]);
+    // The settings dialog rides along (issue #279): the old settings pages
+    // send a browser here with `?einstellungen=…`, and it should open over
+    // the workspace this lands in rather than be dropped on the way.
+    if (first !== undefined) {
+      router.replace(
+        settingsAddress({ pathname: `/arbeitsbereich/${first.id}`, search: '' }, carried),
+      );
+    }
+  }, [carried, router, workspaces.data]);
 
   if (workspaces.isPending) return <LoadingState label={t('loading')} />;
   if (workspaces.isError) return <ErrorState onRetry={() => void workspaces.refetch()} />;

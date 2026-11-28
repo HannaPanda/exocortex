@@ -12,7 +12,6 @@ import {
 import {
   Alert,
   AlertDescription,
-  AppPage,
   ErrorState,
   Label,
   LoadingState,
@@ -52,7 +51,7 @@ function isOutlineTransparency(value: unknown): value is OutlineTransparency {
  * why, while the text moves aside. The pin itself stays in the outline: whether it is pinned is a
  * choice per browser, how it is pinned a choice per person.
  */
-export function EditorSettingsPage() {
+export function EditorSettings() {
   const t = useTranslations('settings.editor');
   const query = useUserPreferences();
   const outline = useOutlinePreferences();
@@ -79,12 +78,7 @@ export function EditorSettingsPage() {
       : t('transparencyHint');
 
   return (
-    <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-6">
-      <div>
-        <h1 className="exocortex-page-title">{t('title')}</h1>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
-      </div>
-
+    <div className="flex flex-col gap-6">
       {failed ? (
         <Alert variant="destructive">
           <AlertDescription>{t('saveFailed')}</AlertDescription>
@@ -213,6 +207,6 @@ export function EditorSettingsPage() {
           </div>
         </section>
       )}
-    </AppPage>
+    </div>
   );
 }

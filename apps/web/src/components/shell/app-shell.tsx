@@ -29,6 +29,7 @@ import { PaletteRequestsProvider, useAskPalette } from '@/components/palette/pal
 import { usePaletteCommands } from '@/components/palette/registry';
 import { shellCommands } from '@/components/palette/shell-commands';
 import { SearchCommand } from '@/components/search/search-command';
+import { SettingsDialogProvider } from '@/components/settings-dialog/settings-dialog';
 import { useTimeFormatPreference } from '@/lib/api/preferences-queries';
 import { queryKeys } from '@/lib/api/query-keys';
 import { useSessionQuery } from '@/lib/api/session-queries';
@@ -81,7 +82,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <CommentAnchorProvider>
             <PaletteRequestsProvider>
               <PaletteContributionsProvider>
-                <AppShellInner>{children}</AppShellInner>
+                <SettingsDialogProvider>
+                  <AppShellInner>{children}</AppShellInner>
+                </SettingsDialogProvider>
               </PaletteContributionsProvider>
             </PaletteRequestsProvider>
           </CommentAnchorProvider>

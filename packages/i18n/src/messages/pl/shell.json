@@ -30,11 +30,7 @@
     "entities": "Encje",
     "shares": "Udostępnienia",
     "memory": "Pamięć",
-    "connections": "Połączenia",
-    "notifications": "Powiadomienia",
-    "language": "Język i czas",
-    "aiChat": "Czat AI",
-    "editor": "Edytor",
+    "settings": "Ustawienia",
     "admin": "Administracja",
     "menuLabel": "Konto i obszary",
     "menuLabelWithNew": "{count, plural, one {Konto i obszary (# nowa funkcja)} few {Konto i obszary (# nowe funkcje)} many {Konto i obszary (# nowych funkcji)} other {Konto i obszary (# nowej funkcji)}}",
@@ -236,26 +232,6 @@
         "label": "Otwórz pamięć",
         "keywords": "pamięć memory agenci fakty wspomnienia"
       },
-      "connections": {
-        "label": "Otwórz połączenia",
-        "keywords": "połączenie konektor wtyczka integracja mcp token klucz api claude chatgpt"
-      },
-      "notifications": {
-        "label": "Ustaw powiadomienia",
-        "keywords": "powiadomienie powiadomienia mail push alert ustawienia"
-      },
-      "language": {
-        "label": "Ustaw język i czas",
-        "keywords": "język language tłumaczenie ustawienia polski english godzina format czasu 24 godziny 12 godzin am pm strefa czasowa"
-      },
-      "aiChat": {
-        "label": "Ustawienia czatu AI",
-        "keywords": "ai czat asystent ustawienia przewijanie początek odpowiedzi"
-      },
-      "editorSettings": {
-        "label": "Ustawienia edytora",
-        "keywords": "edytor ustawienia konspekt spis treści przypnij nakładka przezroczystość półprzezroczysty omijanie rozwiń najechanie skala"
-      },
       "workspaces": {
         "label": "Pokaż wszystkie obszary robocze",
         "keywords": "obszar roboczy workspace przełącz przegląd lista"
@@ -371,6 +347,28 @@
       "menuAccount": "Konto",
       "menuWorkspace": "Obszar roboczy",
       "menuAdmin": "Administracja"
+    },
+    "settingsSections": {
+      "language": {
+        "label": "Ustaw język i czas",
+        "keywords": "język language tłumaczenie ustawienia polski english czas format czasu 24 godziny 12 godzin am pm strefa czasowa"
+      },
+      "editor": {
+        "label": "Ustawienia edytora",
+        "keywords": "edytor ustawienia konspekt spis treści przypnij nakładanie przezroczystość półprzezroczysty omijanie rozwiń najechanie skala"
+      },
+      "chat": {
+        "label": "Ustawienia czatu AI",
+        "keywords": "ai chat czat asystent ustawienia przewijanie autoscroll początek odpowiedzi"
+      },
+      "notifications": {
+        "label": "Ustaw powiadomienia",
+        "keywords": "powiadomienie mail push alert ustawienia urządzenie urządzenia telefon powiadomienie push komentarz termin przypomnienie"
+      },
+      "connections": {
+        "label": "Otwórz połączenia",
+        "keywords": "połączenie konektor wtyczka integracja mcp token api klucz claude chatgpt token dostępu oauth aplikacja rozłącz hermes codex skonfiguruj"
+      }
     },
     "create": {
       "page": "Utwórz nową stronę",

@@ -30,11 +30,7 @@
     "entities": "Entities",
     "shares": "Shares",
     "memory": "Memory",
-    "connections": "Connections",
-    "notifications": "Notifications",
-    "language": "Language and time",
-    "aiChat": "AI Chat",
-    "editor": "Editor",
+    "settings": "Settings",
     "admin": "Administration",
     "menuLabel": "Account and areas",
     "menuLabelWithNew": "{count, plural, one {Account and areas (# new feature)} other {Account and areas (# new features)}}",
@@ -236,26 +232,6 @@
         "label": "Open memory",
         "keywords": "memory agents facts reminders"
       },
-      "connections": {
-        "label": "Open connections",
-        "keywords": "connection connector plugin integration mcp token api key claude chatgpt"
-      },
-      "notifications": {
-        "label": "Configure notifications",
-        "keywords": "notification mail push alert settings"
-      },
-      "language": {
-        "label": "Set language and time",
-        "keywords": "language translation settings german english time time format 24-hour 12-hour am pm time zone"
-      },
-      "aiChat": {
-        "label": "AI Chat settings",
-        "keywords": "ai chat assistant settings scroll follow response start"
-      },
-      "editorSettings": {
-        "label": "Editor settings",
-        "keywords": "editor settings outline table of contents toc pin overlay transparency translucent dodge expand hover scale"
-      },
       "workspaces": {
         "label": "Show all workspaces",
         "keywords": "workspace switch overview list"
@@ -371,6 +347,28 @@
       "menuAccount": "Account",
       "menuWorkspace": "Workspace",
       "menuAdmin": "Administration"
+    },
+    "settingsSections": {
+      "language": {
+        "label": "Set language and time",
+        "keywords": "language translation settings german english time time format 24 hours 12 hours am pm timezone"
+      },
+      "editor": {
+        "label": "Editor settings",
+        "keywords": "editor settings outline table of contents pin overlay transparency translucent avoid expand hover scale"
+      },
+      "chat": {
+        "label": "AI chat settings",
+        "keywords": "ai chat assistant settings scroll autoscroll follow start of response"
+      },
+      "notifications": {
+        "label": "Set up notifications",
+        "keywords": "notification mail push alert settings device devices phone mobile push device comment event reminder"
+      },
+      "connections": {
+        "label": "Open connections",
+        "keywords": "connection connector plugin integration mcp token api key claude chatgpt access token oauth app disconnect hermes codex set up"
+      }
     },
     "create": {
       "page": "Create new page",

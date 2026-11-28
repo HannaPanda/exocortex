@@ -30,11 +30,7 @@
     "entities": "Entitäten",
     "shares": "Freigaben",
     "memory": "Gedächtnis",
-    "connections": "Verbindungen",
-    "notifications": "Benachrichtigungen",
-    "language": "Sprache und Uhrzeit",
-    "aiChat": "KI-Chat",
-    "editor": "Editor",
+    "settings": "Einstellungen",
     "admin": "Verwaltung",
     "menuLabel": "Konto und Bereiche",
     "menuLabelWithNew": "{count, plural, one {Konto und Bereiche (# neue Funktion)} other {Konto und Bereiche (# neue Funktionen)}}",
@@ -236,26 +232,6 @@
         "label": "Gedächtnis öffnen",
         "keywords": "gedächtnis memory agenten fakten erinnerungen"
       },
-      "connections": {
-        "label": "Verbindungen öffnen",
-        "keywords": "verbindung connector plugin integration mcp token api schlüssel claude chatgpt"
-      },
-      "notifications": {
-        "label": "Benachrichtigungen einstellen",
-        "keywords": "benachrichtigung mail push hinweis einstellungen"
-      },
-      "language": {
-        "label": "Sprache und Uhrzeit einstellen",
-        "keywords": "sprache language übersetzung einstellungen deutsch english uhrzeit zeitformat 24 stunden 12 stunden am pm zeitzone"
-      },
-      "aiChat": {
-        "label": "KI-Chat-Einstellungen",
-        "keywords": "ki chat assistent einstellungen scrollen mitlaufen antwortanfang"
-      },
-      "editorSettings": {
-        "label": "Editor-Einstellungen",
-        "keywords": "editor einstellungen gliederung inhaltsverzeichnis anpinnen überlagern transparenz durchscheinend ausweichen aufklappen überfahren skala"
-      },
       "workspaces": {
         "label": "Alle Arbeitsbereiche anzeigen",
         "keywords": "arbeitsbereich workspace wechseln übersicht liste"
@@ -371,6 +347,28 @@
       "menuAccount": "Konto",
       "menuWorkspace": "Arbeitsbereich",
       "menuAdmin": "Verwaltung"
+    },
+    "settingsSections": {
+      "language": {
+        "label": "Sprache und Uhrzeit einstellen",
+        "keywords": "sprache language übersetzung einstellungen deutsch english uhrzeit zeitformat 24 stunden 12 stunden am pm zeitzone"
+      },
+      "editor": {
+        "label": "Editor-Einstellungen",
+        "keywords": "editor einstellungen gliederung inhaltsverzeichnis anpinnen überlagern transparenz durchscheinend ausweichen aufklappen überfahren skala"
+      },
+      "chat": {
+        "label": "KI-Chat-Einstellungen",
+        "keywords": "ki chat assistent einstellungen scrollen mitlaufen antwortanfang"
+      },
+      "notifications": {
+        "label": "Benachrichtigungen einstellen",
+        "keywords": "benachrichtigung mail push hinweis einstellungen gerät geräte handy push-gerät kommentar termin erinnerung"
+      },
+      "connections": {
+        "label": "Verbindungen öffnen",
+        "keywords": "verbindung connector plugin integration mcp token api schlüssel claude chatgpt zugangstoken oauth anwendung trennen hermes codex einrichten"
+      }
     },
     "create": {
       "page": "Neue Seite anlegen",

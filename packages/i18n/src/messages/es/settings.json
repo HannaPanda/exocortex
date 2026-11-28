@@ -1,7 +1,38 @@
 {
+  "dialog": {
+    "title": "Ajustes",
+    "description": "Tu cuenta, el espacio de trabajo y la administración en un solo lugar. La página que está debajo se queda como está.",
+    "navigation": "Secciones de ajustes",
+    "backToList": "Todos los ajustes",
+    "areas": {
+      "account": "Cuenta",
+      "workspace": "Espacio de trabajo",
+      "admin": "Administración"
+    },
+    "sections": {
+      "language": {
+        "label": "Idioma y hora",
+        "intro": "En qué idioma te habla eXocortex y cómo muestra las horas. La opción se aplica a tu cuenta, es decir, en cualquier dispositivo donde hayas iniciado sesión. Tu propio contenido nunca se traduce."
+      },
+      "editor": {
+        "label": "Editor",
+        "intro": "Cómo se comportan las páginas al leer y escribir. La opción se aplica a tu cuenta, es decir, en cualquier dispositivo donde hayas iniciado sesión."
+      },
+      "chat": {
+        "label": "Chat de IA",
+        "intro": "Cómo se comporta el chat de IA para ti. La opción se aplica a tu cuenta, es decir, en cualquier dispositivo donde hayas iniciado sesión."
+      },
+      "notifications": {
+        "label": "Notificaciones",
+        "intro": "Cuándo contacta eXocortex contigo por iniciativa propia y por qué vía. En tus dispositivos decides por cada dispositivo; por correo, para toda la cuenta."
+      },
+      "connections": {
+        "label": "Conexiones",
+        "intro": "Aquí es donde se conectan tus agentes a eXocortex: aplicaciones que inician sesión en tu nombre, tokens para todo lo demás y los comandos listos para la configuración. Cuándo contacta eXocortex contigo por iniciativa propia se configura en <link>Notificaciones</link>."
+      }
+    }
+  },
   "language": {
-    "title": "Idioma y hora",
-    "intro": "En qué idioma te habla eXocortex y cómo muestra las horas. Esta opción se aplica a tu cuenta, es decir, en cualquier dispositivo donde hayas iniciado sesión. Tu propio contenido nunca se traduce.",
     "legend": "Idioma de la interfaz",
     "followBrowser": "Igual que mi navegador",
     "followBrowserHint": "Mientras no elijas ninguna opción, eXocortex usará el idioma de tu navegador, que ahora mismo es {browser}.",
@@ -15,8 +46,6 @@
     "timeFormatHint": "Se aplica a todas las horas en eXocortex, incluidas las bases de datos y el calendario. Las fechas sin hora no cambian. Las horas se muestran en la zona horaria de tu dispositivo, actualmente {zone}."
   },
   "chat": {
-    "title": "Chat de IA",
-    "intro": "Cómo se comporta el chat de IA para ti. La opción elegida se aplica a tu cuenta, por lo que afectará a cualquier dispositivo en el que hayas iniciado sesión.",
     "scrollLegend": "Mientras se genera una respuesta",
     "follow": "Seguir automáticamente",
     "answerStart": "Quedarse al inicio de la respuesta",
@@ -27,8 +56,6 @@
     "loadError": "No se han podido cargar los ajustes"
   },
   "editor": {
-    "title": "Editor",
-    "intro": "Cómo se comportan las páginas al leer y escribir. Esta preferencia se aplica a tu cuenta, es decir, en cualquier dispositivo donde hayas iniciado sesión.",
     "outlineHeading": "Esquema fijado",
     "outlineIntro": "Puedes fijar el esquema de una página con la chincheta situada arriba en su lista. Aquí decides cómo se sitúa junto al texto.",
     "pinnedLegend": "Espacio para el esquema",

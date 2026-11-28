@@ -1,7 +1,38 @@
 {
+  "dialog": {
+    "title": "Paramètres",
+    "description": "Ton compte, l’espace de travail et l’administration au même endroit. La page en dessous reste inchangée.",
+    "navigation": "Rubriques des paramètres",
+    "backToList": "Tous les paramètres",
+    "areas": {
+      "account": "Compte",
+      "workspace": "Espace de travail",
+      "admin": "Administration"
+    },
+    "sections": {
+      "language": {
+        "label": "Langue et heure",
+        "intro": "La langue utilisée par eXocortex pour s’adresser à toi et le format de l’heure. Ce choix s’applique à ton compte, donc sur tous les appareils où tu es connecté. Tes propres contenus ne sont jamais traduits."
+      },
+      "editor": {
+        "label": "Éditeur",
+        "intro": "Le comportement des pages pendant la lecture et l’écriture. Ce choix s’applique à ton compte, donc sur tous les appareils où tu es connecté."
+      },
+      "chat": {
+        "label": "Chat IA",
+        "intro": "Le comportement du chat IA pour toi. Ce choix s’applique à ton compte, donc sur tous les appareils où tu es connecté."
+      },
+      "notifications": {
+        "label": "Notifications",
+        "intro": "Quand eXocortex te contacte de lui-même et par quel moyen. Pour tes appareils, tu décides appareil par appareil ; pour les e-mails, cela s’applique à l’ensemble du compte."
+      },
+      "connections": {
+        "label": "Connexions",
+        "intro": "Ici sont reliés tes agents à eXocortex : les applications qui se connectent en ton nom, les jetons pour tout le reste et les commandes prêtes à l’emploi pour la configuration. Pour savoir quand eXocortex te contacte de lui-même, consulte les <link>Notifications</link>."
+      }
+    }
+  },
   "language": {
-    "title": "Langue et heure",
-    "intro": "La langue utilisée par eXocortex pour communiquer avec toi et la façon dont les heures s’affichent. Ce choix s’applique à ton compte, donc sur tous les appareils où tu es connecté·e. Tes propres contenus ne sont jamais traduits.",
     "legend": "Langue de l’interface",
     "followBrowser": "Comme mon navigateur",
     "followBrowserHint": "Tant que tu ne choisis rien, eXocortex s’adapte à ton navigateur, actuellement {browser}.",
@@ -15,8 +46,6 @@
     "timeFormatHint": "S’applique à toutes les heures dans eXocortex, y compris dans les bases de données et l’agenda. Une date sans heure reste inchangée. Les heures s’affichent dans le fuseau horaire de ton appareil, actuellement {zone}."
   },
   "chat": {
-    "title": "Chat IA",
-    "intro": "Comportement du chat IA pour toi. Ce choix s’applique à ton compte, sur tous les appareils où tu es connecté.",
     "scrollLegend": "Pendant qu’une réponse se génère",
     "follow": "Suivre le défilement",
     "answerStart": "Rester au début de la réponse",
@@ -27,8 +56,6 @@
     "loadError": "Impossible de charger les paramètres"
   },
   "editor": {
-    "title": "Éditeur",
-    "intro": "Comportement des pages lors de la lecture et de l’écriture. Ce choix s’applique à ton compte, sur chaque appareil où tu te connectes.",
     "outlineHeading": "Plan épinglé",
     "outlineIntro": "Le plan d’une page peut être épinglé grâce à l’épingle située en haut de sa liste. Définis ici comment il se positionne à côté du texte.",
     "pinnedLegend": "Disposition du plan",

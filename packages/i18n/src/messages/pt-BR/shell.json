@@ -30,11 +30,7 @@
     "entities": "Entidades",
     "shares": "Compartilhamentos",
     "memory": "Memória",
-    "connections": "Conexões",
-    "notifications": "Notificações",
-    "language": "Idioma e hora",
-    "aiChat": "Chat de IA",
-    "editor": "Editor",
+    "settings": "Configurações",
     "admin": "Administração",
     "menuLabel": "Conta e áreas",
     "menuLabelWithNew": "{count, plural, one {Conta e áreas (# novo recurso)} many {Conta e áreas (# novos recursos)} other {Conta e áreas (# novos recursos)}}",
@@ -236,26 +232,6 @@
         "label": "Abrir memória",
         "keywords": "memória memory agentes fatos lembranças"
       },
-      "connections": {
-        "label": "Abrir conexões",
-        "keywords": "conexão conector plugin integração mcp token api chave claude chatgpt"
-      },
-      "notifications": {
-        "label": "Configurar notificações",
-        "keywords": "notificação email push aviso configurações"
-      },
-      "language": {
-        "label": "Configurar idioma e hora",
-        "keywords": "idioma language tradução configurações português english hora formato de hora 24 horas 12 horas am pm fuso horário"
-      },
-      "aiChat": {
-        "label": "Configurações do chat de IA",
-        "keywords": "ia chat assistente configurações rolar acompanhar início da resposta"
-      },
-      "editorSettings": {
-        "label": "Configurações do editor",
-        "keywords": "editor configurações estrutura sumário índice fixar sobrepor transparência translúcido desviar expandir passar cursor escala"
-      },
       "workspaces": {
         "label": "Mostrar todos os espaços de trabalho",
         "keywords": "espaço de trabalho workspace alternar visão geral lista"
@@ -371,6 +347,28 @@
       "menuAccount": "Conta",
       "menuWorkspace": "Espaço de trabalho",
       "menuAdmin": "Administração"
+    },
+    "settingsSections": {
+      "language": {
+        "label": "Configurar idioma e hora",
+        "keywords": "idioma language tradução configurações português english hora formato de hora 24 horas 12 horas am pm fuso horário"
+      },
+      "editor": {
+        "label": "Configurações do editor",
+        "keywords": "editor configurações sumário índice fixar sobrepor transparência translúcido desviar expandir passar o mouse escala"
+      },
+      "chat": {
+        "label": "Configurações do chat de IA",
+        "keywords": "ia chat assistente configurações rolagem acompanhar início da resposta"
+      },
+      "notifications": {
+        "label": "Configurar notificações",
+        "keywords": "notificação email push aviso configurações dispositivo dispositivos celular dispositivo push comentário compromisso lembrete"
+      },
+      "connections": {
+        "label": "Abrir conexões",
+        "keywords": "conexão conector plugin integração mcp token api chave claude chatgpt token de acesso oauth aplicativo desconectar hermes codex configurar"
+      }
     },
     "create": {
       "page": "Criar nova página",

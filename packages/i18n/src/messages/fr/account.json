@@ -1,8 +1,4 @@
 {
-  "connections": {
-    "title": "Connexions",
-    "intro": "C’est ici que tes agents se rattachent à eXocortex : les applications qui se connectent en ton nom, les jetons pour tout le reste et les commandes prêtes à l’emploi pour la configuration. Pour savoir quand eXocortex te contacte directement, consulte les <link>Notifications</link>."
-  },
   "connectedApps": {
     "title": "Applications connectées",
     "intro": "Applications auxquelles tu as accordé l’accès sur la page de consentement, par exemple ChatGPT. Elles se connectent en ton nom, sans nécessiter de jeton de ta part. La déconnexion est immédiate : les sessions en cours prennent fin et tout nouvel accès nécessitera à nouveau ton accord.",
@@ -154,8 +150,6 @@
     "rightsAdmin": "<strong>Accès complet : à personne.</strong> Aucun outil du catalogue MCP n’en a besoin, et c’est le seul droit permettant à un token de générer d’autres tokens."
   },
   "notifications": {
-    "title": "Notifications",
-    "intro": "Quand eXocortex te contacte de sa propre initiative, et par quel moyen. Sur tes appareils, tu décides par appareil ; par e-mail, pour l’ensemble du compte.",
     "failed": "Cela n’a pas fonctionné.",
     "kinds": {
       "SHARE": {

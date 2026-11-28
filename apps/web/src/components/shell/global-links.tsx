@@ -1,19 +1,16 @@
 'use client';
 
 import {
-  BellIcon,
   BrainIcon,
   CircleQuestionMarkIcon,
   HandIcon,
-  KeyIcon,
-  LanguagesIcon,
   LogOutIcon,
+  type LucideIcon,
   MessagesSquareIcon,
   NetworkIcon,
-  PenLineIcon,
+  SettingsIcon,
   Share2Icon,
   ShieldIcon,
-  SparklesIcon,
   UserRoundIcon,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -30,16 +27,20 @@ import {
   DropdownMenuTrigger,
 } from '@exocortex/ui';
 
+import { useSettingsDialog } from '@/components/settings-dialog/settings-dialog-context';
 import { useFeatures } from '@/lib/api/feature-queries';
+import { isPlainClick } from '@/lib/plain-click';
 
 interface GlobalLink {
   href: string;
   label: string;
   testId: string;
-  icon: typeof KeyIcon;
+  icon: LucideIcon;
   badge?: number;
   /** A rule the entry ends a group on, drawn as a separator above the next. */
   group: 'help' | 'rooms' | 'settings' | 'deployment';
+  /** Opens the settings dialog in place rather than going to `href`. */
+  opensSettings?: boolean;
 }
 
 /**
@@ -69,6 +70,7 @@ interface GlobalLink {
 function globalLinks(
   newCount: number,
   role: UserRole,
+  settingsHref: string,
   t: ReturnType<typeof useTranslations<'shell.globalLinks'>>,
 ): GlobalLink[] {
   const links: GlobalLink[] = [
@@ -126,48 +128,17 @@ function globalLinks(
       icon: BrainIcon,
       group: 'rooms',
     },
+    // One door for every setting (issue #279): the dialog opens over the
+    // page being read, at the account's first group, and its navigation
+    // reaches the rest. Five entries for five settings pages made the menu
+    // the table of contents of a dialog it could simply open.
     {
-      href: '/einstellungen/verbindungen',
-      label: t('connections'),
-      testId: 'open-api-tokens',
-      icon: KeyIcon,
+      href: settingsHref,
+      label: t('settings'),
+      testId: 'open-settings',
+      icon: SettingsIcon,
       group: 'settings',
-    },
-    // Its own entry rather than a corner of "Verbindungen": since issue #105
-    // this is where both halves of being notified are decided, and the other
-    // page is about programs one lets in.
-    {
-      href: '/einstellungen/benachrichtigungen',
-      label: t('notifications'),
-      testId: 'open-notifications',
-      icon: BellIcon,
-      group: 'settings',
-    },
-    // The first entry that reads its label from the catalogue (issue #98):
-    // the page it opens is the one a person needs when the rest of this menu
-    // is in a language they cannot read, so it is named in theirs first.
-    {
-      href: '/einstellungen/sprache',
-      label: t('language'),
-      testId: 'open-language',
-      icon: LanguagesIcon,
-      group: 'settings',
-    },
-    // How the chat behaves for this person (issue #282), on every device.
-    {
-      href: '/einstellungen/ki-chat',
-      label: t('aiChat'),
-      testId: 'open-ai-chat-settings',
-      icon: SparklesIcon,
-      group: 'settings',
-    },
-    // How pages behave for this person while reading and writing (issue #283).
-    {
-      href: '/einstellungen/editor',
-      label: t('editor'),
-      testId: 'open-editor-settings',
-      icon: PenLineIcon,
-      group: 'settings',
+      opensSettings: true,
     },
   ];
 
@@ -221,7 +192,8 @@ export function GlobalLinks({
   const features = useFeatures();
   const newCount = features.data?.newCount ?? 0;
   const t = useTranslations('shell.globalLinks');
-  const links = globalLinks(newCount, role, t);
+  const settings = useSettingsDialog();
+  const links = globalLinks(newCount, role, settings.href(''), t);
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -259,7 +231,12 @@ export function GlobalLinks({
             <DropdownMenuItem
               data-testid={`menu-${link.testId}`}
               render={<Link href={link.href} />}
-              onClick={() => setOpen(false)}
+              onClick={(event) => {
+                setOpen(false);
+                if (link.opensSettings !== true || !isPlainClick(event)) return;
+                event.preventDefault();
+                settings.open('');
+              }}
             >
               <link.icon /> {link.label}
             </DropdownMenuItem>

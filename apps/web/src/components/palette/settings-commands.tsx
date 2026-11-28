@@ -5,6 +5,12 @@ import { type useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { SETTING_GROUPS } from '@/components/settings/setting-copy';
+import { SETTINGS_SECTION_ICONS } from '@/components/settings-dialog/section-icons';
+import {
+  SETTINGS_SECTIONS,
+  type SettingsAudience,
+  type SettingsSectionId,
+} from '@/components/settings-dialog/sections';
 
 import { keywordsOf, type PaletteCommand, type PaletteContext } from './palette-command';
 import { SETTING_GROUP_PARAM, WORKSPACE_TAB_PARAM } from './settings-addresses';
@@ -96,13 +102,55 @@ export function settingsCommands(
   return commands;
 }
 
-const ACCOUNT_PLACES = new Set([
-  'navigate-connections',
-  'navigate-notifications',
-  'navigate-language',
-  'navigate-aiChat',
-  'navigate-editorSettings',
-]);
+/** Whether the reader in `context` may see a group meant for `audience`. */
+export function reachesAudience(audience: SettingsAudience, context: PaletteContext): boolean {
+  const role = context.workspaceRole;
+  switch (audience) {
+    case 'everyone':
+      return true;
+    case 'admin':
+      return context.role === 'admin';
+    case 'workspaceMember':
+      return context.workspaceId !== null && role !== null;
+    case 'workspaceAdmin':
+      return context.workspaceId !== null && role !== null && WORKSPACE_ADMIN_ROLES.has(role);
+    case 'workspaceOwner':
+      return context.workspaceId !== null && role === 'OWNER';
+  }
+}
+
+/**
+ * One command per group of the settings dialog (issue #279), read from the
+ * dialog's own list, so a group added there is a command the day it exists.
+ * Each opens the dialog over the page being read; its label and search words
+ * are the ones the dialog's search answers with, under
+ * `shell.paletteCommands.settingsSections.<group>`.
+ */
+export function settingsSectionCommands(
+  context: PaletteContext,
+  t: ReturnType<typeof useTranslations<'shell.paletteCommands.settingsSections'>>,
+  href: (section: SettingsSectionId) => string,
+): PaletteCommand[] {
+  return SETTINGS_SECTIONS.filter((section) => reachesAudience(section.audience, context)).map(
+    (section) => {
+      const Icon = SETTINGS_SECTION_ICONS[section.id];
+      return {
+        id: `settings-section-${section.id}`,
+        group: 'settings',
+        label: t(`${section.id}.label`),
+        icon: <Icon className={ICON} />,
+        keywords: keywordsOf(t(`${section.id}.keywords`)),
+        href: href(section.id),
+      };
+    },
+  );
+}
+
+const ACCOUNT_SECTIONS = new Set(
+  SETTINGS_SECTIONS.filter((section) => section.area === 'account').map(
+    (section) => `settings-section-${section.id}`,
+  ),
+);
 const WORKSPACE_PLACES = new Set(['navigate-workspaceSettings']);
 const ADMIN_PLACES = new Set(['navigate-adminSettings', 'navigate-adminModels']);
 
@@ -119,6 +167,7 @@ const ADMIN_PLACES = new Set(['navigate-adminSettings', 'navigate-adminModels'])
  */
 export function settingsMenu(
   navigation: readonly PaletteCommand[],
+  dialogGroups: readonly PaletteCommand[],
   settings: readonly PaletteCommand[],
   t: ReturnType<typeof useTranslations<'shell.paletteCommands.settings'>>,
   groupLabel: (group: string) => string,
@@ -131,8 +180,12 @@ export function settingsMenu(
       label: groupLabel(command.id.slice('settings-group-'.length)),
       hint: undefined,
     }));
-  const sections = [
-    { id: 'account', label: t('menuAccount'), entries: pick(ACCOUNT_PLACES) },
+  const menus = [
+    {
+      id: 'account',
+      label: t('menuAccount'),
+      entries: dialogGroups.filter((command) => ACCOUNT_SECTIONS.has(command.id)),
+    },
     {
       id: 'workspace',
       label: t('menuWorkspace'),
@@ -153,7 +206,7 @@ export function settingsMenu(
       icon: <SettingsIcon className={ICON} />,
       keywords: keywordsOf(t('menuKeywords')),
       children: () =>
-        sections.map<PaletteCommand>((section) => ({
+        menus.map<PaletteCommand>((section) => ({
           id: `settings-menu-${section.id}`,
           group: 'settings',
           label: section.label,

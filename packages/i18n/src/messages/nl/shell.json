@@ -30,11 +30,7 @@
     "entities": "Entiteiten",
     "shares": "Delingen",
     "memory": "Geheugen",
-    "connections": "Verbindingen",
-    "notifications": "Meldingen",
-    "language": "Taal en tijd",
-    "aiChat": "AI-chat",
-    "editor": "Editor",
+    "settings": "Instellingen",
     "admin": "Beheer",
     "menuLabel": "Account en ruimtes",
     "menuLabelWithNew": "{count, plural, one {Account en ruimtes (# nieuwe functie)} other {Account en ruimtes (# nieuwe functies)}}",
@@ -236,26 +232,6 @@
         "label": "Geheugen openen",
         "keywords": "geheugen memory agenten feiten herinneringen"
       },
-      "connections": {
-        "label": "Verbindingen openen",
-        "keywords": "verbinding connector plugin integratie mcp token api sleutel claude chatgpt"
-      },
-      "notifications": {
-        "label": "Meldingen instellen",
-        "keywords": "melding mail push bericht instellingen"
-      },
-      "language": {
-        "label": "Taal en tijd instellen",
-        "keywords": "taal language vertaling instellingen nederlands engels tijd tijdnotatie 24 uur 12 uur am pm tijdzone"
-      },
-      "aiChat": {
-        "label": "AI-chatinstellingen",
-        "keywords": "ai chat assistent instellingen scrollen meescrollen begin van antwoord"
-      },
-      "editorSettings": {
-        "label": "Editor-instellingen",
-        "keywords": "editor instellingen overzicht inhoudsopgave vastpinnen overlappen transparantie doorschijnend uitwijken uitvouwen aanwijzen schaal"
-      },
       "workspaces": {
         "label": "Alle werkruimten weergeven",
         "keywords": "werkruimte workspace wisselen overzicht lijst"
@@ -371,6 +347,28 @@
       "menuAccount": "Account",
       "menuWorkspace": "Werkruimte",
       "menuAdmin": "Beheer"
+    },
+    "settingsSections": {
+      "language": {
+        "label": "Taal en tijd instellen",
+        "keywords": "taal language vertaling instellingen duits engels tijd tijdnotatie 24 uur 12 uur am pm tijdzone"
+      },
+      "editor": {
+        "label": "Editor-instellingen",
+        "keywords": "editor instellingen overzicht inhoudsopgave vastpinnen overlappen transparantie doorschijnend uitwijken uitvouwen aanwijzen schaal"
+      },
+      "chat": {
+        "label": "AI-chatinstellingen",
+        "keywords": "ai chat assistent instellingen scrollen meelopen antwoordbegin"
+      },
+      "notifications": {
+        "label": "Meldingen instellen",
+        "keywords": "melding e-mail push notificatie instellingen apparaat apparaten mobiel push-apparaat reactie afspraak herinnering"
+      },
+      "connections": {
+        "label": "Verbindingen openen",
+        "keywords": "verbinding connector plugin integratie mcp token api sleutel claude chatgpt toegangstoken oauth toepassing ontkoppelen hermes codex instellen"
+      }
     },
     "create": {
       "page": "Nieuwe pagina maken",

@@ -55,10 +55,18 @@ const SCREEN_EXEMPT = [
     reason: 'The OAuth consent screen a connecting client sends the browser to.',
   },
   { screen: '/freigabe/:x', reason: 'A public link, anonymous and outside the shell.' },
-  {
-    screen: '/einstellungen/tokens',
-    reason: 'A redirect to /einstellungen/verbindungen, kept for old bookmarks.',
-  },
+  ...[
+    '/einstellungen/sprache',
+    '/einstellungen/editor',
+    '/einstellungen/ki-chat',
+    '/einstellungen/benachrichtigungen',
+    '/einstellungen/verbindungen',
+    '/einstellungen/tokens',
+  ].map((screen) => ({
+    screen,
+    reason:
+      'A redirect into the settings dialog (issue #279), kept for old bookmarks; the palette opens the dialog group itself.',
+  })),
   {
     screen: '/teilen',
     reason:

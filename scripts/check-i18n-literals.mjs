@@ -202,6 +202,14 @@ const GERMAN = new RegExp(
 const ROUTE_LITERAL = /(['"`])\/[\w\-/[\]${}.:?=&]*\1/g;
 
 /**
+ * The name of a query parameter is part of the address as well, and for the
+ * same reason: `?einstellungen=language` opens the settings dialog in every
+ * locale (issue #279). It counts only where it is declared as one, a
+ * constant whose name ends in `_PARAM`.
+ */
+const PARAM_LITERAL = /\b[A-Z][A-Z_]*_PARAM\s*=\s*(['"])[a-z-]+\1/g;
+
+/**
  * The source with every comment blanked out, newlines kept, so a German
  * comment -- and most comments in `apps/web` are German -- never counts.
  * Strings and template literals are stepped over, which is what keeps the
@@ -255,7 +263,8 @@ function copyString(text, index) {
 export function germanLines(text) {
   return withoutComments(text)
     .split('\n')
-    .filter((line) => GERMAN.test(line.replace(ROUTE_LITERAL, ''))).length;
+    .filter((line) => GERMAN.test(line.replace(ROUTE_LITERAL, '').replace(PARAM_LITERAL, '')))
+    .length;
 }
 
 function trackedFiles() {

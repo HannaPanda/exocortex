@@ -1,8 +1,4 @@
 {
-  "connections": {
-    "title": "Verbindingen",
-    "intro": "Hier zijn je agents gekoppeld aan eXocortex: toepassingen die zich namens jou aanmelden, tokens voor al het andere en kant-en-klare opdrachten voor de configuratie. Wanneer eXocortex uit zichzelf contact met je opneemt, vind je onder <link>Meldingen</link>."
-  },
   "connectedApps": {
     "title": "Verbonden toepassingen",
     "intro": "Programma’s waaraan je op de toestemmingspagina toegang hebt gegeven, zoals ChatGPT. Ze melden zich namens jou aan, zonder een token van jou. Ontkoppelen werkt direct: actieve sessies worden beëindigd en voor nieuwe toegang is je toestemming opnieuw vereist.",
@@ -154,8 +150,6 @@
     "rightsAdmin": "<strong>Volledige toegang: aan niemand.</strong> Geen enkele tool in de MCP-catalogus heeft dit nodig, en het is het enige recht waarmee een token verdere tokens kan aanmaken."
   },
   "notifications": {
-    "title": "Meldingen",
-    "intro": "Wanneer eXocortex je uit zichzelf benadert, en via welke weg. Op je apparaten beslis je per apparaat, via e-mail voor het hele account.",
     "failed": "Dat is niet gelukt.",
     "kinds": {
       "SHARE": {

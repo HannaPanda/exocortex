@@ -1,7 +1,38 @@
 {
+  "dialog": {
+    "title": "Ustawienia",
+    "description": "Twoje konto, obszar roboczy i administracja w jednym miejscu. Strona pod spodem pozostaje bez zmian.",
+    "navigation": "Sekcje ustawień",
+    "backToList": "Wszystkie ustawienia",
+    "areas": {
+      "account": "Konto",
+      "workspace": "Obszar roboczy",
+      "admin": "Administracja"
+    },
+    "sections": {
+      "language": {
+        "label": "Język i czas",
+        "intro": "W jakim języku eXocortex się z tobą komunikuje i jak zapisuje czas. Wybór dotyczy twojego konta, więc każdego urządzenia, na którym się logujesz. Twoje własne treści nigdy nie są tłumaczone."
+      },
+      "editor": {
+        "label": "Edytor",
+        "intro": "Jak zachowują się strony podczas czytania i pisania. Wybór dotyczy twojego konta, więc każdego urządzenia, na którym się logujesz."
+      },
+      "chat": {
+        "label": "Czat AI",
+        "intro": "Jak zachowuje się czat AI. Wybór dotyczy twojego konta, więc każdego urządzenia, na którym się logujesz."
+      },
+      "notifications": {
+        "label": "Powiadomienia",
+        "intro": "Kiedy i w jaki sposób eXocortex kontaktuje się z tobą z własnej inicjatywy. Na swoich urządzeniach decydujesz osobno dla każdego z nich, a w przypadku e-maili – dla całego konta."
+      },
+      "connections": {
+        "label": "Połączenia",
+        "intro": "Tutaj twoi agenci łączą się z eXocortex: aplikacje logujące się w twoim imieniu, tokeny do wszystkiego innego oraz gotowe polecenia konfiguracyjne. To, kiedy eXocortex kontaktuje się z tobą z własnej inicjatywy, znajdziesz w sekcji <link>Powiadomienia</link>."
+      }
+    }
+  },
   "language": {
-    "title": "Język i czas",
-    "intro": "W jakim języku eXocortex wyświetla interfejs i jak zapisuje godziny. Wybór dotyczy twojego konta, czyli każdego urządzenia, na którym się logujesz. Twoje własne treści nigdy nie są tłumaczone.",
     "legend": "Język interfejsu",
     "followBrowser": "Taki jak w przeglądarce",
     "followBrowserHint": "Dopóki nic nie wybierzesz, eXocortex dostosowuje się do twojej przeglądarki, czyli obecnie do: {browser}.",
@@ -15,8 +46,6 @@
     "timeFormatHint": "Dotyczy każdej godziny w eXocortex, także w bazach danych i w kalendarzu. Data bez godziny pozostaje bez zmian. Godziny są wyświetlane w strefie czasowej twojego urządzenia, obecnie {zone}."
   },
   "chat": {
-    "title": "Czat SI",
-    "intro": "Jak zachowuje się czat SI. Ten wybór dotyczy twojego konta, a więc każdego urządzenia, na którym jesteś zalogować się.",
     "scrollLegend": "Podczas generowania odpowiedzi",
     "follow": "Przewijaj automatycznie",
     "answerStart": "Pozostań na początku odpowiedzi",
@@ -27,8 +56,6 @@
     "loadError": "Nie udało się załadować ustawień"
   },
   "editor": {
-    "title": "Edytor",
-    "intro": "Jak strony zachowują się podczas czytania i pisania. Wybór dotyczy twojego konta, czyli każdego urządzenia, na którym się logujesz.",
     "outlineHeading": "Przypięty spis treści",
     "outlineIntro": "Spis treści strony można przypiąć za pomocą pinezki na górze listy. Tutaj określasz, jak ma być widoczny obok tekstu.",
     "pinnedLegend": "Miejsce na spis treści",

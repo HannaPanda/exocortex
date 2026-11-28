@@ -1,8 +1,4 @@
 {
-  "connections": {
-    "title": "Połączenia",
-    "intro": "Tutaj twoi agenci łączą się z eXocortex: aplikacje, które logują się w twoim imieniu, tokeny do wszystkiego innego oraz gotowe polecenia do konfiguracji. To, kiedy eXocortex kontaktuje się z tobą z własnej inicjatywy, znajdziesz w sekcji <link>Powiadomienia</link>."
-  },
   "connectedApps": {
     "title": "Połączone aplikacje",
     "intro": "Programy, którym dostęp przyznano na stronie zgody, na przykład ChatGPT. Logują się w twoim imieniu bez twojego tokena. Odłączenie działa natychmiast: trwające sesje dobiegają końca, a ponowny dostęp wymaga ponownego udzielenia zgody.",
@@ -154,8 +150,6 @@
     "rightsAdmin": "<strong>Pełny dostęp: dla nikogo.</strong> Żadne narzędzie w katalogu MCP go nie potrzebuje, a jest to jedyne uprawnienie, za pomocą którego token może generować kolejne tokeny."
   },
   "notifications": {
-    "title": "Powiadomienia",
-    "intro": "Kiedy i w jaki sposób eXocortex kontaktuje się z tobą z własnej inicjatywy. Na swoich urządzeniach decydujesz dla każdego urządzenia osobno, a przez e-mail – dla całego konta.",
     "failed": "To się nie udało.",
     "kinds": {
       "SHARE": {

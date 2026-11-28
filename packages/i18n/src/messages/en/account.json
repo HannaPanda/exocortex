@@ -1,8 +1,4 @@
 {
-  "connections": {
-    "title": "Connections",
-    "intro": "This is where your agents connect to eXocortex: applications that log in on your behalf, tokens for everything else, and ready-to-use setup commands. To see when eXocortex reaches out to you on its own, check <link>Notifications</link>."
-  },
   "connectedApps": {
     "title": "Connected applications",
     "intro": "Programs you have granted access to on the consent page, such as ChatGPT. They log in on your behalf without a token from you. Disconnecting takes effect immediately: active sessions end, and reconnecting requires your consent from scratch.",
@@ -154,8 +150,6 @@
     "rightsAdmin": "<strong>Full access: to no one.</strong> No tool in the MCP catalog needs it, and it is the only permission that allows a token to issue further tokens."
   },
   "notifications": {
-    "title": "Notifications",
-    "intro": "When eXocortex reaches out to you, and how. On your devices you decide per device, via email for the entire account.",
     "failed": "That didn’t work.",
     "kinds": {
       "SHARE": {

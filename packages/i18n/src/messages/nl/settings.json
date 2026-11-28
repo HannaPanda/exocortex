@@ -1,7 +1,38 @@
 {
+  "dialog": {
+    "title": "Instellingen",
+    "description": "Je account, de werkruimte en het beheer op één plek. De pagina eronder blijft zoals hij is.",
+    "navigation": "Instellingengroepen",
+    "backToList": "Alle instellingen",
+    "areas": {
+      "account": "Account",
+      "workspace": "Werkruimte",
+      "admin": "Beheer"
+    },
+    "sections": {
+      "language": {
+        "label": "Taal en tijd",
+        "intro": "Welke taal eXocortex gebruikt en hoe tijden worden weergegeven. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd. Je eigen inhoud wordt nooit vertaald."
+      },
+      "editor": {
+        "label": "Editor",
+        "intro": "Hoe pagina’s zich voor jou gedragen tijdens het lezen en schrijven. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd."
+      },
+      "chat": {
+        "label": "AI-chat",
+        "intro": "Hoe de AI-chat zich voor jou gedraagt. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd."
+      },
+      "notifications": {
+        "label": "Meldingen",
+        "intro": "Wanneer eXocortex uit zichzelf contact met je opneemt, en via welke weg. Voor je apparaten beslis je per apparaat, voor e-mail voor het hele account."
+      },
+      "connections": {
+        "label": "Verbindingen",
+        "intro": "Hier zijn je agenten aan eXocortex gekoppeld: toepassingen die namens jou inloggen, tokens voor al het overige en kant-en-klare opdrachten voor de configuratie. Wanneer eXocortex uit zichzelf contact met je opneemt, vind je onder <link>Meldingen</link>."
+      }
+    }
+  },
   "language": {
-    "title": "Taal en tijd",
-    "intro": "In welke taal eXocortex met je communiceert en hoe tijden worden weergegeven. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd. Je eigen inhoud wordt nooit vertaald.",
     "legend": "Taal van de interface",
     "followBrowser": "Zoals mijn browser",
     "followBrowserHint": "Zolang je niets kiest, volgt eXocortex je browser, momenteel dus {browser}.",
@@ -15,8 +46,6 @@
     "timeFormatHint": "Geldt voor elke tijd in eXocortex, ook in databases en in de agenda. Een datum zonder tijd blijft zoals hij is. Tijden worden weergegeven in de tijdzone van je apparaat, momenteel {zone}."
   },
   "chat": {
-    "title": "AI-chat",
-    "intro": "Hoe de AI-chat zich voor jou gedraagt. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd.",
     "scrollLegend": "Terwijl een antwoord wordt gegenereerd",
     "follow": "Meebewegen",
     "answerStart": "Aan het begin van het antwoord blijven",
@@ -27,8 +56,6 @@
     "loadError": "De instellingen konden niet worden geladen"
   },
   "editor": {
-    "title": "Editor",
-    "intro": "Hoe pagina’s zich voor jou gedragen tijdens het lezen en schrijven. Deze keuze geldt voor je account, dus op elk apparaat waarop je bent ingelogd.",
     "outlineHeading": "Vastgezette inhoudsopgave",
     "outlineIntro": "De inhoudsopgave van een pagina kun je vastzetten met de speld bovenaan de lijst. Hier bepaal je hoe deze naast de tekst staat.",
     "pinnedLegend": "Ruimte voor de inhoudsopgave",
