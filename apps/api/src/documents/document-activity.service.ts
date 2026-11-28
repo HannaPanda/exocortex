@@ -236,7 +236,7 @@ function sortKey(entry: DocumentActivityEntry): number {
  * the intended, cheap reading of "regelmäßige Momentaufnahmen wären der
  * billigere Weg" from the issue.
  *
- * Without any `SCHEDULED` snapshots (the setting defaults off), this falls
+ * Without any `SCHEDULED` snapshots (the setting switched off, or nobody typed), this falls
  * back to at most one single-point session built from `Document.updatedAt` --
  * honest given the data available, not a range, since no earlier boundary is
  * knowable from a single "current state" column.

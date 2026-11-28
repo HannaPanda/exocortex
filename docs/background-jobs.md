@@ -189,21 +189,45 @@ would be deleted without deleting it, so the first run after this shipped
 cannot silently remove snapshots that already existed on a live deployment.
 
 `snapshot-active-documents` (every 5 min, a no-op unless
-`activity.editSessionSnapshotsEnabled` is on) is what feeds a real session
-_range_ into the Aktivität tab rather than the single point
-`Document.updatedAt` alone carries ("Bearbeitungen im Editor verdichten").
+`activity.editSessionSnapshotsEnabled` is on, which it is by default since
+issue #235) is what turns typing into versions. Nothing else does: a store from
+the collaboration server writes `DocumentContent` and no snapshot, so before
+the sampler ran a page somebody had typed into all afternoon had no version
+between its last write from outside and now. That is what the page history
+would have shown, and why this is the sampler's job rather than the
+collaboration server's: the store is debounced to a couple of seconds and on
+the hot path, while "at most every N minutes while something changed" is a
+sweep over one indexed column.
+
 It takes a `SCHEDULED` `DocumentSnapshot` of a page whose `yjsUpdatedAt` moved
-within `activity.editSessionSnapshotIntervalMinutes` and whose last snapshot
-is both older than that content change and older than the interval itself —
-two independent guards, so a page with no new content since its last
-checkpoint is skipped even if the checkpoint is old, and a page mid-burst of
-edits is not re-snapshotted on every five-minute sweep. `DocumentActivityService`
+within `activity.editSessionSnapshotIntervalMinutes` (default 10) and whose
+last snapshot is both older than that content change and older than the
+interval itself: two independent guards, so a page with no new content since
+its last checkpoint is skipped even if the checkpoint is old, and a page
+mid-burst of edits is not re-snapshotted on every five-minute sweep. Only
+typing counts. `DocumentContent.yjsUpdatedById` is set by a store whose last
+transaction came from a person's connection (`apps/collaboration/src/typist.ts`)
+and cleared by a write through the API and by a restore, which leave a version
+with their own author already; the sampler skips a page where it is `null` and
+attributes the version to it otherwise, rather than to `Document.updatedById`,
+which typing never touches.
+
+What it costs, measured on exocortex.app on 2026-11-28 before the switch:
+4 943 snapshots held 78 MB of Yjs state (44 MB on disk after TOAST
+compression), 3 843 of them `API_WRITE` at 17 kB on average; the 173
+`SCHEDULED` ones from the weeks the sampler once ran averaged 4.4 kB. An hour of
+typing into one page is at most six versions, roughly 100 kB at the average
+size, and the retention tiers fold them to one per day after the full window.
+
+`DocumentActivityService`
 (`apps/api/src/documents/document-activity.service.ts`) later folds
 consecutive same-actor `SCHEDULED` snapshots less than 30 minutes apart into
-one `editingSession` entry; ordinary `MANUAL`/`API_WRITE`/`IMPORT`/`PRE_RESTORE`
-snapshots stay out of that folding because they already appear as their own
-precise, individually restorable entries, and burying a restore point inside
-a vague session range would be a regression, not a condensation.
+one `editingSession` entry, and the page history (`page-history.ts`) groups
+them the same way; ordinary `MANUAL`/`API_WRITE`/`IMPORT`/`PRE_RESTORE`
+snapshots stay out of that folding in the Aktivität tab because they already
+appear as their own precise, individually restorable entries, and burying a
+restore point inside a vague session range would be a regression, not a
+condensation.
 
 The Aktivität tab itself (`GET /api/documents/:documentId/activity`,
 `exo_page_activity`) merges this with the audit log (`document.moved`,
@@ -953,7 +977,7 @@ so. See `docs/mail.md`.
 | completed jobs                           | 1 hour / 1000 jobs                                                                                                                                                                                                                                          |
 | failed jobs                              | 7 days / 5000 jobs                                                                                                                                                                                                                                          |
 | snapshots per document                   | tiered by age, not a flat count: full for `activity.snapshotRetentionFullDays` (default 7d), then one/day until `activity.snapshotRetentionDailyDays` (default 30d), then one/week; `MANUAL` exempt (`prune-snapshots`, daily at 04:00, dry-run by default) |
-| active-document snapshot interval        | `activity.editSessionSnapshotIntervalMinutes` (default 15 min), off by default (`activity.editSessionSnapshotsEnabled`)                                                                                                                                     |
+| active-document snapshot interval        | `activity.editSessionSnapshotIntervalMinutes` (default 10 min), on by default (`activity.editSessionSnapshotsEnabled`)                                                                                                                                      |
 | replaced page covers                     | deleted 1 hour after they stop being a cover (`collect-orphaned-covers`, daily at 04:30)                                                                                                                                                                    |
 | chat pictures never sent                 | deleted 1 day after their upload when no message names them (`collect-orphaned-covers`, daily at 04:30; issue #223, ADR-095)                                                                                                                                |
 | files of a database cell no longer named | deleted when no FILES value of their column names them and they are older than 1 day (`collect-orphaned-covers`, daily at 04:30; issue #245, ADR-098)                                                                                                       |

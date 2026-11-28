@@ -441,7 +441,7 @@
     "title": "Page history with preview",
     "summary": "A large window shows all previous versions of a page: when, by whom, whether a person, an agent, or the AI assistant. One click shows the version as the page looked back then, or what has changed since, and another restores it.",
     "details": {
-      "p1": "On the right, versions are listed by day, newest first. Changes made in quick succession appear as a single entry: a typing session, a series of writes by an agent. The arrow next to it expands the individual versions; nothing is lost. A write series represents the page before the series began, which is usually the version you want to get back.",
+      "p1": "On the right, versions are listed by day, newest first. Changes made close together appear as a single entry: a typing session, a series of writes by an agent. The arrow next to it expands the individual versions; none are lost. A series of writes represents the page before the series—the version you usually want to restore. While typing, eXocortex saves the page at most every ten minutes, and only as long as someone is actively writing.",
       "p2": "On the left, you see the selected version as a read-only preview, exactly as the page looked at the time. The “Changes” toggle shows instead what has changed since then, block by block; from there, you can also restore individual blocks.",
       "p3": "“Restore this version” asks for confirmation once and backs up the current version first. Afterwards, “Undo” appears at the bottom, and anyone who currently has the page open sees the change immediately. Agents have the same capabilities as tools: read the history, read a version as Markdown, compare, and restore."
     },

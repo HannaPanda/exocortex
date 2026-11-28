@@ -466,11 +466,11 @@
     "activity": {
       "editSessionSnapshotsEnabled": {
         "label": "Registrar sesiones de edición",
-        "help": "Guarda una página en edición activa a intervalos regulares para que la pestaña de actividad pueda mostrar periodos reales («editado de 14:20 a 14:45») en vez de solo el último estado. Desactivado: no se crean instantáneas adicionales."
+        "help": "Guarda a intervalos regulares una página en la que se esté escribiendo. Estas son las versiones que muestra el historial de la página para una sesión de escritura y los intervalos de tiempo en la pestaña «Actividad» («editado de 14:20 a 14:45»). Desactivado: escribir ya no deja versiones propias; solo lo hacen las operaciones de escritura externas, las restauraciones y las versiones guardadas."
       },
       "editSessionSnapshotIntervalMinutes": {
         "label": "Intervalo entre copias de seguridad de la sesión",
-        "help": "Frecuencia máxima con la que se puede guardar una instantánea nueva de una página en edición activa. Solo tiene efecto si la opción anterior está activada."
+        "help": "Frecuencia máxima con la que se puede volver a guardar una página en la que se esté escribiendo. Con 10 minutos, una hora de escritura genera seis versiones. Solo tiene efecto si la opción superior está activada."
       },
       "snapshotRetentionFullDays": {
         "label": "Retención completa (días)",

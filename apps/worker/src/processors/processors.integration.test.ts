@@ -2557,11 +2557,11 @@ describe('maintenance', () => {
    * checkpoint is too recent.
    */
   describe('snapshot-active-documents (issue #20, editing-session snapshots)', () => {
-    it('is a no-op while the setting is off, the default', async () => {
+    it('is a no-op while the setting is off', async () => {
       const documentId = await createDocument();
       await prisma.documentContent.update({
         where: { documentId },
-        data: { yjsUpdatedAt: new Date() },
+        data: { yjsUpdatedAt: new Date(), yjsUpdatedById: userId },
       });
 
       const processor = createMaintenanceProcessor({
@@ -2572,7 +2572,7 @@ describe('maintenance', () => {
         queues,
         storage: recordingStorage(),
         bus,
-        settings: stubSettings(),
+        settings: stubSettings({ 'activity.editSessionSnapshotsEnabled': false }),
       });
       await processor(
         contextFor<'maintenance'>({
@@ -2588,11 +2588,11 @@ describe('maintenance', () => {
       ).toBe(0);
     }, 30_000);
 
-    it('takes a SCHEDULED snapshot of a page that changed within the interval, attributed to its current editor', async () => {
+    it('takes a SCHEDULED snapshot of a page typed into within the interval, attributed to the typist', async () => {
       const documentId = await createDocument();
       await prisma.documentContent.update({
         where: { documentId },
-        data: { yjsUpdatedAt: new Date() },
+        data: { yjsUpdatedAt: new Date(), yjsUpdatedById: userId },
       });
 
       const processor = createMaintenanceProcessor({
@@ -2627,7 +2627,10 @@ describe('maintenance', () => {
     it('skips a page that has not changed since its last snapshot', async () => {
       const documentId = await createDocument();
       const yjsUpdatedAt = new Date();
-      await prisma.documentContent.update({ where: { documentId }, data: { yjsUpdatedAt } });
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { yjsUpdatedAt, yjsUpdatedById: userId },
+      });
       // Already checkpointed at least as recently as the content: nothing new
       // to capture.
       await prisma.documentSnapshot.create({
@@ -2670,7 +2673,10 @@ describe('maintenance', () => {
     it('skips a page whose last snapshot is more recent than the configured interval, even with newer content', async () => {
       const documentId = await createDocument();
       const yjsUpdatedAt = new Date();
-      await prisma.documentContent.update({ where: { documentId }, data: { yjsUpdatedAt } });
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { yjsUpdatedAt, yjsUpdatedById: userId },
+      });
       // A checkpoint from a moment ago, well inside the (long) configured
       // interval, but strictly older than the content: the "changed since
       // last checkpoint" guard alone must not be enough to fire again yet.
@@ -2724,7 +2730,7 @@ describe('maintenance', () => {
       const recent = new Date(Date.now() - 60_000);
       await prisma.documentContent.updateMany({
         where: { documentId: { in: [doomedId, survivorId] } },
-        data: { yjsUpdatedAt: recent },
+        data: { yjsUpdatedAt: recent, yjsUpdatedById: userId },
       });
 
       const processor = createMaintenanceProcessor({
@@ -2780,7 +2786,7 @@ describe('maintenance', () => {
       await prisma.documentContent.update({
         where: { documentId },
         // Older than any reasonable interval: not "active" at all.
-        data: { yjsUpdatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        data: { yjsUpdatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), yjsUpdatedById: userId },
       });
 
       const processor = createMaintenanceProcessor({
@@ -2800,6 +2806,41 @@ describe('maintenance', () => {
         contextFor<'maintenance'>({
           documentId: null,
           correlationId: 'test-snap-active-5',
+          task: 'snapshot-active-documents',
+          workspaceId,
+        }).context,
+      );
+
+      expect(
+        await prisma.documentSnapshot.count({ where: { documentId, reason: 'SCHEDULED' } }),
+      ).toBe(0);
+    }, 30_000);
+    it('leaves a page alone whose last change was a write through the API, not typing (issue #235)', async () => {
+      // That write left its own version with its own author; a sampled copy
+      // of it would be attributed to whoever typed before it.
+      const documentId = await createDocument();
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { yjsUpdatedAt: new Date(), yjsUpdatedById: null },
+      });
+
+      const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
+        search,
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings({
+          'activity.editSessionSnapshotsEnabled': true,
+          'activity.editSessionSnapshotIntervalMinutes': 15,
+        }),
+      });
+      await processor(
+        contextFor<'maintenance'>({
+          documentId: null,
+          correlationId: 'test-snap-active-7',
           task: 'snapshot-active-documents',
           workspaceId,
         }).context,

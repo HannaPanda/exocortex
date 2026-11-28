@@ -162,7 +162,7 @@ export const maintenanceJobSchema = jobBase.extend({
      */
     'repair-document-links',
     /**
-     * Takes a `SCHEDULED` `DocumentSnapshot` of every page that changed since
+     * Takes a `SCHEDULED` `DocumentSnapshot` of every page somebody typed into since
      * its last snapshot, gated by `activity.editSessionSnapshotsEnabled`
      * (issue #20). What lets the Aktivität tab show a real session range
      * ("14:20-14:45") instead of the single point `Document.updatedAt` alone

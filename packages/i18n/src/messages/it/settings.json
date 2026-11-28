@@ -466,11 +466,11 @@
     "activity": {
       "editSessionSnapshotsEnabled": {
         "label": "Registra sessioni di modifica",
-        "help": "Salva a intervalli regolari una pagina in corso di modifica attiva, così la scheda delle attività può mostrare intervalli di tempo reali («modificato dalle 14:20 alle 14:45») invece del solo stato finale. Disattivato: non viene creata alcuna istantanea aggiuntiva."
+        "help": "Salva a intervalli regolari una pagina mentre viene digitata. Questi sono gli stati mostrati dalla cronologia della pagina per una sessione di scrittura e gli intervalli di tempo nella scheda «Attività» («Modificato dalle 14:20 alle 14:45»). Disattivato: la digitazione non lascia più stati propri, solo le operazioni di scrittura esterne, i ripristini e le versioni salvate lo fanno."
       },
       "editSessionSnapshotIntervalMinutes": {
         "label": "Intervallo tra i salvataggi della sessione",
-        "help": "La frequenza massima con cui salvare nuovamente una pagina in corso di modifica attiva. Ha effetto solo se l’opzione precedente è attivata."
+        "help": "Frequenza massima con cui una pagina in fase di digitazione può essere risalvata. Con 10 minuti, un’ora di digitazione genera sei stati. Ha effetto solo se l’opzione sopra è attiva."
       },
       "snapshotRetentionFullDays": {
         "label": "Conservazione completa (giorni)",

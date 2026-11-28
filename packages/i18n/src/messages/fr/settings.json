@@ -466,11 +466,11 @@
     "activity": {
       "editSessionSnapshotsEnabled": {
         "label": "Enregistrer les sessions de modification",
-        "help": "Sauvegarde une page en cours d’édition à intervalles réguliers, pour que l’onglet d’activité puisse afficher de véritables plages temporelles (« modifié de 14:20 à 14:45 ») plutôt que le dernier état seul. Désactivé : aucune sauvegarde supplémentaire n’est créée."
+        "help": "Enregistre à intervalles réguliers une page en cours de frappe. Ce sont les versions que l’historique de la page affiche pour une session de saisie, ainsi que les périodes dans l’onglet « Activité » (« modifiée de 14:20 à 14:45 »). Désactivé : la frappe ne génère plus de versions propres ; seules les écritures externes, les restaurations et les versions enregistrées le font."
       },
       "editSessionSnapshotIntervalMinutes": {
         "label": "Intervalle entre les sauvegardes de session",
-        "help": "Fréquence maximale à laquelle une page en cours d’édition peut être sauvegardée. Ne s’applique que si la ligne du dessus est activée."
+        "help": "Fréquence maximale à laquelle une page en cours de saisie peut être réenregistrée. Avec 10 minutes, une heure de frappe génère six versions. N’a d’effet que si la ligne ci-dessus est activée."
       },
       "snapshotRetentionFullDays": {
         "label": "Conservation intégrale (jours)",

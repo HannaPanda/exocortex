@@ -111,10 +111,13 @@ export const snapshotActiveDocuments: MaintenanceTask = async (context) => {
   // A page whose content changed inside the interval is "active"; one
   // whose last edit is older than that is left alone entirely, which is
   // what keeps this cheap -- most pages are not being edited at any
-  // given moment.
+  // given moment. Only typing counts (issue #235): `yjsUpdatedById` is set by
+  // a store from somebody's connection and cleared by a write through the
+  // API, which already left a version of its own with its own author.
   const candidates = await prisma.documentContent.findMany({
     where: {
       yjsUpdatedAt: { gte: activeSince },
+      yjsUpdatedById: { not: null },
       ...(payload.workspaceId === null ? {} : { document: { workspaceId: payload.workspaceId } }),
     },
     select: {
@@ -122,8 +125,9 @@ export const snapshotActiveDocuments: MaintenanceTask = async (context) => {
       yjsState: true,
       schemaVersion: true,
       yjsUpdatedAt: true,
-      document: { select: { updatedById: true } },
+      yjsUpdatedById: true,
     },
+    orderBy: { yjsUpdatedAt: 'desc' },
     take: 200,
   });
 
@@ -148,7 +152,7 @@ export const snapshotActiveDocuments: MaintenanceTask = async (context) => {
           documentId: candidate.documentId,
           yjsState: candidate.yjsState,
           schemaVersion: candidate.schemaVersion,
-          createdById: candidate.document.updatedById,
+          createdById: candidate.yjsUpdatedById,
           reason: 'SCHEDULED',
         },
       });

@@ -466,11 +466,11 @@
     "activity": {
       "editSessionSnapshotsEnabled": {
         "label": "Bearbeitungssitzungen aufzeichnen",
-        "help": "Sichert eine aktiv bearbeitete Seite in regelmäßigen Abständen, damit der Aktivitäts-Reiter echte Zeitspannen zeigen kann („14:20 bis 14:45 bearbeitet“) statt nur des letzten Standes. Aus: es entstehen keine zusätzlichen Sicherungen."
+        "help": "Sichert eine Seite, in die gerade getippt wird, in regelmäßigen Abständen. Das sind die Stände, die der Seitenverlauf für eine Tipp-Sitzung zeigt, und die Zeitspannen im Reiter „Aktivität“ („14:20 bis 14:45 bearbeitet“). Aus: Tippen hinterlässt keine eigenen Stände mehr, nur Schreibvorgänge von außen, Wiederherstellungen und gespeicherte Versionen tun es."
       },
       "editSessionSnapshotIntervalMinutes": {
         "label": "Abstand zwischen Sitzungs-Sicherungen",
-        "help": "So oft darf eine aktiv bearbeitete Seite höchstens neu gesichert werden. Wirkt nur, wenn die Zeile darüber an ist."
+        "help": "So oft darf eine Seite, in die gerade getippt wird, höchstens neu gesichert werden. Bei 10 Minuten ergibt eine Stunde Tippen sechs Stände. Wirkt nur, wenn die Zeile darüber an ist."
       },
       "snapshotRetentionFullDays": {
         "label": "Volle Aufbewahrung (Tage)",

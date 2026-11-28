@@ -466,11 +466,11 @@
     "activity": {
       "editSessionSnapshotsEnabled": {
         "label": "Gravar sessões de edição",
-        "help": "Salva uma página em edição ativa em intervalos regulares para que a aba de atividade possa mostrar períodos reais (“editado das 14:20 às 14:45”) em vez de apenas o estado mais recente. Desativado: nenhuma cópia adicional é criada."
+        "help": "Salva uma página em que alguém está digitando em intervalos regulares. Esses são os estados exibidos no histórico da página para uma sessão de digitação e os intervalos de tempo na aba „Atividade” („editado das 14:20 às 14:45”). Desativado: a digitação não gera mais estados próprios; apenas gravações externas, restaurações e versões salvas fazem isso."
       },
       "editSessionSnapshotIntervalMinutes": {
         "label": "Intervalo entre backups da sessão",
-        "help": "Com que frequência máxima uma página em edição ativa pode receber uma nova cópia. Só tem efeito se a opção acima estiver ativada."
+        "help": "Com que frequência máxima uma página em que alguém está digitando pode ser salva novamente. Com 10 minutos, uma hora de digitação gera seis estados. Só tem efeito se a opção acima estiver ativada."
       },
       "snapshotRetentionFullDays": {
         "label": "Retenção completa (dias)",

@@ -466,11 +466,11 @@
     "activity": {
       "editSessionSnapshotsEnabled": {
         "label": "Bewerkingssessies vastleggen",
-        "help": "Bewaart regelmatig een kopie van een actief bewerkte pagina, zodat het tabblad Activiteit echte tijdsperioden kan tonen („bewerkt van 14:20 tot 14:45”) in plaats van alleen de laatste status. Uit: er worden geen extra back-ups gemaakt."
+        "help": "Slaat een pagina waarin wordt getypt met regelmatige tussenpozen op. Dit zijn de versies die de paginageschiedenis toont voor een typsessie, en de tijdsperioden op het tabblad „Activiteit” („14:20 tot 14:45 bewerkt”). Uit: typen laat geen eigen versies meer achter; alleen schrijfacties van buitenaf, herstelacties en opgeslagen versies doen dat nog."
       },
       "editSessionSnapshotIntervalMinutes": {
         "label": "Interval tussen sessie-back-ups",
-        "help": "Hoe vaak een actief bewerkte pagina maximaal opnieuw mag worden opgeslagen. Werkt alleen als de optie hierboven is ingeschakeld."
+        "help": "Zo vaak mag een pagina waarin wordt getypt hoogstens opnieuw worden opgeslagen. Bij 10 minuten levert een uur typen zes versies op. Heeft alleen effect als de optie hierboven is ingeschakeld."
       },
       "snapshotRetentionFullDays": {
         "label": "Volledige bewaartermijn (dagen)",

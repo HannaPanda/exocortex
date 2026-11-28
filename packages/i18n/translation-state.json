@@ -15041,8 +15041,8 @@
       "output": "6fe03ddbae1bce4e"
     },
     "features.seitenverlauf.details.p1": {
-      "source": "6af03a356662ce7c",
-      "output": "77993099173b92d4"
+      "source": "60908ce43c38f03f",
+      "output": "903e6ffeac2ae667"
     },
     "features.seitenverlauf.details.p2": {
       "source": "76ed19005aa827bb",
@@ -19673,16 +19673,16 @@
       "output": "e2073645cb0dbbdd"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
-      "source": "140e37cfe17ddc4e",
-      "output": "3a801e31b3bd6d59"
+      "source": "b2ed1ba889127ecc",
+      "output": "576556a5892738ee"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
       "source": "6c22f4ae55001a6e",
       "output": "f7cf9b1865f2fb77"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
-      "source": "2c71fb80893c9fea",
-      "output": "039541d61aa8b390"
+      "source": "2570d73f10ec012d",
+      "output": "c7fd1aa2c2e5143c"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.label": {
       "source": "db337b600c22d4ad",
@@ -41251,8 +41251,8 @@
       "output": "510c52afecc754d9"
     },
     "features.seitenverlauf.details.p1": {
-      "source": "6af03a356662ce7c",
-      "output": "e70a54b2716f3150"
+      "source": "60908ce43c38f03f",
+      "output": "b3098f9a5bf25338"
     },
     "features.seitenverlauf.details.p2": {
       "source": "76ed19005aa827bb",
@@ -45883,16 +45883,16 @@
       "output": "810271920a9c3acd"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
-      "source": "140e37cfe17ddc4e",
-      "output": "2fd341cfe6b6920d"
+      "source": "b2ed1ba889127ecc",
+      "output": "0aeb6d6a40efd21c"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
       "source": "6c22f4ae55001a6e",
       "output": "342dfbd0f37ec995"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
-      "source": "2c71fb80893c9fea",
-      "output": "0ceb8ccd645f7fd2"
+      "source": "2570d73f10ec012d",
+      "output": "4d70b8add453e227"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.label": {
       "source": "db337b600c22d4ad",
@@ -67461,8 +67461,8 @@
       "output": "6162f4dfd4c90ed4"
     },
     "features.seitenverlauf.details.p1": {
-      "source": "6af03a356662ce7c",
-      "output": "d41b0039f7d8c5b9"
+      "source": "60908ce43c38f03f",
+      "output": "d88f1b8e3448eaf3"
     },
     "features.seitenverlauf.details.p2": {
       "source": "76ed19005aa827bb",
@@ -72093,16 +72093,16 @@
       "output": "e2073645cb0dbbdd"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
-      "source": "140e37cfe17ddc4e",
-      "output": "9c5dd8fe3d2518c7"
+      "source": "b2ed1ba889127ecc",
+      "output": "819773108c3f5cba"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
       "source": "6c22f4ae55001a6e",
       "output": "edf5f4da08c817a5"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
-      "source": "2c71fb80893c9fea",
-      "output": "3db1b34b0645799a"
+      "source": "2570d73f10ec012d",
+      "output": "68868087b87f7dc7"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.label": {
       "source": "db337b600c22d4ad",
@@ -93671,8 +93671,8 @@
       "output": "1338ca4263ec6474"
     },
     "features.seitenverlauf.details.p1": {
-      "source": "6af03a356662ce7c",
-      "output": "075abf28ab9b5546"
+      "source": "60908ce43c38f03f",
+      "output": "dab30abca81bdbe6"
     },
     "features.seitenverlauf.details.p2": {
       "source": "76ed19005aa827bb",
@@ -98303,16 +98303,16 @@
       "output": "2e2d5c5649b718b5"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
-      "source": "140e37cfe17ddc4e",
-      "output": "cf1840a2be3a9037"
+      "source": "b2ed1ba889127ecc",
+      "output": "7dda4eda22eeb612"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
       "source": "6c22f4ae55001a6e",
       "output": "4e51c5698c0cc2ae"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
-      "source": "2c71fb80893c9fea",
-      "output": "69ec27b88b1f41fd"
+      "source": "2570d73f10ec012d",
+      "output": "2d7cce87e65826b9"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.label": {
       "source": "db337b600c22d4ad",
@@ -119881,8 +119881,8 @@
       "output": "e87f24cfd57f8b74"
     },
     "features.seitenverlauf.details.p1": {
-      "source": "6af03a356662ce7c",
-      "output": "490c5ebc04122d91"
+      "source": "60908ce43c38f03f",
+      "output": "3dc173059b50d5bf"
     },
     "features.seitenverlauf.details.p2": {
       "source": "76ed19005aa827bb",
@@ -124513,16 +124513,16 @@
       "output": "e2073645cb0dbbdd"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
-      "source": "140e37cfe17ddc4e",
-      "output": "d3dacdea0ef2b100"
+      "source": "b2ed1ba889127ecc",
+      "output": "2e25388c88a54d26"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
       "source": "6c22f4ae55001a6e",
       "output": "6bfb73efea321164"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
-      "source": "2c71fb80893c9fea",
-      "output": "a052b56f7e4ab051"
+      "source": "2570d73f10ec012d",
+      "output": "19cfa94423179433"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.label": {
       "source": "db337b600c22d4ad",
@@ -146091,8 +146091,8 @@
       "output": "ccdbe41d093961b5"
     },
     "features.seitenverlauf.details.p1": {
-      "source": "6af03a356662ce7c",
-      "output": "f5210304b2c7846d"
+      "source": "60908ce43c38f03f",
+      "output": "02e36e59308a4022"
     },
     "features.seitenverlauf.details.p2": {
       "source": "76ed19005aa827bb",
@@ -150723,16 +150723,16 @@
       "output": "e2073645cb0dbbdd"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
-      "source": "140e37cfe17ddc4e",
-      "output": "1ee2df3935383a65"
+      "source": "b2ed1ba889127ecc",
+      "output": "bb81dc5c2234ab94"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
       "source": "6c22f4ae55001a6e",
       "output": "4c00d552389e6a2e"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
-      "source": "2c71fb80893c9fea",
-      "output": "c873751b7b0ca26d"
+      "source": "2570d73f10ec012d",
+      "output": "7d42c8d9becd9465"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.label": {
       "source": "db337b600c22d4ad",
@@ -172301,8 +172301,8 @@
       "output": "02a5696ba603563b"
     },
     "features.seitenverlauf.details.p1": {
-      "source": "6af03a356662ce7c",
-      "output": "6851195edf58a469"
+      "source": "60908ce43c38f03f",
+      "output": "cce173854c3e7011"
     },
     "features.seitenverlauf.details.p2": {
       "source": "76ed19005aa827bb",
@@ -176933,16 +176933,16 @@
       "output": "e2073645cb0dbbdd"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.help": {
-      "source": "140e37cfe17ddc4e",
-      "output": "7bf2142ee8803e8a"
+      "source": "b2ed1ba889127ecc",
+      "output": "a5198abaf89e5e0d"
     },
     "settings.keys.activity.editSessionSnapshotIntervalMinutes.label": {
       "source": "6c22f4ae55001a6e",
       "output": "f7d636ffa4c9ddf2"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.help": {
-      "source": "2c71fb80893c9fea",
-      "output": "7680804238ae383f"
+      "source": "2570d73f10ec012d",
+      "output": "f5f60247681f8d5b"
     },
     "settings.keys.activity.editSessionSnapshotsEnabled.label": {
       "source": "db337b600c22d4ad",

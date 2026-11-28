@@ -251,7 +251,7 @@ export const settingsSchema = z.object({
    * Off by default, and for a reason that is not about cost: this is outgoing
    * network traffic to addresses a model picks, which is not something an
    * update may quietly start doing on somebody's server -- the same argument as
-   * `ai.imageGenerationEnabled` and `activity.editSessionSnapshotsEnabled`.
+   * `ai.imageGenerationEnabled`.
    *
    * Switching it on does not make writes riskier by itself: a fetched page
    * arrives as foreign text, so `ai.untrustedContentPolicy` closes the door on
@@ -545,20 +545,23 @@ export const settingsSchema = z.object({
    */
   'notifications.commentMailDebounceMinutes': z.number().int().min(0).max(60).default(2),
   /**
-   * Takes a `SCHEDULED` snapshot of a page that changed since its last
+   * Takes a `SCHEDULED` snapshot of a page somebody typed into since its last
    * snapshot, on the interval below (issue #20, "Bearbeitungen im Editor
-   * verdichten"). Off by default: it is a new, recurring write the deployment
-   * has not asked for yet, and it is what feeds session ranges in the
-   * Aktivität tab -- without it, a session collapses to the single point
-   * `Document.updatedAt` already carries.
+   * verdichten"). On since issue #235: typing in the editor leaves no other
+   * version at all (only API writes, restores, imports and saved versions do),
+   * so without it the page history has nothing to show for an afternoon of
+   * writing. It costs one snapshot per page per interval while that page is
+   * being typed into, and nothing otherwise; `docs/admin.md` has the numbers.
    */
-  'activity.editSessionSnapshotsEnabled': z.boolean().default(false),
+  'activity.editSessionSnapshotsEnabled': z.boolean().default(true),
   /**
    * How often `snapshot-active-documents` may take a fresh snapshot of the
    * same page. Also the window a page must have changed within to count as
    * "active" at all, so a page nobody has touched in months is never swept.
+   * Ten minutes: close enough that a version is never far from what somebody
+   * wants back, far enough apart that an hour of typing is six versions.
    */
-  'activity.editSessionSnapshotIntervalMinutes': z.number().int().min(5).max(1_440).default(15),
+  'activity.editSessionSnapshotIntervalMinutes': z.number().int().min(5).max(1_440).default(10),
   /**
    * Every snapshot younger than this is kept, whatever `reason` it has.
    * Below this age, `prune-snapshots` never removes anything.

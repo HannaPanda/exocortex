@@ -466,11 +466,11 @@
     "activity": {
       "editSessionSnapshotsEnabled": {
         "label": "Record edit sessions",
-        "help": "Backs up an actively edited page at regular intervals so the activity tab can show actual time spans (“edited 14:20 to 14:45”) instead of just the latest state. Off: no additional backups are created."
+        "help": "Backs up a page that is being typed into at regular intervals. These are the revisions that the page history shows for a typing session, and the time ranges in the “Activity” tab (“edited 14:20 to 14:45”). Off: Typing no longer leaves its own revisions; only external write operations, restores, and saved versions do."
       },
       "editSessionSnapshotIntervalMinutes": {
         "label": "Interval between session backups",
-        "help": "How often at most an actively edited page may be backed up again. Only takes effect if the setting above is enabled."
+        "help": "How often a page that is being typed into may be backed up at most. At 10 minutes, one hour of typing results in six revisions. Only takes effect when the row above is turned on."
       },
       "snapshotRetentionFullDays": {
         "label": "Full retention (days)",

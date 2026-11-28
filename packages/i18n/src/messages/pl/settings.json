@@ -466,11 +466,11 @@
     "activity": {
       "editSessionSnapshotsEnabled": {
         "label": "Rejestrowanie sesji edycji",
-        "help": "Zapisuje kopię aktywnie edytowanej strony w regularnych odstępach czasu, aby karta aktywności mogła pokazywać rzeczywiste przedziały czasowe („edytowano od 14:20 do 14:45”) zamiast tylko ostatniego stanu. Wyłączone: nie są tworzone żadne dodatkowe kopie."
+        "help": "Zapisuje stronę, na której właśnie piszesz, w regularnych odstępach czasu. To właśnie te wersje pokazuje historia strony dla sesji pisania oraz przedziały czasowe w zakładce „Aktywność” („edytowano od 14:20 do 14:45”). Wyłączone: pisanie nie tworzy już osobnych wersji – robią to tylko zewnętrzne operacje zapisu, przywrócenia i zapisane wersje."
       },
       "editSessionSnapshotIntervalMinutes": {
         "label": "Odstęp między kopiami zapasowymi sesji",
-        "help": "Maksymalna częstotliwość tworzenia nowych kopii aktywnie edytowanej strony. Działa tylko wtedy, gdy powyższa opcja jest włączona."
+        "help": "Maksymalna częstotliwość ponownego zapisywania strony, na której właśnie piszesz. Przy 10 minutach jedna godzina pisania daje sześć wersji. Działa tylko wtedy, gdy opcja powyżej jest włączona."
       },
       "snapshotRetentionFullDays": {
         "label": "Pełne przechowywanie (dni)",
