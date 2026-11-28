@@ -162,8 +162,10 @@ test.describe('times in a database (issue #255)', () => {
     );
   });
 
-  test('is chosen on the language page, with an example per clock', async ({ page }) => {
+  test('is chosen in the settings, with an example per clock', async ({ page }) => {
+    // The old address still works: it opens the settings dialog at its group.
     await page.goto('/einstellungen/sprache');
+    await page.waitForURL(/einstellungen=language/, { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: 'Sprache und Uhrzeit' })).toBeVisible();
     await page.getByTestId('time-format').click();
     await page.getByRole('option', { name: /^12 Stunden/ }).click();

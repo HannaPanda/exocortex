@@ -335,7 +335,7 @@ test.describe('page outline laid over the text', () => {
   });
 
   test('is chosen in the settings and leaves the text where it is', async ({ page }) => {
-    await page.goto('/einstellungen/editor');
+    await page.goto('/arbeitsbereich?einstellungen=editor');
     await page.getByTestId('outline-pinned').click();
     await page.getByRole('option', { name: 'Über dem Text liegen' }).click();
     await expect(page.getByTestId('outline-transparency')).toBeEnabled();

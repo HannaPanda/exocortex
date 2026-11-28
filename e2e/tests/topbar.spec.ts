@@ -85,12 +85,10 @@ const AREAS = [
   { testId: 'open-entities', label: 'Entitäten', href: '/entitaeten' },
   { testId: 'open-shared', label: 'Freigaben', href: '/geteilt' },
   { testId: 'open-memory', label: 'Gedächtnis', href: '/gedaechtnis' },
-  { testId: 'open-api-tokens', label: 'Verbindungen', href: '/einstellungen/verbindungen' },
-  {
-    testId: 'open-notifications',
-    label: 'Benachrichtigungen',
-    href: '/einstellungen/benachrichtigungen',
-  },
+  // Every setting sits in one dialog over the page (issue #279): the entry
+  // opens it where the reader is, so its address is this page plus the
+  // dialog's parameter.
+  { testId: 'open-settings', label: 'Einstellungen', href: /\?einstellungen=$/ },
 ];
 
 /** Was dauerhaft sichtbar bleiben darf, in Fokusreihenfolge. */

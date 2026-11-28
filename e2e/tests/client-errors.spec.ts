@@ -31,8 +31,9 @@ const ROUTES = [
   '/arbeitsbereich',
   '/admin',
   '/admin/einstellungen',
-  '/einstellungen/verbindungen',
-  '/einstellungen/benachrichtigungen',
+  // Two groups of the settings dialog (issue #279), each over a workspace.
+  '/arbeitsbereich?einstellungen=connections',
+  '/arbeitsbereich?einstellungen=notifications',
 ];
 
 test.describe('client runtime', () => {
