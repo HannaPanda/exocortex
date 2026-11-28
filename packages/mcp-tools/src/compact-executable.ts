@@ -1,5 +1,5 @@
 import { toolsFor } from './catalog.js';
-import { COMPACT_ENDPOINT_DOMAINS } from './domains.js';
+import { COMPACT_ENDPOINT_ALSO_LISTED_NAMES, COMPACT_ENDPOINT_DOMAINS } from './domains.js';
 import { type AnyToolDefinition, type ToolDomain } from './tool.js';
 
 /**
@@ -91,15 +91,24 @@ export function compactWithholding(tool: AnyToolDefinition): CompactWithholding 
 }
 
 /**
+ * What `/api/mcp/compact` lists directly: its domains, and the few tools
+ * named beside them with a reason (`COMPACT_ENDPOINT_ALSO_LISTED`).
+ */
+export function compactEndpointListed(): readonly AnyToolDefinition[] {
+  return toolsFor('mcp', {
+    domains: COMPACT_ENDPOINT_DOMAINS,
+    alsoListed: COMPACT_ENDPOINT_ALSO_LISTED_NAMES,
+  });
+}
+
+/**
  * The tools of the `mcp` surface the compact endpoint does not list and its
  * dispatchers may run. Computed once from the catalogue; a test pins the
  * result, so a new tool that would be released turns it red until somebody
  * decided it.
  */
 export const COMPACT_ENDPOINT_EXECUTABLE: readonly string[] = (() => {
-  const listed = new Set(
-    toolsFor('mcp', { domains: COMPACT_ENDPOINT_DOMAINS }).map((tool) => tool.name),
-  );
+  const listed = new Set(compactEndpointListed().map((tool) => tool.name));
   return toolsFor('mcp')
     .filter((tool) => !listed.has(tool.name) && compactWithholding(tool) === null)
     .map((tool) => tool.name)

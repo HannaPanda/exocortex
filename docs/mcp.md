@@ -485,7 +485,16 @@ Two steps:
      ([ADR-064](adr/ADR-064-a-local-file-arrives-through-an-upload-ticket.md)).
    - **already public on the web**: `exo_attachment_upload_url`, which fetches
      it here through the same address check web research uses
-     ([ADR-033](adr/ADR-033-web-research-is-two-rest-calls.md)).
+     ([ADR-033](adr/ADR-033-web-research-is-two-rest-calls.md)): checked again
+     on every redirect hop (at most three), the socket pinned to the address
+     that was judged (issue #178), 15 seconds per hop, cut off at
+     `MAX_UPLOAD_BYTES` while reading, and the type decided from the bytes, so
+     a server calling a web page `image/png` is refused. One call per address;
+     three pictures are three calls. It is on every agent surface: stdio,
+     `/api/mcp`, listed directly on `/api/mcp/compact` (issue #212) and the
+     built-in AI's `attachments` domain. In the built-in AI it carries the web
+     fence (ADR-030), so under `ai.untrustedContentPolicy: guarded` the run
+     writes nothing directly after it and proposes the embed instead.
    - **a few bytes you generated yourself**: `exo_attachment_upload` with
      Base64. The model writes every byte into the call, so this is not the way
      for a photograph.
@@ -584,6 +593,14 @@ A write that points at a foreign host is still carried out -- an address that
 cannot be loaded here is still an address -- but the response says so in
 `warnings`. Creating a page with Markdown (`exo_page_create`) answers with the
 same warnings since 2026-09-25; before that only `exo_page_write` did.
+The warning names only tools its reader has (issue #212,
+`foreignMediaWayIn` in `apps/api/src/documents/document-content.service.ts`):
+a run of the built-in AI, recognised by the run id its service token carries,
+is told about `exo_attachment_upload_url` alone, because it holds no files and
+is never offered the ticket; an external agent is told about the address
+import first, then the ticket for a file on its own disk, then the Base64
+upload for a client that offers no ticket. `foreign-media-warning.test.ts`
+checks every tool name in both variants against the surface that reads it.
 
 ### Linking a section of the same page
 
@@ -914,18 +931,24 @@ need the set in Redis rather than in a `Map`.
 
 Four endpoints, differing only in which tools they serve:
 
-| URL                                      | Tools                                                     | For                                  |
-| ---------------------------------------- | --------------------------------------------------------- | ------------------------------------ |
-| `https://exocortex.app/api/mcp`          | every `exo_` tool on the `mcp` surface                    | a general-purpose agent              |
-| `https://exocortex.app/api/mcp/compact`  | the `exo_` tools of `COMPACT_ENDPOINT_DOMAINS` (about 75) | ChatGPT                              |
-| `https://exocortex.app/api/mcp/research` | `search`, `fetch`                                         | ChatGPT deep research                |
-| `https://exocortex.app/api/mcp/memory`   | `recall`, `remember`, `fetch`                             | a chat client using the agent memory |
+| URL                                      | Tools                                                                                        | For                                  |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `https://exocortex.app/api/mcp`          | every `exo_` tool on the `mcp` surface                                                       | a general-purpose agent              |
+| `https://exocortex.app/api/mcp/compact`  | the `exo_` tools of `COMPACT_ENDPOINT_DOMAINS` (about 75) and `COMPACT_ENDPOINT_ALSO_LISTED` | ChatGPT                              |
+| `https://exocortex.app/api/mcp/research` | `search`, `fetch`                                                                            | ChatGPT deep research                |
+| `https://exocortex.app/api/mcp/memory`   | `recall`, `remember`, `fetch`                                                                | a chat client using the agent memory |
 
 ChatGPT refuses the full endpoint: OAuth, `initialize` and `tools/list` all
 succeed, and it then reports that the connection could not be verified and
 revokes the token (242 tools, 309 KB in November 2026). The compact endpoint
 serves the everyday domains (pages, search, databases, comments, history,
-inbox, templates) and is accepted. A connector created while the catalogue was
+inbox, templates) and is accepted. `COMPACT_ENDPOINT_ALSO_LISTED` in
+`domains.ts` names the few tools it lists beside those domains, each with its
+reason: today `exo_attachment_upload_url` (issue #212), because a chat client
+holds the address of a picture and never its bytes, every write warning about a
+foreign picture names that tool, and a tool that reaches the open web has to be
+listed with its own `openWorldHint` rather than dispatched (criterion 5 below).
+`exo_clip` is the older precedent, listed through the inbox domain. A connector created while the catalogue was
 small keeps working on its cached list until it is reconnected.
 
 The compact endpoint also lists three meta-tools (issue #256 as a spike,

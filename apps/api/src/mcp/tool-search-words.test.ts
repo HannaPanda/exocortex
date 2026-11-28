@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  COMPACT_ENDPOINT_DOMAINS,
   COMPACT_ENDPOINT_EXECUTABLE,
+  compactEndpointListed,
   rankTools,
   toolsFor,
 } from '@exocortex/mcp-tools';
@@ -21,9 +21,7 @@ import { toolSearchWords } from './tool-search-words';
  * pass is a finding about the description, not a reason to loosen the bar.
  */
 
-const listed = new Set(
-  toolsFor('mcp', { domains: COMPACT_ENDPOINT_DOMAINS }).map((tool) => tool.name),
-);
+const listed = new Set(compactEndpointListed().map((tool) => tool.name));
 const hidden = toolsFor('mcp').filter((tool) => !listed.has(tool.name));
 const prefer = new Set(COMPACT_ENDPOINT_EXECUTABLE);
 const searchText = toolSearchWords();

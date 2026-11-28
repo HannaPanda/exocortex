@@ -33,6 +33,17 @@ import { toolSearchWords } from './tool-search-words';
 /** How long the loopback credential minted for an OAuth client stays valid. */
 const LOOPBACK_TOKEN_TTL_SECONDS = 120;
 
+/**
+ * What a narrowed endpoint lists and lets its dispatchers run
+ * (`/api/mcp/compact`, issues #256, #265, #212): the tools of `domains`, the
+ * named `alsoListed` beside them, and the hidden `executable` ones.
+ */
+export interface McpNarrowing {
+  domains: readonly ToolDomain[];
+  alsoListed?: readonly string[];
+  executable?: readonly string[];
+}
+
 /** Which credential authenticated an MCP connection. */
 export type McpCredentialKind = 'api_token' | 'oauth';
 
@@ -217,7 +228,7 @@ export class McpService {
      * the hidden tools `exo_tool_read` and `exo_tool_write` may still run
      * (issues #256, #265).
      */
-    narrowing?: { domains: readonly ToolDomain[]; executable?: readonly string[] },
+    narrowing?: McpNarrowing,
   ): Promise<McpRequestHandler> {
     const domains = narrowing?.domains;
     const whole = surface === 'mcp' && domains === undefined;
@@ -232,7 +243,7 @@ export class McpService {
 
     return createMcpRequestHandler({
       client,
-      tools: toolsFor(surface, { domains }),
+      tools: toolsFor(surface, { domains, alsoListed: narrowing?.alsoListed }),
       // The rest of the surface, findable and partly callable through two
       // meta-tools. Searched in the same surface's catalogue, so a narrowed
       // connection can never discover more than the full one would list.

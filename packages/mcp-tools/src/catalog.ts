@@ -123,15 +123,25 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
  */
 export function toolsFor(
   surface: ToolSurface,
-  options?: { includeMutating?: boolean; domains?: readonly ToolDomain[] },
+  options?: {
+    includeMutating?: boolean;
+    domains?: readonly ToolDomain[];
+    /**
+     * Names listed beside `domains` although their domain is not among them
+     * (`COMPACT_ENDPOINT_ALSO_LISTED`, issue #212). Still only tools of this
+     * surface, and still subject to `includeMutating`.
+     */
+    alsoListed?: readonly string[];
+  },
 ): readonly AnyToolDefinition[] {
   const includeMutating = options?.includeMutating ?? true;
   const domains = options?.domains === undefined ? null : new Set(options.domains);
+  const also = new Set(options?.alsoListed ?? []);
   return EXOCORTEX_TOOLS.filter(
     (tool) =>
       tool.surfaces.includes(surface) &&
       (includeMutating || !tool.mutating) &&
-      (domains === null || domains.has(tool.domain)),
+      (domains === null || domains.has(tool.domain) || also.has(tool.name)),
   );
 }
 

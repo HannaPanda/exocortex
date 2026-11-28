@@ -193,8 +193,11 @@ export const attachmentUploadUrlTool: AnyToolDefinition = defineTool({
   description:
     'Lädt die Datei unter einer Adresse auf eine Seite (documentId) eines Workspace hoch. ' +
     'Das ist der Weg für ein Bild, das schon öffentlich im Netz steht und von dem du nur die ' +
-    'Adresse hast: eXocortex holt es und legt es als Anhang ab. Die Adresse muss öffentlich ' +
-    'erreichbar sein (kein localhost, keine internen Netze). Eine Datei, die bei dir lokal liegt, ' +
+    'Adresse hast: eXocortex holt es und legt es als Anhang ab, du brauchst die Bytes nicht. ' +
+    'Die Adresse muss öffentlich erreichbar sein (kein localhost, keine internen Netze); ' +
+    'Weiterleitungen werden gefolgt und jede wird neu geprüft. Angenommen wird, was auch ein ' +
+    'Upload annimmt, und entschieden wird nach dem Inhalt, nicht nach Endung oder Angabe des ' +
+    'Servers. Für mehrere Bilder einmal je Adresse aufrufen. Eine Datei, die bei dir lokal liegt, ' +
     'nicht erst auf einem Server veröffentlichen, um sie hiermit zu holen: dafür ist ' +
     'exo_attachment_upload_ticket da. ' +
     EMBED_RECIPE +

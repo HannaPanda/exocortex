@@ -4,9 +4,10 @@ import { toolsFor } from './catalog.js';
 import {
   COMPACT_ENDPOINT_EXECUTABLE,
   COMPACT_WITHHELD,
+  compactEndpointListed,
   compactWithholding,
 } from './compact-executable.js';
-import { COMPACT_ENDPOINT_DOMAINS } from './domains.js';
+import { COMPACT_ENDPOINT_ALSO_LISTED, COMPACT_ENDPOINT_DOMAINS } from './domains.js';
 
 /**
  * The criteria of `compact-executable.ts` against the whole catalogue
@@ -18,9 +19,7 @@ import { COMPACT_ENDPOINT_DOMAINS } from './domains.js';
 
 const full = toolsFor('mcp');
 const byName = new Map(full.map((tool) => [tool.name, tool]));
-const listed = new Set(
-  toolsFor('mcp', { domains: COMPACT_ENDPOINT_DOMAINS }).map((tool) => tool.name),
-);
+const listed = new Set(compactEndpointListed().map((tool) => tool.name));
 const executable = COMPACT_ENDPOINT_EXECUTABLE.map((name) => {
   const tool = byName.get(name);
   if (tool === undefined) throw new Error(`${name} is not on the mcp surface`);
@@ -202,6 +201,25 @@ describe('the compact endpoint allowlist', () => {
         COMPACT_ENDPOINT_EXECUTABLE.includes(tool.name),
     );
     expect(reached.map((tool) => tool.name)).toEqual([]);
+  });
+
+  it('lists the URL import directly, beside the everyday domains (issue #212)', () => {
+    const domains = new Set(COMPACT_ENDPOINT_DOMAINS);
+    const extra = [...listed].filter((name) => !domains.has(byName.get(name)?.domain ?? 'admin'));
+    expect(extra.sort()).toEqual(Object.keys(COMPACT_ENDPOINT_ALSO_LISTED).sort());
+    expect(listed.has('exo_attachment_upload_url')).toBe(true);
+    // The dispatchers still never reach the open web; the listed tool carries
+    // its own `openWorldHint`.
+    expect(COMPACT_ENDPOINT_EXECUTABLE).not.toContain('exo_attachment_upload_url');
+  });
+
+  it('names only tools of the mcp surface outside the listed domains beside them', () => {
+    for (const name of Object.keys(COMPACT_ENDPOINT_ALSO_LISTED)) {
+      const tool = byName.get(name);
+      expect(tool, name).toBeDefined();
+      expect(COMPACT_ENDPOINT_DOMAINS, name).not.toContain(tool?.domain);
+      expect(tool?.destructive || tool?.irreversible, name).toBe(false);
+    }
   });
 
   it('keeps every named exception pointed at a tool that exists and would otherwise pass', () => {

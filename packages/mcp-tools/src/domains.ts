@@ -66,6 +66,30 @@ export const COMPACT_ENDPOINT_DOMAINS: readonly ToolDomain[] = [
 ];
 
 /**
+ * Tools `/api/mcp/compact` lists although their domain is not in
+ * `COMPACT_ENDPOINT_DOMAINS`, each with its reason (issue #212).
+ *
+ * Listed rather than left to the dispatchers when a tool reaches the open web:
+ * `exo_tool_write` cannot say `openWorldHint` of one call without saying it of
+ * all of them (criterion 5 in `compact-executable.ts`), while a listed tool
+ * carries its own annotations. `exo_clip` is the precedent, listed through the
+ * inbox domain. A whole domain is not added for one tool, because every tool
+ * costs the connector's list budget.
+ */
+export const COMPACT_ENDPOINT_ALSO_LISTED: Readonly<Record<string, string>> = {
+  exo_attachment_upload_url:
+    'The only way a chat client puts a picture it found on the web onto a page: it has the ' +
+    'address, never the bytes, and every write warning about a foreign image names this tool. ' +
+    'The fetch is the attachment route’s own (ADR-033 check per hop, the socket pinned to the ' +
+    'judged address, a size cap), not the research search or browser.',
+};
+
+/** The names of `COMPACT_ENDPOINT_ALSO_LISTED`, for `toolsFor`. */
+export const COMPACT_ENDPOINT_ALSO_LISTED_NAMES: readonly string[] = Object.keys(
+  COMPACT_ENDPOINT_ALSO_LISTED,
+);
+
+/**
  * What each domain is, in the words the model is shown when it asks.
  *
  * German, because it is read by the model inside a German prompt and by a

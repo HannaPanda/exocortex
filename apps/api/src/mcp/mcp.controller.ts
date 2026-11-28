@@ -8,6 +8,7 @@ import { type ApiEnv } from '@exocortex/config';
 import { agentSessionExternalIdSchema } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 import {
+  COMPACT_ENDPOINT_ALSO_LISTED_NAMES,
   COMPACT_ENDPOINT_DOMAINS,
   COMPACT_ENDPOINT_EXECUTABLE,
   JSON_RPC_ERROR_CODES,
@@ -16,7 +17,6 @@ import {
   LATEST_PROTOCOL_VERSION,
   type McpRequestHandler,
   TOOL_DISPATCHER_NAMES,
-  type ToolDomain,
   type ToolSurface,
 } from '@exocortex/mcp-tools';
 
@@ -24,7 +24,7 @@ import { Public } from '../auth/session.guard';
 import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 
-import { type McpCaller, McpService } from './mcp.service';
+import { type McpCaller, type McpNarrowing, McpService } from './mcp.service';
 import { McpStreamsService } from './mcp-streams.service';
 
 /**
@@ -94,6 +94,9 @@ export class McpController {
   async handleCompact(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
     await this.handle(request, reply, 'mcp', {
       domains: COMPACT_ENDPOINT_DOMAINS,
+      // The few tools listed beside those domains, each with its reason
+      // (issue #212).
+      alsoListed: COMPACT_ENDPOINT_ALSO_LISTED_NAMES,
       // What the rest of the catalogue is reachable through (issues #256,
       // #265): `exo_tool_search` finds it, `exo_tool_read` and
       // `exo_tool_write` run what passes the criteria of
@@ -266,7 +269,7 @@ export class McpController {
     request: FastifyRequest,
     reply: FastifyReply,
     surface: ToolSurface,
-    narrowing?: { domains: readonly ToolDomain[]; executable?: readonly string[] },
+    narrowing?: McpNarrowing,
   ): Promise<void> {
     const headers = request.headers as Record<string, string | string[] | undefined>;
 
