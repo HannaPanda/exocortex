@@ -473,7 +473,7 @@
     "details": {
       "p1": "Zwei Dinge lösen einen Schnappschuss aus: jeder Schreibvorgang, der nicht aus dem Editor kommt, also jeder Zugriff eines Agenten oder einer Automation, und eine Schreibsitzung im Editor, die in Abständen gesichert wird. Der erste Fall ist der wichtige, denn dort ändert etwas die Seite, während du nicht hinschaust.",
       "p2": "Im Kontextbereich rechts liegt der Reiter \"Aktivität\" mit der Liste: wann, von wem, aus welchem Anlass. Ein Klick stellt diesen Stand wieder her, und weil das Wiederherstellen selbst eine Änderung ist, entsteht dabei erneut ein Schnappschuss. Du kannst also auch ein Zurückrollen zurückrollen.",
-      "p3": "Wie lange die Stände aufgehoben werden, ist einstellbar, in zwei Stufen: eine Weile lang alle, danach einer pro Tag. Das hält die Datenbank klein, ohne dass die Geschichte einer Seite mit einem Schlag verschwindet."
+      "p3": "Wie lange die Stände aufgehoben werden, ist einstellbar, in drei Stufen: 30 Tage lang alle, danach bis zu einem Jahr einer pro Tag, danach einer pro Woche. Gespeicherte Versionen bleiben immer. Das hält die Datenbank klein, ohne dass die Geschichte einer Seite mit einem Schlag verschwindet; pro Nacht dünnt die Aufräumung höchstens 200 Stände aus."
     },
     "where": "Der Reiter \"Aktivität\" im Kontextbereich rechts."
   },

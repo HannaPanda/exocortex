@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { pruneSnapshotIds } from './maintenance';
+import { pruneSnapshotIds, SNAPSHOT_PRUNE_MAX_PER_RUN, snapshotsToThin } from './maintenance';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const now = new Date('2026-08-09T12:00:00.000Z');
@@ -75,5 +75,37 @@ describe('pruneSnapshotIds', () => {
 
   it('returns nothing for an empty list', () => {
     expect(pruneSnapshotIds([], { fullCutoff, dailyCutoff })).toEqual([]);
+  });
+});
+
+describe('snapshotsToThin (issue #235)', () => {
+  const cutoffs = { fullCutoff, dailyCutoff };
+  // Twelve o'clock ten days back, and five versions in the hours before it:
+  // the tier keeps the newest and offers the other five.
+  const day = daysAgo(10);
+  const sameDay = ['v0', 'v1', 'v2', 'v3', 'v4', 'v5'].map((id, index) => ({
+    id,
+    createdAt: new Date(day.getTime() - index * 60 * 60 * 1000),
+  }));
+
+  it('never deletes a snapshot a write journal points at', () => {
+    const deleted = snapshotsToThin(sameDay, cutoffs, new Set(['v2']), 100);
+    expect(deleted.sort()).toEqual(['v1', 'v3', 'v4', 'v5']);
+  });
+
+  it('keeps the newest of the bucket even when an older one is protected', () => {
+    const deleted = snapshotsToThin(sameDay, cutoffs, new Set(['v5']), 100);
+    expect(deleted).not.toContain('v0');
+    expect(deleted).not.toContain('v5');
+  });
+
+  it('stops at what is left of the run budget', () => {
+    expect(snapshotsToThin(sameDay, cutoffs, new Set(), 2)).toHaveLength(2);
+    expect(snapshotsToThin(sameDay, cutoffs, new Set(), 0)).toEqual([]);
+  });
+
+  it('takes a few hundred per run, not a backlog of a year', () => {
+    expect(SNAPSHOT_PRUNE_MAX_PER_RUN).toBeGreaterThan(0);
+    expect(SNAPSHOT_PRUNE_MAX_PER_RUN).toBeLessThanOrEqual(500);
   });
 });

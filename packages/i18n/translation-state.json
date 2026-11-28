@@ -15353,8 +15353,8 @@
       "output": "5193181d3f3c5b5c"
     },
     "features.verlauf.details.p3": {
-      "source": "3639da78678879af",
-      "output": "b76c3f6be5bbe571"
+      "source": "a8aac25a3b94788c",
+      "output": "ed1c2416401da910"
     },
     "features.verlauf.summary": {
       "source": "2aa287340738f085",
@@ -19689,24 +19689,24 @@
       "output": "f5398de0e72b730a"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.help": {
-      "source": "65fc2fab15b8e15b",
-      "output": "029a6f04650cf159"
+      "source": "4e4b38b81ca9b7e9",
+      "output": "9dd5af681a3652ef"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.label": {
       "source": "b92ec723102cae97",
       "output": "3002c3831148111a"
     },
     "settings.keys.activity.snapshotRetentionDryRun.help": {
-      "source": "b2d3ec73e95242cb",
-      "output": "c10c38b97503537f"
+      "source": "cd669b6fcde4669f",
+      "output": "e3222584a4c2d4fe"
     },
     "settings.keys.activity.snapshotRetentionDryRun.label": {
       "source": "bc4c1fe500a5c808",
       "output": "acd56fad956cb3ce"
     },
     "settings.keys.activity.snapshotRetentionFullDays.help": {
-      "source": "caf164afc32a4e58",
-      "output": "90334e4de64270c7"
+      "source": "764535d1be6de3b0",
+      "output": "82b4b92f58d70a24"
     },
     "settings.keys.activity.snapshotRetentionFullDays.label": {
       "source": "2e04acb428d3d417",
@@ -41563,8 +41563,8 @@
       "output": "ffaedc2acb1b9d86"
     },
     "features.verlauf.details.p3": {
-      "source": "3639da78678879af",
-      "output": "8168eca37626700a"
+      "source": "a8aac25a3b94788c",
+      "output": "2666206bbdfd0e7c"
     },
     "features.verlauf.summary": {
       "source": "2aa287340738f085",
@@ -45899,24 +45899,24 @@
       "output": "43012d06d2488d4c"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.help": {
-      "source": "65fc2fab15b8e15b",
-      "output": "3ffe34e085c4c09a"
+      "source": "4e4b38b81ca9b7e9",
+      "output": "fec7b81e64b4a71f"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.label": {
       "source": "b92ec723102cae97",
       "output": "a2bae206e566b50e"
     },
     "settings.keys.activity.snapshotRetentionDryRun.help": {
-      "source": "b2d3ec73e95242cb",
-      "output": "2d061d1870a0538c"
+      "source": "cd669b6fcde4669f",
+      "output": "fef8ccaae6110569"
     },
     "settings.keys.activity.snapshotRetentionDryRun.label": {
       "source": "bc4c1fe500a5c808",
       "output": "bc9f7ab102074737"
     },
     "settings.keys.activity.snapshotRetentionFullDays.help": {
-      "source": "caf164afc32a4e58",
-      "output": "7e0643d50cb24693"
+      "source": "764535d1be6de3b0",
+      "output": "3b37cfac3a1bdb41"
     },
     "settings.keys.activity.snapshotRetentionFullDays.label": {
       "source": "2e04acb428d3d417",
@@ -67773,8 +67773,8 @@
       "output": "afac3f1ee02092b9"
     },
     "features.verlauf.details.p3": {
-      "source": "3639da78678879af",
-      "output": "303df72c2576deee"
+      "source": "a8aac25a3b94788c",
+      "output": "9040738e17b386e1"
     },
     "features.verlauf.summary": {
       "source": "2aa287340738f085",
@@ -72109,24 +72109,24 @@
       "output": "a63ac72883f38650"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.help": {
-      "source": "65fc2fab15b8e15b",
-      "output": "df7480d57081b0e8"
+      "source": "4e4b38b81ca9b7e9",
+      "output": "991c3e1c37782afc"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.label": {
       "source": "b92ec723102cae97",
       "output": "bf993622e748d5af"
     },
     "settings.keys.activity.snapshotRetentionDryRun.help": {
-      "source": "b2d3ec73e95242cb",
-      "output": "5bcaaf606f0823f6"
+      "source": "cd669b6fcde4669f",
+      "output": "0ade05af1c283e16"
     },
     "settings.keys.activity.snapshotRetentionDryRun.label": {
       "source": "bc4c1fe500a5c808",
       "output": "c0ae9e95cf1912e5"
     },
     "settings.keys.activity.snapshotRetentionFullDays.help": {
-      "source": "caf164afc32a4e58",
-      "output": "420c441c3e597286"
+      "source": "764535d1be6de3b0",
+      "output": "bda1b1b075707243"
     },
     "settings.keys.activity.snapshotRetentionFullDays.label": {
       "source": "2e04acb428d3d417",
@@ -93983,8 +93983,8 @@
       "output": "9b836f7ae7fbf67f"
     },
     "features.verlauf.details.p3": {
-      "source": "3639da78678879af",
-      "output": "a69f25afe90187ff"
+      "source": "a8aac25a3b94788c",
+      "output": "859e78ede3eea188"
     },
     "features.verlauf.summary": {
       "source": "2aa287340738f085",
@@ -98319,24 +98319,24 @@
       "output": "693fa363e85f0dff"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.help": {
-      "source": "65fc2fab15b8e15b",
-      "output": "501c77d09fa2df73"
+      "source": "4e4b38b81ca9b7e9",
+      "output": "bc33eef17557ebb7"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.label": {
       "source": "b92ec723102cae97",
       "output": "678ef966d4c733ab"
     },
     "settings.keys.activity.snapshotRetentionDryRun.help": {
-      "source": "b2d3ec73e95242cb",
-      "output": "197df34c01d47969"
+      "source": "cd669b6fcde4669f",
+      "output": "8157e13f9d4092a2"
     },
     "settings.keys.activity.snapshotRetentionDryRun.label": {
       "source": "bc4c1fe500a5c808",
       "output": "0c9745f670c5161a"
     },
     "settings.keys.activity.snapshotRetentionFullDays.help": {
-      "source": "caf164afc32a4e58",
-      "output": "14e1e42d24b2761b"
+      "source": "764535d1be6de3b0",
+      "output": "7b8280727b8bc4dc"
     },
     "settings.keys.activity.snapshotRetentionFullDays.label": {
       "source": "2e04acb428d3d417",
@@ -120193,8 +120193,8 @@
       "output": "63911abf10b8e34a"
     },
     "features.verlauf.details.p3": {
-      "source": "3639da78678879af",
-      "output": "6051fa2c12b7a4a6"
+      "source": "a8aac25a3b94788c",
+      "output": "0bc176682c21ea45"
     },
     "features.verlauf.summary": {
       "source": "2aa287340738f085",
@@ -124529,24 +124529,24 @@
       "output": "4843d76ae384833f"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.help": {
-      "source": "65fc2fab15b8e15b",
-      "output": "8b0e3b23e5ba94a6"
+      "source": "4e4b38b81ca9b7e9",
+      "output": "57b78e05a04f476b"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.label": {
       "source": "b92ec723102cae97",
       "output": "873d4d67677cb9a2"
     },
     "settings.keys.activity.snapshotRetentionDryRun.help": {
-      "source": "b2d3ec73e95242cb",
-      "output": "4a5415ef36a4e3ed"
+      "source": "cd669b6fcde4669f",
+      "output": "4c463f75ac02cc18"
     },
     "settings.keys.activity.snapshotRetentionDryRun.label": {
       "source": "bc4c1fe500a5c808",
       "output": "a3e9487a69342986"
     },
     "settings.keys.activity.snapshotRetentionFullDays.help": {
-      "source": "caf164afc32a4e58",
-      "output": "09a153cba5f5b43e"
+      "source": "764535d1be6de3b0",
+      "output": "10ac127270f2ed8d"
     },
     "settings.keys.activity.snapshotRetentionFullDays.label": {
       "source": "2e04acb428d3d417",
@@ -146403,8 +146403,8 @@
       "output": "6ed0e2838b9f6d0b"
     },
     "features.verlauf.details.p3": {
-      "source": "3639da78678879af",
-      "output": "493c0808a58c82d0"
+      "source": "a8aac25a3b94788c",
+      "output": "0bbafe0c11a2fc0d"
     },
     "features.verlauf.summary": {
       "source": "2aa287340738f085",
@@ -150739,24 +150739,24 @@
       "output": "a8ad79ad206c9dae"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.help": {
-      "source": "65fc2fab15b8e15b",
-      "output": "fcfc6cdaad0887ed"
+      "source": "4e4b38b81ca9b7e9",
+      "output": "407193866cbc44f1"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.label": {
       "source": "b92ec723102cae97",
       "output": "1d4a0357a3eba133"
     },
     "settings.keys.activity.snapshotRetentionDryRun.help": {
-      "source": "b2d3ec73e95242cb",
-      "output": "5fb39b8d16b5eeb0"
+      "source": "cd669b6fcde4669f",
+      "output": "b387d16cece4f94a"
     },
     "settings.keys.activity.snapshotRetentionDryRun.label": {
       "source": "bc4c1fe500a5c808",
       "output": "f15382fdceded4f5"
     },
     "settings.keys.activity.snapshotRetentionFullDays.help": {
-      "source": "caf164afc32a4e58",
-      "output": "6db269d6a9c29206"
+      "source": "764535d1be6de3b0",
+      "output": "878bbfe8e8c9f28a"
     },
     "settings.keys.activity.snapshotRetentionFullDays.label": {
       "source": "2e04acb428d3d417",
@@ -172613,8 +172613,8 @@
       "output": "325a467da69b1dab"
     },
     "features.verlauf.details.p3": {
-      "source": "3639da78678879af",
-      "output": "1e80f77cae3dfd96"
+      "source": "a8aac25a3b94788c",
+      "output": "b4e0bb8ebc86eac3"
     },
     "features.verlauf.summary": {
       "source": "2aa287340738f085",
@@ -176949,24 +176949,24 @@
       "output": "59c1e480fef0a5b7"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.help": {
-      "source": "65fc2fab15b8e15b",
-      "output": "de2f38fd0ba57d97"
+      "source": "4e4b38b81ca9b7e9",
+      "output": "afcf52eb4c0c430e"
     },
     "settings.keys.activity.snapshotRetentionDailyDays.label": {
       "source": "b92ec723102cae97",
       "output": "98de966eb46dc8b2"
     },
     "settings.keys.activity.snapshotRetentionDryRun.help": {
-      "source": "b2d3ec73e95242cb",
-      "output": "bd7b13b4cdd568df"
+      "source": "cd669b6fcde4669f",
+      "output": "7a20a469ffb0251b"
     },
     "settings.keys.activity.snapshotRetentionDryRun.label": {
       "source": "bc4c1fe500a5c808",
       "output": "3c6304abbcdcb63d"
     },
     "settings.keys.activity.snapshotRetentionFullDays.help": {
-      "source": "caf164afc32a4e58",
-      "output": "6ed02ce147b763f8"
+      "source": "764535d1be6de3b0",
+      "output": "902f6a0796b07f5f"
     },
     "settings.keys.activity.snapshotRetentionFullDays.label": {
       "source": "2e04acb428d3d417",

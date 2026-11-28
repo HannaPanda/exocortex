@@ -164,29 +164,43 @@ leaves everything owed — and the job id is `comment-digest-<userId>-<the
 oldest entry's createdAt>`, which is stable across a retry, so a sweep that
 died between the two does not buy anybody a second letter.
 
-### The Aktivität tab (issue #20): snapshots as history
+### The Aktivität tab (issue #20) and the page history (issue #235): snapshots as history
 
 `prune-snapshots` (daily at 04:00) used to keep a flat count per document; it
 now thins with age instead, tuned from `activity.*` settings (ADR-013, table
 in `docs/admin.md`) rather than a constructor option, so retention changes
-without a redeploy. `pruneSnapshotIds` (`apps/worker/src/processors/maintenance.ts`,
+without a redeploy. The two day counts are workspace-overridable below the
+deployment's (ADR-023), so the task walks the workspaces and asks
+`context.settings(workspaceId)` for each; whether it deletes at all
+(`activity.snapshotRetentionDryRun`) is asked once, deployment-wide.
+`pruneSnapshotIds` (`apps/worker/src/processors/maintenance-tasks/snapshots.ts`,
 pure and unit-tested on its own) buckets a document's non-`MANUAL` snapshots
-into an epoch-day or epoch-week index — not real ISO calendar weeks, a
-deterministic index is all thinning needs — and keeps the newest of each
+into an epoch-day or epoch-week index (not real ISO calendar weeks, a
+deterministic index is all thinning needs) and keeps the newest of each
 bucket:
 
-- younger than `activity.snapshotRetentionFullDays`: every snapshot survives.
-- between that and `activity.snapshotRetentionDailyDays`: at most one per day.
-- older than `activity.snapshotRetentionDailyDays`: at most one per week.
-- `MANUAL` snapshots are exempt from all three tiers — a deliberately named
+- younger than `activity.snapshotRetentionFullDays` (30): every snapshot survives.
+- between that and `activity.snapshotRetentionDailyDays` (365): at most one per day.
+- older than that: at most one per week.
+- `MANUAL` snapshots are exempt from all three tiers: a deliberately named
   version is not "the regular checkpoint" this retention is about.
+- so is a snapshot an `AgentWriteJournal` row still points at
+  (`snapshotBeforeId`), because that state is what taking an agent's or a
+  run's writes back restores (ADR-022, ADR-094). It ages out with its journal
+  row (`agents.journalRetentionDays`), and `snapshotsToThin` never offers it.
 
 A bucket with only one snapshot in it loses nothing, which is what keeps a
-lightly edited document from being thinned at all — the edge case worth
-testing explicitly, alongside "dry run changes nothing in the database".
-`activity.snapshotRetentionDryRun` defaults **on**: it computes and logs what
-would be deleted without deleting it, so the first run after this shipped
-cannot silently remove snapshots that already existed on a live deployment.
+lightly edited document from being thinned at all.
+
+The dry run was the default from issue #20 until #235, and nobody had switched
+it off, so on 2026-11-28 the live deployment held every snapshot it ever took:
+4 943 of them since 2026-08-06. Under the new defaults 1 063 of those (26 MB of
+state across 319 pages) are thinning candidates. A run deletes at most
+`SNAPSHOT_PRUNE_MAX_PER_RUN` (200) and logs one line per page it thinned
+(`Thinned the stored versions of a page`, with the page, the workspace, the
+count, the journal-protected ones and the tiers it applied), so the backlog
+takes about a week of nights, and a wrong setting costs one night's worth that
+the log shows the next morning.
 
 `snapshot-active-documents` (every 5 min, a no-op unless
 `activity.editSessionSnapshotsEnabled` is on, which it is by default since

@@ -473,7 +473,7 @@
     "details": {
       "p1": "Due eventi attivano un’istantanea: qualsiasi operazione di scrittura non proveniente dall’editor, cioè ogni accesso di un agente o di un’automazione, e una sessione di scrittura nell’editor, che viene salvata periodicamente. Il primo caso è quello cruciale, perché lì qualcosa modifica la pagina mentre non stai guardando.",
       "p2": "Nell’area contestuale a destra si trova la scheda «Attività» con l’elenco: quando, da parte di chi, per quale motivo. Un clic ripristina quella versione e, poiché il ripristino stesso costituisce una modifica, viene generata una nuova istantanea. Puoi quindi annullare anche un rollback.",
-      "p3": "Il periodo di conservazione delle versioni è configurabile in due fasi: per un certo periodo tutte, successivamente una al giorno. Questo mantiene il database leggero senza cancellare di colpo la cronologia di una pagina."
+      "p3": "Il periodo di conservazione degli stati è configurabile in tre livelli: tutti per 30 giorni, poi uno al giorno fino a un anno, e successivamente uno a settimana. Le versioni salvate rimangono sempre. In questo modo il database resta compatto, senza che la cronologia di una pagina svanisca all’improvviso; ogni notte la pulizia rimuove al massimo 200 stati."
     },
     "where": "La scheda «Attività» nell’area contestuale a destra."
   },

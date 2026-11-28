@@ -473,7 +473,7 @@
     "details": {
       "p1": "Deux situations déclenchent un instantané : toute écriture ne provenant pas de l’éditeur, c’est-à-dire chaque intervention d’un agent ou d’une automatisation, ainsi qu’une session de rédaction dans l’éditeur, sauvegardée périodiquement. Le premier cas est le plus important, car la page est alors modifiée sans que tu aies les yeux dessus.",
       "p2": "Dans le volet contextuel à droite se trouve l’onglet « Activité » avec la liste : quand, par qui, pour quelle raison. Un clic restaure cet état, et comme la restauration constitue elle-même une modification, un nouvel instantané est généré. Tu peux donc tout à fait annuler une restauration.",
-      "p3": "La durée de conservation des versions est réglable, selon deux paliers : toutes sont conservées pendant un certain temps, puis une seule par jour par la suite. Cela évite l’engorgement de la base de données sans faire disparaître l’historique d’une page d’un seul coup."
+      "p3": "La durée de conservation des états est paramétrable, en trois étapes : tous pendant 30 jours, puis un par jour jusqu’à un an, puis un par semaine au-delà. Les versions enregistrées sont toujours conservées. Cela permet de garder la base de données légère sans que l’historique d’une page ne disparaisse d’un coup ; chaque nuit, le nettoyage n’éclaircit pas plus de 200 états."
     },
     "where": "L’onglet « Activité » dans le volet contextuel à droite."
   },

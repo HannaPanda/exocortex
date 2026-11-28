@@ -474,15 +474,15 @@
       },
       "snapshotRetentionFullDays": {
         "label": "Conservation intégrale (jours)",
-        "help": "Durée pendant laquelle toutes les sauvegardes d’une page sont conservées, quel qu’en soit le motif."
+        "help": "Durée pendant laquelle tous les états d’une page sont conservés, peu importe la raison. Un espace de travail peut définir une durée plus courte, mais pas plus longue que celle-ci."
       },
       "snapshotRetentionDailyDays": {
         "label": "Élagage quotidien jusqu’à (jours)",
-        "help": "Entre la rétention complète et cet âge, il ne reste au plus qu’une sauvegarde par jour civil, puis au plus une par semaine. Les sauvegardes nommées manuellement en sont exclues."
+        "help": "Entre la conservation intégrale et cet âge, au maximum un état par jour calendaire est conservé, puis au maximum un par semaine. Les versions enregistrées manuellement et les états permettant d’annuler l’écriture d’un agent sont exclus. Un espace de travail peut définir une durée plus courte, mais pas plus longue que celle-ci."
       },
       "snapshotRetentionDryRun": {
         "label": "Simuler uniquement l’élagage (à blanc)",
-        "help": "Activé : le nettoyage quotidien calcule et consigne ce qu’il supprimerait, mais ne supprime rien. Recommandé avant la première exécution réelle ; à désactiver délibérément ensuite."
+        "help": "Activé : le nettoyage nocturne calcule et consigne dans le journal ce qu’il supprimerait, sans rien supprimer. Désactivé : il élague, au maximum 200 états par nuit, et écrit une ligne dans le journal pour chaque page."
       }
     },
     "agents": {

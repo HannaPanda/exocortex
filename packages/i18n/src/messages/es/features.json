@@ -473,7 +473,7 @@
     "details": {
       "p1": "Hay dos motivos que activan una instantánea: cualquier escritura que no provenga del editor, es decir, todo acceso de un agente o de una automatización, y una sesión de escritura en el editor, que se guarda a intervalos. El primer caso es el fundamental, ya que ahí algo modifica la página sin que estés mirando.",
       "p2": "En el panel contextual de la derecha se encuentra la pestaña «Actividad» con la lista: cuándo, quién y por qué motivo. Un clic restaura esa versión y, como la propia restauración es un cambio, se genera de nuevo otra instantánea. Así también puedes deshacer una reversión.",
-      "p3": "El tiempo que se conservan las versiones se puede configurar en dos fases: durante un tiempo se guardan todas; después, solo una por día. Esto mantiene pequeña la base de datos sin que el historial de una página desaparezca de golpe."
+      "p3": "El tiempo durante el cual se conservan los estados se puede configurar en tres niveles: todos durante 30 días, después uno al día hasta cumplir un año, y a partir de ahí uno por semana. Las versiones guardadas se mantienen siempre. Esto permite que la base de datos no crezca demasiado sin que el historial de una página desaparezca de golpe; cada noche, la limpieza elimina como máximo 200 estados."
     },
     "where": "La pestaña «Actividad» en el panel contextual de la derecha."
   },

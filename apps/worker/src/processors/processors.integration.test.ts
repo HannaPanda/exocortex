@@ -2191,10 +2191,17 @@ describe('maintenance', () => {
       expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(3);
     }, 60_000);
 
-    it('defaults to a dry run: the bare `stubSettings()` used elsewhere in this file never deletes', async () => {
+    it('applies the defaults of issue #235: everything for 30 days, then one a day, then one a week', async () => {
       const documentId = await createDocument();
+      // Inside the full month: both survive.
+      const recentA = await snapshotAt(documentId, utcNoon(20, -1));
+      const recentB = await snapshotAt(documentId, utcNoon(20, 1));
+      // Half a year back, same day: the newer survives.
+      await snapshotAt(documentId, utcNoon(180, -1));
+      const halfYear = await snapshotAt(documentId, utcNoon(180, 1));
+      // Older than a year, same day and so the same week: the newer survives.
       await snapshotAt(documentId, utcNoon(400, -1));
-      await snapshotAt(documentId, utcNoon(400, 1));
+      const yearAgo = await snapshotAt(documentId, utcNoon(400, 1));
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
@@ -2215,7 +2222,88 @@ describe('maintenance', () => {
         }).context,
       );
 
-      expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(2);
+      const remaining = await prisma.documentSnapshot.findMany({
+        where: { documentId },
+        select: { id: true },
+      });
+      expect(remaining.map((row) => row.id).sort()).toEqual(
+        [recentA, recentB, halfYear, yearAgo].sort(),
+      );
+    }, 60_000);
+
+    it('keeps a snapshot an agent write journal still points at (issue #235)', async () => {
+      const documentId = await createDocument();
+      const journalled = await snapshotAt(documentId, utcNoon(10, -2));
+      await snapshotAt(documentId, utcNoon(10, 0));
+      const newest = await snapshotAt(documentId, utcNoon(10, 2));
+      const session = await prisma.agentSession.create({
+        data: { externalId: `prune-${Date.now().toString(36)}`, userId },
+      });
+      await prisma.agentWriteJournal.create({
+        data: {
+          sessionId: session.id,
+          workspaceId,
+          documentId,
+          action: 'document.updated',
+          snapshotBeforeId: journalled,
+          correlationId: 'test-prune-6',
+        },
+      });
+
+      const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
+        search,
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: retentionSettings(),
+      });
+      await processor(
+        contextFor<'maintenance'>({
+          correlationId: 'test-prune-6',
+          task: 'prune-snapshots',
+          workspaceId,
+          documentId: null,
+        }).context,
+      );
+
+      const remaining = await prisma.documentSnapshot.findMany({
+        where: { documentId },
+        select: { id: true },
+      });
+      expect(remaining.map((row) => row.id).sort()).toEqual([journalled, newest].sort());
+    }, 60_000);
+
+    it("reads the workspace's own retention, not the deployment's", async () => {
+      const documentId = await createDocument();
+      await snapshotAt(documentId, utcNoon(10, -1));
+      await snapshotAt(documentId, utcNoon(10, 1));
+
+      const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
+        search,
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        // The deployment keeps everything for 30 days; this workspace for 7.
+        settings: stubSettingsForWorkspace(workspaceId, {
+          'activity.snapshotRetentionFullDays': 7,
+        }),
+      });
+      await processor(
+        contextFor<'maintenance'>({
+          correlationId: 'test-prune-7',
+          task: 'prune-snapshots',
+          workspaceId,
+          documentId: null,
+        }).context,
+      );
+
+      expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(1);
     }, 60_000);
   });
 

@@ -564,24 +564,30 @@ export const settingsSchema = z.object({
   'activity.editSessionSnapshotIntervalMinutes': z.number().int().min(5).max(1_440).default(10),
   /**
    * Every snapshot younger than this is kept, whatever `reason` it has.
-   * Below this age, `prune-snapshots` never removes anything.
+   * Below this age, `prune-snapshots` never removes anything. Thirty days
+   * since issue #235: a month in which every version a page ever had can be
+   * looked at and restored, which is what a page history promises.
    */
-  'activity.snapshotRetentionFullDays': z.number().int().min(1).max(365).default(7),
+  'activity.snapshotRetentionFullDays': z.number().int().min(1).max(365).default(30),
   /**
    * Between the full-retention window above and this age, at most one
    * snapshot per calendar day survives (the newest of that day). Older than
    * this, at most one per calendar week survives. `MANUAL` snapshots are
-   * exempt from both tiers -- a deliberately named version is never thinned
-   * by age alone.
+   * exempt from every tier -- a deliberately named version is never thinned
+   * by age alone -- and so is a snapshot a write journal still points at,
+   * because that is what taking an agent's or a run's writes back restores.
+   * A year since issue #235.
    */
-  'activity.snapshotRetentionDailyDays': z.number().int().min(1).max(3_650).default(30),
+  'activity.snapshotRetentionDailyDays': z.number().int().min(1).max(3_650).default(365),
   /**
    * Computes and logs what tiered retention would delete without deleting
-   * anything. Defaults **on**: the first run after this feature ships must
-   * not silently remove existing snapshots on a live deployment. Switch off
-   * deliberately, once the dry-run log line looks right.
+   * anything. Off since issue #235, which asked for the retention to apply:
+   * the dry run had been the default since issue #20 and nobody had switched
+   * it off, so no snapshot had ever been thinned. What keeps the first real
+   * runs from taking a year's backlog at once is the per-run limit in
+   * `prune-snapshots` (`SNAPSHOT_PRUNE_MAX_PER_RUN`), not this switch.
    */
-  'activity.snapshotRetentionDryRun': z.boolean().default(true),
+  'activity.snapshotRetentionDryRun': z.boolean().default(false),
   /**
    * Days an agent's write journal is kept (issue #49, ADR-022).
    *
@@ -999,8 +1005,14 @@ export const SETTING_SCOPES = {
   'notifications.commentMailDebounceMinutes': 'deployment',
   'activity.editSessionSnapshotsEnabled': 'deployment',
   'activity.editSessionSnapshotIntervalMinutes': 'deployment',
-  'activity.snapshotRetentionFullDays': 'deployment',
-  'activity.snapshotRetentionDailyDays': 'deployment',
+  /**
+   * How long a workspace keeps its pages' versions is a workspace's choice,
+   * below the deployment's: the deployment pays for the storage, so its
+   * number is a ceiling (`SETTING_CEILINGS`). Whether thinning deletes at all
+   * stays the deployment's, like the sampler.
+   */
+  'activity.snapshotRetentionFullDays': 'workspace',
+  'activity.snapshotRetentionDailyDays': 'workspace',
   'activity.snapshotRetentionDryRun': 'deployment',
   'agents.journalRetentionDays': 'deployment',
   'agents.largePageChars': 'workspace',
@@ -1130,6 +1142,13 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
    */
   'agents.largePageChars',
   'agents.oversizedPageChars',
+  /*
+   * Higher keeps more and costs the deployment more, so a workspace may keep
+   * its versions for a shorter time than the deployment does, never longer
+   * (issue #235).
+   */
+  'activity.snapshotRetentionFullDays',
+  'activity.snapshotRetentionDailyDays',
 ];
 
 const CEILING_KEYS = new Set<string>(SETTING_CEILINGS);

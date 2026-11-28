@@ -473,7 +473,7 @@
     "details": {
       "p1": "Duas coisas acionam um snapshot: cada operação de escrita que não vem do editor, ou seja, qualquer acesso de um agente ou de uma automação, e uma sessão de escrita no editor, que é salva em intervalos. O primeiro caso é o mais importante, pois nele algo altera a página enquanto você não está olhando.",
       "p2": "No painel de contexto à direita fica a aba “Atividade” com a lista: quando, por quem, por qual motivo. Um clique restaura essa versão e, como a própria restauração é uma alteração, um novo snapshot é criado no processo. Assim, você também pode reverter uma reversão.",
-      "p3": "O tempo de retenção das versões é configurável em duas etapas: por um período, todas; depois, uma por dia. Isso mantém o banco de dados pequeno, sem que o histórico de uma página desapareça de repente."
+      "p3": "O tempo de retenção das versões é configurável, em três níveis: todas por 30 dias, depois até um ano uma por dia, e em seguida uma por semana. Versões salvas permanecem para sempre. Isso mantém o banco de dados pequeno, sem que o histórico de uma página desapareça de repente; a limpeza remove no máximo 200 versões por noite."
     },
     "where": "A aba “Atividade” no painel de contexto à direita."
   },

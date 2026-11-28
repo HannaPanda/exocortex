@@ -473,7 +473,7 @@
     "details": {
       "p1": "Migawkę wyzwalają dwie sytuacje: każda operacja zapisu pochodząca spoza edytora (czyli dostęp agenta lub automatyzacji) oraz sesja pisania w edytorze, zapisywana w odstępach czasu. Pierwszy przypadek jest kluczowy, ponieważ modyfikuje stronę bez twojej bezpośredniej uwagi.",
       "p2": "W panelu kontekstowym po prawej znajduje się zakładka „Aktywność” z listą: kiedy, przez kogo i z jakiego powodu. Jedno kliknięcie przywraca dany stan, a ponieważ samo przywracanie jest zmianą, tworzy nową migawkę. Możesz więc cofnąć również wycofanie zmian.",
-      "p3": "Czas przechowywania wersji można skonfigurować dwuetapowo: przez pewien czas zachowywane są wszystkie, a później po jednej na dzień. Dzięki temu baza danych pozostaje niewielka, a historia strony nie znika z dnia na dzień."
+      "p3": "Czas przechowywania stanów można konfigurować w trzech etapach: przez 30 dni wszystkie, następnie do jednego roku jeden dziennie, a potem jeden tygodniowo. Zapisane wersje pozostają na zawsze. Dzięki temu baza danych pozostaje mała, a historia strony nie znika nagle; porządkowanie usuwa każdej nocy maksymalnie 200 stanów."
     },
     "where": "Zakładka „Aktywność” w panelu kontekstowym po prawej stronie."
   },

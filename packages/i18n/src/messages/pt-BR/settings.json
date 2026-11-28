@@ -474,15 +474,15 @@
       },
       "snapshotRetentionFullDays": {
         "label": "Retenção completa (dias)",
-        "help": "Por quanto tempo todas as cópias de uma página são mantidas, independentemente do motivo."
+        "help": "Por quanto tempo todas as versões de uma página são mantidas, independentemente do motivo. Um espaço de trabalho pode definir um período mais curto, mas não mais longo do que este."
       },
       "snapshotRetentionDailyDays": {
         "label": "Redução diária até (dias)",
-        "help": "Entre a retenção total e esta idade, resta no máximo um backup por dia do calendário; depois disso, no máximo um por semana. Backups nomeados manualmente não são afetados."
+        "help": "Entre a retenção completa e esta idade, resta no máximo uma versão por dia civil; depois disso, no máximo uma por semana. Versões salvas manualmente e versões usadas para reverter uma gravação de agente são exceções. Um espaço de trabalho pode definir um período mais curto, mas não mais longo do que este."
       },
       "snapshotRetentionDryRun": {
         "label": "Apenas simular a redução (dry run)",
-        "help": "Ativado: a limpeza diária calcula e registra o que apagaria, mas não exclui nada. Recomendado antes da primeira execução real; depois, desative conscientemente."
+        "help": "Ativado: a limpeza noturna calcula e registra o que excluiria, mas não exclui nada. Desativado: ela faz a redução gradual, no máximo 200 versões por noite, e grava uma linha no registro para cada página."
       }
     },
     "agents": {

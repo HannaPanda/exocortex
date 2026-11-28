@@ -30,8 +30,10 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     ui: {},
     settings: [
       'activity.editSessionSnapshotsEnabled',
+      'activity.editSessionSnapshotIntervalMinutes',
       'activity.snapshotRetentionFullDays',
       'activity.snapshotRetentionDailyDays',
+      'activity.snapshotRetentionDryRun',
     ],
     tools: ['exo_page_activity', 'exo_page_snapshots', 'exo_page_restore_snapshot'],
   }),

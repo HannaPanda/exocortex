@@ -39,7 +39,11 @@ import { pruneSnapshots, snapshotActiveDocuments } from './maintenance-tasks/sna
 import { checkpointInterruptedRuns } from './maintenance-tasks/work-checkpoints';
 import { sweepWorkflows } from './maintenance-tasks/workflows';
 
-export { pruneSnapshotIds } from './maintenance-tasks/snapshots';
+export {
+  pruneSnapshotIds,
+  SNAPSHOT_PRUNE_MAX_PER_RUN,
+  snapshotsToThin,
+} from './maintenance-tasks/snapshots';
 
 export interface MaintenanceDependencies {
   prisma: PrismaClient;

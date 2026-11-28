@@ -474,15 +474,15 @@
       },
       "snapshotRetentionFullDays": {
         "label": "Conservazione completa (giorni)",
-        "help": "Per questo periodo tutte le istantanee di una pagina vengono conservate, indipendentemente dal motivo."
+        "help": "Per questo periodo tutte le versioni di una pagina vengono conservate, a prescindere dal motivo. Un’area di lavoro può impostare una durata inferiore, ma non superiore a quella definita qui."
       },
       "snapshotRetentionDailyDays": {
         "label": "Sfoltimento giornaliero fino a (giorni)",
-        "help": "Tra la conservazione completa e questa età viene conservato al massimo un backup per giorno di calendario, successivamente al massimo uno a settimana. I backup nominati manualmente sono esclusi."
+        "help": "Tra la conservazione completa e questo limite viene mantenuta al massimo una versione per giorno di calendario, successivamente al massimo una alla settimana. Le versioni salvate manualmente e quelle che consentono di annullare la scrittura di un agente sono escluse. Un’area di lavoro può impostare una durata inferiore, ma non superiore a quella definita qui."
       },
       "snapshotRetentionDryRun": {
         "label": "Simula solo l’epurazione (dry run)",
-        "help": "Attivo: la pulizia giornaliera calcola e registra ciò che eliminerebbe, ma non elimina nulla. Consigliato prima della prima esecuzione effettiva; disattivare poi consapevolmente."
+        "help": "Attivo: la pulizia notturna calcola e registra nel log cosa eliminerebbe, ma non elimina nulla. Disattivo: esegue la pulizia, al massimo 200 versioni per notte, e scrive una riga nel log per ogni pagina."
       }
     },
     "agents": {

@@ -474,15 +474,15 @@
       },
       "snapshotRetentionFullDays": {
         "label": "Full retention (days)",
-        "help": "How long all snapshots of a page are kept, regardless of the reason."
+        "help": "This is how long all revisions of a page are kept, regardless of the reason. A workspace can set a shorter period, but not longer than here."
       },
       "snapshotRetentionDailyDays": {
         "label": "Daily thinning up to (days)",
-        "help": "Between full retention and this age, at most one snapshot remains per calendar day, after which at most one per week. Manually named snapshots are exempt."
+        "help": "Between the full retention period and this age, at most one revision per calendar day is kept, after that at most one per week. Manually saved versions and revisions that allow an agent write action to be undone are excluded. A workspace can set a shorter period, but not longer than here."
       },
       "snapshotRetentionDryRun": {
         "label": "Only simulate pruning (dry run)",
-        "help": "On: daily cleanup calculates and logs what it would delete, but deletes nothing. Recommended before the first live run; deliberately switch off afterwards."
+        "help": "On: the nightly cleanup calculates and logs what it would delete, but deletes nothing. Off: it thins out revisions, at most 200 per night, and writes one line to the log for each page."
       }
     },
     "agents": {

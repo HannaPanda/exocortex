@@ -474,15 +474,15 @@
       },
       "snapshotRetentionFullDays": {
         "label": "Volle Aufbewahrung (Tage)",
-        "help": "So lange bleiben alle Sicherungen einer Seite erhalten, unabhängig vom Grund."
+        "help": "So lange bleiben alle Stände einer Seite erhalten, unabhängig vom Grund. Ein Arbeitsbereich kann eine kürzere Zeit einstellen, aber keine längere als hier."
       },
       "snapshotRetentionDailyDays": {
         "label": "Tägliche Ausdünnung bis (Tage)",
-        "help": "Zwischen der vollen Aufbewahrung und diesem Alter bleibt höchstens eine Sicherung pro Kalendertag übrig, danach höchstens eine pro Woche. Manuell benannte Sicherungen sind davon ausgenommen."
+        "help": "Zwischen der vollen Aufbewahrung und diesem Alter bleibt höchstens ein Stand pro Kalendertag übrig, danach höchstens einer pro Woche. Manuell gespeicherte Versionen und Stände, mit denen sich ein Agenten-Schreibvorgang zurücknehmen lässt, sind ausgenommen. Ein Arbeitsbereich kann eine kürzere Zeit einstellen, aber keine längere als hier."
       },
       "snapshotRetentionDryRun": {
         "label": "Ausdünnung nur simulieren (Trockenlauf)",
-        "help": "An: die tägliche Aufräumung berechnet und protokolliert, was sie löschen würde, löscht aber nichts. Vor dem ersten scharfen Lauf empfohlen; danach bewusst ausschalten."
+        "help": "An: die nächtliche Aufräumung berechnet und protokolliert, was sie löschen würde, löscht aber nichts. Aus: sie dünnt aus, höchstens 200 Stände pro Nacht, und schreibt für jede Seite eine Zeile ins Protokoll."
       }
     },
     "agents": {

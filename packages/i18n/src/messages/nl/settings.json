@@ -474,15 +474,15 @@
       },
       "snapshotRetentionFullDays": {
         "label": "Volledige bewaartermijn (dagen)",
-        "help": "Zolang blijven alle snapshots van een pagina behouden, ongeacht de aanleiding."
+        "help": "Zo lang blijven alle versies van een pagina bewaard, ongeacht de reden. Een werkruimte kan een kortere periode instellen, maar niet langer dan hier."
       },
       "snapshotRetentionDailyDays": {
         "label": "Dagelijks uitdunnen tot (dagen)",
-        "help": "Tussen de volledige bewaring en deze leeftijd blijft maximaal één back-up per kalenderdag bewaard, daarna maximaal één per week. Handmatig benoemde back-ups vallen hierbuiten."
+        "help": "Tussen de volledige bewaring en deze leeftijd blijft maximaal één versie per kalenderdag over, daarna maximaal één per week. Handmatig opgeslagen versies en versies waarmee een schrijfactie van een agent ongedaan kan worden gemaakt, zijn uitgezonderd. Een werkruimte kan een kortere periode instellen, maar niet langer dan hier."
       },
       "snapshotRetentionDryRun": {
         "label": "Uitdunnen alleen simuleren (proefdraaien)",
-        "help": "Aan: de dagelijkse opschoning berekent en registreert wat er verwijderd zou worden, maar verwijdert niets. Aanbevolen vóór de eerste echte uitvoering; schakel daarna bewust uit."
+        "help": "Aan: de nachtelijke opschoning berekent en registreert wat er verwijderd zou worden, maar verwijdert niets. Uit: het ruimt op, maximaal 200 versies per nacht, en schrijft voor elke pagina een regel naar het logboek."
       }
     },
     "agents": {

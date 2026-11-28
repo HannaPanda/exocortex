@@ -473,7 +473,7 @@
     "details": {
       "p1": "Twee dingen zorgen voor een momentopname: elke schrijfactie die niet uit de editor komt, dus elke actie van een agent of een automatisering, en een schrijfsessie in de editor, die periodiek wordt opgeslagen. Het eerste geval is het belangrijkst, want dan verandert er iets aan de pagina terwijl je niet kijkt.",
       "p2": "In het contextpaneel rechts vind je het tabblad \"Activiteit\" met de lijst: wanneer, door wie en waarom. Eén klik herstelt die versie, en omdat het herstellen zelf een wijziging is, ontstaat er opnieuw een momentopname. Je kunt een herstelactie dus ook weer terugdraaien.",
-      "p3": "Hoe lang versies bewaard blijven is instelbaar in twee fasen: een tijdje allemaal, daarna één per dag. Dat houdt de database compact, zonder dat de geschiedenis van een pagina ineens verdwijnt."
+      "p3": "Hoe lang de versies bewaard blijven, is instelbaar in drie fasen: 30 dagen lang allemaal, daarna tot maximaal een jaar één per dag, en daarna één per week. Opgeslagen versies blijven altijd bewaard. Dit houdt de database klein zonder dat de geschiedenis van een pagina in één klap verdwijnt; per nacht ruimt het opschoonproces hoogstens 200 versies op."
     },
     "where": "Het tabblad \"Activiteit\" in het contextpaneel rechts."
   },

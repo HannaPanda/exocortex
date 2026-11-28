@@ -55,48 +55,139 @@ export function pruneSnapshotIds(
   return toDelete;
 }
 
-/** Thins the stored versions of every page down to the configured tiers. */
+/**
+ * The most snapshots one nightly run deletes (issue #235).
+ *
+ * Retention had been a dry run since it shipped, so the first real run meets
+ * every version a deployment ever kept. Taking that backlog a few hundred at a
+ * time means a setting entered wrongly costs a night's worth, which the log
+ * line of each page shows the next morning, rather than a year's.
+ */
+export const SNAPSHOT_PRUNE_MAX_PER_RUN = 200;
+
+/**
+ * What to delete of one page's versions: the tiers of `pruneSnapshotIds`,
+ * minus the snapshots nothing may take, within what is left of the run's
+ * budget. Pure for the same reason as the tiers.
+ *
+ * A protected snapshot still counts as its bucket's survivor if it is the
+ * newest of that day or week; it is only never the one deleted. So a day with
+ * a journalled write keeps that state and its newest one, which is one more
+ * than the tier asks for and never one less.
+ */
+export function snapshotsToThin(
+  snapshots: readonly { id: string; createdAt: Date }[],
+  cutoffs: { fullCutoff: Date; dailyCutoff: Date },
+  keep: ReadonlySet<string>,
+  budget: number,
+): string[] {
+  if (budget <= 0) return [];
+  return pruneSnapshotIds(snapshots, cutoffs)
+    .filter((id) => !keep.has(id))
+    .slice(0, budget);
+}
+
+/**
+ * Thins the stored versions of every page down to the tiers its workspace is
+ * configured for (ADR-023: a workspace may keep them for less time than the
+ * deployment, never longer).
+ */
 export const pruneSnapshots: MaintenanceTask = async (context) => {
   const { prisma, payload, logger, reportProgress } = context;
   await reportProgress(10, 'pruningSnapshots');
-  const settings = await context.settings();
-  const fullDays = settings['activity.snapshotRetentionFullDays'];
-  const dailyDays = settings['activity.snapshotRetentionDailyDays'];
-  const dryRun = settings['activity.snapshotRetentionDryRun'];
+  // Whether thinning deletes at all is the deployment's decision alone.
+  const dryRun = (await context.settings())['activity.snapshotRetentionDryRun'];
   const now = Date.now();
-  const cutoffs = {
-    fullCutoff: new Date(now - fullDays * DAY_MS),
-    dailyCutoff: new Date(now - dailyDays * DAY_MS),
-  };
 
-  const documents = await prisma.document.findMany({
-    where: payload.workspaceId === null ? {} : { workspaceId: payload.workspaceId },
+  const workspaces = await prisma.workspace.findMany({
+    where: payload.workspaceId === null ? {} : { id: payload.workspaceId },
     select: { id: true },
+    orderBy: { id: 'asc' },
   });
 
+  let budget = SNAPSHOT_PRUNE_MAX_PER_RUN;
   let removed = 0;
   let candidates = 0;
-  for (const document of documents) {
-    // `MANUAL` is exempt from age-based thinning: a deliberately named
-    // version is not the "regular checkpoint" this retention tier is
-    // about, and pruning it by age alone would defeat the one
-    // permanent restore point a person asked for.
-    const snapshots = await prisma.documentSnapshot.findMany({
-      where: { documentId: document.id, reason: { not: 'MANUAL' } },
-      select: { id: true, createdAt: true },
+  let documentCount = 0;
+  for (const workspace of workspaces) {
+    if (budget <= 0) break;
+    const settings = await context.settings(workspace.id);
+    const fullDays = settings['activity.snapshotRetentionFullDays'];
+    const dailyDays = settings['activity.snapshotRetentionDailyDays'];
+    const cutoffs = {
+      fullCutoff: new Date(now - fullDays * DAY_MS),
+      dailyCutoff: new Date(now - dailyDays * DAY_MS),
+    };
+
+    const documents = await prisma.document.findMany({
+      where: { workspaceId: workspace.id },
+      select: { id: true },
+      orderBy: { id: 'asc' },
     });
-    const toDelete = pruneSnapshotIds(snapshots, cutoffs);
-    candidates += toDelete.length;
-    if (toDelete.length === 0) continue;
-    if (!dryRun) {
-      const result = await prisma.documentSnapshot.deleteMany({
-        where: { id: { in: toDelete } },
+    documentCount += documents.length;
+
+    for (const document of documents) {
+      if (budget <= 0) break;
+      // `MANUAL` is exempt from age-based thinning: a deliberately named
+      // version is not the "regular checkpoint" this retention tier is
+      // about, and pruning it by age alone would defeat the one
+      // permanent restore point a person asked for. Nothing younger than
+      // the full window is read at all.
+      const snapshots = await prisma.documentSnapshot.findMany({
+        where: {
+          documentId: document.id,
+          reason: { not: 'MANUAL' },
+          createdAt: { lt: cutoffs.fullCutoff },
+        },
+        select: { id: true, createdAt: true },
       });
-      removed += result.count;
+      if (snapshots.length < 2) continue;
+
+      // A snapshot a write journal points at is what taking that write back
+      // restores (ADR-022, ADR-094). It ages out with its journal row
+      // (`agents.journalRetentionDays`), not before.
+      const journalled = await prisma.agentWriteJournal.findMany({
+        where: {
+          documentId: document.id,
+          snapshotBeforeId: { in: snapshots.map((row) => row.id) },
+        },
+        select: { snapshotBeforeId: true },
+      });
+      const keep = new Set(journalled.flatMap((row) => row.snapshotBeforeId ?? []));
+
+      const toDelete = snapshotsToThin(snapshots, cutoffs, keep, budget);
+      if (toDelete.length === 0) continue;
+      candidates += toDelete.length;
+      budget -= toDelete.length;
+      if (!dryRun) {
+        const result = await prisma.documentSnapshot.deleteMany({
+          where: { id: { in: toDelete } },
+        });
+        removed += result.count;
+      }
+      // One line per page, so what a night thinned can be read back by page.
+      logger.info('Thinned the stored versions of a page', {
+        documentId: document.id,
+        workspaceId: workspace.id,
+        thinned: toDelete.length,
+        olderThanFullWindow: snapshots.length,
+        protectedByJournal: keep.size,
+        fullDays,
+        dailyDays,
+        dryRun,
+      });
     }
   }
   await reportProgress(100, 'done');
-  logger.info('Snapshots pruned', { removed, candidates, dryRun, documents: documents.length });
+  logger.info('Snapshots pruned', {
+    removed,
+    candidates,
+    dryRun,
+    documents: documentCount,
+    workspaces: workspaces.length,
+    budgetLeft: budget,
+    limitReached: budget <= 0,
+  });
 };
 
 /** Takes a checkpoint of every page someone is editing right now. */

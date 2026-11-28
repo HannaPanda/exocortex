@@ -474,15 +474,15 @@
       },
       "snapshotRetentionFullDays": {
         "label": "Pełne przechowywanie (dni)",
-        "help": "Przez ten czas zachowywane są wszystkie kopie strony, niezależnie od przyczyny."
+        "help": "Przez ten czas zachowywane są wszystkie wersje strony, niezależnie od przyczyny. Obszar roboczy może ustawić krótszy czas, ale nie dłuższy niż tutaj."
       },
       "snapshotRetentionDailyDays": {
         "label": "Dzienna redukcja do (dni)",
-        "help": "Między pełnym przechowywaniem a tym wiekiem pozostaje co najwyżej jedna kopia zapasowa na dzień kalendarzowy, a po nim najwyżej jedna na tydzień. Ręcznie nazwane kopie zapasowe są z tego wyłączone."
+        "help": "Pomiędzy pełnym okresem przechowywania a tym wiekiem zachowywana jest co najwyżej jedna wersja na dzień kalendarzowy, a potem co najwyżej jedna na tydzień. Wersje zapisane ręcznie oraz wersje umożliwiające cofnięcie zapisu agenta są wykluczone. Obszar roboczy może ustawić krótszy czas, ale nie dłuższy niż tutaj."
       },
       "snapshotRetentionDryRun": {
         "label": "Symulacja przerzedzania (przebieg próbny)",
-        "help": "Włączone: codzienne porządkowanie oblicza i rejestruje w dzienniku to, co by usunęło, ale niczego nie usuwa. Zalecane przed pierwszym prawdziwym uruchomieniem; potem wyłącz świadomie."
+        "help": "Włączone: nocne czyszczenie oblicza i rejestruje w dzienniku, co zostałoby usunięte, ale niczego nie kasuje. Wyłączone: usuwa nadmiarowe wersje, maksymalnie 200 na noc, i zapisuje w dzienniku jeden wiersz dla każdej strony."
       }
     },
     "agents": {

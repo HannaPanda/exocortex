@@ -473,7 +473,7 @@
     "details": {
       "p1": "Two things trigger a snapshot: any write operation that does not originate from the editor—meaning any access by an agent or an automation—and an editor writing session, which is backed up at intervals. The first case is the crucial one, because that is where something changes the page while you are not looking.",
       "p2": "In the right context panel, you will find the \"Activity\" tab with the list: when, by whom, and why. One click restores that version, and because restoring is itself a change, a new snapshot is created in the process. So you can even roll back a rollback.",
-      "p3": "How long versions are kept is configurable in two stages: all of them for a while, and one per day after that. This keeps the database small without erasing a page’s history all at once."
+      "p3": "How long snapshots are kept is configurable, in three tiers: all of them for 30 days, then one per day for up to a year, then one per week after that. Saved versions are always kept. This keeps the database small without a page’s history disappearing all at once; cleanup thins out at most 200 snapshots per night."
     },
     "where": "The \"Activity\" tab in the right context panel."
   },
