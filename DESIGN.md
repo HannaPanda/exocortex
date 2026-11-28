@@ -892,7 +892,12 @@ modal: the table beside it stays live, the context panel stays where it is,
 and nothing under it moves or re-renders. Where the page area is narrower than
 the panel wants to be, the panel takes all of it, which is the phone's case.
 Its close button stands first in its bar, where the reader's eye arrives from
-the table, and Escape closes it.
+the table, and Escape closes it. Its left edge is the shell's resize handle
+(`ResizeHandle`, the one `ResizablePanel` draws), with a grip wider than its
+line because it reaches out over the table: drag, arrow keys, Home and End,
+and a double-click back to the default of about half the page area. It never
+gets narrower than the row header needs (360 px) nor so wide that the table
+loses its last 240 px, and on a phone there is no handle.
 
 ### A block's own bar
 

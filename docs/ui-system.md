@@ -266,7 +266,7 @@ owns the code and nothing is fetched at runtime.
 | `src/styles.css`                    | Tailwind theme mapping, base layer, focus and scrollbar styles                                                                   |
 | `src/components/ui/*`               | installed and adapted shadcn components                                                                                          |
 | `src/components/ui/toolbar.tsx`     | custom primitive: `role="toolbar"` with a roving tabindex, on Base UI                                                            |
-| `src/components/layout.tsx`         | `AppShell`, `AppHeader`, `AppBody`, `AppMain`, `AppPage`, `ResizablePanel`, `SkipToContentLink`                                  |
+| `src/components/layout.tsx`         | `AppShell`, `AppHeader`, `AppBody`, `AppMain`, `AppPage`, `ResizablePanel`, `ResizeHandle`, `SkipToContentLink`                  |
 | `src/components/date-picker.tsx`    | `DatePicker`, `DateTimePicker`: the one date entry, `Calendar` in a `Popover`                                                    |
 | `src/components/image-lightbox.tsx` | `ImageLightbox`: an image over the page with zoom, pan and pinch; `ImageLightboxArea` in `apps/web` decides which click opens it |
 | `src/components/instrument.tsx`     | `SectionRule` (the section mark), `Leader` (the dotted leader)                                                                   |
