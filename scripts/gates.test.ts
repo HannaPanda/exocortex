@@ -38,12 +38,16 @@ interface GateResult {
   readonly output: string;
 }
 
-function run(command: string, args: readonly string[]): GateResult {
+function run(
+  command: string,
+  args: readonly string[],
+  env: Readonly<Record<string, string>> = {},
+): GateResult {
   const result = spawnSync(command, [...args], {
     cwd: repoRoot,
     encoding: 'utf8',
     // Colour codes would make the assertions on the output brittle.
-    env: { ...process.env, NO_COLOR: '1' },
+    env: { ...process.env, NO_COLOR: '1', ...env },
   });
   return { status: result.status, output: `${result.stdout ?? ''}${result.stderr ?? ''}` };
 }
@@ -1094,6 +1098,144 @@ describe('the translation state the tool and the gate share (lib/i18n-catalog.mj
     expect(keyStatus('Neu', 'Former', machine)).toBe('review');
     // An accepted hand-written translation has no output hash.
     expect(keyStatus('Neu', 'New', { source: hashText('Neu') })).toBe('current');
+  });
+});
+
+describe('message keys in use (check-i18n-keys.mjs)', () => {
+  const probe = 'apps/web/src/components/__gate_probe__/probe.tsx';
+
+  it('is green on the repository as it stands', () => {
+    expect(gate('check-i18n-keys.mjs').status).toBe(0);
+  });
+
+  it('names file, line and namespace when the German catalogue lacks the namespace', () => {
+    writeProbe(
+      probe,
+      [
+        "import { useTranslations } from 'next-intl';",
+        '',
+        'export function Probe() {',
+        "  const t = useTranslations('database.gateProbe');",
+        "  return t('title');",
+        '}',
+        '',
+      ].join('\n'),
+    );
+    const result = gate('check-i18n-keys.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain(`${probe}:4: useTranslations('database.gateProbe')`);
+    expect(result.output).toContain('is not in de/database.json');
+  });
+
+  it('goes red for a literal key the namespace lacks, through t.rich and a ternary too', () => {
+    writeProbe(
+      probe,
+      [
+        "import { getTranslations } from 'next-intl/server';",
+        '',
+        'export async function Probe(flag: boolean) {',
+        "  const tx = await getTranslations({ locale: 'de', namespace: 'settings' });",
+        "  return [tx.rich('gateProbeRich', {}), tx(flag ? 'language.title' : 'gateProbeElse')];",
+        '}',
+        '',
+      ].join('\n'),
+    );
+    const result = gate('check-i18n-keys.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain(`${probe}:5: tx.rich('gateProbeRich')`);
+    expect(result.output).toContain("'settings.gateProbeElse' is not in the German catalogue");
+    expect(result.output).not.toContain("'settings.language.title'");
+  });
+
+  it('does not guess at a key built at run time or a translator handed elsewhere', () => {
+    writeProbe(
+      probe,
+      [
+        "import { useTranslations } from 'next-intl';",
+        '',
+        'function label(t: (key: string) => string) {',
+        "  return t('gateProbe.notThisOnesBusiness');",
+        '}',
+        '',
+        'export function Probe({ code }: { code: string }) {',
+        "  const t = useTranslations('settings');",
+        '  return [t(`gateProbe.${code}`), label(t)];',
+        '}',
+        '',
+      ].join('\n'),
+    );
+    expect(gate('check-i18n-keys.mjs').status).toBe(0);
+  });
+
+  it('stops `pnpm typecheck` before tsc starts', () => {
+    writeProbe(
+      probe,
+      [
+        "import { useTranslations } from 'next-intl';",
+        '',
+        'export function Probe() {',
+        "  const t = useTranslations('gateProbe');",
+        "  return t('title');",
+        '}',
+        '',
+      ].join('\n'),
+    );
+    const result = run('bash', ['scripts/typecheck.sh']);
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain(`${probe}:4: useTranslations('gateProbe')`);
+    expect(result.output).not.toContain('typecheck: $ tsc');
+  });
+});
+
+describe('memory limit around heavy steps (memory-scope.sh)', () => {
+  // A scope needs a systemd user session. Where there is none (the CI runner)
+  // the script runs its command without a limit, and only the pass-through
+  // cases below can be asked.
+  const scopes =
+    spawnSync('systemd-run', [
+      '--user',
+      '--scope',
+      '--quiet',
+      '--collect',
+      '-p',
+      'MemoryMax=64M',
+      '--',
+      'true',
+    ]).status === 0;
+  const hog = ['-e', 'const held = []; for (;;) held.push(Buffer.alloc(1e6, 1));'];
+
+  it.skipIf(!scopes)('ends a step at its limit, with 137 and a message naming the limit', () => {
+    const result = run(
+      'bash',
+      ['scripts/memory-scope.sh', 'build', 'Gate probe', '--', 'node', ...hog],
+      { EXOCORTEX_BUILD_MEMORY_MAX: '128M' },
+    );
+    expect(result.status).toBe(137);
+    expect(result.output).toContain(
+      'Gate probe stopped at its memory limit of 128M (EXOCORTEX_BUILD_MEMORY_MAX)',
+    );
+    expect(result.output).toContain('check-i18n-keys.mjs');
+  });
+
+  it("passes the command's own exit status through", () => {
+    const result = run('bash', [
+      'scripts/memory-scope.sh',
+      'typecheck',
+      'Gate probe',
+      '--',
+      'bash',
+      '-c',
+      'exit 3',
+    ]);
+    expect(result.status).toBe(3);
+  });
+
+  it('refuses a limit that is not a size', () => {
+    const result = run('bash', ['scripts/memory-scope.sh', '--status'], {
+      EXOCORTEX_TYPECHECK_MEMORY_MAX: 'plenty',
+    });
+    expect(result.status).toBe(2);
+    expect(result.output).toContain('EXOCORTEX_TYPECHECK_MEMORY_MAX must be a size');
   });
 });
 

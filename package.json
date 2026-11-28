@@ -17,7 +17,7 @@
     "build": "turbo run build",
     "lint": "node scripts/check-dependency-boundaries.mjs && oxlint && eslint .",
     "lint:fix": "oxlint --fix && eslint . --fix",
-    "typecheck": "turbo run typecheck && tsc -p tsconfig.tools.json --noEmit",
+    "typecheck": "bash scripts/typecheck.sh",
     "test": "pnpm test:unit && pnpm test:integration",
     "test:unit": "node scripts/run-tests.mjs test:unit",
     "test:integration": "bash scripts/test-integration.sh",

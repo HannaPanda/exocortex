@@ -26,6 +26,12 @@
 # while it runs, there are 16 GB shared with everything else on the machine, and
 # the Next.js build on its own is enough to summon the OOM killer. See
 # `deploy/README.md`.
+#
+# The heavy steps -- each package's build, the linters, the typecheck, the
+# tests -- also run inside a memory limit of their own (`scripts/memory-scope.sh`,
+# issue #325): EXOCORTEX_TYPECHECK_MEMORY_MAX (default 4G) for the typecheck,
+# EXOCORTEX_BUILD_MEMORY_MAX (default 5G) for the rest, `off` for none. Where
+# no systemd user session exists, as on the CI runner, they run without one.
 
 set -euo pipefail
 
@@ -69,6 +75,25 @@ run_gate() {
   fi
 }
 
+# A heavy step, inside the build memory limit (scripts/memory-scope.sh). Its
+# exit status is the command's own, or 137 when the limit ended it, in which
+# case memory-scope.sh has already said which limit and why.
+heavy() {
+  local label="$1"; shift
+  bash scripts/memory-scope.sh build "$label" -- "$@"
+}
+
+# What a failed heavy step reports. 137 is a kill rather than a failure, and
+# the hint is about memory then, not about the code.
+heavy_failed() {
+  local status="$1" title="$2" hint="${3:-}"
+  if [ "$status" -eq 137 ]; then
+    fail "$title (killed)" \
+         "If the lines above name a memory limit, it was this step's own and nothing else was touched. If they do not, it was the host's OOM killer: check 'dmesg | tail' and free memory before retrying. Do not retry in a loop."
+  fi
+  fail "$title" "$hint"
+}
+
 # --- 0. Working tree ---------------------------------------------------------
 # Before anything else, and not covered by --skip-checks. Everything downstream
 # assumes "what is deployed is a git SHA": the build marker, the deploy marker
@@ -97,6 +122,9 @@ if [ "$AVAILABLE_MB" -lt 2048 ]; then
   warn "Under 2 GB available. The build will work but has little room; watch 'dmesg | tail' if a step is killed."
 fi
 ok "Enough headroom."
+MEMORY_LIMITS="$(bash scripts/memory-scope.sh --status)" \
+  || fail "Memory limit misconfigured" "Set the variable named above to a size like 4G, or to off."
+info "$MEMORY_LIMITS"
 
 # --- 2. Dependencies ---------------------------------------------------------
 step "Step 2 — pnpm install --frozen-lockfile"
@@ -129,6 +157,9 @@ run_gate "test split"           node scripts/check-test-split.mjs
 run_gate "typecheck coverage"   node scripts/check-typecheck-coverage.mjs
 run_gate "migration history"    bash scripts/check-migrations-reproducible.sh
 run_gate "message catalogues"   node scripts/check-i18n.mjs
+# Before anything type-checks, and step 5 does (tsc per package, next build):
+# a namespace the German catalogue lacks costs this a second and tsc gigabytes.
+run_gate "message keys in use"  node scripts/check-i18n-keys.mjs
 run_gate "inline text ratchet"  node scripts/check-i18n-literals.mjs
 ok "All hard gates green."
 
@@ -143,10 +174,10 @@ if [ -f "$MARKER" ] && [ "$(cat "$MARKER")" = "$HEAD_SHA" ]; then
 else
   while read -r package; do
     info "$package"
-    if ! pnpm --filter "$package" build; then
-      fail "Build failed: $package" \
-           "If it was killed rather than failing, it is the OOM killer: check 'dmesg | tail' and free memory before retrying. Do not retry in a loop."
-    fi
+    status=0
+    heavy "Build $package" pnpm --filter "$package" build || status=$?
+    [ "$status" -eq 0 ] || heavy_failed "$status" "Build failed: $package" \
+      "Read the compiler's output above."
   done < <(node scripts/lib/build-order.mjs)
   printf '%s' "$HEAD_SHA" > "$MARKER"
   ok "Build complete."
@@ -170,10 +201,12 @@ else
   # was: those same files had been outside every tsconfig for as long as they
   # had existed.
   info "oxlint, whole repository …"
-  pnpm exec oxlint || fail "oxlint found problems" "Run 'pnpm exec oxlint --fix' for the mechanical ones."
+  heavy "oxlint" pnpm exec oxlint \
+    || heavy_failed $? "oxlint found problems" "Run 'pnpm exec oxlint --fix' for the mechanical ones."
 
   info "ESLint, the rules oxlint cannot express …"
-  pnpm exec eslint . || fail "ESLint found problems" "Run 'pnpm exec eslint . --fix' for the mechanical ones."
+  heavy "ESLint" pnpm exec eslint . \
+    || heavy_failed $? "ESLint found problems" "Run 'pnpm exec eslint . --fix' for the mechanical ones."
 
   # A soft check and not a hard gate on purpose: an unformatted file is not a
   # wrong file, and stopping a deploy over a line break would be out of
@@ -185,8 +218,10 @@ else
   pnpm format:check >/dev/null || fail "Files are not formatted" \
     "Run 'pnpm format'. If it touches files you did not change, commit that on its own -- a reformat mixed into a real change makes the real change unreadable."
 
+  # `pnpm typecheck` is scripts/typecheck.sh: the catalogue keys first, then
+  # turbo at a concurrency of four inside its own, tighter memory limit.
   info "Typecheck …"
-  pnpm typecheck || fail "Type errors" "Every TypeScript file in the repository, tests included, is covered by one of these projects; the coverage gate above is what keeps that true."
+  pnpm typecheck || heavy_failed $? "Type errors" "Every TypeScript file in the repository, tests included, is covered by one of these projects; the coverage gate above is what keeps that true."
 
   # The watchmen. Each gate is run twice, once clean and once with a violation
   # written into the tree, so a gate that has quietly stopped matching anything
@@ -194,7 +229,7 @@ else
   # seconds, and it runs wherever this script runs -- here and in CI, which is
   # this script and nothing else.
   info "Gate tests …"
-  pnpm test:gates || fail "A gate does not behave the way it is documented to" \
+  heavy "Gate tests" pnpm test:gates || heavy_failed $? "A gate does not behave the way it is documented to" \
     "Read which case failed: a gate that cannot go red is worse than no gate, because it reports success on a question it no longer asks."
 
   # The default set is every test that needs no database, no Redis and no
@@ -215,7 +250,7 @@ else
   # some 70 test processes on eight cores and tests ran into their limits
   # under the load they made themselves (issue #313).
   info "Tests without infrastructure (--full-tests adds the rest) …"
-  pnpm test:unit || fail "Unit tests failed"
+  heavy "Unit tests" pnpm test:unit || heavy_failed $? "Unit tests failed"
 
   # The Claude Code plugin is no workspace: plain Node without dependencies,
   # because it is copied onto other people's machines. Its hooks are tested
@@ -225,7 +260,7 @@ else
 
   if [ "$FULL_TESTS" -eq 1 ]; then
     info "Integration tests on a throwaway Postgres and Redis …"
-    pnpm test:integration || fail "Integration tests failed"
+    heavy "Integration tests" pnpm test:integration || heavy_failed $? "Integration tests failed"
 
     # The styleguide gate (issue #127): screenshot baselines, axe and keyboard
     # checks against /design-system, served from the web build step 5 just
@@ -233,7 +268,7 @@ else
     # image. Here rather than in the default set for the same reason as the
     # integration tests: it needs Docker, and two minutes.
     info "Styleguide: screenshots, accessibility, keyboard …"
-    pnpm test:styleguide || fail "Styleguide gate failed" \
+    heavy "Styleguide" pnpm test:styleguide || heavy_failed $? "Styleguide gate failed" \
       "A red screenshot is a difference to review, not a verdict: open the diff in e2e/test-results. Meant? Rerun with 'pnpm test:styleguide:update' and commit the baseline on its own. Not meant? Fix the code. Never rewrite baselines just to get green."
   fi
 

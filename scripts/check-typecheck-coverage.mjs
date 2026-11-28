@@ -118,7 +118,13 @@ function projectsOf(manifests, scriptName) {
     const script = JSON.parse(readFileSync(join(repoRoot, manifest), 'utf8')).scripts?.[scriptName];
     if (script === undefined) continue;
     const dir = dirname(manifest);
-    for (const match of script.matchAll(/-p\s+(\S+)/g)) {
+    // A script may hand the work to a shell script of the repository's own:
+    // the root `typecheck` is `bash scripts/typecheck.sh`, which wraps tsc in
+    // a memory limit (issue #325). What that file runs counts as the script's.
+    const delegated = [...script.matchAll(/\bbash\s+(\S+\.sh)\b/g)].map((match) =>
+      readFileSync(join(repoRoot, dir, match[1]), 'utf8'),
+    );
+    for (const match of [script, ...delegated].join('\n').matchAll(/-p\s+(\S+)/g)) {
       found.push({ dir, config: match[1], declaredIn: manifest });
     }
   }
