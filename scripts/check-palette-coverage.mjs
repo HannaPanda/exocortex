@@ -68,6 +68,11 @@ const SCREEN_EXEMPT = [
       'A redirect into the settings dialog (issue #279), kept for old bookmarks; the palette opens the dialog group itself.',
   })),
   {
+    screen: '/arbeitsbereich/:x/einstellungen',
+    reason:
+      "A redirect into the settings dialog (issue #279): its tabs became the dialog's workspace groups, which the palette opens one by one.",
+  },
+  {
     screen: '/teilen',
     reason:
       'The share target and the bookmarklet: it needs the address being shared, which only the sender has. Capture is the palette command for the same thing.',

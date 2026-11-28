@@ -67,7 +67,6 @@ interface Place {
     | 'workflows'
     | 'automations'
     | 'templates'
-    | 'workspaceSettings'
     | 'admin'
     | 'adminSettings'
     | 'adminModels'
@@ -169,12 +168,6 @@ const PLACES: readonly Place[] = [
     screen: '/arbeitsbereich/:x/vorlagen',
     audience: 'workspace',
     icon: LayoutTemplateIcon,
-  },
-  {
-    key: 'workspaceSettings',
-    screen: '/arbeitsbereich/:x/einstellungen',
-    audience: 'workspace',
-    icon: Settings2Icon,
   },
   { key: 'admin', screen: '/admin', audience: 'admin', icon: ShieldIcon },
   { key: 'adminSettings', screen: '/admin/einstellungen', audience: 'admin', icon: Settings2Icon },

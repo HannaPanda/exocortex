@@ -72,6 +72,54 @@ test.describe('Einstellungsdialog', () => {
     }
   });
 
+  test('the gear on the workspace opens its own group over the workspace', async ({ page }) => {
+    const workspacePath = await openWorkspace(page);
+    await page.getByTestId('open-workspace-settings').click();
+
+    const dialog = page.getByTestId('settings-dialog');
+    await expect(page).toHaveURL(/\?einstellungen=workspace$/);
+    expect(new URL(page.url()).pathname).toBe(workspacePath);
+    await expect(dialog.getByTestId('settings-nav-workspace')).toHaveAttribute(
+      'aria-current',
+      'page',
+      { timeout: 30_000 },
+    );
+    // The seed account owns this workspace, so it sees every group of it,
+    // the owner-only foreign tools included.
+    for (const group of ['members', 'ai', 'tools', 'overrides']) {
+      await expect(dialog.getByTestId(`settings-nav-${group}`)).toBeVisible();
+    }
+    // What stays a page is linked from here rather than gone.
+    await expect(dialog.getByTestId('open-workspace-shares')).toBeVisible();
+
+    await page.goBack();
+    await expect(dialog).toHaveCount(0);
+    expect(new URL(page.url()).pathname).toBe(workspacePath);
+  });
+
+  test('the old workspace settings open the group their tab became', async ({ page }) => {
+    const workspacePath = await openWorkspace(page);
+    for (const [tab, group] of [
+      ['', 'workspace'],
+      ['?tab=members', 'members'],
+      ['?tab=overrides', 'overrides'],
+    ] as const) {
+      await page.goto(`${workspacePath}/einstellungen${tab}`);
+      await page.waitForURL(new RegExp(`${workspacePath}\\?einstellungen=${group}$`), {
+        timeout: 60_000,
+      });
+      await expect(page.getByTestId(`settings-section-${group}`)).toBeVisible({ timeout: 30_000 });
+    }
+  });
+
+  test('a group of the workspace waits for it instead of showing another', async ({ page }) => {
+    const workspacePath = await openWorkspace(page);
+    await page.goto(`${workspacePath}?einstellungen=members`);
+    // Straight to the members, never by way of the first account group.
+    await expect(page.getByTestId('open-workspace-invite')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('settings-nav-members')).toHaveAttribute('aria-current', 'page');
+  });
+
   test.describe('on a phone', () => {
     test.use({ viewport: { width: 390, height: 844 } });
 

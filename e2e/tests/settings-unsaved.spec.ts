@@ -25,12 +25,15 @@ async function openWorkspaceSettings(page: Page): Promise<void> {
   await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
   const workspaceId = workspaceIdFrom(page);
 
-  await page.goto(`/arbeitsbereich/${workspaceId}/einstellungen`);
-  await page
-    .getByTestId('workspace-settings-tabs')
-    .getByRole('tab', { name: 'Einstellungen' })
-    .click();
+  // The workspace's configuration is a group of the settings dialog now
+  // (issue #279), opened over the workspace's start page.
+  await page.goto(`/arbeitsbereich/${workspaceId}?einstellungen=overrides`);
   await expect(page.getByTestId('workspace-setting-group-ai')).toBeVisible({ timeout: 30_000 });
+}
+
+/** Another group of the dialog, which is the way out of a draft inside it. */
+function languageGroup(page: Page) {
+  return page.getByTestId('settings-nav-language');
 }
 
 /**
@@ -67,39 +70,34 @@ test.describe('Ungespeicherte Einstellungen', () => {
     await expect(notice).toBeEmpty();
   });
 
-  test('fragt nach, bevor ein Wechsel innerhalb der Anwendung die Änderung verwirft', async ({
-    page,
-  }) => {
+  test('fragt nach, bevor ein Wechsel im Dialog die Änderung verwirft', async ({ page }) => {
     await openWorkspaceSettings(page);
     await toolsSwitch(page).click();
     await expect(page.getByTestId('workspace-settings-dirty')).not.toBeEmpty();
 
-    await page.getByTestId('open-global-menu').click();
-    await page.getByTestId('menu-open-features').click();
+    await languageGroup(page).click();
 
     const dialog = page.getByTestId('unsaved-changes-dialog');
     await expect(dialog).toBeVisible();
     await expect(dialog).toContainText('Eine Einstellung ist geändert');
 
-    // Hier bleiben lässt die Seite stehen, und die Änderung steht noch.
+    // Hier bleiben lässt die Gruppe stehen, und die Änderung steht noch.
     await page.getByTestId('unsaved-changes-stay').click();
     await expect(dialog).toBeHidden();
-    await expect(page).toHaveURL(/\/einstellungen$/);
+    await expect(page).toHaveURL(/einstellungen=overrides$/);
     await expect(page.getByTestId('workspace-settings-dirty')).not.toBeEmpty();
 
-    // Und die Seite ist danach noch bedienbar. Der Wächter hat den Klick
-    // anfangs auch gestoppt statt nur abgebrochen, sodass das Kontomenü nie
-    // zuging und seine Sperrfläche über allem liegen blieb.
-    await expect(page.locator('[data-base-ui-inert]')).toHaveCount(0);
+    // Und die Gruppe ist danach noch bedienbar.
     await toolsSwitch(page).click();
     await expect(page.getByTestId('workspace-settings-dirty')).toBeEmpty();
     await toolsSwitch(page).click();
 
-    // Und derselbe Weg noch einmal, diesmal bis zum Ende.
-    await page.getByTestId('open-global-menu').click();
-    await page.getByTestId('menu-open-features').click();
+    // Schließen fragt genauso, und Verwerfen schließt dann wirklich.
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeVisible();
     await page.getByTestId('unsaved-changes-leave').click();
-    await page.waitForURL(/\/hilfe/, { timeout: 30_000 });
+    await expect(page.getByTestId('settings-dialog')).toHaveCount(0);
+    await expect(page).not.toHaveURL(/einstellungen=/);
   });
 
   test('fragt nicht nach, wenn sich nichts geändert hat', async ({ page }) => {
@@ -110,9 +108,8 @@ test.describe('Ungespeicherte Einstellungen', () => {
     await toolsSwitch(page).click();
     await expect(page.getByTestId('workspace-settings-dirty')).toBeEmpty();
 
-    await page.getByTestId('open-global-menu').click();
-    await page.getByTestId('menu-open-features').click();
-    await page.waitForURL(/\/hilfe/, { timeout: 30_000 });
+    await languageGroup(page).click();
+    await expect(page).toHaveURL(/einstellungen=language$/);
     await expect(page.getByTestId('unsaved-changes-dialog')).toHaveCount(0);
   });
 
@@ -151,9 +148,9 @@ test.describe('Ungespeicherte Einstellungen', () => {
     await expect(notice).toBeEmpty();
 
     // Und der Wechsel geht jetzt ohne Rückfrage.
-    await page.getByTestId('open-global-menu').click();
-    await page.getByTestId('menu-open-features').click();
-    await page.waitForURL(/\/hilfe/, { timeout: 30_000 });
+    await languageGroup(page).click();
+    await expect(page).toHaveURL(/einstellungen=language$/);
+    await expect(page.getByTestId('unsaved-changes-dialog')).toHaveCount(0);
 
     // Den eigenen Wert wieder wegräumen, damit der Arbeitsbereich bleibt, wie
     // er war.

@@ -10,7 +10,7 @@ import { storageStatePath } from '../support/global-setup';
  *
  * Ein echter fremder MCP-Server müsste öffentlich per https erreichbar sein,
  * und der Schalter `ai.externalMcpEnabled` gehört der Betreiberin, nicht der
- * Suite. Deshalb prüft der erste Test nur, dass der Reiter mit der echten API
+ * Suite. Deshalb prüft der erste Test nur, dass die Gruppe mit der echten API
  * erscheint, und der zweite ersetzt die Antworten der API im Browser durch
  * einen Server mit drei Werkzeugen: So ist jeder Zustand einer Zeile zu sehen,
  * ohne dass eine Anfrage die Instanz verlässt.
@@ -120,13 +120,13 @@ function fixtureServer(readAccess: string) {
 }
 
 async function openTab(page: Page): Promise<void> {
-  await page.goto(`/arbeitsbereich/${workspaceId}/einstellungen?tab=tools`);
+  await page.goto(`/arbeitsbereich/${workspaceId}?einstellungen=tools`);
   await expect(page.getByTestId('external-mcp-panel')).toBeVisible({ timeout: 30_000 });
 }
 
-test('der Reiter erscheint für die Besitzerin und liest die echte API', async ({ page }) => {
+test('die Gruppe erscheint für die Besitzerin und liest die echte API', async ({ page }) => {
   await openTab(page);
-  await expect(page.getByTestId('tab-external-tools')).toBeVisible();
+  await expect(page.getByTestId('settings-nav-tools')).toBeVisible();
   // Live ist der Schalter der Instanz aus oder an; beides ist ein gültiger
   // Zustand, und jeder hat sein eigenes, sichtbares Zeichen.
   // Der Knopf zum Anbinden ist immer da und genau dann gesperrt, wenn der

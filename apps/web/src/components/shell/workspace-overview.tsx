@@ -35,9 +35,11 @@ import {
 
 import { ChatStarter } from '@/components/ai/chat-starter';
 import { DocumentIcon } from '@/components/document/document-icon';
+import { useSettingsDialog } from '@/components/settings-dialog/settings-dialog-context';
 import { useCreateDocument } from '@/lib/api/document-queries';
 import { useWorkspaceOverview } from '@/lib/api/workspace-queries';
 import { useFormatter } from '@/lib/formatter';
+import { isPlainClick } from '@/lib/plain-click';
 
 /**
  * The landing view of a workspace.
@@ -263,6 +265,7 @@ function SectionRow({
 
 export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
   const t = useTranslations('shell.workspaceOverview');
+  const settings = useSettingsDialog();
   const format = useFormatter();
   const router = useRouter();
   const overview = useWorkspaceOverview(workspaceId);
@@ -311,7 +314,16 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
                   size="icon-sm"
                   aria-label={t('settingsLabel')}
                   data-testid="open-workspace-settings"
-                  render={<Link href={`/arbeitsbereich/${workspaceId}/einstellungen`} />}
+                  render={
+                    <Link
+                      href={settings.href('workspace')}
+                      onClick={(event) => {
+                        if (!isPlainClick(event)) return;
+                        event.preventDefault();
+                        settings.open('workspace');
+                      }}
+                    />
+                  }
                 >
                   <SettingsIcon />
                 </Button>

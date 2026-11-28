@@ -1,26 +1,25 @@
 'use client';
 
-import { PlugIcon, Settings2Icon, SettingsIcon, SparklesIcon, UsersIcon } from 'lucide-react';
+import { Settings2Icon, SettingsIcon } from 'lucide-react';
 import { type useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { SETTING_GROUPS } from '@/components/settings/setting-copy';
 import { SETTINGS_SECTION_ICONS } from '@/components/settings-dialog/section-icons';
 import {
+  sectionReaches,
   SETTINGS_SECTIONS,
   type SettingsAudience,
   type SettingsSectionId,
 } from '@/components/settings-dialog/sections';
 
 import { keywordsOf, type PaletteCommand, type PaletteContext } from './palette-command';
-import { SETTING_GROUP_PARAM, WORKSPACE_TAB_PARAM } from './settings-addresses';
+import { SETTING_GROUP_PARAM } from './settings-addresses';
 
 const ICON = 'size-4 text-muted-foreground';
 
-const WORKSPACE_ADMIN_ROLES = new Set(['OWNER', 'ADMIN']);
-
 /**
- * Every settings area by its own name (issue #148).
+ * Every group of the deployment's settings by its own name (issue #148).
  *
  * The deployment's groups are read from `SETTING_GROUPS`, not listed here, so
  * a new group is a new command the day it exists: somebody typing "kalender"
@@ -52,71 +51,19 @@ export function settingsCommands(
     }
   }
 
-  const workspaceId = context.workspaceId;
-  if (workspaceId !== null) {
-    const base = `/arbeitsbereich/${workspaceId}/einstellungen?${WORKSPACE_TAB_PARAM}=`;
-    // Only somebody who may change who is in the workspace is offered the
-    // tab for it: the settings page hides it from everybody else, and the
-    // command would open the first tab instead, which is a quiet lie.
-    if (context.workspaceRole !== null && WORKSPACE_ADMIN_ROLES.has(context.workspaceRole)) {
-      commands.push({
-        id: 'settings-workspace-members',
-        group: 'settings',
-        label: t('workspaceMembers'),
-        icon: <UsersIcon className={ICON} />,
-        keywords: keywordsOf(t('workspaceMembersKeywords')),
-        href: `${base}members`,
-      });
-    }
-    // Owner only, like the tab and the API behind it (ADR-086).
-    if (context.workspaceRole === 'OWNER') {
-      commands.push({
-        id: 'settings-workspace-tools',
-        group: 'settings',
-        label: t('workspaceTools'),
-        icon: <PlugIcon className={ICON} />,
-        keywords: keywordsOf(t('workspaceToolsKeywords')),
-        href: `${base}tools`,
-      });
-    }
-    commands.push(
-      {
-        id: 'settings-workspace-ai',
-        group: 'settings',
-        label: t('workspaceAi'),
-        icon: <SparklesIcon className={ICON} />,
-        keywords: keywordsOf(t('workspaceAiKeywords')),
-        href: `${base}ai`,
-      },
-      {
-        id: 'settings-workspace-overrides',
-        group: 'settings',
-        label: t('workspaceOverrides'),
-        icon: <Settings2Icon className={ICON} />,
-        keywords: keywordsOf(t('workspaceOverridesKeywords')),
-        href: `${base}overrides`,
-      },
-    );
-  }
-
   return commands;
 }
 
-/** Whether the reader in `context` may see a group meant for `audience`. */
+/**
+ * Whether the reader in `context` may see a group meant for `audience`. A
+ * workspace group needs a workspace open underneath: the palette has no
+ * other one to name, while the dialog falls back to the first.
+ */
 export function reachesAudience(audience: SettingsAudience, context: PaletteContext): boolean {
-  const role = context.workspaceRole;
-  switch (audience) {
-    case 'everyone':
-      return true;
-    case 'admin':
-      return context.role === 'admin';
-    case 'workspaceMember':
-      return context.workspaceId !== null && role !== null;
-    case 'workspaceAdmin':
-      return context.workspaceId !== null && role !== null && WORKSPACE_ADMIN_ROLES.has(role);
-    case 'workspaceOwner':
-      return context.workspaceId !== null && role === 'OWNER';
-  }
+  return sectionReaches(audience, {
+    admin: context.role === 'admin',
+    workspaceRole: context.workspaceId === null ? null : context.workspaceRole,
+  });
 }
 
 /**
@@ -146,12 +93,16 @@ export function settingsSectionCommands(
   );
 }
 
-const ACCOUNT_SECTIONS = new Set(
-  SETTINGS_SECTIONS.filter((section) => section.area === 'account').map(
-    (section) => `settings-section-${section.id}`,
-  ),
-);
-const WORKSPACE_PLACES = new Set(['navigate-workspaceSettings']);
+function sectionCommandIds(area: string): Set<string> {
+  return new Set(
+    SETTINGS_SECTIONS.filter((section) => section.area === area).map(
+      (section) => `settings-section-${section.id}`,
+    ),
+  );
+}
+const ACCOUNT_SECTIONS = sectionCommandIds('account');
+const WORKSPACE_SECTIONS = sectionCommandIds('workspace');
+const ADMIN_SECTIONS = sectionCommandIds('admin');
 const ADMIN_PLACES = new Set(['navigate-adminSettings', 'navigate-adminModels']);
 
 /**
@@ -189,12 +140,17 @@ export function settingsMenu(
     {
       id: 'workspace',
       label: t('menuWorkspace'),
+      entries: dialogGroups.filter((command) => WORKSPACE_SECTIONS.has(command.id)),
+    },
+    {
+      id: 'admin',
+      label: t('menuAdmin'),
       entries: [
-        ...pick(WORKSPACE_PLACES),
-        ...settings.filter((command) => command.id.startsWith('settings-workspace-')),
+        ...dialogGroups.filter((command) => ADMIN_SECTIONS.has(command.id)),
+        ...pick(ADMIN_PLACES),
+        ...adminGroups,
       ],
     },
-    { id: 'admin', label: t('menuAdmin'), entries: [...pick(ADMIN_PLACES), ...adminGroups] },
   ].filter((section) => section.entries.length > 0);
 
   return [

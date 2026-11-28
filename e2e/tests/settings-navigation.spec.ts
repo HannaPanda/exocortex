@@ -44,32 +44,31 @@ test.describe('Auswahl und Navigation', () => {
     await expect(target).not.toBeEmpty();
   });
 
-  test('die Einstellungen eines Arbeitsbereichs sind in Reiter geteilt', async ({ page }) => {
+  test('die Einstellungen eines Arbeitsbereichs sind Gruppen, und genau eine ist gewählt', async ({
+    page,
+  }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
     const workspaceId = workspaceIdFrom(page);
 
-    await page.goto(`/arbeitsbereich/${workspaceId}/einstellungen`);
-    await expect(
-      page.getByRole('heading', { name: 'Arbeitsbereich-Einstellungen', level: 1 }),
-    ).toBeVisible({ timeout: 30_000 });
+    // The tabs became groups of the settings dialog (issue #279).
+    await page.goto(`/arbeitsbereich/${workspaceId}?einstellungen=workspace`);
+    const dialog = page.getByTestId('settings-dialog');
+    const allgemein = dialog.getByTestId('settings-nav-workspace');
+    const konfiguration = dialog.getByTestId('settings-nav-overrides');
 
-    const tabs = page.getByTestId('workspace-settings-tabs');
-    const allgemein = tabs.getByRole('tab', { name: 'Allgemein' });
-    const einstellungen = tabs.getByRole('tab', { name: 'Einstellungen' });
-
-    // Exactly one tab carries the selection, and it is the one on screen.
-    await expect(allgemein).toHaveAttribute('data-active', '');
-    await expect(einstellungen).not.toHaveAttribute('data-active', '');
+    // Exactly one group carries the selection, and it is the one on screen.
+    await expect(allgemein).toHaveAttribute('aria-current', 'page', { timeout: 30_000 });
+    await expect(konfiguration).not.toHaveAttribute('aria-current', 'page');
     await expect(page.getByTestId('workspace-name-input')).toBeVisible();
 
-    await einstellungen.click();
-    await expect(einstellungen).toHaveAttribute('data-active', '');
-    await expect(allgemein).not.toHaveAttribute('data-active', '');
+    await konfiguration.click();
+    await expect(konfiguration).toHaveAttribute('aria-current', 'page');
+    await expect(allgemein).not.toHaveAttribute('aria-current', 'page');
     await expect(page.getByTestId('workspace-name-input')).toHaveCount(0);
 
     // The settings themselves arrive one group at a time, and the group list
-    // marks where you are for the same reason the tabs above it do.
+    // marks where you are for the same reason the navigation beside it does.
     const ai = page.getByTestId('workspace-setting-group-ai');
     const memory = page.getByTestId('workspace-setting-group-memory');
     await expect(ai).toHaveAttribute('data-active', '', { timeout: 30_000 });
