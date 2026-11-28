@@ -209,7 +209,7 @@ describe('narrow writes (ADR-055)', () => {
     }
     expect(caught).toBeInstanceOf(BlockRangeError);
     expect((caught as BlockRangeError).reason).toBe('database_in_table_cell');
-    expect((caught as BlockRangeError).message).toContain('[[Titel]]');
+    expect((caught as BlockRangeError).message).toContain('[[Title]]');
   });
 
   it('takes the same database beside the table, and a link to it in the cell', () => {

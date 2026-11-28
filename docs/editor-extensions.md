@@ -82,7 +82,7 @@ and it cannot be worked with at that width. The rule is one module,
   `block+`, which the schema cannot narrow without a second set of nodes, so
   `validateProseMirrorDocument` asks `findBlocksInTableCells` first and refuses
   with a sentence naming the alternative (above or below the table, or
-  `:::page Titel` / `[[Titel]]` in the cell). Every server-side write goes
+  `:::page Title` / `[[Title]]` in the cell). Every server-side write goes
   through it; a narrow write (ADR-055) is refused earlier, by name
   (`database_in_table_cell`). Markdown cannot write one: a pipe table's cells
   hold inline text only.

@@ -149,8 +149,8 @@ export function findBlocksInTableCells(document: ProseMirrorNode): TableCellViol
 export function tableCellViolationMessage(violation: TableCellViolation): string {
   return (
     `A database (${violation.type}) cannot stand inside a table cell. ` +
-    'Put it above or below the table, or link to it from the cell with [[Titel]] ' +
-    'or a `:::page Titel` block'
+    'Put it above or below the table, or link to it from the cell with [[Title]] ' +
+    'or a `:::page Title` block'
   );
 }
 
@@ -161,7 +161,7 @@ export function tableCellViolationMessage(violation: TableCellViolation): string
  * and its `documentId` the database; a page link carries exactly those two, so
  * the link opens the same database and is renamed with it. An embed that was
  * never bound (`documentId` empty) becomes a link by title, the way a
- * `[[Titel]]` typed before its page existed is one.
+ * `[[Title]]` typed before its page existed is one.
  */
 export function pageLinkAttributesForEmbed(
   attrs: Readonly<Record<string, unknown>> | undefined,
