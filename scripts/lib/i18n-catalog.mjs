@@ -160,7 +160,23 @@ export function generatedCatalogSource(locales, namespaces) {
     }
   }
   lines.push('', `export const NAMESPACES = ${JSON.stringify(namespaces)} as const;`, '');
-  lines.push('export const CATALOG = {');
+  // The shape is written out rather than inferred: an inferred type of every
+  // locale's every message grew past what tsc will serialise into a
+  // declaration file (TS7056). Naming the source locale's shape once and
+  // holding every locale to it is also the stricter statement.
+  lines.push("/** The source locale's shape, which is every locale's shape. */");
+  // A type alias, not an interface: only an alias gets the implicit index
+  // signature use-intl's `AbstractIntlMessages` asks for.
+  lines.push('export type CatalogMessages = {');
+  for (const namespace of namespaces) {
+    lines.push(
+      `  readonly ${JSON.stringify(namespace)}: typeof ${identifier(SOURCE_LOCALE, namespace)};`,
+    );
+  }
+  lines.push('};', '');
+  lines.push(
+    `export const CATALOG: { readonly [locale in ${locales.map((locale) => `'${locale}'`).join(' | ')}]: CatalogMessages } = {`,
+  );
   for (const locale of locales) {
     lines.push(`  '${locale}': {`);
     for (const namespace of namespaces) {
@@ -168,6 +184,6 @@ export function generatedCatalogSource(locales, namespaces) {
     }
     lines.push('  },');
   }
-  lines.push('} as const;', '');
+  lines.push('};', '');
   return lines.join('\n');
 }

@@ -284,7 +284,46 @@ import pt_BR_workflows from './messages/pt-BR/workflows.json';
 
 export const NAMESPACES = ["account","admin","agentProfiles","ai","attention","auth","automations","calendar","changesets","commands","database","diagnostics","dialogs","document","editor","entities","errors","evals","features","help","invitations","knowledgeMap","mail","memory","projects","push","render","runInspector","search","settings","shares","shell","ui","workItems","workflows"] as const;
 
-export const CATALOG = {
+/** The source locale's shape, which is every locale's shape. */
+export type CatalogMessages = {
+  readonly "account": typeof de_account;
+  readonly "admin": typeof de_admin;
+  readonly "agentProfiles": typeof de_agentProfiles;
+  readonly "ai": typeof de_ai;
+  readonly "attention": typeof de_attention;
+  readonly "auth": typeof de_auth;
+  readonly "automations": typeof de_automations;
+  readonly "calendar": typeof de_calendar;
+  readonly "changesets": typeof de_changesets;
+  readonly "commands": typeof de_commands;
+  readonly "database": typeof de_database;
+  readonly "diagnostics": typeof de_diagnostics;
+  readonly "dialogs": typeof de_dialogs;
+  readonly "document": typeof de_document;
+  readonly "editor": typeof de_editor;
+  readonly "entities": typeof de_entities;
+  readonly "errors": typeof de_errors;
+  readonly "evals": typeof de_evals;
+  readonly "features": typeof de_features;
+  readonly "help": typeof de_help;
+  readonly "invitations": typeof de_invitations;
+  readonly "knowledgeMap": typeof de_knowledgeMap;
+  readonly "mail": typeof de_mail;
+  readonly "memory": typeof de_memory;
+  readonly "projects": typeof de_projects;
+  readonly "push": typeof de_push;
+  readonly "render": typeof de_render;
+  readonly "runInspector": typeof de_runInspector;
+  readonly "search": typeof de_search;
+  readonly "settings": typeof de_settings;
+  readonly "shares": typeof de_shares;
+  readonly "shell": typeof de_shell;
+  readonly "ui": typeof de_ui;
+  readonly "workItems": typeof de_workItems;
+  readonly "workflows": typeof de_workflows;
+};
+
+export const CATALOG: { readonly [locale in 'de' | 'en' | 'es' | 'fr' | 'it' | 'nl' | 'pl' | 'pt-BR']: CatalogMessages } = {
   'de': {
     "account": de_account,
     "admin": de_admin,
@@ -581,4 +620,4 @@ export const CATALOG = {
     "workItems": pt_BR_workItems,
     "workflows": pt_BR_workflows,
   },
-} as const;
+};
