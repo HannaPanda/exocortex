@@ -191,6 +191,36 @@ export class WorkspaceAccessService {
     userId: string,
     documentId: string | null,
   ): Promise<WorkspaceRole | null> {
+    return this.roleAt(workspaceId, userId, documentId, 'branch');
+  }
+
+  /**
+   * The caller's role, for an operation that writes onto this very page and
+   * creates nothing below it: a file or a picture uploaded onto the page, its
+   * cover (issue #264, ADR-044 addendum 2026-11-28).
+   *
+   * The same as `requireRoleAnchoredAt` for a member and for a confined
+   * credential. It differs only for the holder of a grant: any grant that
+   * covers the page counts, `PAGE_ONLY` included, because a file on the page is
+   * part of the page the grant lets them edit. `requireRoleAnchoredAt` keeps
+   * asking for the branch, because a page created under this one is a page the
+   * grant never named. Whether the role may write is the policy's question
+   * (`canUploadFile`), so a `READ` grant still uploads nothing.
+   */
+  async requireRoleOnPage(
+    workspaceId: string,
+    userId: string,
+    documentId: string | null,
+  ): Promise<WorkspaceRole | null> {
+    return this.roleAt(workspaceId, userId, documentId, 'page');
+  }
+
+  private async roleAt(
+    workspaceId: string,
+    userId: string,
+    documentId: string | null,
+    reach: 'branch' | 'page',
+  ): Promise<WorkspaceRole | null> {
     this.refuseOutsideConfinement(workspaceId);
     const restriction = this.currentRestriction();
     if (isRestricted(restriction)) {
@@ -215,12 +245,14 @@ export class WorkspaceAccessService {
     // Not a member, but possibly the holder of a grant on this very page. This
     // is what makes a WRITE share of a branch mean what it says: somebody who
     // may edit the pages in it may also add one, and without this they could
-    // change every existing page and create none.
+    // change every existing page and create none. Writing onto the page itself
+    // needs only a grant that covers it (issue #264).
     const context = await this.findDocumentContext(documentId, userId);
-    if (context === null) return null;
-    return context.grant.source === 'share' && context.grant.scope === 'SUBTREE'
-      ? context.role
-      : null;
+    if (context === null || context.grant.source !== 'share') return null;
+    // The grant answers for its own workspace; a request naming another one
+    // is about something else, whatever the page id says.
+    if (context.workspaceId !== workspaceId) return null;
+    return reach === 'page' || context.grant.scope === 'SUBTREE' ? context.role : null;
   }
 
   /**
@@ -493,6 +525,12 @@ export class WorkspaceAccessService {
       previewByteSize: number | null;
     };
     role: WorkspaceRole;
+    /**
+     * The page the file hangs on, as the caller reached it; null for a file on
+     * no page. Deleting a file asks whether the caller may edit this page
+     * (issue #264), so the answer has to be about the page, not the workspace.
+     */
+    page: DocumentPolicySubject | null;
   } | null> {
     const attachment = await this.prisma.attachment.findUnique({
       where: { id: attachmentId },
@@ -533,7 +571,7 @@ export class WorkspaceAccessService {
     if (attachment.documentId !== null) {
       const context = await this.findDocumentContext(attachment.documentId, userId);
       if (context === null) return null;
-      return { attachment, role: context.role };
+      return { attachment, role: context.role, page: context.document };
     }
 
     if (isRestricted(this.currentRestriction())) return null;
@@ -546,7 +584,7 @@ export class WorkspaceAccessService {
     if (attachment.conversationId !== null && attachment.createdById !== userId) return null;
     const role = await this.findMembershipRole(attachment.workspaceId, userId);
     if (role === null) return null;
-    return { attachment, role };
+    return { attachment, role, page: null };
   }
 
   /**

@@ -2,8 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { type FastifyRequest } from 'fastify';
 
 import {
-  assertPolicy,
-  canUploadFile,
   generateUploadTicket,
   hashUploadTicket,
   looksLikeUploadTicket,
@@ -44,6 +42,7 @@ import { PRISMA } from '../platform/platform.module';
 
 import { AttachmentsService } from './attachments.service';
 import { CellFilesService } from './cell-files.service';
+import { requireUploadRole } from './upload-access';
 
 /** Who is minting a ticket, as `SessionGuard` resolved them. */
 export interface TicketMinter {
@@ -103,12 +102,12 @@ export class UploadTicketsService {
     // The same check the upload makes, anchored at the same page, so a
     // credential confined to a branch can mint a ticket into it and nowhere
     // else (ADR-044). Redeeming checks again; this answers early.
-    const role = await this.access.requireRoleAnchoredAt(
-      input.workspaceId,
-      input.minter.userId,
-      input.request.documentId,
-    );
-    assertPolicy(canUploadFile(role));
+    await requireUploadRole(this.access, {
+      workspaceId: input.workspaceId,
+      userId: input.minter.userId,
+      documentId: input.request.documentId,
+      propertyId: input.request.propertyId,
+    });
     await this.attachments.assertAttachTarget(input.workspaceId, input.request.documentId);
     if (input.request.propertyId !== null) {
       await this.cellFiles.resolveTarget({
@@ -150,7 +149,10 @@ export class UploadTicketsService {
     // Still able to reach the place it names, under the same confinement the
     // request carries: a ticket is not a way to keep reading a workspace one
     // has left, or a page a confined token no longer covers.
-    const role = await this.access.requireRoleAnchoredAt(row.workspaceId, userId, row.documentId);
+    const role =
+      row.propertyId === null
+        ? await this.access.requireRoleOnPage(row.workspaceId, userId, row.documentId)
+        : await this.access.requireRoleAnchoredAt(row.workspaceId, userId, row.documentId);
     if (role === null) throw AppError.notFound('Upload ticket');
     return { ticket: toContract(row, Date.now()) };
   }
@@ -242,7 +244,7 @@ export class UploadTicketsService {
  *
  * The token is checked as if it had just arrived in a header -- revoked,
  * expired, disabled -- and it must still carry `scope`. Its page confinement
- * is installed in the request context, where `requireRoleAnchoredAt` and
+ * is installed in the request context, where `requireRoleOnPage` and
  * `findAttachmentContext` read it, so a confined token's ticket stays inside
  * the branch it was given. That context must exist: a confinement that could
  * not be installed would be a request with its owner's full reach, so its

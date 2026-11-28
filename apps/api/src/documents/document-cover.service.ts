@@ -1,11 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import {
-  assertPolicy,
-  canEditDocument,
-  canUploadFile,
-  WorkspaceAccessService,
-} from '@exocortex/auth';
+import { assertPolicy, canEditDocument, WorkspaceAccessService } from '@exocortex/auth';
 import {
   type DocumentSummary,
   type GenerateDocumentCoverResponse,
@@ -15,6 +10,7 @@ import { type PrismaClient } from '@exocortex/database';
 import { QueueRegistry } from '@exocortex/queue';
 
 import { AttachmentsService } from '../attachments/attachments.service';
+import { requireUploadRole } from '../attachments/upload-access';
 import { AppError } from '../common/app-error';
 import { confinedMembershipWhere, currentAiRunId } from '../common/correlation';
 import { PRISMA, QUEUES } from '../platform/platform.module';
@@ -113,19 +109,16 @@ export class DocumentCoverService {
   }): Promise<GenerateDocumentCoverResponse> {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canEditDocument(context.role, context.document));
-    // The finished picture is installed through the ordinary upload above,
-    // which asks more than editing does: a grant on this page alone does not
-    // carry a file onto it (ADR-044, `requireRoleAnchoredAt`). Asked here, so
-    // nobody pays for a picture that could never be set (issue #264).
-    assertPolicy(
-      canUploadFile(
-        await this.access.requireRoleAnchoredAt(
-          context.workspaceId,
-          input.userId,
-          input.documentId,
-        ),
-      ),
-    );
+    // The finished picture is installed through the ordinary upload above, so
+    // its question is asked here too, before anything is paid for: a picture
+    // that could never be set must not be drawn (issue #264). Since the
+    // addendum to ADR-044 any writing grant on the page carries it, the page
+    // alone included; the check stays so the two can never drift apart.
+    await requireUploadRole(this.access, {
+      workspaceId: context.workspaceId,
+      userId: input.userId,
+      documentId: input.documentId,
+    });
 
     // Who pays: the page's workspace for a member, the reader's own for
     // somebody who reached the page through a share (issue #264).

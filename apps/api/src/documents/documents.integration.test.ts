@@ -823,8 +823,6 @@ describe('generating a cover', () => {
           documentId: sharedPageId,
           kind: 'USER',
           permission: 'WRITE',
-          // The branch, because installing the cover is an upload onto the
-          // page, which a grant on the page alone does not carry (ADR-044).
           scope: 'SUBTREE',
           granteeId: outsiderId,
           createdById: ownerId,
@@ -833,10 +831,13 @@ describe('generating a cover', () => {
     });
 
     afterAll(async () => {
+      // The grants go too: the suites below rely on the outsider holding
+      // nothing in this workspace, and since issue #327 a grant opens the tree.
+      await prisma.documentShare.deleteMany({ where: { workspaceId, granteeId: outsiderId } });
       await prisma.workspace.deleteMany({ where: { id: { in: [readerFirstId, readerSecondId] } } });
     });
 
-    it('refuses before anything is paid when the grant could not install the cover', async () => {
+    it('draws for a writing grant on the page alone (issue #264)', async () => {
       const pageOnlyId = await createPage('Nur diese Seite geteilt');
       await prisma.documentShare.create({
         data: {
@@ -850,15 +851,41 @@ describe('generating a cover', () => {
         },
       });
 
+      await coverService(enabled).requestGeneration({
+        documentId: pageOnlyId,
+        userId: outsiderId,
+        prompt: 'Ein Leuchtturm',
+        correlationId,
+      });
+
+      const job = await queuedJobFor(pageOnlyId);
+      expect(job?.data.billingWorkspaceId).toBe(readerFirstId);
+      await job?.remove();
+    });
+
+    it('refuses before anything is paid when the grant only reads', async () => {
+      const readOnlyId = await createPage('Nur zum Lesen geteilt');
+      await prisma.documentShare.create({
+        data: {
+          workspaceId,
+          documentId: readOnlyId,
+          kind: 'USER',
+          permission: 'READ',
+          scope: 'PAGE_ONLY',
+          granteeId: outsiderId,
+          createdById: ownerId,
+        },
+      });
+
       await expect(
         coverService(enabled).requestGeneration({
-          documentId: pageOnlyId,
+          documentId: readOnlyId,
           userId: outsiderId,
           prompt: 'Ein Leuchtturm',
           correlationId,
         }),
       ).rejects.toBeInstanceOf(AuthorizationError);
-      expect(await queuedJobFor(pageOnlyId)).toBeUndefined();
+      expect(await queuedJobFor(readOnlyId)).toBeUndefined();
     });
 
     it("bills the reader's first own workspace when no run asks", async () => {

@@ -597,8 +597,8 @@ export const pageGenerateCoverTool: AnyToolDefinition = defineTool({
     'Hintergrund und ist nicht sofort fertig: der Aufruf bestätigt nur den Auftrag. ' +
     'Braucht ein eingerichtetes Bildmodell, sonst antwortet die API mit ai_image_unavailable. ' +
     'Es zahlt der Arbeitsbereich der Seite; auf einer nur geteilten Seite dein eigener (im Chat ' +
-    'der des Chats, sonst dein erster; ohne einen: ai_image_no_own_workspace). Geteilt geht es ' +
-    'nur, wenn die Seite samt allem darunter zum Bearbeiten freigegeben ist.',
+    'der des Chats, sonst dein erster; ohne einen: ai_image_no_own_workspace). Geteilt reicht ' +
+    'eine Freigabe zum Bearbeiten, auch für die Seite allein.',
   inputSchema: pageGenerateCoverInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'appearance',

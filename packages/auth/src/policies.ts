@@ -787,17 +787,33 @@ export function canEditAttachmentText(
   return ALLOW;
 }
 
+/**
+ * Deleting a file: its uploader, an ADMIN/OWNER, and, for a file that hangs on
+ * a page, whoever may edit that page (issue #264). A file on a page is part of
+ * the page's content, and whoever may change the page may take an image out of
+ * it; that includes the holder of a `WRITE` grant on the page alone. A file on
+ * no page (a chat picture, a workspace file) keeps the narrower rule, because
+ * there is no page whose editors it would belong to.
+ */
 export function canDeleteAttachment(
   role: WorkspaceRole | null,
   attachment: AttachmentPolicySubject,
   actorUserId: string,
+  page: DocumentPolicySubject | null = null,
 ): PolicyDecision {
   const read = canReadWorkspace(role);
   if (!read.allowed)
     return { allowed: false, code: 'attachment_access_denied', reason: read.reason };
   const isUploader = attachment.createdById === actorUserId;
-  if (!isUploader && !hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
-    return deny('forbidden', 'Only the uploader or an ADMIN/OWNER may delete an attachment');
+  const editsPage =
+    page !== null &&
+    page.workspaceId === attachment.workspaceId &&
+    canEditDocument(role, page).allowed;
+  if (!isUploader && !editsPage && !hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
+    return deny(
+      'forbidden',
+      'Only the uploader, an editor of its page or an ADMIN/OWNER may delete an attachment',
+    );
   }
   if (!hasAtLeast(role as WorkspaceRole, 'MEMBER')) {
     return deny('forbidden', 'Deleting attachments requires at least the MEMBER role');

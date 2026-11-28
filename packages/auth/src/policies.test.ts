@@ -289,9 +289,22 @@ describe('attachment policies', () => {
     expect(canDeleteAttachment('MEMBER', attachment, 'user_1').allowed).toBe(true);
   });
 
-  it('prevents another member from deleting a foreign attachment', () => {
+  it('prevents another member from deleting a foreign attachment on no page', () => {
     expect(canDeleteAttachment('MEMBER', attachment, 'user_2').allowed).toBe(false);
     expect(canDeleteAttachment('ADMIN', attachment, 'user_2').allowed).toBe(true);
+  });
+
+  it("lets whoever may edit the file's page delete it, whoever uploaded it (issue #264)", () => {
+    const page = { id: 'page_1', workspaceId, archivedAt: null };
+    expect(canDeleteAttachment('MEMBER', attachment, 'user_2', page).allowed).toBe(true);
+    // Reading the page is not editing it.
+    expect(canDeleteAttachment('GUEST', attachment, 'user_2', page).allowed).toBe(false);
+    // An archived page is read-only, so only the old rule applies there.
+    const archived = { ...page, archivedAt: new Date() };
+    expect(canDeleteAttachment('MEMBER', attachment, 'user_2', archived).allowed).toBe(false);
+    // A page of another workspace says nothing about this file.
+    const elsewhere = { ...page, workspaceId: 'workspace_other' };
+    expect(canDeleteAttachment('MEMBER', attachment, 'user_2', elsewhere).allowed).toBe(false);
   });
 
   it('lets a member correct extracted text or force a re-extraction, but not a guest', () => {

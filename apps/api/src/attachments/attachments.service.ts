@@ -8,7 +8,6 @@ import {
   canDeleteAttachment,
   canDownloadAttachment,
   canEditAttachmentText,
-  canUploadFile,
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
@@ -50,6 +49,7 @@ import { SettingsService } from '../platform/settings.service';
 import { projectAttachmentText } from './attachment-text-projection';
 import { CellFilesService } from './cell-files.service';
 import { fetchRemoteFile } from './remote-file';
+import { requireUploadRole } from './upload-access';
 
 export interface UploadInput {
   workspaceId: string;
@@ -109,16 +109,7 @@ export class AttachmentsService {
   ) {}
 
   async upload(input: UploadInput): Promise<UploadAttachmentResponse> {
-    // Anchored at the page the file lands on (issue #83, ADR-044): a file that
-    // hangs on a page takes that page's access, so a credential confined to a
-    // branch may upload into it and a file that hangs on nothing is a
-    // workspace-level act and refused for such a credential.
-    const role = await this.access.requireRoleAnchoredAt(
-      input.workspaceId,
-      input.userId,
-      input.documentId,
-    );
-    assertPolicy(canUploadFile(role));
+    await requireUploadRole(this.access, input);
 
     if (input.body.byteLength === 0) {
       throw AppError.validation('The uploaded file is empty');
@@ -312,12 +303,12 @@ export class AttachmentsService {
   }): Promise<UploadAttachmentResponse> {
     // Before the fetch, not only before the upload: the access check is what
     // decides whether this deployment makes an outgoing request at all.
-    const role = await this.access.requireRoleAnchoredAt(
-      input.workspaceId,
-      input.userId,
-      input.request.documentId,
-    );
-    assertPolicy(canUploadFile(role));
+    await requireUploadRole(this.access, {
+      workspaceId: input.workspaceId,
+      userId: input.userId,
+      documentId: input.request.documentId,
+      propertyId: input.request.propertyId,
+    });
     // A wrong cell is refused before anything is fetched, too (issue #245).
     if (input.request.propertyId !== null) {
       await this.cellFiles.resolveTarget({
@@ -543,7 +534,7 @@ export class AttachmentsService {
         'Attachment does not exist or is not visible to this user',
       );
     }
-    assertPolicy(canDeleteAttachment(context.role, context.attachment, input.userId));
+    assertPolicy(canDeleteAttachment(context.role, context.attachment, input.userId, context.page));
 
     await this.prisma.$transaction(async (tx) => {
       await tx.attachment.update({

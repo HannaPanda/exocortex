@@ -360,7 +360,11 @@ export class DocumentsService {
     }
 
     if (input.request.coverAttachmentId !== undefined && input.request.coverAttachmentId !== null) {
-      await this.assertUsableCover(input.request.coverAttachmentId, context.workspaceId);
+      await this.assertUsableCover(
+        input.request.coverAttachmentId,
+        context.workspaceId,
+        input.userId,
+      );
     }
 
     const renamed =
@@ -473,11 +477,18 @@ export class DocumentsService {
    * the reference alone would leak the existence of another workspace's
    * attachment, and a PDF set as a cover would render as a broken image.
    */
-  private async assertUsableCover(attachmentId: string, workspaceId: string): Promise<void> {
-    const attachment = await this.prisma.attachment.findUnique({
-      where: { id: attachmentId },
-      select: { workspaceId: true, mimeType: true, deletedAt: true, conversationId: true },
-    });
+  private async assertUsableCover(
+    attachmentId: string,
+    workspaceId: string,
+    userId: string,
+  ): Promise<void> {
+    // Only a file the caller may read themselves (issue #264): the access a
+    // file has is the access of the page it hangs on, so somebody who reached
+    // this page through a grant, or a confined credential, cannot name a file
+    // of a page they were never given and hang it on theirs. Answered like a
+    // file that does not exist.
+    const reachable = await this.access.findAttachmentContext(attachmentId, userId);
+    const attachment = reachable?.attachment ?? null;
     // A file on a chat message belongs to its conversation and goes with it
     // (issue #223), so it cannot become a page's cover.
     if (
