@@ -26,6 +26,7 @@ export * from './database-ai-fill';
 export * from './database-formula';
 export * from './database-relations';
 export * from './database-row-batch';
+export * from './database-view-scrub';
 export * from './database-views';
 export * from './documents';
 export * from './entities';

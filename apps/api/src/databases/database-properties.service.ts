@@ -11,14 +11,19 @@ import {
   type CreateDatabasePropertyOptionRequest,
   type CreateDatabasePropertyRequest,
   databaseDatePropertyConfigSchema,
+  databaseFilterGroupSchema,
   type DatabaseOptionColor,
   type DatabaseProperty,
   type DatabasePropertyOption,
   type DatabasePropertyType,
+  databaseSortSchema,
+  filtersMentionProperty,
+  filtersWithoutProperty,
   parseDatePropertyConfig,
   parseFormulaConfig,
   renameFormulaProperty,
   type ReorderDatabasePropertyRequest,
+  sortsWithoutProperty,
   type UpdateDatabasePropertyOptionRequest,
   type UpdateDatabasePropertyRequest,
 } from '@exocortex/contracts';
@@ -358,7 +363,7 @@ export class DatabasePropertiesService {
     // message, because the alternative is a table that stops rendering.
     await this.assertSchemaStaysValid(property.documentId, { omit: input.propertyId });
 
-    await this.prisma.$transaction(async (tx) => {
+    const viewsChanged = await this.prisma.$transaction(async (tx) => {
       await this.outbox.writeAudit(tx, {
         workspaceId: context.workspaceId,
         actorId: input.userId,
@@ -368,7 +373,9 @@ export class DatabasePropertiesService {
         correlationId: input.correlationId,
         metadata: { collectionDocumentId: property.documentId, name: property.name },
       });
+      const changed = await this.dropPropertyFromViews(tx, property.documentId, input.propertyId);
       await tx.databaseProperty.delete({ where: { id: input.propertyId } });
+      return changed;
     });
 
     await this.realtime.emit(
@@ -379,7 +386,52 @@ export class DatabasePropertiesService {
         documentId: property.documentId,
       },
     );
+    if (viewsChanged) {
+      await this.realtime.emit('database.view.changed', context.workspaceId, input.correlationId, {
+        documentId: property.documentId,
+      });
+    }
     return { deleted: true };
+  }
+
+  /**
+   * Takes a deleted column out of every view's sorts and filters, in the
+   * transaction that deletes it (issue #296). The query engine refuses a rule
+   * naming a property the database no longer has, so a rule left behind would
+   * stop the view from rendering at all. A stored blob that does not parse is
+   * left alone: the read path refuses it on its own, and rewriting it here
+   * would replace something nobody can see with a guess.
+   */
+  private async dropPropertyFromViews(
+    tx: Prisma.TransactionClient,
+    collectionDocumentId: string,
+    propertyId: string,
+  ): Promise<boolean> {
+    const views = await tx.databaseView.findMany({
+      where: { documentId: collectionDocumentId },
+      select: { id: true, filters: true, sorts: true },
+    });
+    let changed = false;
+    for (const view of views) {
+      const sorts = databaseSortSchema.array().safeParse(view.sorts);
+      const filters = databaseFilterGroupSchema.safeParse(view.filters);
+      const data: Prisma.DatabaseViewUpdateInput = {};
+      if (sorts.success && sorts.data.some((sort) => sort.propertyId === propertyId)) {
+        data.sorts = sortsWithoutProperty(sorts.data, propertyId) as Prisma.InputJsonValue;
+      }
+      if (filters.success && filtersMentionProperty(filters.data, propertyId)) {
+        // A hand-written recursive interface has no index signature, so it is
+        // not structurally Prisma's JSON type; the value was parsed just above.
+        data.filters = filtersWithoutProperty(
+          filters.data,
+          propertyId,
+        ) as unknown as Prisma.InputJsonValue;
+      }
+      if (data.sorts === undefined && data.filters === undefined) continue;
+      await tx.databaseView.update({ where: { id: view.id }, data });
+      changed = true;
+    }
+    return changed;
   }
 
   async createOption(input: {

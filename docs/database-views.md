@@ -181,6 +181,24 @@ operators use. A value with no end counts as a point in time, so the operator
 works on both kinds of DATE property. Served by the
 `(propertyId, dateValue, dateEndValue)` index.
 
+### Sorting
+
+A view's `sorts` is a list in priority order: the first rule decides, the next
+one only breaks its ties, and `document."orderKey"` breaks whatever is left, so
+equal keys never swap places between two reads. Every rule sorts empty values
+last in both directions. `propertyId` is a property of this database or the
+reserved `DATABASE_TITLE_COLUMN_KEY` (`'title'`, the same key `columnWidths`
+uses), which sorts by the row document's own title (issue #296). It cannot
+collide with a property id, which `idSchema` keeps at eight characters or more.
+
+Deleting a column takes it out of every view's sorts and filters in the same
+transaction (`dropPropertyFromViews` in `database-properties.service.ts`, using
+`sortsWithoutProperty`/`filtersWithoutProperty` from contracts): the query
+engine refuses a rule naming a property the database does not have, and that
+refusal is what keeps a rule from reaching into another database, so a rule left
+behind would stop the view from rendering. A filter group the deletion leaves
+empty goes with it.
+
 ## Adding a new view type
 
 1. Add it to `DatabaseViewType` in `schema.prisma` (migration) and
@@ -691,11 +709,11 @@ The value is an ordinary stored value, never a formula (ADR-041).
 
 ## Known limitations (deliberate, not bugs)
 
-- **Filters/sorts sent alongside a `viewId` are ignored.** When a request to
-  `rows/query` includes a `viewId`, the API resolves filters/sorts from that
-  saved view and does not merge in request-level `filters`/`sorts` — the two
-  are alternatives, not additive. Query without a `viewId` for one-off,
-  unsaved filtering.
+- **Sorts sent alongside a `viewId` are ignored.** When a request to
+  `rows/query` includes a `viewId`, the API takes the sorts from that saved
+  view and drops request-level `sorts`: a view's order is the order. Inline
+  `filters` narrow the view instead (see the calendar section above). Query
+  without a `viewId` for a one-off order.
 - **A row's property type cannot be changed once created.**
   `updateDatabasePropertyRequestSchema` only allows renaming and `config`
   changes. Changing what a column _means_ (TEXT → NUMBER, say) is

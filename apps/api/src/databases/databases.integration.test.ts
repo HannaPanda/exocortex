@@ -5,6 +5,7 @@ import { loadDotEnv } from '@exocortex/config';
 import { type ApiEnv } from '@exocortex/config';
 import {
   CONFIGURED_PROPERTY_TYPES,
+  DATABASE_TITLE_COLUMN_KEY,
   type DatabasePropertyType,
   IMPLEMENTED_PROPERTY_TYPES,
 } from '@exocortex/contracts';
@@ -734,6 +735,96 @@ describe('database rows', () => {
     });
 
     expect(result.rows.map((row) => row.document.title)).toEqual(['Hoch', 'Niedrig']);
+  });
+
+  it('sorts by a date first and the row name second (issue #296)', async () => {
+    const collectionId = await createCollection('Belege');
+    const date = await properties.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { type: 'DATE', name: 'Datum' },
+      correlationId,
+    });
+    for (const [title, day] of [
+      ['Beta', '2026-03-01'],
+      ['Alpha', '2026-03-01'],
+      ['Gamma', '2026-05-01'],
+    ] as const) {
+      await rows.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { title, values: [{ propertyId: date.id, value: day }] },
+        correlationId,
+      });
+    }
+
+    const result = await rows.query({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: {
+        sorts: [
+          { propertyId: date.id, direction: 'desc' },
+          { propertyId: DATABASE_TITLE_COLUMN_KEY, direction: 'asc' },
+        ],
+        limit: 20,
+      },
+    });
+    expect(result.rows.map((row) => row.document.title)).toEqual(['Gamma', 'Alpha', 'Beta']);
+  });
+
+  it('keeps a saved view working after a column it sorts and filters by is deleted', async () => {
+    const { collectionId, priority, urgent } = await setupTaskDatabase();
+    await rows.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { title: 'Bleibt', values: [{ propertyId: urgent.id, value: true }] },
+      correlationId,
+    });
+    const view = await views.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { type: 'TABLE', name: 'Nach Priorität' },
+      correlationId,
+    });
+    await views.update({
+      viewId: view.id,
+      userId: ownerId,
+      request: {
+        filters: {
+          combinator: 'and',
+          conditions: [
+            { propertyId: urgent.id, operator: 'equals', value: true },
+            {
+              combinator: 'or',
+              conditions: [
+                { propertyId: priority.id, operator: 'greater_than', value: 0 },
+                { propertyId: priority.id, operator: 'is_empty' },
+              ],
+            },
+          ],
+        },
+        sorts: [
+          { propertyId: priority.id, direction: 'desc' },
+          { propertyId: DATABASE_TITLE_COLUMN_KEY, direction: 'asc' },
+        ],
+      },
+      correlationId,
+    });
+
+    await properties.delete({ propertyId: priority.id, userId: ownerId, correlationId });
+
+    const stored = (await views.list(collectionId, ownerId)).find((entry) => entry.id === view.id);
+    expect(stored?.sorts).toEqual([{ propertyId: DATABASE_TITLE_COLUMN_KEY, direction: 'asc' }]);
+    expect(stored?.filters).toEqual({
+      combinator: 'and',
+      conditions: [{ propertyId: urgent.id, operator: 'equals', value: true }],
+    });
+    const result = await rows.query({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { viewId: view.id, limit: 20 },
+    });
+    expect(result.rows.map((row) => row.document.title)).toEqual(['Bleibt']);
   });
 
   it('queries through a saved view', async () => {
