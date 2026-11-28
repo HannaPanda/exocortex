@@ -1,6 +1,7 @@
 import { type Command, InputRule } from '@tiptap/core';
 import { CodeBlock } from '@tiptap/extension-code-block';
-import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
+import type { Node as ProseMirrorNode, NodeType } from '@tiptap/pm/model';
+import type { Selection } from '@tiptap/pm/state';
 import css from 'highlight.js/lib/languages/css';
 import diff from 'highlight.js/lib/languages/diff';
 import go from 'highlight.js/lib/languages/go';
@@ -21,6 +22,7 @@ import yaml from 'highlight.js/lib/languages/yaml';
 import { createLowlight } from 'lowlight';
 
 import { codeBlockBackspace, codeBlockDelete, type CodeBlockEdgeOutcome } from './code-block-edges';
+import { neighbourCodeLanguage } from './code-block-language';
 import { placeCodeBlock, planCodeBlock } from './code-block-placement';
 import { looksLikeSession, shellScript, terminalSession } from './code-grammars';
 import { codeHighlightPlugin, type HighlightSpan } from './code-highlight';
@@ -178,6 +180,21 @@ export function highlightSpans(code: string, language: unknown): readonly Highli
 }
 
 /**
+ * The attributes a code block made by the editor starts with: its
+ * neighbour's language (issue #258), or `null` for none. `null` as well when
+ * the selection already stands in a code block, where no new one is made.
+ */
+function startingAttrs(
+  doc: ProseMirrorNode,
+  selection: Selection,
+  type: NodeType,
+): { language: string } | null {
+  if (selection.$from.parent.type === type) return null;
+  const language = neighbourCodeLanguage(doc, selection.from, selection.to, type);
+  return language === null ? null : { language };
+}
+
+/**
  * A fence (```, optionally with a language, or ~~~) typed at the start of a
  * line. Upstream's rule only matched at the start of a text block and only
  * where that block may turn into a code block, so it never fired in a list
@@ -205,6 +222,11 @@ export const ExocortexCodeBlock = CodeBlock.extend({
    * stays in its item (issue #318). Where the rule has nothing to say (the
    * caret already in a code block, a selection over several blocks) upstream's
    * command runs as before, which also toggles a code block back.
+   *
+   * Called without a language, the new block takes its neighbour's
+   * (`neighbourCodeLanguage`, issue #258). Inside a code block nothing is
+   * looked up: there the command turns the block back, and a language would
+   * make upstream's toggle think the block is not active.
    */
   addCommands() {
     const parent = this.parent?.() ?? {};
@@ -213,13 +235,13 @@ export const ExocortexCodeBlock = CodeBlock.extend({
       (attributes?: { language: string }): Command =>
       (props) => {
         const { tr, dispatch } = props;
-        const attrs = attributes ?? null;
+        const attrs = attributes ?? startingAttrs(tr.doc, tr.selection, this.type);
         if (dispatch === undefined) {
           if (planCodeBlock(tr.doc, tr.selection, this.type, attrs) !== null) return true;
         } else if (placeCodeBlock(tr, this.type, attrs)) {
           return true;
         }
-        return fallback(attributes)(props);
+        return fallback(attrs ?? undefined)(props);
       };
     return {
       ...parent,
@@ -247,8 +269,11 @@ export const ExocortexCodeBlock = CodeBlock.extend({
           if (!atLineStart || $start.parent.type === this.type) return null;
           const { tr } = state;
           tr.delete(range.from, range.to);
+          // ``` without a name takes the neighbour's language (issue #258).
           const language = match[1];
-          if (!placeCodeBlock(tr, this.type, language === undefined ? null : { language })) {
+          const attrs =
+            language === undefined ? startingAttrs(tr.doc, tr.selection, this.type) : { language };
+          if (!placeCodeBlock(tr, this.type, attrs)) {
             return null;
           }
           return undefined;
