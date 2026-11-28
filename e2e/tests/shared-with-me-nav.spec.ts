@@ -156,7 +156,9 @@ test.describe('shared with me in the navigation', () => {
     // shared view.
     await page.goto(`/geteilt/${rootId}`);
     const link = page.getByTestId('editor-surface').getByRole('link', { name: childTitle });
-    await expect(link).toHaveAttribute('href', `/geteilt/${childId}`);
+    // A wiki link keeps its `wiki:` address in the document; where a click
+    // takes it is decided when it is followed.
+    await expect(link).toHaveAttribute('data-document-id', childId);
     await link.click();
     await page.waitForURL(`**/geteilt/${childId}`);
 
