@@ -14,6 +14,7 @@ import {
 
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
+import { copiedFilesText } from './database-rows-batch.js';
 import { formatDocumentSummary } from './page-render.js';
 
 /**
@@ -150,7 +151,8 @@ export const templateUseTool: AnyToolDefinition = defineTool({
   name: 'exo_template_use',
   description:
     'Legt eine neue Seite aus einer Vorlage an: Inhalt, Symbol, Titelbild und, innerhalb ' +
-    'derselben Datenbank, die Eigenschaften werden kopiert. Danach gibt es keine Verbindung ' +
+    'derselben Datenbank, die Eigenschaften werden kopiert; Dateien einer Dateien-Spalte als ' +
+    'eigene Dateien der neuen Zeile (copiedFiles nennt die neuen Kennungen). Danach gibt es keine Verbindung ' +
     'mehr zur Vorlage, die neue Seite ist eine gewöhnliche Seite. Ohne parentId landet sie am ' +
     'hinterlegten Zielort der Vorlage, sonst auf oberster Ebene.',
   inputSchema: z
@@ -177,7 +179,7 @@ export const templateUseTool: AnyToolDefinition = defineTool({
       result.copiedProperties > 0 ? ` ${result.copiedProperties} Eigenschaft(en) übernommen.` : '';
     const warnings = result.warnings.length > 0 ? `\nHinweis: ${result.warnings.join(' ')}` : '';
     return {
-      text: `Aus der Vorlage angelegt ${where}: ${formatDocumentSummary(result.document)}.${properties}${warnings}`,
+      text: `Aus der Vorlage angelegt ${where}: ${formatDocumentSummary(result.document)}.${properties}${copiedFilesText(result.copiedFiles)}${warnings}`,
       data: result,
     };
   },

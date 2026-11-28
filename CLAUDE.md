@@ -1001,7 +1001,10 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   lock, so the browser never writes the list after an upload. A value may only
   add files of its own row; `Attachment.propertyId` is a plain column so the
   mark outlives a deleted column, and the daily sweep collects a marked file a
-  day after no value of its column names it.
+  day after no value of its column names it. A row made from a template or
+  duplicated gets copies of its cell files (`CellFileCopyService`, #316):
+  same mark, the object copied inside the bucket, text and screening carried
+  over, the uploader unchanged so ADR-096 trusts the copy for the same reader.
 - ADR-099: an AI column is a stored value with a mark, never a formula. The
   instruction is `database_property_ai` on the column; a batch is an
   `ai_run` of kind FILL the API plans (mode, rights, `ai.fillMaxRowsPerRun`)

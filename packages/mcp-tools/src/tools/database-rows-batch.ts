@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   databaseRowIdsRequestSchema,
   databaseRowsResponseSchema,
+  duplicateDatabaseRowsResponseSchema,
   idSchema,
   trashDatabaseRowsResponseSchema,
   updateDatabaseRowsRequestSchema,
@@ -89,7 +90,8 @@ export const databaseRowsDuplicateTool: AnyToolDefinition = defineTool({
   description:
     'Dupliziert Zeilen einer Datenbank: jede Kopie steht direkt unter ihrer Zeile, mit ' +
     'demselben Titel, Symbol, Titelbild, Text und denselben Werten, aber ohne Verbindung zum ' +
-    'Original. Dateien, die die Kopie nennt, bleiben die der Originalzeile. ' +
+    'Original. Die Dateien einer Dateien-Spalte werden als eigene Dateien der Kopie mitkopiert ' +
+    '(samt gelesenem Text); copiedFiles nennt je Datei die neue Kennung. ' +
     SELECTION,
   inputSchema: rowsInputSchema,
   surfaces: ['mcp', 'ai'],
@@ -102,14 +104,25 @@ export const databaseRowsDuplicateTool: AnyToolDefinition = defineTool({
       method: 'POST',
       path: `/api/documents/${documentId}/rows/duplicate`,
       body,
-      responseSchema: databaseRowsResponseSchema,
+      responseSchema: duplicateDatabaseRowsResponseSchema,
     });
     return {
-      text: `${result.rows.length} Kopie(n) angelegt: ${titles(result.rows)}`,
+      text: `${result.rows.length} Kopie(n) angelegt: ${titles(result.rows)}${copiedFilesText(result.copiedFiles)}`,
       data: result,
     };
   },
 });
+
+/** The copied files of FILES cells, one line each: old id to new id. */
+export function copiedFilesText(
+  files: readonly { rowId: string; sourceAttachmentId: string; attachmentId: string }[],
+): string {
+  if (files.length === 0) return '';
+  const lines = files.map(
+    (file) => `- ${file.sourceAttachmentId} -> ${file.attachmentId} (Zeile ${file.rowId})`,
+  );
+  return `\n${files.length} Datei(en) mitkopiert:\n${lines.join('\n')}`;
+}
 
 function titles(rows: readonly { document: { id: string; title: string } }[]): string {
   return rows.map((row) => `${row.document.title} (id: ${row.document.id})`).join(', ');

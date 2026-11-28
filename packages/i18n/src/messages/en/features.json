@@ -392,7 +392,7 @@
     "details": {
       "p1": "As soon as one row is selected, all rows show their checkbox, and above the table it shows how many are selected. Holding Shift selects everything between the last clicked row and this one. The checkbox in the header selects all visible rows, Escape clears the selection.",
       "p2": "“Set property” writes a value to all selected rows, such as a status or a date. This happens in a single step: if you are not allowed to edit one of the rows, none of them are changed.",
-      "p3": "Anything moved to the trash can be restored from there, row by row just like any page. For multiple rows, eXocortex asks for confirmation first. A duplicate appears right below its original row and keeps the original’s text and values, but is no longer linked to it.",
+      "p3": "What goes to the trash can be restored from there, row by row just like any page. For multiple rows, eXocortex asks first. A duplicate appears directly below its row and has the text and values of the original, but no longer any connection to it. It receives the files from a files column as its own copies, including any text already read.",
       "p4": "On mobile, the handle and checkbox are always visible; with the keyboard, you reach them via Tab, and Space toggles the checkbox. Agents can do the same with exo_database_rows_update, exo_database_rows_duplicate, and exo_database_rows_trash."
     },
     "where": "In a database in table view: to the left of a row’s name."
@@ -556,7 +556,7 @@
     "details": {
       "p1": "In the table, in the header of a row page, in the row view, and in the properties section, the cell displays its files with names. Clicking the name downloads the file, an image shows a small thumbnail that can be opened in full size, and the cross removes the file from the cell. Multiple files at once also work.",
       "p2": "When you drag files over the cell, it changes color and indicates which column they are going into. This sets it apart from the page text below: anything you drag onto the page itself still lands in the text. During upload you see the progress, and if a file is too large or its type is not allowed, this is shown directly on the cell.",
-      "p3": "The file is attached to the row. If the row is permanently deleted, the file is deleted with it. If you remove it from the cell or delete the column, nightly maintenance clears it away after one day. Anyone with read-only access to a page can view and download the files, but cannot add or remove anything.",
+      "p3": "The file is attached to the row. If the row is permanently deleted, the file goes with it. If you remove it from the cell or delete the column, nightly maintenance cleans it up after one day. A row from a template or a duplicate gets its own copies of the files, so nothing disappears there if you remove a file from the template. Anyone with read-only access to a page can see the files and download them, but cannot add or remove anything.",
       "p4": "Agents upload using the same tools as for a page (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket) and additionally specify propertyId; removing and reordering is done with exo_database_row_update. exo_database_row_get lists the files of a cell by name."
     },
     "where": "A cell of a files column, in the table or at the top of a row’s page."

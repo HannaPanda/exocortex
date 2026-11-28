@@ -108,3 +108,14 @@ visible as a typo.
 - Deleting a template deletes nothing that was made from it. Unmarking one
   (`DELETE /api/templates/:documentId`) deletes neither the page nor its
   copies.
+
+## Addendum (issue #316, 2026-11-28)
+
+One exception to "every outward reference is kept": the files of a FILES cell
+are copied, because a cell names only files of its own row (ADR-098) and a
+shared one disappeared from the copy when the template's cell dropped it. Each
+file becomes an attachment of the new row with the same column mark, copied by
+the storage itself and with the text already read from it; the response's
+`copiedFiles` names the new ids. Pictures and files in the page text and the
+cover stay references to the template's attachments, as before, and the
+response still warns about them.

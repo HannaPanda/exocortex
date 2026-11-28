@@ -43,7 +43,7 @@ both arrive, and an agent needs one call, not two.
 **A value may only add files of its own row.** Writing the list is how a file
 is removed or reordered. An id the cell does not hold yet must be a live,
 non-chat attachment hanging on that row (`database_files_foreign`); ids already
-held may stay, which is what a row made from a template holds. Before this a
+held may stay, which is what a row made from a template held before issue #316. Before this a
 FILES value took any string; no deployment had a FILES column with values, so
 nothing had to be migrated.
 
@@ -64,8 +64,47 @@ never collected.
 - Every row answer carries `files` (name, type, size) for the ids its FILES
   values name, so a person and a model read names rather than ids. A missing
   entry is a file that is gone, shown as such.
-- A row made from a template names the template row's files. A reader of the
-  copy who cannot read the template cannot download them, the same limit the
-  copied page text already has.
+- Until issue #316, a row made from a template named the template row's files.
+  Since then it holds copies of its own; see the addendum.
 - Removing a file from a cell does not delete it at once. For a day it can be
   written back by id, then it is gone from storage too.
+
+## Addendum (issue #316, 2026-11-28)
+
+A row made from a template (ADR-039) or duplicated (issue #244) gets copies of
+the source's cell files, not the source's ids. A shared id broke the rule this
+decision rests on: the sweep collects a file once its column stops naming it,
+and "its column" was the template's, so taking a file out of the template
+emptied every cell made from it as soon as the copies stopped naming it too, and
+deleting the template for good took the files along at once.
+
+- **A copy is a file of the new row.** `CellFileCopyService`
+  (`apps/api/src/attachments`) creates an `Attachment` per file on the new row
+  with the same `propertyId`, and the value names the copies, in the source's
+  order. A file that is already gone is left out; nothing is invented back.
+- **The storage copies the bytes.** `ObjectStorage.copyObject` is S3
+  `CopyObject` inside the bucket, so a 40 MB scan does not pass through the API.
+  The preview is copied the same way, best effort like the one an upload makes.
+- **What was read from the file comes along.** Extracted text, page starts,
+  metadata, the correction and the screening all describe the same bytes, so a
+  copied PDF is not read again by the extraction engine. A file still being
+  read (`PENDING`) is read again for its copy, because the running job writes
+  only the source's row. The new row is re-indexed once its files exist, since
+  their text is part of its search projection (ADR-050).
+- **The uploader stays the uploader.** `createdById`, `fetchedFromUrl` and who
+  corrected the text are the source's. ADR-096 trusts a file for the person
+  whose words it is, and copying a row does not make them the copier's: the
+  copy is trusted for exactly the reader the original is trusted for. Taking
+  the copier as uploader would let anybody turn a colleague's screened file
+  into their own by duplicating a row, and screening the copy again would not
+  change whose text it is. The one side effect is that the original uploader
+  may also delete the copy (`canDeleteAttachment`), which every editor of the
+  new row may anyway.
+- **Both answers name the copies.** `POST /api/templates/:id/pages` and
+  `POST /api/documents/:id/rows/duplicate` carry `copiedFiles` (row, column,
+  source id, new id), and `exo_template_use` and `exo_database_rows_duplicate`
+  print them.
+- The sweep still asks "any value of the column", which keeps a value written
+  before this addendum from losing its files.
+- Files shown in a copied page's text, and the cover, are still references to
+  the source's attachments, as ADR-039 decided for every outward reference.

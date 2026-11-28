@@ -392,7 +392,7 @@
     "details": {
       "p1": "Gdy tylko jeden wiersz zostanie zaznaczony, wszystkie wiersze pokazują swoje pola wyboru, a nad tabelą wyświetla się liczba zaznaczonych elementów. Przytrzymując klawisz Shift, zaznaczysz wszystko między ostatnio klikniętym wierszem a bieżącym. Pole wyboru w nagłówku zaznacza wszystkie widoczne wiersze, a klawisz Escape usuwa zaznaczenie.",
       "p2": "Opcja „Ustaw właściwość” zapisuje wartość we wszystkich zaznaczonych wierszach, na przykład status lub datę. Odbywa się to w jednym kroku: jeśli nie masz uprawnień do edycji któregoś z wierszy, żaden z nich nie zostanie zmieniony.",
-      "p3": "To, co trafi do kosza, można stamtąd przywrócić – wiersz po wierszu, tak jak każdą stronę. W przypadku wielu wierszy eXocortex pyta wcześniej o potwierdzenie. Duplikat pojawia się bezpośrednio pod swoim wierszem i zawiera tekst oraz wartości oryginału, ale nie jest z nim w żaden sposób połączony.",
+      "p3": "To, co trafia do kosza, stamtąd wraca – wiersz po wierszu, jak każda strona. W przypadku wielu wierszy eXocortex najpierw zapyta o potwierdzenie. Duplikat pojawia się bezpośrednio pod swoim wierszem i zawiera tekst oraz wartości oryginału, ale nie ma już z nim żadnego połączenia. Pliki z kolumny plików otrzymuje jako własne kopie, wraz z już odczytanym tekstem.",
       "p4": "Na telefonie uchwyt i pole wyboru są widoczne cały czas. Za pomocą klawiatury przejdziesz do nich klawiszem Tab, a spacja zaznacza pole. Agenci mogą robić to samo za pomocą exo_database_rows_update, exo_database_rows_duplicate i exo_database_rows_trash."
     },
     "where": "W bazie danych w widoku tabeli: po lewej stronie obok nazwy wiersza."
@@ -556,7 +556,7 @@
     "details": {
       "p1": "W tabeli, w nagłówku strony wiersza, w widoku wiersza oraz w sekcji właściwości komórka wyświetla swoje pliki z nazwami. Kliknięcie nazwy pobiera plik, obraz wyświetla małą miniaturę, którą można powiększyć, a krzyżyk usuwa plik z komórki. Można też dodać wiele plików naraz.",
       "p2": "Gdy przeciągasz pliki nad komórkę, zmienia ona kolor i informuje, do której kolumny trafią. To odróżnia ją od tekstu strony poniżej: to, co przeciągniesz na samą stronę, nadal trafia do tekstu. Podczas przesyłania widać postęp, a jeśli plik jest zbyt duży lub jego typ jest niedozwolony, informacja pojawia się bezpośrednio przy komórce.",
-      "p3": "Plik jest powiązany z wierszem. Jeśli wiersz zostanie trwale usunięty, plik zniknie wraz z nim. Jeśli usuniesz go z komórki lub skasujesz kolumnę, nocna konserwacja usunie go po jednym dniu. Osoby mające dostęp tylko do odczytu widzą pliki i mogą je pobierać, ale nie mogą niczego dodawać ani usuwać.",
+      "p3": "Plik jest powiązany z wierszem. Jeśli wiersz zostanie trwale usunięty, plik znika razem z nim. Jeśli usuniesz go z komórki lub usuniesz kolumnę, nocne czyszczenie usunie go po jednym dniu. Wiersz utworzony na podstawie szablonu lub duplikat otrzymuje własne kopie plików, dlatego nic z nich nie zniknie, gdy usuniesz plik z szablonu. Osoby z uprawnieniami tylko do odczytu strony widzą pliki i mogą je pobierać, ale nie mogą niczego dodawać ani usuwać.",
       "p4": "Agenci przesyłają pliki za pomocą tych samych narzędzi, co w przypadku strony (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket), podając dodatkowo propertyId; usuwanie i zmiana kolejności odbywa się za pomocą exo_database_row_update. exo_database_row_get wymienia pliki komórki z nazwy."
     },
     "where": "Komórka kolumny typu Pliki, w tabeli lub u góry strony wiersza."

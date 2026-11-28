@@ -392,7 +392,7 @@
     "details": {
       "p1": "Sobald eine Zeile ausgewählt ist, zeigen alle Zeilen ihr Kästchen, und über der Tabelle steht, wie viele ausgewählt sind. Mit gedrückter Umschalttaste wählst du alles zwischen der zuletzt angeklickten Zeile und dieser aus. Das Kästchen im Kopf wählt alle sichtbaren Zeilen, Escape hebt die Auswahl auf.",
       "p2": "„Eigenschaft setzen“ schreibt einen Wert in alle ausgewählten Zeilen, zum Beispiel einen Status oder ein Datum. Das passiert in einem Schritt: darfst du eine der Zeilen nicht ändern, bleibt keine verändert.",
-      "p3": "Was in den Papierkorb geht, kommt von dort zurück, Zeile für Zeile wie jede Seite. Bei mehreren Zeilen fragt eXocortex vorher nach. Ein Duplikat steht direkt unter seiner Zeile und hat Text und Werte des Originals, aber keine Verbindung mehr zu ihm.",
+      "p3": "Was in den Papierkorb geht, kommt von dort zurück, Zeile für Zeile wie jede Seite. Bei mehreren Zeilen fragt eXocortex vorher nach. Ein Duplikat steht direkt unter seiner Zeile und hat Text und Werte des Originals, aber keine Verbindung mehr zu ihm. Die Dateien einer Dateien-Spalte bekommt es als eigene Kopien, samt dem schon gelesenen Text.",
       "p4": "Auf dem Telefon sind Griff und Kästchen immer zu sehen, mit der Tastatur erreichst du sie mit Tab, Leertaste setzt den Haken. Agenten können dasselbe mit exo_database_rows_update, exo_database_rows_duplicate und exo_database_rows_trash."
     },
     "where": "In einer Datenbank in der Tabellenansicht: links neben dem Namen einer Zeile."
@@ -556,7 +556,7 @@
     "details": {
       "p1": "In der Tabelle, im Kopf einer Zeilenseite, in der Zeilenansicht und im Eigenschaften-Bereich zeigt die Zelle ihre Dateien mit Namen. Ein Klick auf den Namen lädt die Datei herunter, ein Bild zeigt ein kleines Vorschaubild, das sich groß öffnen lässt, und das Kreuz nimmt die Datei aus der Zelle. Mehrere Dateien auf einmal gehen auch.",
       "p2": "Ziehst du Dateien über die Zelle, färbt sie sich ein und sagt, in welche Spalte sie gehen. Das unterscheidet sie vom Text der Seite darunter: was du auf die Seite selbst ziehst, landet weiterhin im Text. Beim Hochladen siehst du den Fortschritt, und ist eine Datei zu groß oder ihr Typ nicht erlaubt, steht das direkt an der Zelle.",
-      "p3": "Die Datei hängt an der Zeile. Wird die Zeile endgültig gelöscht, geht die Datei mit. Nimmst du sie aus der Zelle oder löschst du die Spalte, räumt die nächtliche Wartung sie nach einem Tag weg. Wer eine Seite nur lesen darf, sieht die Dateien und kann sie herunterladen, aber nichts hinzufügen oder entfernen.",
+      "p3": "Die Datei hängt an der Zeile. Wird die Zeile endgültig gelöscht, geht die Datei mit. Nimmst du sie aus der Zelle oder löschst du die Spalte, räumt die nächtliche Wartung sie nach einem Tag weg. Eine Zeile aus einer Vorlage oder ein Duplikat bekommt eigene Kopien der Dateien, deshalb verschwindet dort nichts, wenn du eine Datei aus der Vorlage nimmst. Wer eine Seite nur lesen darf, sieht die Dateien und kann sie herunterladen, aber nichts hinzufügen oder entfernen.",
       "p4": "Agenten laden mit denselben Werkzeugen hoch wie für eine Seite (exo_attachment_upload, exo_attachment_upload_url, exo_attachment_upload_ticket) und geben zusätzlich propertyId an; entfernen und umsortieren geht mit exo_database_row_update. exo_database_row_get nennt die Dateien einer Zelle mit Namen."
     },
     "where": "Eine Zelle einer Dateien-Spalte, in der Tabelle oder oben auf der Seite einer Zeile."

@@ -39,10 +39,15 @@ of the page it is.
    place an attachment is checked for being usable as one.
 5. Row properties are copied when -- and only when -- the new page's parent is
    the same collection the template sits in.
+   The files of a FILES cell are copied with them as files of the new row
+   (`CellFileCopyService`, issue #316): same column mark, the object copied
+   inside the bucket, extracted text, correction and screening carried over,
+   the uploader unchanged (ADR-096). The response lists them in `copiedFiles`.
 6. `useCount` goes up and `lastUsedAt` moves.
 
-The response names what could not be copied exactly: attachments still belong
-to the template, and an embedded database is now shown twice.
+The response names what could not be copied exactly: pictures and files in the
+page text (and the cover) still belong to the template, and an embedded
+database is now shown twice. Only the files of FILES cells are copies.
 
 ## Adding a placeholder
 

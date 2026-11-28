@@ -334,8 +334,9 @@ own, so the grid lines of #305 and the pinned cell's tint are unchanged.
   so each row comes back on its own, from the trash like any page; there is
   no undo of its own. A copy is made like a page from a template (ADR-039):
   from the canonical Yjs state with new block ids, title, icon, cover and the
-  stored values, placed directly after its row; files it names stay the source
-  row's.
+  stored values, placed directly after its row. The files of its FILES cells
+  are copies of its own (see "Files in a FILES cell"); pictures and files in
+  its text stay the source row's.
 - **Live.** Rows are pages, so a row created, duplicated, archived, restored
   or moved elsewhere arrives as a `document.*` event naming its parent, and
   `useDatabaseRealtime` invalidates that parent's rows. Before #244 a table
@@ -556,7 +557,17 @@ properties panel, because all three render `PropertyCell` and pass it the row.
   list, which is how a file is removed or the order changed. Ids are kept once,
   and an id the cell does not already hold must be a file on this row
   (`database_files_foreign` otherwise); ids it holds may stay even if they hang
-  elsewhere, which is what a row made from a template holds (ADR-039).
+  elsewhere, which only a value written before issue #316 does.
+- **A copied row copies its files.** A row made from a template or duplicated
+  gets an `Attachment` of its own for each file of a FILES cell
+  (`CellFileCopyService`, issue #316): on the new row, with the same
+  `propertyId`, the object and its preview copied inside the bucket
+  (`ObjectStorage.copyObject`), and extracted text, page starts, correction
+  and screening carried over, so no PDF goes through the extraction engine
+  again; one still being read is read again for its copy. The uploader stays
+  the source's, so the copy is trusted for the same reader (ADR-096). Both
+  answers carry `copiedFiles` with the new ids. Emptying the source's cell
+  then leaves the copy's alone.
 - **Reading the names.** Every row answer (`rows/query`, `/row`, a value write)
   carries `files`: id, name, type and size of each file its FILES values name,
   once. An id without an entry is a file that is gone; the cell says so and
