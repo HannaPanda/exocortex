@@ -139,4 +139,62 @@ test.describe('files in a database cell (issue #245)', () => {
     await expect(headerCell.getByTestId('files-cell-file')).toHaveCount(3, { timeout: 15_000 });
     await expect(headerCell).not.toContainText('beleg.txt');
   });
+
+  test('a duplicated row holds copies of its files, so emptying the original leaves it (issue #316)', async ({
+    page,
+  }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    await createDatabase(page, `Kopien ${Date.now().toString(36)}`);
+    await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
+    await addFilesProperty(page, 'Belege');
+    await addRowAndClosePeek(page);
+    const rows = page.locator('[data-testid^="database-row-"]');
+    const original = rows.first();
+    await expect(original).toBeVisible({ timeout: 15_000 });
+    await original.getByTestId('files-cell-input').setInputFiles([
+      { name: 'beleg.txt', mimeType: 'text/plain', buffer: Buffer.from('Rechnung 42') },
+      { name: 'pixel.png', mimeType: 'image/png', buffer: PNG_PIXEL },
+    ]);
+    const originalCell = original.getByTestId('files-cell');
+    await expect(originalCell.getByTestId('files-cell-file')).toHaveCount(2, { timeout: 20_000 });
+    const originalLinks = await originalCell
+      .getByTestId('files-cell-download')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+
+    await original.hover();
+    await original.getByTestId('row-handle').click();
+    await page.getByTestId('row-duplicate').click();
+    await expect(rows).toHaveCount(2, { timeout: 15_000 });
+
+    // The copy stands below its row and shows both files, as files of its own.
+    const copyCell = rows.nth(1).getByTestId('files-cell');
+    await expect(copyCell.getByTestId('files-cell-file')).toHaveCount(2, { timeout: 15_000 });
+    await expect(copyCell).toContainText('beleg.txt');
+    const copyLinks = await copyCell
+      .getByTestId('files-cell-download')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    for (const link of copyLinks) expect(originalLinks).not.toContain(link);
+
+    // Taking a file out of the original leaves the copy as it was.
+    await originalCell
+      .getByTestId('files-cell-file')
+      .filter({ hasText: 'beleg.txt' })
+      .getByTestId('files-cell-remove')
+      .click();
+    await expect(originalCell.getByTestId('files-cell-file')).toHaveCount(1, { timeout: 15_000 });
+    await page.reload();
+    await expect(rows.nth(1).getByTestId('files-cell').getByTestId('files-cell-file')).toHaveCount(
+      2,
+      { timeout: 15_000 },
+    );
+    await expect(rows.nth(1).getByTestId('files-cell')).toContainText('beleg.txt');
+
+    // The copy's file downloads the bytes the original had.
+    const textLink = copyLinks.find((_, index) => index === 0);
+    expect(textLink).toBeTruthy();
+    const response = await page.request.get(textLink as string);
+    expect(response.ok()).toBe(true);
+  });
 });
