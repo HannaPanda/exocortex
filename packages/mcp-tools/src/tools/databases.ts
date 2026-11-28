@@ -429,7 +429,11 @@ const databaseViewUpdateInputSchema = z
 
 export const databaseViewUpdateTool: AnyToolDefinition = defineTool({
   name: 'exo_database_view_update',
-  description: 'Ändert Name, Filter, Sortierung oder Konfiguration einer Ansicht.',
+  description:
+    'Ändert Name, Filter, Sortierung oder Konfiguration einer Ansicht. sorts ersetzt die ganze ' +
+    'Liste und ist nach Priorität geordnet: die erste Regel entscheidet, jede weitere nur bei ' +
+    'Gleichstand. propertyId ist eine Spalte der Datenbank oder "title" für den Zeilennamen, ' +
+    'z. B. [{propertyId:<Datum>,direction:"desc"},{propertyId:"title",direction:"asc"}].',
   inputSchema: databaseViewUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'databases',
@@ -507,7 +511,9 @@ const databaseQueryInputSchema = z
 export const databaseQueryTool: AnyToolDefinition = defineTool({
   name: 'exo_database_query',
   description:
-    'Fragt Zeilen einer Datenbank ab, optional über eine gespeicherte Ansicht oder ad-hoc-Filter. ' +
+    'Fragt Zeilen einer Datenbank ab, optional über eine gespeicherte Ansicht oder ad-hoc-Filter ' +
+    'und -Sortierung (sorts in Prioritätsfolge, "title" sortiert nach dem Zeilennamen; mit viewId ' +
+    'gilt die Sortierung der Ansicht). ' +
     'Personen (PERSON, erstellt/geändert von) stehen mit Namen und Kennung da, Dateien mit Namen.',
   inputSchema: databaseQueryInputSchema,
   surfaces: ['mcp', 'ai'],

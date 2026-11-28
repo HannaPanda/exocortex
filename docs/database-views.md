@@ -199,6 +199,20 @@ refusal is what keeps a rule from reaching into another database, so a rule left
 behind would stop the view from rendering. A filter group the deletion leaves
 empty goes with it.
 
+In the browser the sort bar (`filter-sort-bar.tsx`) shows the rules as chips in
+their order, and one popover (`sort-editor.tsx`) edits all of them: column,
+direction, removal, and the priority by dragging a rule's grip (pointer events,
+so touch works too) or with Alt+↑/↓ on it. A table's column menu (and the
+menu on the name column) sorts by that column: an existing rule for it changes
+direction in place and keeps its priority, a new one goes last, so "by date,
+then by name" is two clicks in that order. The pure list operations live in
+`sort-rules.ts`. The writes go through `useUpdateDatabaseViewSorts`, which puts
+the new list into the views cache before the request is queued and runs the
+writes of one view one after another, so several Alt+↑ presses in a row each
+start from the list the previous one left and the last one is what is stored.
+The dragged row follows the pointer by a transform and the list keeps its DOM
+order until the drop: moving the captured grip's node would end the drag.
+
 ## Adding a new view type
 
 1. Add it to `DatabaseViewType` in `schema.prisma` (migration) and

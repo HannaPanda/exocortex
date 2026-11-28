@@ -74,6 +74,17 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'datenbank-sortieren',
+    area: 'datenbanken',
+    since: '2026-11-28',
+    references: ['#296'],
+    ui: {},
+    shortcuts: [
+      'Alt+Pfeil hoch oder runter auf dem Griff einer Sortierung verschiebt sie um eine Stelle',
+    ],
+    tools: ['exo_database_view_update', 'exo_database_query'],
+  }),
+  defineFeature({
     id: 'kalenderansicht',
     area: 'datenbanken',
     since: '2026-09-18',
