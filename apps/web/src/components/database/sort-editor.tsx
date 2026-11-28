@@ -338,17 +338,12 @@ function SortRuleList({
                 >
                   <SelectTrigger
                     size="sm"
-                    className="w-32 shrink-0"
+                    className="w-36 shrink-0"
                     aria-label={t('direction')}
                     data-testid={`sort-direction-${at}`}
                   >
                     <SelectValue>
-                      {() => (
-                        <span className="flex items-center gap-1">
-                          <DirectionIcon direction={sort.direction} />
-                          {sort.direction === 'asc' ? t('ascending') : t('descending')}
-                        </span>
-                      )}
+                      {() => (sort.direction === 'asc' ? t('ascending') : t('descending'))}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>

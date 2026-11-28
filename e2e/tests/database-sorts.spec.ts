@@ -130,12 +130,14 @@ test.describe('sorting a database by several columns (issue #296)', () => {
   test('fits the editor on a phone and reorders by touch', async ({ browser, baseURL }) => {
     const context = await browser.newContext({
       storageState: storageStatePath('johanna'),
-      viewport: { width: 390, height: 844 },
       hasTouch: true,
     });
     const page = await context.newPage();
     try {
+      // Made at desktop width, where the sidebar's "new database" is on
+      // screen, then looked at the width of a phone.
       await databaseWithDates(page, baseURL);
+      await page.setViewportSize({ width: 390, height: 844 });
       await page.getByTestId('add-sort').tap();
       await page.getByTestId('sort-add-rule').tap();
       await page.getByTestId('sort-add-rule').tap();
