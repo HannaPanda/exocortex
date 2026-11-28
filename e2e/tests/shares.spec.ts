@@ -224,6 +224,93 @@ test.describe('shares', () => {
     ).toBe(403);
   });
 
+  test('a writing grant on one page carries files and a cover onto it, and nothing below (#264)', async ({
+    browser,
+  }) => {
+    const workspaceId = await createWorkspace('Freigabe Dateien');
+    const documentId = await createDocument(workspaceId, 'Nur diese Seite');
+    const otherId = await createDocument(workspaceId, 'Nicht geteilt');
+    await share(documentId, {
+      kind: 'USER',
+      email: SEED_USERS.stefan.email,
+      permission: 'WRITE',
+      scope: 'PAGE_ONLY',
+    });
+    // A 1x1 PNG, enough for the magic-byte check and the cover's image rule.
+    const png = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64',
+    );
+    async function uploadAs(api: APIRequestContext, target: string) {
+      return api.post(`${origin}/api/workspaces/${workspaceId}/attachments`, {
+        multipart: {
+          file: { name: 'bild.png', mimeType: 'image/png', buffer: png },
+          documentId: target,
+        },
+        headers: { origin },
+      });
+    }
+
+    // The grantee uploads onto the page and takes the owner's file off it.
+    const own = await uploadAs(stefanApi, documentId);
+    expect(own.status(), await own.text()).toBe(201);
+    const ownerFile = await uploadAs(johannaApi, documentId);
+    const ownerFileId = ((await ownerFile.json()) as { attachment: { id: string } }).attachment.id;
+    const removed = await stefanApi.delete(`${origin}/api/attachments/${ownerFileId}`, {
+      headers: { origin },
+    });
+    expect(removed.status(), await removed.text()).toBe(204);
+
+    // Nothing below the page and nothing beside it.
+    const child = await stefanApi.post(`${origin}/api/workspaces/${workspaceId}/documents`, {
+      data: { title: 'Unterseite', type: 'PAGE', parentId: documentId },
+      headers: { origin },
+    });
+    expect(child.status()).toBe(403);
+    const elsewhere = await uploadAs(johannaApi, otherId);
+    const elsewhereId = ((await elsewhere.json()) as { attachment: { id: string } }).attachment.id;
+    expect((await uploadAs(stefanApi, otherId)).status()).toBe(403);
+    const foreignDelete = await stefanApi.delete(`${origin}/api/attachments/${elsewhereId}`, {
+      headers: { origin },
+    });
+    expect(foreignDelete.status()).toBe(403);
+    const foreignCover = await stefanApi.patch(`${origin}/api/documents/${documentId}`, {
+      data: { coverAttachmentId: elsewhereId },
+      headers: { origin },
+    });
+    expect(foreignCover.status()).toBe(404);
+
+    // The cover, through the browser the way a person sets one.
+    const context = await browser.newContext({ httpCredentials: BASIC_AUTH_CREDENTIALS });
+    try {
+      await apiSignIn(context.request, 'stefan', origin);
+      const page = await context.newPage();
+      await page.goto(`${origin}/geteilt/${documentId}`);
+      await expect(page.getByTestId('document-title')).toBeVisible();
+      // The add-cover button only shows on hover; its file input is what it opens.
+      await page
+        .getByTestId('cover-file-input')
+        .first()
+        .setInputFiles({ name: 'titel.png', mimeType: 'image/png', buffer: png });
+      await expect(page.getByTestId('page-cover-image')).toBeVisible();
+    } finally {
+      await context.close();
+    }
+    const detail = (await (
+      await stefanApi.get(`${origin}/api/documents/${documentId}`)
+    ).json()) as {
+      coverAttachmentId: string | null;
+    };
+    expect(detail.coverAttachmentId).not.toBeNull();
+
+    // And off again.
+    const cleared = await stefanApi.patch(`${origin}/api/documents/${documentId}`, {
+      data: { coverAttachmentId: null },
+      headers: { origin },
+    });
+    expect(cleared.status(), await cleared.text()).toBe(200);
+  });
+
   test('the recipient finds the page in their own list and nowhere else', async () => {
     const workspaceId = await createWorkspace('Freigabe Liste');
     const documentId = await createDocument(workspaceId, 'In der Liste');
