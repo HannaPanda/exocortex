@@ -70,7 +70,9 @@ async function storedWidth(
 ): Promise<number | undefined> {
   const response = await page.request.get(`/api/documents/${databaseId}/views`);
   expect(response.ok(), await response.text()).toBe(true);
-  const views = (await response.json()) as { config: { columnWidths?: Record<string, number> } }[];
+  const { views } = (await response.json()) as {
+    views: { config: { columnWidths?: Record<string, number> } }[];
+  };
   return views[0]?.config.columnWidths?.[columnKey];
 }
 
