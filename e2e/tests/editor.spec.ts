@@ -543,10 +543,12 @@ test.describe('editor', () => {
     await pick('none');
     await expect(coloured).toHaveCount(0);
 
-    // A script has no prompts; the options are still found.
+    // "Shell" with an unmistakable prompt in it is read as a session too; the
+    // stored language stays bash.
     await pick('bash');
+    await expect(pre.locator('code')).toHaveClass(/language-bash/);
+    await expect(pre.locator('.hljs-meta.prompt_')).toHaveText('user@host:~$ ');
     await expect(pre.locator('.hljs-attr')).toHaveText(['-av', '--progress']);
-    await expect(pre.locator('.hljs-meta')).toHaveCount(0);
   });
 
   /**

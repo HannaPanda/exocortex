@@ -117,3 +117,29 @@ export const terminalSession: LanguageFn = (): Language => ({
     },
   ],
 });
+
+/**
+ * A prompt no script line can start with: `user@host:~$`, `host:~/dir #`,
+ * `[user@host dir]$`, or a bare `$ ` (in a script `$` starts a variable and is
+ * never followed by a space). Deliberately narrower than `PROMPT` above, which
+ * may assume it is looking at a session.
+ */
+const SESSION_MARKER =
+  /^[ \t]{0,3}(?:\([\w.-]+\)[ \t])?(?:\[[^\]\n]*@[^\]\n]*\]|[\w.-]+@[\w.-]+(?::\S*?)?|[\w.-]+:[~/]\S*?)?[ \t]?[$#](?:[ \t]|$)/m;
+
+/**
+ * Whether a block marked as a shell script is in fact a terminal session.
+ *
+ * Most "Shell" blocks in practice are pasted from a terminal: prompt, command,
+ * output (issue #317). Read as a script, the prompt's `#` opens a comment and
+ * every line of output looks like a command. One line starting with an
+ * unmistakable prompt settles it, so such a block is highlighted as `console`
+ * while its stored language stays `bash`. A root prompt without a host (`# `)
+ * is not enough on its own: in a script that is a comment.
+ */
+export function looksLikeSession(code: string): boolean {
+  for (const match of code.matchAll(new RegExp(SESSION_MARKER.source, 'gm'))) {
+    if (!/^[ \t]*#/.test(match[0])) return true;
+  }
+  return false;
+}

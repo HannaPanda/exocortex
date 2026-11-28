@@ -538,7 +538,13 @@ so nothing about highlighting is ever written to the Yjs state (issue #317).
   options and paths to upstream's grammar (alias `shell`), `console` is a
   terminal session where a line starting with a prompt (`user@host:~$`,
   `host:~/scripts #`, `[me@box dir]$`, `$`, `#`) is a bash command and every
-  other line is output, left plain. `dotenv` and `env` are aliases of `ini`.
+  other line is output, left plain. A block stored as `bash` (or `sh`,
+  `shell`) that holds one unmistakable prompt (`looksLikeSession`: a host or
+  path before the `$`/`#`, or a bare `$ `) is highlighted as `console`; its
+  stored language is not touched. Most "Shell" blocks are pasted terminals,
+  and read as a script their prompt's `#` opened a comment. `dotenv` and `env`
+  are aliases of `ini`. Code renders with `translate="no"`, so a browser's page
+  translation leaves it alone.
 - **Colours** are the `--syntax-*` tokens (`tokens.css`, DESIGN.md §2 "Syntax"),
   mapped from highlight.js classes in `apps/web/src/app/globals.css`. The AI
   chat renders fenced code with the same registry through `highlightCode`.

@@ -29,7 +29,7 @@ function Code({ language, code }: { language: string; code: string }) {
   const nodes = React.useMemo(() => highlightCode(code, language), [code, language]);
   return (
     <div className="exocortex-editor max-w-measure">
-      <pre className="my-0">
+      <pre translate="no" className="my-0">
         <code className={language.length > 0 ? `language-${language}` : undefined}>
           {renderNodes(nodes, language)}
         </code>
@@ -87,7 +87,7 @@ export function CodeBlockPattern() {
       <DsExample
         id="codeblock-shell"
         title="Shell"
-        note="Befehle blau, Optionen und Variablen hell, Pfade und Zeichenketten orange, Kommentare gedämpft und kursiv, Schlüsselwörter halbfett."
+        note="Befehle blau, Optionen und Variablen hell, Pfade und Zeichenketten orange, Kommentare gedämpft und kursiv, Schlüsselwörter halbfett. Steht in einem Shell-Block eine Zeile mit einem eindeutigen Prompt (user@host:~$), wird er wie eine Terminal-Sitzung gelesen; die gespeicherte Sprache bleibt."
       >
         <Code language="bash" code={SCRIPT} />
       </DsExample>

@@ -288,7 +288,10 @@ function ChatCodeBlock({ node, keyPrefix }: { node: ProseMirrorNode; keyPrefix: 
   const highlighted = React.useMemo(() => highlightCode(text, language), [text, language]);
 
   return (
-    <pre className="mb-1.5 overflow-x-auto rounded-md border border-border bg-sunken p-3 font-mono text-xs last:mb-0">
+    <pre
+      translate="no"
+      className="mb-1.5 overflow-x-auto rounded-md border border-border bg-sunken p-3 font-mono text-xs last:mb-0"
+    >
       <code>
         <span className="exocortex-editor">{renderHighlightNodes(highlighted, keyPrefix)}</span>
       </code>

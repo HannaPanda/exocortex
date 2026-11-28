@@ -3,6 +3,7 @@ import { Editor } from '@tiptap/core';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { highlightSpans } from './code-block';
+import { looksLikeSession } from './code-grammars';
 import { buildEditorExtensions } from './extensions';
 
 /**
@@ -102,6 +103,31 @@ describe('highlightSpans', () => {
       'hljs-title function_ invoke__',
       'hljs-attr',
     ]);
+  });
+
+  it('reads a shell block holding a terminal session as one', () => {
+    const pasted = [
+      'host:~/scripts # head -1 /usr/local/bin/rrsync',
+      '#!/usr/bin/env python3',
+      'host:~/scripts # which python3',
+      '/usr/bin/python3',
+    ].join('\n');
+    expect(highlightSpans(pasted, 'bash')).toEqual(highlightSpans(pasted, 'console'));
+    const lines = render(pasted, 'bash').split('\n');
+    // The prompt's `#` is no comment, and output stays as printed.
+    expect(lines[0]).toContain('[hljs-meta prompt_:host:~/scripts # ]');
+    expect(lines[1]).toBe('#!/usr/bin/env python3');
+    expect(lines[3]).toBe('/usr/bin/python3');
+  });
+
+  it('tells a session from a script by an unmistakable prompt only', () => {
+    expect(looksLikeSession('user@host:~$ ls')).toBe(true);
+    expect(looksLikeSession('echo eins\n[jo@box tmp]$ ls')).toBe(true);
+    expect(looksLikeSession('$ ls -l')).toBe(true);
+    expect(looksLikeSession('host:~/scripts # ls')).toBe(true);
+    expect(looksLikeSession('# ein Kommentar\necho "$HOME"')).toBe(false);
+    expect(looksLikeSession('make # baut alles\nFOO=1 ./run.sh > log')).toBe(false);
+    expect(looksLikeSession('#!/bin/bash\nset -e')).toBe(false);
   });
 
   it('understands the names people write after a fence', () => {

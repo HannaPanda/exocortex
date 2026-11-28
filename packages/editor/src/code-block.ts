@@ -19,7 +19,7 @@ import xml from 'highlight.js/lib/languages/xml';
 import yaml from 'highlight.js/lib/languages/yaml';
 import { createLowlight } from 'lowlight';
 
-import { shellScript, terminalSession } from './code-grammars';
+import { looksLikeSession, shellScript, terminalSession } from './code-grammars';
 import { codeHighlightPlugin, type HighlightSpan } from './code-highlight';
 
 /**
@@ -108,11 +108,17 @@ export const CODE_BLOCK_LANGUAGES = [
 
 export type CodeBlockLanguage = (typeof CODE_BLOCK_LANGUAGES)[number]['value'];
 
-/** The grammar a stored language name stands for, or `null` for plain text. */
-function grammarFor(language: unknown): string | null {
+/**
+ * The grammar a stored language name stands for, or `null` for plain text. A
+ * shell block holding a terminal session is read as one (`looksLikeSession`);
+ * the stored name is not touched.
+ */
+function grammarFor(language: unknown, code: string): string | null {
   if (typeof language !== 'string') return null;
   const normalized = language.trim().toLowerCase();
-  return normalized.length > 0 && lowlight.registered(normalized) ? normalized : null;
+  if (normalized.length === 0 || !lowlight.registered(normalized)) return null;
+  const bashNames = ['bash', 'sh', 'zsh', 'shell'];
+  return bashNames.includes(normalized) && looksLikeSession(code) ? 'console' : normalized;
 }
 
 /** The node shape `lowlight.highlight` actually produces, inferred rather than
@@ -161,7 +167,7 @@ function collectSpans(
  * (`text`, a language nobody added) both mean plain text.
  */
 export function highlightSpans(code: string, language: unknown): readonly HighlightSpan[] {
-  const grammar = grammarFor(language);
+  const grammar = grammarFor(language, code);
   if (grammar === null || code.length === 0) return [];
   const spans: HighlightSpan[] = [];
   collectSpans(lowlight.highlight(grammar, code).children, [], spans, 0);
@@ -193,7 +199,8 @@ export const ExocortexCodeBlock = CodeBlock.extend({
   languageClassPrefix: 'language-',
   exitOnTripleEnter: false,
   exitOnArrowDown: true,
-  HTMLAttributes: { class: 'exocortex-code-block' },
+  // Code is not prose: a browser's page translation must leave it alone.
+  HTMLAttributes: { class: 'exocortex-code-block', translate: 'no' },
 });
 
 /**
@@ -238,7 +245,7 @@ function toHighlightNode(node: LowlightNode): HighlightNode {
  * fenced block in a chat message may carry any string the model typed.
  */
 export function highlightCode(code: string, language: string): readonly HighlightNode[] {
-  const grammar = grammarFor(language);
+  const grammar = grammarFor(language, code);
   if (grammar === null) return code.length > 0 ? [{ type: 'text', value: code }] : [];
   return lowlight.highlight(grammar, code).children.map(toHighlightNode);
 }
