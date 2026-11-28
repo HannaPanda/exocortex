@@ -287,4 +287,70 @@ test.describe('the block menu', () => {
     ).toHaveCount(1);
     await expect(listItem('Drei')).toHaveCount(0);
   });
+
+  /**
+   * Issue #253: a ticked task steps back, and a list is sorted once from the
+   * handle's menu. The order and the undo are unit-tested in
+   * `packages/editor/src/list-sort.test.ts`; the browser proves the colour the
+   * stylesheet really gives, the menu entry and `Strg+Z` through Yjs.
+   */
+  test('mutes a done task and sorts a list from the handle', async ({ page }) => {
+    await pageWith(
+      page,
+      [
+        'Oben',
+        '- [x] Erledigt\n  - [ ] Noch offen\n- [ ] Offen eins\n- [x] Auch erledigt\n- [ ] Offen zwei',
+        '- Zehn 10\n- Neun 9\n- Elf 11',
+      ].join('\n\n'),
+    );
+    await expect(textBlock(page, 'Offen zwei')).toBeVisible({ timeout: 30_000 });
+
+    const listItem = (text: string): Locator =>
+      page.locator('.exocortex-editor li p', { hasText: new RegExp(`^${text}$`) });
+    const ink = (text: string) =>
+      listItem(text).evaluate((element) => {
+        // The e2e project has no DOM library: the browser's globals are typed here.
+        const browser = globalThis as unknown as {
+          getComputedStyle: (target: unknown) => { color: string; textDecorationLine: string };
+        };
+        const style = browser.getComputedStyle(element);
+        return { color: style.color, line: style.textDecorationLine };
+      });
+    const done = await ink('Erledigt');
+    const open = await ink('Offen eins');
+    const openUnderDone = await ink('Noch offen');
+    expect(done.line).toContain('line-through');
+    expect(open.line).not.toContain('line-through');
+    expect(done.color).not.toBe(open.color);
+    // An open sub-task under a done one is still work: full ink, no strike.
+    expect(openUnderDone.color).toBe(open.color);
+    expect(openUnderDone.line).not.toContain('line-through');
+
+    const order = (): Promise<string[]> =>
+      page
+        .locator('.exocortex-editor .ProseMirror > ul[data-type="taskList"] > li > div > p')
+        .allTextContents();
+    await caretAtEndOf(page, textBlock(page, 'Oben'));
+    await openMenuOf(page, textBlock(page, 'Offen eins'));
+    await page.getByTestId('block-sort').click();
+    await page.getByTestId('block-sort-checked').click();
+    await expect.poll(order).toEqual(['Offen eins', 'Offen zwei', 'Erledigt', 'Auch erledigt']);
+    // The sub-task went with its parent.
+    await expect(
+      page.locator('.exocortex-editor li[data-checked="true"] li p', { hasText: 'Noch offen' }),
+    ).toHaveCount(1);
+    await page.keyboard.press('Control+z');
+    await expect.poll(order).toEqual(['Erledigt', 'Offen eins', 'Auch erledigt', 'Offen zwei']);
+
+    // A plain list has no "done" order, and sorts by its numbers.
+    const bullets = (): Promise<string[]> =>
+      page
+        .locator('.exocortex-editor .ProseMirror > ul:not([data-type="taskList"]) > li > p')
+        .allTextContents();
+    await openMenuOf(page, textBlock(page, 'Neun 9'));
+    await page.getByTestId('block-sort').click();
+    await expect(page.getByTestId('block-sort-checked')).toHaveCount(0);
+    await page.getByTestId('block-sort-numeric').click();
+    await expect.poll(bullets).toEqual(['Neun 9', 'Zehn 10', 'Elf 11']);
+  });
 });

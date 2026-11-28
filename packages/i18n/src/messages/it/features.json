@@ -91,6 +91,16 @@
     },
     "where": "Nell’editor trascinando la maniglia a sinistra di un blocco, oppure con Strg+Umschalt+Freccia su e giù."
   },
+  "listen-sortieren": {
+    "title": "Ordinare gli elenchi e spostare gli elementi completati",
+    "summary": "Le attività completate passano in secondo piano: il testo diventa attenuato e barrato, rimanendo però ben leggibile. Tramite la maniglia di un elenco puoi riordinarlo all’istante, in ordine alfabetico, per numero o, nel caso delle attività, spostando quelle completate in basso.",
+    "details": {
+      "p1": "Non appena spunti una casella, la riga viene attenuata e barrata. Gli elementi rientrati sotto un’attività completata appartengono a essa e vengono anch’essi attenuati; tuttavia, una sottoattività ancora aperta rimane con il carattere normale, poiché deve essere ancora svolta. Lo stato di completamento dell’attività continua a essere indicato dalla casella stessa, anche per gli screen reader.",
+      "p2": "Per ordinare, apri il menu tramite la maniglia con i sei punti accanto a una voce dell’elenco e scegli «Ordina elenco». «Alfabetico» ordina in base al testo senza distinguere tra maiuscole e minuscole, «Per numero» in base al primo numero presente nella voce (le voci senza numeri vanno alla fine), e per gli elenchi di attività «Completate in basso» sposta le attività spuntate dopo quelle aperte, senza modificare l’ordine interno dei due gruppi. Funziona per elenchi puntati, elenchi numerati ed elenchi di attività.",
+      "p3": "Viene ordinato solo l’elenco in cui si trova la voce, e ogni voce porta con sé i propri elementi secondari. L’ordinamento è un’operazione singola e non una modalità permanente: nulla si sposta alla spunta successiva, e Strg+Z annulla l’operazione in un unico passaggio. I collegamenti alle singole voci continuano a funzionare anche dopo."
+    },
+    "where": "Nell’editor, nel menu della maniglia di una voce dell’elenco alla voce «Ordina elenco»."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Continuare gli elenchi dopo un’immagine",
     "summary": "Se sotto un elenco c’è un’immagine, una citazione o una tabella, la riga vuota successiva propone di continuare l’elenco: un punto sbiadito mostra dove andrebbe la voce successiva e con Tab la rende effettiva. Se inizi semplicemente a digitare, la riga rimane un normale paragrafo.",

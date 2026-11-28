@@ -59,6 +59,13 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'listen-sortieren',
+    area: 'seiten',
+    since: '2026-11-28',
+    references: ['#253'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'aufzaehlung-fortsetzen',
     area: 'seiten',
     since: '2026-11-26',

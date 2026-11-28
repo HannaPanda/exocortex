@@ -152,7 +152,11 @@
     "moveUp": "Nach oben verschieben",
     "moveDown": "Nach unten verschieben",
     "moveUpShortcut": "Strg+Umschalt+↑",
-    "moveDownShortcut": "Strg+Umschalt+↓"
+    "moveDownShortcut": "Strg+Umschalt+↓",
+    "sort": "Liste sortieren",
+    "sortChecked": "Erledigte nach unten",
+    "sortAlphabetical": "Alphabetisch",
+    "sortNumeric": "Nach Zahl"
   },
   "blockRemoval": {
     "title": {

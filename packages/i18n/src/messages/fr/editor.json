@@ -152,7 +152,11 @@
     "moveUp": "Déplacer vers le haut",
     "moveDown": "Déplacer vers le bas",
     "moveUpShortcut": "Ctrl+Maj+↑",
-    "moveDownShortcut": "Ctrl+Maj+↓"
+    "moveDownShortcut": "Ctrl+Maj+↓",
+    "sort": "Trier la liste",
+    "sortChecked": "Éléments cochés en bas",
+    "sortAlphabetical": "Par ordre alphabétique",
+    "sortNumeric": "Par ordre numérique"
   },
   "blockRemoval": {
     "title": {

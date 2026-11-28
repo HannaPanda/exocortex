@@ -486,6 +486,55 @@ the start of the block that followed, which is on screen, so focusing scrolls
 nothing. Covered by `apps/web/src/components/editor/block-target.test.ts` and
 `e2e/tests/scroll-position.spec.ts`.
 
+## Done tasks, and sorting a list
+
+A ticked task steps back (issue #253). Tiptap's task item carries
+`data-checked` on its `<li>`, and `globals.css` gives the content of a
+`data-checked='true'` item `text-muted-foreground` (5.6:1 on the page, 4.7:1
+on a card) and strikes through the item's own paragraph only. Everything
+nested under a done task is muted with it, but an open sub-task gets the full
+ink back, because it is still work; the strike stays on the own line, since a
+line-through on the container would run through every descendant and no
+child could take it back. The state itself is the checkbox's, which a screen
+reader announces; colour and strike are the second signal. No node view and
+no attribute is involved, so the static rendering of a page (the share view,
+a transclusion) looks the same.
+
+"Liste sortieren" in the handle's menu (`list-sort.ts`, in the web app
+`block-actions.tsx`) puts the items of one list into an order: "Alphabetisch"
+(`Intl.Collator` in the reader's interface language, `numeric` and `base`, so
+"Punkt 9" comes before "Punkt 10" and case does not matter), "Nach Zahl" (the
+first number in the item's own text, a comma or a point as the decimal
+separator, no thousands separators guessed), and for a task list "Erledigte
+nach unten". Items without a key (no text, no number) go last; every sort is
+stable, so "done to the bottom" leaves both halves in the order they had.
+
+- The handle's item sorts the list it stands in, a sub-item its sub-list; from
+  the selection toolbar it is the innermost list around the caret
+  (`sortableListAt`, `sortableListAtSelection`). The entry is only there for a
+  list of two items or more, and "Erledigte nach unten" only for a task list
+  (`listSortOrders`).
+- Only that list's items move, each with everything nested under it; a
+  sub-list keeps its own order. The items are the same nodes in a new order,
+  so their block ids stay and a link to one still finds it. A numbered list
+  keeps its `start`.
+- It is one transaction (`sortListTransaction`), so `Strg+Z` takes it back in
+  one step, and an order that would not change dispatches nothing. A caret
+  inside an item travels with it.
+
+It is an action and never a mode, on purpose. A list that re-sorts itself
+when a box is ticked moves a line away under a collaborator's cursor, would
+need a per-list setting stored beside the canonical Yjs state (ADR-004/005),
+and would make every tick a structural change that undo has to reverse. A
+person who wants the done tasks at the bottom again sorts again.
+
+Agents have no tool of their own for it, and need none: sorting is
+reordering a list's items, which `exo_page_section_write` or
+`exo_page_patch` does by writing the list back in the new order. Everything
+outside the list keeps its identifiers (ADR-055); the rewritten items get new
+ones, which is the one difference from the person's sort. Covered by
+`packages/editor/src/list-sort.test.ts` and `e2e/tests/block-menu.spec.ts`.
+
 ## The hint in the empty line
 
 „Schreibe etwas oder tippe „/“ für Befehle …“ is `LinePlaceholder`

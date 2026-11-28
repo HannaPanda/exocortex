@@ -91,6 +91,16 @@
     },
     "where": "En el editor, arrastra desde el tirador a la izquierda de un bloque, o usa Strg+Umschalt+Pfeil hoch y runter."
   },
+  "listen-sortieren": {
+    "title": "Ordenar listas y apartar tareas completadas",
+    "summary": "Las tareas marcadas pasan a un segundo plano: su texto se atenúa y se tacha, pero sigue siendo fácil de leer. Desde el tirador de una lista, puedes ordenarla puntualmente: de forma alfabética, por número o, en las listas de tareas, enviando las completadas al final.",
+    "details": {
+      "p1": "En cuanto marcas una casilla, la línea se atenúa y se tacha. Lo que esté sangrado bajo una tarea completada forma parte de ella y también se atenúa; sin embargo, una subtarea que siga pendiente conserva el texto normal, ya que todavía está por hacer. La propia casilla sigue indicando si una tarea está completada, también para un lector de pantalla.",
+      "p2": "Para ordenar, abre el menú en el tirador de seis puntos junto a un elemento de la lista y elige «Ordenar lista». «Alfabéticamente» ordena según el texto sin distinguir mayúsculas de minúsculas, «Por número» lo hace según el primer número del elemento (los elementos sin número van al final) y, en una lista de tareas, «Completadas al final» desplaza las tareas marcadas detrás de las pendientes, sin cambiar el orden dentro de ambos grupos. Esto funciona con listas con viñetas, listas numeradas y listas de tareas.",
+      "p3": "Solo se ordena la lista en la que se encuentra el elemento, y cada elemento se lleva consigo sus subelementos. Ordenar es una acción puntual y no un modo continuo: nada cambia de lugar automáticamente al marcar la siguiente tarea, y Strg+Z lo deshace en un solo paso. Los enlaces a elementos individuales siguen funcionando después."
+    },
+    "where": "En el editor, en el menú del tirador de un elemento de lista, bajo «Ordenar lista»."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Continuar listas después de una imagen",
     "summary": "Si debajo de una lista hay una imagen, una cita o una tabla, la línea vacía que le sigue te ofrece continuar la lista: un punto tenue muestra dónde iría el siguiente elemento y Tab lo convierte en uno real. Si simplemente comienzas a escribir, la línea sigue siendo un párrafo normal.",

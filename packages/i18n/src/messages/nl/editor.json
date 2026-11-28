@@ -152,7 +152,11 @@
     "moveUp": "Omhoog verplaatsen",
     "moveDown": "Omlaag verplaatsen",
     "moveUpShortcut": "Ctrl+Shift+↑",
-    "moveDownShortcut": "Ctrl+Shift+↓"
+    "moveDownShortcut": "Ctrl+Shift+↓",
+    "sort": "Lijst sorteren",
+    "sortChecked": "Voltooide naar beneden",
+    "sortAlphabetical": "Alfabetisch",
+    "sortNumeric": "Op getal"
   },
   "blockRemoval": {
     "title": {

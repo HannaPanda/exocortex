@@ -9404,6 +9404,22 @@
       "source": "27b7e86af97221fe",
       "output": "fefb2efe74e4a1fc"
     },
+    "editor.blockActions.sort": {
+      "source": "5bfe50117d119c10",
+      "output": "8d6c012ff2fcb246"
+    },
+    "editor.blockActions.sortAlphabetical": {
+      "source": "1be222324e89de24",
+      "output": "a49d631f8c6cf6fb"
+    },
+    "editor.blockActions.sortChecked": {
+      "source": "1542cba46330852e",
+      "output": "14ded75d500ba387"
+    },
+    "editor.blockActions.sortNumeric": {
+      "source": "d152bcfef7a56f20",
+      "output": "a6382f93cfe86a0c"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "788bef32c529ff05"
@@ -14823,6 +14839,30 @@
     "features.lauf-inspektor.where": {
       "source": "768ea6d753d698ec",
       "output": "b6d00427a5e6479e"
+    },
+    "features.listen-sortieren.details.p1": {
+      "source": "fc27afe21f4664dc",
+      "output": "9c37ca8f9ebc59e5"
+    },
+    "features.listen-sortieren.details.p2": {
+      "source": "ad70d3b80fcf88d0",
+      "output": "faf112c73ed35c1b"
+    },
+    "features.listen-sortieren.details.p3": {
+      "source": "66138fc1756bbc93",
+      "output": "28fa235ff999bf12"
+    },
+    "features.listen-sortieren.summary": {
+      "source": "682829b81b5662bb",
+      "output": "b28de9326833228e"
+    },
+    "features.listen-sortieren.title": {
+      "source": "963f42649e0835a0",
+      "output": "76272bc8aa76cdbf"
+    },
+    "features.listen-sortieren.where": {
+      "source": "b2741debca3c3439",
+      "output": "008ddb39ecdb26e0"
     },
     "features.markierung-an-ki.details.p1": {
       "source": "4a5096731bcdf8d1",
@@ -36094,6 +36134,22 @@
       "source": "27b7e86af97221fe",
       "output": "7fcac08e4af0e2c2"
     },
+    "editor.blockActions.sort": {
+      "source": "5bfe50117d119c10",
+      "output": "1afda49c69ab5857"
+    },
+    "editor.blockActions.sortAlphabetical": {
+      "source": "1be222324e89de24",
+      "output": "53acebce6c126eb3"
+    },
+    "editor.blockActions.sortChecked": {
+      "source": "1542cba46330852e",
+      "output": "913bc1ce548bbe0f"
+    },
+    "editor.blockActions.sortNumeric": {
+      "source": "d152bcfef7a56f20",
+      "output": "b0b6e1e248c30993"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "da63a039c3cb4b76"
@@ -41513,6 +41569,30 @@
     "features.lauf-inspektor.where": {
       "source": "768ea6d753d698ec",
       "output": "d14dff14927f2c7d"
+    },
+    "features.listen-sortieren.details.p1": {
+      "source": "fc27afe21f4664dc",
+      "output": "06516cf3cfa7372d"
+    },
+    "features.listen-sortieren.details.p2": {
+      "source": "ad70d3b80fcf88d0",
+      "output": "35576bf7d61488d0"
+    },
+    "features.listen-sortieren.details.p3": {
+      "source": "66138fc1756bbc93",
+      "output": "23bdc60cbc235ee7"
+    },
+    "features.listen-sortieren.summary": {
+      "source": "682829b81b5662bb",
+      "output": "b11e3a07a360efe8"
+    },
+    "features.listen-sortieren.title": {
+      "source": "963f42649e0835a0",
+      "output": "dbddf4a66188c7e1"
+    },
+    "features.listen-sortieren.where": {
+      "source": "b2741debca3c3439",
+      "output": "e7ccdb1c46ff8b16"
     },
     "features.markierung-an-ki.details.p1": {
       "source": "4a5096731bcdf8d1",
@@ -62784,6 +62864,22 @@
       "source": "27b7e86af97221fe",
       "output": "898f9d11bbb05a04"
     },
+    "editor.blockActions.sort": {
+      "source": "5bfe50117d119c10",
+      "output": "91ea1c006c472ea1"
+    },
+    "editor.blockActions.sortAlphabetical": {
+      "source": "1be222324e89de24",
+      "output": "4fdc8407a6a053a9"
+    },
+    "editor.blockActions.sortChecked": {
+      "source": "1542cba46330852e",
+      "output": "12b5630928cc0aca"
+    },
+    "editor.blockActions.sortNumeric": {
+      "source": "d152bcfef7a56f20",
+      "output": "8326e1bb5dc5223b"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "d23fb3aa0a0aeac1"
@@ -68203,6 +68299,30 @@
     "features.lauf-inspektor.where": {
       "source": "768ea6d753d698ec",
       "output": "256dd9390338e1b5"
+    },
+    "features.listen-sortieren.details.p1": {
+      "source": "fc27afe21f4664dc",
+      "output": "0d01d34a2c0819e7"
+    },
+    "features.listen-sortieren.details.p2": {
+      "source": "ad70d3b80fcf88d0",
+      "output": "f21d4adab230975d"
+    },
+    "features.listen-sortieren.details.p3": {
+      "source": "66138fc1756bbc93",
+      "output": "cb76ded1efbecfd6"
+    },
+    "features.listen-sortieren.summary": {
+      "source": "682829b81b5662bb",
+      "output": "c57aa28159b11692"
+    },
+    "features.listen-sortieren.title": {
+      "source": "963f42649e0835a0",
+      "output": "6dc8e32af0958ef9"
+    },
+    "features.listen-sortieren.where": {
+      "source": "b2741debca3c3439",
+      "output": "8fa31673457e1e3d"
     },
     "features.markierung-an-ki.details.p1": {
       "source": "4a5096731bcdf8d1",
@@ -89474,6 +89594,22 @@
       "source": "27b7e86af97221fe",
       "output": "39acc73466a56f72"
     },
+    "editor.blockActions.sort": {
+      "source": "5bfe50117d119c10",
+      "output": "1f47b699853ca263"
+    },
+    "editor.blockActions.sortAlphabetical": {
+      "source": "1be222324e89de24",
+      "output": "28716e654b22799a"
+    },
+    "editor.blockActions.sortChecked": {
+      "source": "1542cba46330852e",
+      "output": "f946d123569bdaa9"
+    },
+    "editor.blockActions.sortNumeric": {
+      "source": "d152bcfef7a56f20",
+      "output": "3a137db1aa4ab785"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "7713564936d728f3"
@@ -94893,6 +95029,30 @@
     "features.lauf-inspektor.where": {
       "source": "768ea6d753d698ec",
       "output": "0cad2249eeb172b4"
+    },
+    "features.listen-sortieren.details.p1": {
+      "source": "fc27afe21f4664dc",
+      "output": "94a62290a127ea2b"
+    },
+    "features.listen-sortieren.details.p2": {
+      "source": "ad70d3b80fcf88d0",
+      "output": "b6ce955ed45714e0"
+    },
+    "features.listen-sortieren.details.p3": {
+      "source": "66138fc1756bbc93",
+      "output": "3faae82f458334b9"
+    },
+    "features.listen-sortieren.summary": {
+      "source": "682829b81b5662bb",
+      "output": "e8645742d1318dd3"
+    },
+    "features.listen-sortieren.title": {
+      "source": "963f42649e0835a0",
+      "output": "5be4da7ab47771cd"
+    },
+    "features.listen-sortieren.where": {
+      "source": "b2741debca3c3439",
+      "output": "6a7d826f5ed260b1"
     },
     "features.markierung-an-ki.details.p1": {
       "source": "4a5096731bcdf8d1",
@@ -116164,6 +116324,22 @@
       "source": "27b7e86af97221fe",
       "output": "fefb2efe74e4a1fc"
     },
+    "editor.blockActions.sort": {
+      "source": "5bfe50117d119c10",
+      "output": "09ff34b74aba175f"
+    },
+    "editor.blockActions.sortAlphabetical": {
+      "source": "1be222324e89de24",
+      "output": "0f4a223ebc8a9ce0"
+    },
+    "editor.blockActions.sortChecked": {
+      "source": "1542cba46330852e",
+      "output": "d6fd2fbdf8e0e259"
+    },
+    "editor.blockActions.sortNumeric": {
+      "source": "d152bcfef7a56f20",
+      "output": "a0bf6151909d959b"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "17dbff1e2dab331d"
@@ -121583,6 +121759,30 @@
     "features.lauf-inspektor.where": {
       "source": "768ea6d753d698ec",
       "output": "2f23ba3f979b1593"
+    },
+    "features.listen-sortieren.details.p1": {
+      "source": "fc27afe21f4664dc",
+      "output": "ed5d61af4dd382c8"
+    },
+    "features.listen-sortieren.details.p2": {
+      "source": "ad70d3b80fcf88d0",
+      "output": "2da672dd3ac541ef"
+    },
+    "features.listen-sortieren.details.p3": {
+      "source": "66138fc1756bbc93",
+      "output": "5197b36adbcf374d"
+    },
+    "features.listen-sortieren.summary": {
+      "source": "682829b81b5662bb",
+      "output": "972029bc43adbd12"
+    },
+    "features.listen-sortieren.title": {
+      "source": "963f42649e0835a0",
+      "output": "e66272f1a5d420ea"
+    },
+    "features.listen-sortieren.where": {
+      "source": "b2741debca3c3439",
+      "output": "1b5b25ace1cde52c"
     },
     "features.markierung-an-ki.details.p1": {
       "source": "4a5096731bcdf8d1",
@@ -142854,6 +143054,22 @@
       "source": "27b7e86af97221fe",
       "output": "fefb2efe74e4a1fc"
     },
+    "editor.blockActions.sort": {
+      "source": "5bfe50117d119c10",
+      "output": "f5fe794e1a029df4"
+    },
+    "editor.blockActions.sortAlphabetical": {
+      "source": "1be222324e89de24",
+      "output": "7caee36c95e4f2d9"
+    },
+    "editor.blockActions.sortChecked": {
+      "source": "1542cba46330852e",
+      "output": "919ea5f6a66f775a"
+    },
+    "editor.blockActions.sortNumeric": {
+      "source": "d152bcfef7a56f20",
+      "output": "855b423528b9c022"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "f70f6bcd8e6a9dab"
@@ -148273,6 +148489,30 @@
     "features.lauf-inspektor.where": {
       "source": "768ea6d753d698ec",
       "output": "bb0d980d0f5d9c40"
+    },
+    "features.listen-sortieren.details.p1": {
+      "source": "fc27afe21f4664dc",
+      "output": "7f84aa2265d6e24c"
+    },
+    "features.listen-sortieren.details.p2": {
+      "source": "ad70d3b80fcf88d0",
+      "output": "fc1caac5d7cfd262"
+    },
+    "features.listen-sortieren.details.p3": {
+      "source": "66138fc1756bbc93",
+      "output": "5192612916ae4fcc"
+    },
+    "features.listen-sortieren.summary": {
+      "source": "682829b81b5662bb",
+      "output": "d61b6d9aadfceed8"
+    },
+    "features.listen-sortieren.title": {
+      "source": "963f42649e0835a0",
+      "output": "86d1d2d83a801f18"
+    },
+    "features.listen-sortieren.where": {
+      "source": "b2741debca3c3439",
+      "output": "c614bbccb7720403"
     },
     "features.markierung-an-ki.details.p1": {
       "source": "4a5096731bcdf8d1",
@@ -169544,6 +169784,22 @@
       "source": "27b7e86af97221fe",
       "output": "fefb2efe74e4a1fc"
     },
+    "editor.blockActions.sort": {
+      "source": "5bfe50117d119c10",
+      "output": "1afda49c69ab5857"
+    },
+    "editor.blockActions.sortAlphabetical": {
+      "source": "1be222324e89de24",
+      "output": "cc0274506f7b3e0b"
+    },
+    "editor.blockActions.sortChecked": {
+      "source": "1542cba46330852e",
+      "output": "673e46dcca289ed8"
+    },
+    "editor.blockActions.sortNumeric": {
+      "source": "d152bcfef7a56f20",
+      "output": "b0b6e1e248c30993"
+    },
     "editor.blockActions.turnInto": {
       "source": "cc84e9758e0b5f58",
       "output": "fc3d5340f61e343e"
@@ -174963,6 +175219,30 @@
     "features.lauf-inspektor.where": {
       "source": "768ea6d753d698ec",
       "output": "319e0a1d0f642355"
+    },
+    "features.listen-sortieren.details.p1": {
+      "source": "fc27afe21f4664dc",
+      "output": "e7e9990517415637"
+    },
+    "features.listen-sortieren.details.p2": {
+      "source": "ad70d3b80fcf88d0",
+      "output": "7ff24f679505f91a"
+    },
+    "features.listen-sortieren.details.p3": {
+      "source": "66138fc1756bbc93",
+      "output": "b613f596ce35e400"
+    },
+    "features.listen-sortieren.summary": {
+      "source": "682829b81b5662bb",
+      "output": "4448cb8480ba8557"
+    },
+    "features.listen-sortieren.title": {
+      "source": "963f42649e0835a0",
+      "output": "fffda5bc82b52971"
+    },
+    "features.listen-sortieren.where": {
+      "source": "b2741debca3c3439",
+      "output": "b49027fb11b588f8"
     },
     "features.markierung-an-ki.details.p1": {
       "source": "4a5096731bcdf8d1",

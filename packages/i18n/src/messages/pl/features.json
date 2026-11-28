@@ -91,6 +91,16 @@
     },
     "where": "W edytorze: przeciągnij za uchwyt po lewej stronie bloku lub naciśnij Strg+Umschalt+Pfeil hoch i runter."
   },
+  "listen-sortieren": {
+    "title": "Sortowanie list i odsuwanie ukończonych zadań",
+    "summary": "Odznaczone zadania schodzą na dalszy plan: ich tekst staje się przygaszony i przekreślony, ale pozostaje czytelny. Za pomocą uchwytu listy możesz posortować ją jednorazowo alfabetycznie, numerycznie lub – w przypadku zadań – przenosząc ukończone na dół.",
+    "details": {
+      "p1": "Gdy zaznaczysz pole wyboru, dany wiersz zostanie przygaszony i przekreślony. Elementy wcięte pod ukończonym zadaniem należą do niego i również zostają przygaszone; podzadanie, które nadal jest otwarte, zachowuje jednak pełny styl tekstu, ponieważ wciąż wymaga wykonania. O tym, czy zadanie jest ukończone, nadal informuje samo pole wyboru, także czytniki ekranu.",
+      "p2": "Aby posortować listę, otwórz menu przy sześciopunktowym uchwycie obok punktu listy i wybierz „Sortuj listę”. Opcja „Alfabetycznie” porządkuje według tekstu bez rozróżniania wielkości liter, „Według liczb” według pierwszej liczby w punkcie (punkty bez liczb trafiają na koniec), a w liście zadań opcja „Ukończone na dół” przesuwa odznaczone zadania za te otwarte, nie zmieniając kolejności wewnątrz obu grup. Działa to w przypadku list punktowanych, numerowanych i list zadań.",
+      "p3": "Sortowana jest tylko ta lista, w której znajduje się dany punkt, a każdy punkt zabiera ze sobą swoje podpunkty. Sortowanie to jednorazowa czynność, a nie stały tryb: nic nie przeskakuje samoczynnie przy kolejnym odznaczeniu, a skrót Strg+Z cofa zmianę w jednym kroku. Linki do poszczególnych punktów działają bez zmian."
+    },
+    "where": "W edytorze w menu przy uchwycie punktu listy pod pozycją „Sortuj listę”."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Kontynuowanie list po obrazie",
     "summary": "Jeśli pod listą znajduje się obraz, cytat lub tabela, pusty wiersz poniżej proponuje kontynuację listy: blady punkt pokazuje, gdzie pojawiłby się kolejny element, a klawisz Tab zamienia go w prawdziwy punkt. Jeśli po prostu zaczniesz pisać, wiersz pozostanie zwykłym akapitem.",

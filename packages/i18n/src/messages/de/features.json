@@ -91,6 +91,16 @@
     },
     "where": "Im Editor am Griff links neben einem Block ziehen, oder Strg+Umschalt+Pfeil hoch und runter."
   },
+  "listen-sortieren": {
+    "title": "Listen sortieren und Erledigtes absetzen",
+    "summary": "Abgehakte Aufgaben treten zurück: ihr Text wird gedämpft und durchgestrichen, bleibt aber gut lesbar. Über den Griff einer Liste sortierst du sie einmal neu, alphabetisch, nach Zahl oder bei Aufgaben mit den erledigten nach unten.",
+    "details": {
+      "p1": "Sobald du ein Kästchen abhakst, wird die Zeile gedämpft und durchgestrichen. Was unter einer erledigten Aufgabe eingerückt steht, gehört zu ihr und wird ebenfalls leiser; eine Unteraufgabe, die noch offen ist, bleibt aber in voller Schrift, weil sie noch zu tun ist. Ob eine Aufgabe erledigt ist, sagt weiterhin das Kästchen selbst, auch einem Screenreader.",
+      "p2": "Zum Sortieren öffnest du das Menü am Griff mit den sechs Punkten neben einem Listenpunkt und wählst „Liste sortieren“. „Alphabetisch“ ordnet nach dem Text und achtet nicht auf Groß- und Kleinschreibung, „Nach Zahl“ nach der ersten Zahl im Punkt (Punkte ohne Zahl kommen ans Ende), und bei einer Aufgabenliste schiebt „Erledigte nach unten“ die abgehakten Aufgaben hinter die offenen, ohne die Reihenfolge innerhalb der beiden Gruppen zu ändern. Das geht für Aufzählungen, nummerierte Listen und Aufgabenlisten.",
+      "p3": "Sortiert wird nur die Liste, in der der Punkt steht, und jeder Punkt nimmt seine Unterpunkte mit. Das Sortieren ist ein einmaliger Schritt und kein dauerhafter Modus: nichts springt beim nächsten Abhaken weg, und Strg+Z nimmt es in einem Schritt zurück. Links auf einzelne Punkte funktionieren danach weiter."
+    },
+    "where": "Im Editor im Menü am Griff eines Listenpunkts unter „Liste sortieren“."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Aufzählungen nach einem Bild fortsetzen",
     "summary": "Steht unter einer Aufzählung ein Bild, ein Zitat oder eine Tabelle, bietet die leere Zeile danach an, die Aufzählung fortzusetzen: ein blasser Punkt zeigt, wo der nächste stünde, und Tab macht ihn zum echten. Tippst du einfach los, bleibt die Zeile ein normaler Absatz.",

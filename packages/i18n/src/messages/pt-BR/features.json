@@ -91,6 +91,16 @@
     },
     "where": "No editor, arraste pela alça à esquerda de um bloco, ou use Strg+Umschalt+Pfeil hoch e runter."
   },
+  "listen-sortieren": {
+    "title": "Ordenar listas e mover itens concluídos",
+    "summary": "Tarefas marcadas ficam em segundo plano: o texto fica esmaecido e tachado, mas continua bem legível. Pela alça de uma lista, você pode reordená-la pontualmente: em ordem alfabética, por número ou, em listas de tarefas, movendo os itens concluídos para o final.",
+    "details": {
+      "p1": "Assim que você marca uma caixa de seleção, a linha fica esmaecida e tachada. O que estiver recuado sob uma tarefa concluída pertence a ela e também é atenuado; porém, uma subtarefa que ainda estiver pendente permanece com o texto normal, pois ainda precisa ser feita. Se uma tarefa está concluída ou não, isso continua sendo indicado pela própria caixa de seleção, inclusive para leitores de tela.",
+      "p2": "Para ordenar, abra o menu na alça de seis pontos ao lado de um item da lista e escolha „Ordenar lista“. „Alfabética“ ordena pelo texto sem diferenciar maiúsculas de minúsculas, „Por número“ ordena pelo primeiro número do item (itens sem número vão para o final) e, em listas de tarefas, „Concluídas para o final“ move as tarefas marcadas para depois das pendentes, sem alterar a ordem interna de cada grupo. Isso funciona para listas com marcadores, listas numeradas e listas de tarefas.",
+      "p3": "Apenas a lista em que o item se encontra é ordenada, e cada item leva seus subitens junto. A ordenação é uma ação pontual e não um modo permanente: nada muda de lugar sozinho ao marcar a próxima tarefa, e Strg+Z desfaz a ação de uma só vez. Links para itens individuais continuam funcionando normalmente depois."
+    },
+    "where": "No editor, no menu da alça de um item de lista, em „Ordenar lista“."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Continuar listas após uma imagem",
     "summary": "Se houver uma imagem, citação ou tabela abaixo de uma lista, a linha vazia seguinte sugere continuar a lista: um marcador esmaecido mostra onde o próximo ficaria, e Tab o torna real. Se você simplesmente começar a digitar, a linha continuará sendo um parágrafo normal.",

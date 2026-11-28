@@ -91,6 +91,16 @@
     },
     "where": "In de editor slepen aan de greep links van een blok, of via Strg+Umschalt+Pfeil hoch en runter."
   },
+  "listen-sortieren": {
+    "title": "Lijsten sorteren en voltooide items verplaatsen",
+    "summary": "Afgevinkte taken treden naar de achtergrond: de tekst wordt gedimd en doorgehaald, maar blijft goed leesbaar. Via de greep van een lijst sorteer je deze eenmalig opnieuw: alfabetisch, op nummer of bij taken met de voltooide items naar onderen.",
+    "details": {
+      "p1": "Zodra je een vakje aanvinkt, wordt de regel gedimd en doorgehaald. Wat onder een voltooide taak is ingesprongen hoort erbij en wordt eveneens subtieler weergegeven; een subtaak die nog openstaat blijft echter volledig zichtbaar, omdat die nog moet gebeuren. Of een taak voltooid is, blijkt nog steeds uit het vakje zelf, ook voor een schermlezer.",
+      "p2": "Om te sorteren open je het menu via de greep met de zes stippen naast een lijstitem en kies je „Lijst sorteren”. „Alfabetisch” ordent op tekst en negeert hoofdletters en kleine letters, „Op nummer” op het eerste getal in het item (items zonder getal komen onderaan), en bij een takenlijst verplaatst „Voltooide naar onderen” de afgevinkte taken achter de openstaande, zonder de volgorde binnen beide groepen te veranderen. Dit werkt voor opsommingen, genummerde lijsten en takenlijsten.",
+      "p3": "Alleen de lijst waarin het item staat wordt gesorteerd, en elk item neemt zijn subitems mee. Sorteren is een eenmalige actie en geen permanente modus: er verspringt niets wanneer je de volgende keer iets afvinkt, en met Strg+Z maak je het in één stap ongedaan. Links naar afzonderlijke items blijven daarna gewoon werken."
+    },
+    "where": "In de editor in het menu bij de greep van een lijstitem onder „Lijst sorteren”."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Lijsten voortzetten na een afbeelding",
     "summary": "Staat er onder een lijst een afbeelding, citaat of tabel, dan biedt de lege regel eronder aan om de lijst voort te zetten: een lichtgekleurd opsommingsteken toont waar het volgende punt zou komen, en met Tab maak je er een echt punt van. Begin je gewoon te typen, dan blijft de regel een normale alinea.",

@@ -91,6 +91,16 @@
     },
     "where": "Dans l’éditeur, glisser la poignée à gauche d’un bloc, ou utiliser Ctrl+Maj+Flèche vers le haut et vers le bas."
   },
+  "listen-sortieren": {
+    "title": "Trier les listes et reléguer les tâches terminées",
+    "summary": "Les tâches cochées s’estompent : leur texte est grisé et barré, tout en restant bien lisible. Grâce à la poignée d’une liste, tu peux la retrier ponctuellement, par ordre alphabétique, numérique ou en plaçant les tâches terminées à la fin.",
+    "details": {
+      "p1": "Dès que tu coches une case, la ligne s’estompe et est barrée. Les éléments indentés sous une tâche terminée lui sont rattachés et s’estompent également ; une sous-tâche encore en cours reste toutefois affichée normalement, car elle reste à faire. La case elle-même continue d’indiquer si une tâche est terminée, y compris pour les lecteurs d’écran.",
+      "p2": "Pour trier, ouvre le menu situé sur la poignée à six points à côté d’un élément de liste et choisis « Trier la liste ». « Alphabétique » classe selon le texte sans tenir compte de la casse, « Par nombre » selon le premier chiffre présent dans l’élément (les éléments sans chiffre vont à la fin), et pour une liste de tâches, « Tâches terminées en bas » place les tâches cochées après celles en cours, sans modifier l’ordre au sein de chaque groupe. Cela fonctionne pour les listes à puces, numérotées et de tâches.",
+      "p3": "Seule la liste dans laquelle se trouve l’élément est triée, et chaque élément conserve ses sous-éléments. Le tri est une action ponctuelle et non un mode permanent : rien ne bouge au prochain élément coché, et Strg+Z l’annule en une seule fois. Les liens pointant vers des éléments individuels continuent de fonctionner ensuite."
+    },
+    "where": "Dans l’éditeur, via le menu sur la poignée d’un élément de liste, sous « Trier la liste »."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Poursuivre les listes après une image",
     "summary": "Si une image, une citation ou un tableau se trouve sous une liste, la ligne vide suivante te propose de continuer la liste : une puce estompée montre où se situerait le point suivant, et Tab la transforme en véritable puce. Si tu commences simplement à écrire, la ligne reste un paragraphe normal.",

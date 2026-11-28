@@ -91,6 +91,16 @@
     },
     "where": "In the editor, drag by the handle to the left of a block, or use Strg+Umschalt+Pfeil hoch and runter."
   },
+  "listen-sortieren": {
+    "title": "Sort lists and move completed tasks to the bottom",
+    "summary": "Checked tasks step back: their text is dimmed and crossed out, yet remains easily readable. Use a list item’s handle to sort the list once, alphabetically, numerically, or with completed tasks moved to the bottom.",
+    "details": {
+      "p1": "As soon as you check a box, the line dims and gets crossed out. Anything indented under a completed task belongs to it and dims as well; however, a subtask that is still open stays in full font weight, because it is still to be done. Whether a task is completed continues to be conveyed by the checkbox itself, including to screen readers.",
+      "p2": "To sort, open the menu at the six-dot handle next to a list item and select “Sort list”. “Alphabetically” arranges items by text, ignoring case; “By number” orders by the first number in the item (items without numbers go to the end); and on a task list, “Completed to bottom” moves checked tasks behind open ones without changing the order within each group. This works for bulleted lists, numbered lists, and task lists.",
+      "p3": "Only the list containing the item is sorted, and each item takes its sub-items with it. Sorting is a one-time step rather than a permanent mode: nothing jumps away the next time you check a box, and Ctrl+Z undoes it in a single step. Links to individual items continue to work afterward."
+    },
+    "where": "In the editor, in the handle menu of a list item under “Sort list”."
+  },
   "aufzaehlung-fortsetzen": {
     "title": "Continue lists after an image",
     "summary": "If an image, quote, or table follows a list, the empty line below offers to continue the list: a faint bullet shows where the next item would be, and Tab turns it into a real one. If you just start typing, the line stays a normal paragraph.",

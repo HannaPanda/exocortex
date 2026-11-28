@@ -2,21 +2,30 @@
 
 import { type Editor } from '@tiptap/react';
 import {
+  ArrowDown01Icon,
+  ArrowDownAZIcon,
   ArrowDownIcon,
+  ArrowUpDownIcon,
   ArrowUpIcon,
   ChevronRightIcon,
   CopyIcon,
   LinkIcon,
+  ListChecksIcon,
   Trash2Icon,
 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
   BLOCK_ID_ATTRIBUTE,
   type BlockCatalogEntry,
+  type ListSortOrder,
+  listSortOrders,
   movableBlockAt,
   moveBlockTransaction,
+  sortableListAt,
+  sortableListAtSelection,
+  sortListTransaction,
 } from '@exocortex/editor';
 import {
   DropdownMenuContent,
@@ -33,6 +42,18 @@ import { ColorItems } from './color-menu';
 import { useDestructiveConfirm } from './destructive-confirm';
 import { TurnIntoItems } from './turn-into-menu';
 
+const SORT_ICONS: Record<ListSortOrder, typeof ArrowDownAZIcon> = {
+  checked: ListChecksIcon,
+  alphabetical: ArrowDownAZIcon,
+  numeric: ArrowDown01Icon,
+};
+
+const SORT_LABELS = {
+  checked: 'sortChecked',
+  alphabetical: 'sortAlphabetical',
+  numeric: 'sortNumeric',
+} as const satisfies Record<ListSortOrder, string>;
+
 /**
  * The top-level block the cursor is in.
  *
@@ -46,7 +67,8 @@ export function blockTargetFromSelection(editor: Editor): BlockTarget | null {
 }
 
 /**
- * Turn into, colour, move, duplicate, copy-link and delete for one block.
+ * Turn into, colour, move, sort (a list), duplicate, copy-link and delete for
+ * one block.
  *
  * Every one of them acts on `target` when the handle opened the menu, never on
  * the block holding the caret (issue #229).
@@ -65,6 +87,7 @@ export function BlockActionItems({
   target: BlockTarget | null;
 }) {
   const t = useTranslations('editor.blockActions');
+  const locale = useLocale();
   const confirmDestructive = useDestructiveConfirm();
   const removalWarning = useBlockRemovalWarning();
   const resolve = (): BlockTarget | null => target ?? blockTargetFromSelection(editor);
@@ -116,6 +139,34 @@ export function BlockActionItems({
     editor.commands.focus();
   };
 
+  /**
+   * The list "Sortieren" puts in order (issue #253): the one the handle's item
+   * stands in, or the handle's list itself; from the selection toolbar the
+   * innermost list around the caret. Read while the menu renders, which is
+   * when it opens, so the entry is only there for a list it can sort.
+   */
+  const targetRange = target === null ? null : currentRangeOf(editor, target);
+  const sortable =
+    target === null
+      ? sortableListAtSelection(editor.state)
+      : targetRange === null
+        ? null
+        : sortableListAt(editor.state.doc, targetRange.from);
+  const sortOrders = sortable === null ? [] : listSortOrders(sortable.node);
+
+  /**
+   * One sort, as one ordinary step: no mode is stored, nothing re-sorts later,
+   * and `Strg+Z` takes it back. The list is found again by its id first.
+   */
+  const sortList = (order: ListSortOrder): void => {
+    if (sortable === null) return;
+    const range = currentRangeOf(editor, sortable);
+    if (range === null) return;
+    const tr = sortListTransaction(editor.state, range.from, order, locale);
+    if (tr !== null) editor.view.dispatch(tr.scrollIntoView());
+    editor.commands.focus();
+  };
+
   /** Deep link built from the stable block id, never from a document offset. */
   const copyLink = async (): Promise<void> => {
     const blockId = resolve()?.node.attrs[BLOCK_ID_ATTRIBUTE];
@@ -156,6 +207,28 @@ export function BlockActionItems({
         <ArrowDownIcon /> {t('moveDown')}
         <DropdownMenuShortcut>{t('moveDownShortcut')}</DropdownMenuShortcut>
       </DropdownMenuItem>
+      {sortOrders.length > 0 ? (
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger data-testid="block-sort">
+            <ArrowUpDownIcon /> {t('sort')}
+            <ChevronRightIcon className="ml-auto size-3.5 opacity-60" />
+          </DropdownMenuSubTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            {sortOrders.map((order) => {
+              const Icon = SORT_ICONS[order];
+              return (
+                <DropdownMenuItem
+                  key={order}
+                  data-testid={`block-sort-${order}`}
+                  onClick={() => sortList(order)}
+                >
+                  <Icon /> {t(SORT_LABELS[order])}
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenuSub>
+      ) : null}
       <DropdownMenuSeparator />
       <DropdownMenuItem data-testid="block-duplicate" onClick={duplicate}>
         <CopyIcon /> {t('duplicate')}
