@@ -165,6 +165,48 @@ test.describe('databases', () => {
     await expect(page.locator('[data-testid="database-shell"]')).toHaveCount(0);
   });
 
+  test('offers a new column a name for its type and never overwrites a typed one', async ({
+    page,
+  }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    await createDatabase(page, `Spaltennamen ${Date.now().toString(36)}`);
+    await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
+
+    const nameField = page.getByPlaceholder('Name der Eigenschaft');
+    const chooseType = async (label: string) => {
+      await page.getByTestId('property-type-select').click();
+      await page.getByRole('option', { name: label, exact: true }).click();
+    };
+
+    // The form opens on "Text" and follows the type while nobody typed.
+    await page.getByTestId('add-property').click();
+    await expect(nameField).toHaveValue('Text');
+    await chooseType('Datum');
+    await expect(nameField).toHaveValue('Datum');
+    await chooseType('Auswahl');
+    await expect(nameField).toHaveValue('Status');
+    await chooseType('Datum');
+    await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+    await expect(page.locator('th', { hasText: 'Datum' })).toBeVisible({ timeout: 15_000 });
+
+    // A second date column steps around the first.
+    await page.getByTestId('add-property').click();
+    await chooseType('Datum');
+    await expect(nameField).toHaveValue('Datum 2');
+
+    // A name somebody typed survives a change of type, and an emptied field
+    // is offered a name again.
+    await nameField.fill('Fällig am');
+    await chooseType('Dateien');
+    await expect(nameField).toHaveValue('Fällig am');
+    await nameField.fill('');
+    await chooseType('Person');
+    await expect(nameField).toHaveValue('Person');
+    await page.keyboard.press('Escape');
+  });
+
   test('keeps a value longer than its column reachable', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
