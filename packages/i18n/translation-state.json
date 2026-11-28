@@ -9944,13 +9944,37 @@
       "source": "6c2d352161df5809",
       "output": "e2d0a54968ead24e"
     },
+    "editor.emojiMenu.empty": {
+      "source": "5d1ddf840d3d63f9",
+      "output": "60a8a84f3b8ed7ee"
+    },
+    "editor.emojiMenu.groups.frequent": {
+      "source": "93350a05eb062a76",
+      "output": "d6f02fe6e4364f52"
+    },
+    "editor.emojiMenu.groups.people": {
+      "source": "b1a03b358fed478e",
+      "output": "7db20897053bb278"
+    },
+    "editor.emojiMenu.groups.work": {
+      "source": "3f0828ad8bfa9913",
+      "output": "104ab9213e28e4ff"
+    },
     "editor.emojiMenu.placeholder": {
       "source": "51942c20d177a28d",
       "output": "7336265a0467a255"
     },
+    "editor.emojiMenu.recent": {
+      "source": "6a5baed4601efb0f",
+      "output": "1e7cf8df9b6aa46c"
+    },
     "editor.emojiMenu.search": {
       "source": "2cc5af0004a38364",
       "output": "87fafa7206f9f9e3"
+    },
+    "editor.emojiMenu.suggestions": {
+      "source": "750c322a8a670e33",
+      "output": "774fd8a2ae887434"
     },
     "editor.linkBubble.edit": {
       "source": "84e45ee7341134db",
@@ -14259,6 +14283,30 @@
     "features.einstellungen-geltungsbereiche.where": {
       "source": "241a4e0b2dbe6543",
       "output": "6e64c0bcbab05724"
+    },
+    "features.emoji-per-doppelpunkt.details.p1": {
+      "source": "f58f89e670c1979c",
+      "output": "f3cdd83df5eca1ce"
+    },
+    "features.emoji-per-doppelpunkt.details.p2": {
+      "source": "716eb3a73f900d4e",
+      "output": "241f7af82bee7a30"
+    },
+    "features.emoji-per-doppelpunkt.details.p3": {
+      "source": "a613e0002425f263",
+      "output": "8e90a3c04f9d1f8f"
+    },
+    "features.emoji-per-doppelpunkt.summary": {
+      "source": "73da286041d91da6",
+      "output": "9e4e897130e32256"
+    },
+    "features.emoji-per-doppelpunkt.title": {
+      "source": "953c785dc42b4d5d",
+      "output": "db1c3de37b4af138"
+    },
+    "features.emoji-per-doppelpunkt.where": {
+      "source": "eab630d4d520a401",
+      "output": "357963286d1d0760"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -36898,13 +36946,37 @@
       "source": "6c2d352161df5809",
       "output": "c9894cf002f90bd0"
     },
+    "editor.emojiMenu.empty": {
+      "source": "5d1ddf840d3d63f9",
+      "output": "63dbac14acf03306"
+    },
+    "editor.emojiMenu.groups.frequent": {
+      "source": "93350a05eb062a76",
+      "output": "dc013cef3f8f6193"
+    },
+    "editor.emojiMenu.groups.people": {
+      "source": "b1a03b358fed478e",
+      "output": "fa2ea3fb081cf5c5"
+    },
+    "editor.emojiMenu.groups.work": {
+      "source": "3f0828ad8bfa9913",
+      "output": "e1ddc0cbc9891e79"
+    },
     "editor.emojiMenu.placeholder": {
       "source": "51942c20d177a28d",
       "output": "9120df43bebb82c8"
     },
+    "editor.emojiMenu.recent": {
+      "source": "6a5baed4601efb0f",
+      "output": "ed352eca85e58485"
+    },
     "editor.emojiMenu.search": {
       "source": "2cc5af0004a38364",
       "output": "9306b76a82a08dd1"
+    },
+    "editor.emojiMenu.suggestions": {
+      "source": "750c322a8a670e33",
+      "output": "c92b9e5f8bf34e2b"
     },
     "editor.linkBubble.edit": {
       "source": "84e45ee7341134db",
@@ -41213,6 +41285,30 @@
     "features.einstellungen-geltungsbereiche.where": {
       "source": "241a4e0b2dbe6543",
       "output": "08707786e1da79dd"
+    },
+    "features.emoji-per-doppelpunkt.details.p1": {
+      "source": "f58f89e670c1979c",
+      "output": "31c9283cc77ac03e"
+    },
+    "features.emoji-per-doppelpunkt.details.p2": {
+      "source": "716eb3a73f900d4e",
+      "output": "be20dda974f23864"
+    },
+    "features.emoji-per-doppelpunkt.details.p3": {
+      "source": "a613e0002425f263",
+      "output": "01360a88db8d91b2"
+    },
+    "features.emoji-per-doppelpunkt.summary": {
+      "source": "73da286041d91da6",
+      "output": "1f601e122e1f8015"
+    },
+    "features.emoji-per-doppelpunkt.title": {
+      "source": "953c785dc42b4d5d",
+      "output": "3417aa3656fcf299"
+    },
+    "features.emoji-per-doppelpunkt.where": {
+      "source": "eab630d4d520a401",
+      "output": "a0ea4197a33dcf0f"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -63852,13 +63948,37 @@
       "source": "6c2d352161df5809",
       "output": "5e5d0216ce0b5b9e"
     },
+    "editor.emojiMenu.empty": {
+      "source": "5d1ddf840d3d63f9",
+      "output": "bf3c03ef9b1218c8"
+    },
+    "editor.emojiMenu.groups.frequent": {
+      "source": "93350a05eb062a76",
+      "output": "ef05e85d70459da0"
+    },
+    "editor.emojiMenu.groups.people": {
+      "source": "b1a03b358fed478e",
+      "output": "171a45eb0e0c7240"
+    },
+    "editor.emojiMenu.groups.work": {
+      "source": "3f0828ad8bfa9913",
+      "output": "a3c61c353fc46306"
+    },
     "editor.emojiMenu.placeholder": {
       "source": "51942c20d177a28d",
       "output": "47e708e1eb5949f6"
     },
+    "editor.emojiMenu.recent": {
+      "source": "6a5baed4601efb0f",
+      "output": "741b6e71043a30c7"
+    },
     "editor.emojiMenu.search": {
       "source": "2cc5af0004a38364",
       "output": "d82f135dbd2f253f"
+    },
+    "editor.emojiMenu.suggestions": {
+      "source": "750c322a8a670e33",
+      "output": "d89fe205fc80f0d9"
     },
     "editor.linkBubble.edit": {
       "source": "84e45ee7341134db",
@@ -68167,6 +68287,30 @@
     "features.einstellungen-geltungsbereiche.where": {
       "source": "241a4e0b2dbe6543",
       "output": "4509a7958a749a18"
+    },
+    "features.emoji-per-doppelpunkt.details.p1": {
+      "source": "f58f89e670c1979c",
+      "output": "91176de0ff5657c8"
+    },
+    "features.emoji-per-doppelpunkt.details.p2": {
+      "source": "716eb3a73f900d4e",
+      "output": "355f05075609511a"
+    },
+    "features.emoji-per-doppelpunkt.details.p3": {
+      "source": "a613e0002425f263",
+      "output": "e34fd43f9cd2ffa7"
+    },
+    "features.emoji-per-doppelpunkt.summary": {
+      "source": "73da286041d91da6",
+      "output": "c74f95c786ff80f5"
+    },
+    "features.emoji-per-doppelpunkt.title": {
+      "source": "953c785dc42b4d5d",
+      "output": "5bf1357d600f8eab"
+    },
+    "features.emoji-per-doppelpunkt.where": {
+      "source": "eab630d4d520a401",
+      "output": "ca7d176606d45dec"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -90806,13 +90950,37 @@
       "source": "6c2d352161df5809",
       "output": "7efe336bd548c1eb"
     },
+    "editor.emojiMenu.empty": {
+      "source": "5d1ddf840d3d63f9",
+      "output": "57a40f599a048367"
+    },
+    "editor.emojiMenu.groups.frequent": {
+      "source": "93350a05eb062a76",
+      "output": "0b97ed90b138770e"
+    },
+    "editor.emojiMenu.groups.people": {
+      "source": "b1a03b358fed478e",
+      "output": "192b1a4f9acdd28a"
+    },
+    "editor.emojiMenu.groups.work": {
+      "source": "3f0828ad8bfa9913",
+      "output": "a99a658352ad06c1"
+    },
     "editor.emojiMenu.placeholder": {
       "source": "51942c20d177a28d",
       "output": "30109da716dd2260"
     },
+    "editor.emojiMenu.recent": {
+      "source": "6a5baed4601efb0f",
+      "output": "9a0e6334ba360e2f"
+    },
     "editor.emojiMenu.search": {
       "source": "2cc5af0004a38364",
       "output": "4f25894f0e003629"
+    },
+    "editor.emojiMenu.suggestions": {
+      "source": "750c322a8a670e33",
+      "output": "1d05372fa7e1d17a"
     },
     "editor.linkBubble.edit": {
       "source": "84e45ee7341134db",
@@ -95121,6 +95289,30 @@
     "features.einstellungen-geltungsbereiche.where": {
       "source": "241a4e0b2dbe6543",
       "output": "6aac669e9f91183c"
+    },
+    "features.emoji-per-doppelpunkt.details.p1": {
+      "source": "f58f89e670c1979c",
+      "output": "11f5b50edb89c207"
+    },
+    "features.emoji-per-doppelpunkt.details.p2": {
+      "source": "716eb3a73f900d4e",
+      "output": "e78d215b17a229f0"
+    },
+    "features.emoji-per-doppelpunkt.details.p3": {
+      "source": "a613e0002425f263",
+      "output": "c77895755eb212cc"
+    },
+    "features.emoji-per-doppelpunkt.summary": {
+      "source": "73da286041d91da6",
+      "output": "8a7e149b1aec80e1"
+    },
+    "features.emoji-per-doppelpunkt.title": {
+      "source": "953c785dc42b4d5d",
+      "output": "e4538d334d4a8da8"
+    },
+    "features.emoji-per-doppelpunkt.where": {
+      "source": "eab630d4d520a401",
+      "output": "dd408b5acc640fbc"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -117760,13 +117952,37 @@
       "source": "6c2d352161df5809",
       "output": "d6c44c3e95df5008"
     },
+    "editor.emojiMenu.empty": {
+      "source": "5d1ddf840d3d63f9",
+      "output": "9169afa92b1c549f"
+    },
+    "editor.emojiMenu.groups.frequent": {
+      "source": "93350a05eb062a76",
+      "output": "4d1169e4fbc0f716"
+    },
+    "editor.emojiMenu.groups.people": {
+      "source": "b1a03b358fed478e",
+      "output": "8407c1496d06c9c3"
+    },
+    "editor.emojiMenu.groups.work": {
+      "source": "3f0828ad8bfa9913",
+      "output": "b6cc956b64fcb639"
+    },
     "editor.emojiMenu.placeholder": {
       "source": "51942c20d177a28d",
       "output": "39d8ad97a3791a78"
     },
+    "editor.emojiMenu.recent": {
+      "source": "6a5baed4601efb0f",
+      "output": "3cfe97fb496457ce"
+    },
     "editor.emojiMenu.search": {
       "source": "2cc5af0004a38364",
       "output": "28bfd9d2b827df80"
+    },
+    "editor.emojiMenu.suggestions": {
+      "source": "750c322a8a670e33",
+      "output": "389e330602f26dc5"
     },
     "editor.linkBubble.edit": {
       "source": "84e45ee7341134db",
@@ -122075,6 +122291,30 @@
     "features.einstellungen-geltungsbereiche.where": {
       "source": "241a4e0b2dbe6543",
       "output": "b4ce00a7f7c5fb6e"
+    },
+    "features.emoji-per-doppelpunkt.details.p1": {
+      "source": "f58f89e670c1979c",
+      "output": "2b1d7d1d4bca787d"
+    },
+    "features.emoji-per-doppelpunkt.details.p2": {
+      "source": "716eb3a73f900d4e",
+      "output": "00c94221dd7fe401"
+    },
+    "features.emoji-per-doppelpunkt.details.p3": {
+      "source": "a613e0002425f263",
+      "output": "95e36fc7786f16e9"
+    },
+    "features.emoji-per-doppelpunkt.summary": {
+      "source": "73da286041d91da6",
+      "output": "40fc3386011c505f"
+    },
+    "features.emoji-per-doppelpunkt.title": {
+      "source": "953c785dc42b4d5d",
+      "output": "d42b6b888c5228ec"
+    },
+    "features.emoji-per-doppelpunkt.where": {
+      "source": "eab630d4d520a401",
+      "output": "3286a9004d42cd8f"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -144714,13 +144954,37 @@
       "source": "6c2d352161df5809",
       "output": "ae2d7e6c046a5b00"
     },
+    "editor.emojiMenu.empty": {
+      "source": "5d1ddf840d3d63f9",
+      "output": "c8cda3f8e5b5c7d5"
+    },
+    "editor.emojiMenu.groups.frequent": {
+      "source": "93350a05eb062a76",
+      "output": "79a3c6d67abb0ded"
+    },
+    "editor.emojiMenu.groups.people": {
+      "source": "b1a03b358fed478e",
+      "output": "9928fe8e302f1584"
+    },
+    "editor.emojiMenu.groups.work": {
+      "source": "3f0828ad8bfa9913",
+      "output": "e27e58a6b84b572e"
+    },
     "editor.emojiMenu.placeholder": {
       "source": "51942c20d177a28d",
       "output": "efd3944b073965a6"
     },
+    "editor.emojiMenu.recent": {
+      "source": "6a5baed4601efb0f",
+      "output": "5104164c387835e6"
+    },
     "editor.emojiMenu.search": {
       "source": "2cc5af0004a38364",
       "output": "21406b00e09a8f03"
+    },
+    "editor.emojiMenu.suggestions": {
+      "source": "750c322a8a670e33",
+      "output": "62f8c230e78c16f5"
     },
     "editor.linkBubble.edit": {
       "source": "84e45ee7341134db",
@@ -149029,6 +149293,30 @@
     "features.einstellungen-geltungsbereiche.where": {
       "source": "241a4e0b2dbe6543",
       "output": "f330f7fd942e3936"
+    },
+    "features.emoji-per-doppelpunkt.details.p1": {
+      "source": "f58f89e670c1979c",
+      "output": "b7c8e0116965d738"
+    },
+    "features.emoji-per-doppelpunkt.details.p2": {
+      "source": "716eb3a73f900d4e",
+      "output": "2815509c68574398"
+    },
+    "features.emoji-per-doppelpunkt.details.p3": {
+      "source": "a613e0002425f263",
+      "output": "f00e27e1fd9b79bd"
+    },
+    "features.emoji-per-doppelpunkt.summary": {
+      "source": "73da286041d91da6",
+      "output": "ba02ead709ba8e3e"
+    },
+    "features.emoji-per-doppelpunkt.title": {
+      "source": "953c785dc42b4d5d",
+      "output": "39d39e0841901edc"
+    },
+    "features.emoji-per-doppelpunkt.where": {
+      "source": "eab630d4d520a401",
+      "output": "1b90860b92176515"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -171668,13 +171956,37 @@
       "source": "6c2d352161df5809",
       "output": "8b19518ff49b2e29"
     },
+    "editor.emojiMenu.empty": {
+      "source": "5d1ddf840d3d63f9",
+      "output": "f77d0c40d41ed81d"
+    },
+    "editor.emojiMenu.groups.frequent": {
+      "source": "93350a05eb062a76",
+      "output": "497e0b4cd95194a3"
+    },
+    "editor.emojiMenu.groups.people": {
+      "source": "b1a03b358fed478e",
+      "output": "066b5780b4038e2a"
+    },
+    "editor.emojiMenu.groups.work": {
+      "source": "3f0828ad8bfa9913",
+      "output": "a25fd08cc38ade07"
+    },
     "editor.emojiMenu.placeholder": {
       "source": "51942c20d177a28d",
       "output": "9120df43bebb82c8"
     },
+    "editor.emojiMenu.recent": {
+      "source": "6a5baed4601efb0f",
+      "output": "683f39333bc34ea6"
+    },
     "editor.emojiMenu.search": {
       "source": "2cc5af0004a38364",
       "output": "9306b76a82a08dd1"
+    },
+    "editor.emojiMenu.suggestions": {
+      "source": "750c322a8a670e33",
+      "output": "0527f6cf6ffde893"
     },
     "editor.linkBubble.edit": {
       "source": "84e45ee7341134db",
@@ -175983,6 +176295,30 @@
     "features.einstellungen-geltungsbereiche.where": {
       "source": "241a4e0b2dbe6543",
       "output": "565b99d3cd54d60c"
+    },
+    "features.emoji-per-doppelpunkt.details.p1": {
+      "source": "f58f89e670c1979c",
+      "output": "25f04611b3259372"
+    },
+    "features.emoji-per-doppelpunkt.details.p2": {
+      "source": "716eb3a73f900d4e",
+      "output": "dff9ca0812efc093"
+    },
+    "features.emoji-per-doppelpunkt.details.p3": {
+      "source": "a613e0002425f263",
+      "output": "ee9359ecc0b56b17"
+    },
+    "features.emoji-per-doppelpunkt.summary": {
+      "source": "73da286041d91da6",
+      "output": "8ba0289ae8567cb3"
+    },
+    "features.emoji-per-doppelpunkt.title": {
+      "source": "953c785dc42b4d5d",
+      "output": "970aa65cab623630"
+    },
+    "features.emoji-per-doppelpunkt.where": {
+      "source": "eab630d4d520a401",
+      "output": "53217701db99ee16"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",

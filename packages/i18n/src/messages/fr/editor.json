@@ -306,7 +306,15 @@
   },
   "emojiMenu": {
     "search": "Rechercher un émoji",
-    "placeholder": "Rechercher …"
+    "placeholder": "Rechercher …",
+    "empty": "Aucun émoji ne correspond.",
+    "recent": "Récents",
+    "groups": {
+      "frequent": "Fréquents",
+      "work": "Travail",
+      "people": "Personnes"
+    },
+    "suggestions": "Insérer un émoji"
   },
   "table": {
     "label": "Tableau",

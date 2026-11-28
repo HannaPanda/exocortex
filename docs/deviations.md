@@ -359,7 +359,8 @@ it ends on rather than every width on the way.
 
 `packages/contracts/src/lucide-icon-names.ts`,
 `apps/web/src/components/document/lucide-icon-nodes.generated.ts` and
-`apps/web/src/lib/emoji-data.generated.ts` are written by
+`apps/web/src/lib/emoji-data/<locale>.generated.ts` (one per interface language,
+names from Unicode CLDR through emojibase, since #269) are written by
 `pnpm data:generate` (`scripts/generate-icon-data.mjs`,
 `scripts/generate-emoji-data.mjs`) out of `lucide-react` and `emojibase-data`, and
 they are committed rather than built on the fly. Two reasons: the build must not

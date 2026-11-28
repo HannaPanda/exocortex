@@ -58,6 +58,11 @@ const EXEMPT = [
       'The German default of the node views, for a server render and the tests. The browser always hands in the words of editor.nodeViews instead.',
   },
   {
+    pattern: /^apps\/web\/src\/lib\/emoji-data\/[^/]+\.generated\.ts$/,
+    reason:
+      'Unicode CLDR emoji names, one generated file per interface language (#269). The German file is German on purpose, and the word list misreads the others.',
+  },
+  {
     pattern: /^packages\/editor\/src\/(entity-matching|fixtures)\.ts$/,
     reason:
       'Data, not interface: the German stop words entity matching skips, and the sample documents the editor tests are built from.',

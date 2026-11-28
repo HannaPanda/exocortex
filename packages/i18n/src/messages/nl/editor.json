@@ -306,7 +306,15 @@
   },
   "emojiMenu": {
     "search": "Emoji zoeken",
-    "placeholder": "Zoeken …"
+    "placeholder": "Zoeken …",
+    "empty": "Geen emoji gevonden.",
+    "recent": "Recent gebruikt",
+    "groups": {
+      "frequent": "Vaak gebruikt",
+      "work": "Werk",
+      "people": "Mensen"
+    },
+    "suggestions": "Emoji invoegen"
   },
   "table": {
     "label": "Tabel",
