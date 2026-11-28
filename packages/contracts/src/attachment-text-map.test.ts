@@ -201,4 +201,21 @@ describe('readAttachmentText', () => {
       range: { fromPage: 2, toPage: 3 },
     });
   });
+
+  it('finds a phrase on the page it stands on, case and line breaks ignored', () => {
+    const { text, starts } = pagedText(30, 2_000);
+    const at = starts[26]! + 900;
+    const withFact = `${text.slice(0, at)}Der Turm am Kap\nZebrano leuchtet grün. ${text.slice(at)}`;
+    const shifted = starts.map((start, index) => (index > 26 ? start + 41 : start));
+    const read = readAttachmentText(withFact, shifted, { maxChars: 10_000, find: 'kap zebrano' });
+    if (!read.ok) throw new Error(read.reason);
+    expect(read.view).toBe('matches');
+    expect(read.text).toBe('');
+    expect(read.matchCount).toBe(1);
+    expect(read.matches?.[0]).toMatchObject({ page: 27 });
+    expect(read.matches?.[0]?.excerpt).toContain('Kap Zebrano leuchtet');
+    expect(readAttachmentText(withFact, shifted, { find: 'Leuchtturm[' })).toMatchObject({
+      matchCount: 0,
+    });
+  });
 });

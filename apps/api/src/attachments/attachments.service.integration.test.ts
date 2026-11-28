@@ -181,6 +181,16 @@ describe('reading a long text by its pages (issue #133, ADR-101)', () => {
     expect(page.range).toMatchObject({ fromPage: 4, toPage: 4 });
   });
 
+  it('names the page a phrase stands on', async () => {
+    const attachmentId = await createPdfAttachment({ extractedText: text, textPageStarts: starts });
+    const found = await service.getText(attachmentId, memberId, 'test-correlation', {
+      maxChars: 5_000,
+      find: 'seite 5',
+    });
+    expect(found).toMatchObject({ view: 'matches', text: '', matchCount: 1 });
+    expect(found.matches?.[0]?.page).toBe(5);
+  });
+
   it('reads a correction without pages and refuses to pretend it has them', async () => {
     const attachmentId = await createPdfAttachment({
       extractedText: text,

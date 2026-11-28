@@ -192,7 +192,10 @@ export function renderAttachmentTextMap(
     map.entries.length === 0
       ? '(keine adressierbaren Teile)'
       : map.entries.map((entry) => renderAttachmentEntry(entry, byPage)).join('\n');
-  return `${part}. Kein Textauszug, sondern die Gliederung. ${how}${coarse}\n\n${entries}`;
+  const find =
+    ' Jede Zeile zeigt nur den Anfang ihres Teils; ein bestimmtes Wort findet exo_attachment_read_text ' +
+    'mit find.';
+  return `${part}. Kein Textauszug, sondern die Gliederung. ${how}${coarse}${find}\n\n${entries}`;
 }
 
 /**

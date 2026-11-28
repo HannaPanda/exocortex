@@ -1,7 +1,11 @@
 import { z } from 'zod';
 
 import { attachmentTrustSchema } from './ai-trust';
-import { attachmentTextMapSchema, attachmentTextRangeSchema } from './attachment-text-map';
+import {
+  attachmentTextMapSchema,
+  attachmentTextMatchSchema,
+  attachmentTextRangeSchema,
+} from './attachment-text-map';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 /**
@@ -512,6 +516,8 @@ export const attachmentTextReadQuerySchema = z.object({
   toPage: z.coerce.number().int().min(1).max(100_000).optional(),
   fromChar: z.coerce.number().int().min(0).max(ATTACHMENT_TEXT_MAX_CHARS).optional(),
   toChar: z.coerce.number().int().min(0).max(ATTACHMENT_TEXT_MAX_CHARS).optional(),
+  /** A word or phrase: the answer is where it stands in the stretch, not the text. */
+  find: z.string().trim().min(2).max(200).optional(),
 });
 export type AttachmentTextReadQuery = z.infer<typeof attachmentTextReadQuerySchema>;
 
@@ -528,8 +534,11 @@ export type AttachmentTextReadQuery = z.infer<typeof attachmentTextReadQuerySche
 // The added fields default to "the whole text" so a reader one deploy ahead of
 // the API, or behind it, still parses the answer as what it was before.
 export const attachmentTextReadResponseSchema = attachmentTextResponseSchema.extend({
-  view: z.enum(['content', 'map']).default('content'),
+  view: z.enum(['content', 'map', 'matches']).default('content'),
   map: attachmentTextMapSchema.nullable().default(null),
+  /** For `find`: where it stands, at most `ATTACHMENT_TEXT_FIND_MAX_MATCHES`. */
+  matches: z.array(attachmentTextMatchSchema).nullable().default(null),
+  matchCount: z.number().int().nonnegative().nullable().default(null),
   range: attachmentTextRangeSchema.nullable().default(null),
   /** Length of the effective text; null when there is none. */
   totalChars: z.number().int().nonnegative().nullable().default(null),

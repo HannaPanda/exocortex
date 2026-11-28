@@ -176,6 +176,7 @@ export class AttachmentsController {
   @ApiQuery({ name: 'toPage', required: false })
   @ApiQuery({ name: 'fromChar', required: false })
   @ApiQuery({ name: 'toChar', required: false })
+  @ApiQuery({ name: 'find', required: false })
   @ApiOkResponse({ schema: openApiResponseSchema(attachmentTextReadResponseSchema) })
   async text(
     @CurrentSession() session: VerifiedSession,

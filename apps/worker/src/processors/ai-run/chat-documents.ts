@@ -81,6 +81,7 @@ export function chatDocumentContext(documents: readonly ChatDocumentForPrompt[])
           `Braucht die Antwort eine spätere Stelle, dann lies gezielt ${readLater(file.id)}: ` +
           'ohne Bereich kommt die Gliederung (bei einem PDF nach Seiten), danach liest du nur ' +
           'den Bereich, der die Frage beantwortet (fromPage/toPage oder fromChar/toChar). ' +
+          'Suchst du einen bestimmten Namen oder Begriff, nennt find die Seiten, auf denen er steht. ' +
           'Lies das Dokument nicht von vorne durch.',
       );
     }

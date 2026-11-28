@@ -135,7 +135,15 @@ export function shapeTextRead(
   const base = { totalChars: text?.length ?? null, pages };
   const asked = Object.values(query).some((value) => value !== undefined);
   if (!asked || text === null) {
-    return { ...projected, ...base, view: 'content', map: null, range: null };
+    return {
+      ...projected,
+      ...base,
+      view: 'content',
+      map: null,
+      matches: null,
+      matchCount: null,
+      range: null,
+    };
   }
   const read = readAttachmentText(text, pageStarts, query);
   if (!read.ok) {
@@ -152,6 +160,8 @@ export function shapeTextRead(
     machineText: null,
     view: read.view,
     map: read.map,
+    matches: read.matches,
+    matchCount: read.matchCount,
     range: read.range,
   };
 }

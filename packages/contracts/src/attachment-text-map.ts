@@ -56,6 +56,23 @@ export const attachmentTextRangeSchema = z.object({
 });
 export type AttachmentTextRange = z.infer<typeof attachmentTextRangeSchema>;
 
+/**
+ * Where a word the caller looked for stands (issue #133): its offset, its page
+ * when pages are known, and the line around it. A map shows each part's first
+ * line only, so a fact in the middle of page 27 is invisible in it; this is the
+ * literal way to it, no index and no model, over the stored text.
+ */
+export const attachmentTextMatchSchema = z.object({
+  at: z.number().int().nonnegative(),
+  page: z.number().int().positive().nullable(),
+  /** Text of the document around the match, not of this deployment. */
+  excerpt: z.string(),
+});
+export type AttachmentTextMatch = z.infer<typeof attachmentTextMatchSchema>;
+
+/** Matches a `find` lists; the count beside them says how many there were. */
+export const ATTACHMENT_TEXT_FIND_MAX_MATCHES = 20;
+
 /** Entries a map lists before it merges neighbours, when the caller names no limit. */
 export const ATTACHMENT_TEXT_MAP_DEFAULT_ENTRIES = 40;
 
@@ -117,15 +134,20 @@ export interface AttachmentTextReadRequest {
   toPage?: number;
   fromChar?: number;
   toChar?: number;
+  /** A word or phrase to find in the stretch, case ignored; answers where it stands. */
+  find?: string;
 }
 
 export type AttachmentTextRead =
   | {
       ok: true;
-      view: 'content' | 'map';
-      /** The range's text for `content`; empty for `map`, never a prefix. */
+      view: 'content' | 'map' | 'matches';
+      /** The range's text for `content`; empty otherwise, never a prefix. */
       text: string;
       map: AttachmentTextMap | null;
+      matches: AttachmentTextMatch[] | null;
+      /** How many times `find` occurs in the stretch; null without `find`. */
+      matchCount: number | null;
       range: AttachmentTextRange;
     }
   | { ok: false; reason: string };
@@ -439,6 +461,42 @@ export function buildAttachmentTextMap(
   return { mode, ...coarsen(entries, limits.maxEntries) };
 }
 
+const EXCERPT_CHARS = 80;
+
+/** Where `phrase` occurs in the stretch, case ignored, whitespace matched loosely. */
+function findInAttachmentText(
+  text: string,
+  units: readonly AttachmentPageUnit[],
+  range: AttachmentTextRange,
+  phrase: string,
+): { matches: AttachmentTextMatch[]; matchCount: number } {
+  const words = phrase
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length > 0);
+  if (words.length === 0) return { matches: [], matchCount: 0 };
+  const pattern = new RegExp(
+    words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+'),
+    'giu',
+  );
+  const stretch = text.slice(range.fromChar, range.toChar);
+  const matches: AttachmentTextMatch[] = [];
+  let matchCount = 0;
+  for (const match of stretch.matchAll(pattern)) {
+    matchCount += 1;
+    if (matches.length >= ATTACHMENT_TEXT_FIND_MAX_MATCHES) continue;
+    const at = range.fromChar + match.index;
+    const from = snap(text, Math.max(range.fromChar, at - EXCERPT_CHARS));
+    const to = snap(text, Math.min(range.toChar, at + match[0].length + EXCERPT_CHARS));
+    matches.push({
+      at,
+      page: units.length === 0 ? null : (unitAt(units, at)?.fromPage ?? null),
+      excerpt: `${from > range.fromChar ? '…' : ''}${text.slice(from, to).replace(/\s+/g, ' ').trim()}${to < range.toChar ? '…' : ''}`,
+    });
+  }
+  return { matches, matchCount };
+}
+
 /**
  * One read: the stretch the request names, as content when it fits the
  * budget and as its map when it does not. Without `maxChars` the stretch is
@@ -454,6 +512,10 @@ export function readAttachmentText(
   const resolved = resolveAttachmentTextRange(text, units, request);
   if (!resolved.ok) return resolved;
   const { range } = resolved;
+  if (request.find !== undefined) {
+    const found = findInAttachmentText(text, units, range, request.find);
+    return { ok: true, view: 'matches', text: '', map: null, ...found, range };
+  }
   const { maxChars } = request;
   if (maxChars === undefined || range.toChar - range.fromChar <= maxChars) {
     return {
@@ -461,6 +523,8 @@ export function readAttachmentText(
       view: 'content',
       text: text.slice(range.fromChar, range.toChar),
       map: null,
+      matches: null,
+      matchCount: null,
       range,
     };
   }
@@ -468,6 +532,8 @@ export function readAttachmentText(
     ok: true,
     view: 'map',
     text: '',
+    matches: null,
+    matchCount: null,
     map: buildAttachmentTextMap(text, units, range, {
       maxChars,
       maxEntries: request.maxEntries ?? ATTACHMENT_TEXT_MAP_DEFAULT_ENTRIES,

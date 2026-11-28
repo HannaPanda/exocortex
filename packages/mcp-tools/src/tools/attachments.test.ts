@@ -131,6 +131,41 @@ describe('exo_attachment_read_text', () => {
     expect(result.text).toContain('- Seiten 2 bis 3: „Anhang A“ — fromPage 2, toPage 3');
   });
 
+  it('names the pages a phrase stands on, and says what a miss means', async () => {
+    const { client, calls } = createFakeClient({
+      ...baseResponse,
+      text: '',
+      machineText: null,
+      view: 'matches',
+      matches: [{ at: 72_000, page: 27, excerpt: 'Der Turm am Kap Zebrano leuchtet grün.' }],
+      matchCount: 1,
+      totalChars: 82_838,
+      pages: 30,
+    });
+    const result = await attachmentReadTextTool.run(client, {
+      attachmentId: 'attachment1',
+      find: 'Kap Zebrano',
+    });
+    expect(calls[0]?.query).toMatchObject({ find: 'Kap Zebrano' });
+    expect(result.text).toContain('„Kap Zebrano“ kommt 1-mal in bericht.pdf vor.');
+    expect(result.text).toContain(
+      '- Seite 27: „Der Turm am Kap Zebrano leuchtet grün.“ — fromPage 27',
+    );
+
+    const miss = createFakeClient({
+      ...baseResponse,
+      text: '',
+      view: 'matches',
+      matches: [],
+      matchCount: 0,
+    });
+    const none = await attachmentReadTextTool.run(miss.client, {
+      attachmentId: 'attachment1',
+      find: 'Zebrano',
+    });
+    expect(none.text).toContain('kommt im durchsuchten Text von bericht.pdf nicht vor');
+  });
+
   it('sends the stretch asked for and says where it sits', async () => {
     const { client, calls } = createFakeClient({
       ...baseResponse,

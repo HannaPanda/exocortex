@@ -396,13 +396,44 @@ function rangeQuery(input: {
   toPage?: number | undefined;
   fromChar?: number | undefined;
   toChar?: number | undefined;
+  find?: string | undefined;
 }): Record<string, string> {
   const query: Record<string, string> = {};
-  for (const key of ['fromPage', 'toPage', 'fromChar', 'toChar'] as const) {
+  for (const key of ['fromPage', 'toPage', 'fromChar', 'toChar', 'find'] as const) {
     const value = input[key];
     if (value !== undefined) query[key] = String(value);
   }
   return query;
+}
+
+/**
+ * Where a looked-for phrase stands, as places to read next (issue #133).
+ * "Not found" says what was searched, because a model that sampled a few
+ * pages and found nothing must not take that for the document's answer.
+ */
+function describeMatches(result: AttachmentTextReadResponse, phrase: string): string {
+  const count = result.matchCount ?? 0;
+  if (count === 0) {
+    return (
+      `„${phrase}“ kommt im durchsuchten Text von ${result.filename} nicht vor ` +
+      '(Groß- und Kleinschreibung egal, wörtlich gesucht). Ein anderes Wort oder eine andere ' +
+      'Schreibweise kann trotzdem treffen.'
+    );
+  }
+  const shown = result.matches ?? [];
+  const lines = shown.map((match) => {
+    const where = match.page === null ? `Zeichen ${groupDigits(match.at)}` : `Seite ${match.page}`;
+    const read =
+      match.page === null
+        ? `fromChar ${Math.max(0, match.at - 2_000)}, toChar ${match.at + 2_000}`
+        : `fromPage ${match.page}`;
+    return `- ${where}: „${match.excerpt}“ — ${read}`;
+  });
+  const more = count > shown.length ? ` Gezeigt sind die ersten ${shown.length}.` : '';
+  return (
+    `„${phrase}“ kommt ${count}-mal in ${result.filename} vor.${more} Lies die Stelle mit ` +
+    `exo_attachment_read_text und dem genannten Bereich.\n\n${lines.join('\n')}`
+  );
 }
 
 export const attachmentReadTextTool: AnyToolDefinition = defineTool({
@@ -416,6 +447,8 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
     'du brauchst: mit fromPage und toPage (Seitenbereich) oder mit fromChar und toChar ' +
     '(Zeichenbereich aus der Gliederung). Ist auch der Teil zu groß, kommt seine feinere ' +
     'Gliederung. Du musst ein Dokument nie von vorne durchlesen, um an eine späte Stelle zu kommen. ' +
+    'Die Gliederung zeigt je Teil nur die erste Zeile; suchst du einen bestimmten Namen, Begriff ' +
+    'oder eine Zahl, dann frag mit find danach: die Antwort nennt die Seiten, auf denen er steht. ' +
     'Mit includeText: false kommen nur Status und Metadaten (Titel, Autor, Seitenzahl, Tabellen, ' +
     'Texterkennung) zurück, und eine noch nicht gelaufene Extraktion wird dadurch auch nicht gestartet. ' +
     'Wenn ein Mensch den Text korrigiert hat, ist es immer die korrigierte Fassung, die hier zurückkommt; ' +
@@ -453,6 +486,16 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
       .max(ATTACHMENT_TEXT_MAX_CHARS)
       .optional()
       .describe('Ende des Zeichenbereichs (ausschließlich)'),
+    find: z
+      .string()
+      .trim()
+      .min(2)
+      .max(200)
+      .optional()
+      .describe(
+        'Wort oder Wortfolge: statt Text kommen die Seiten (bzw. Zeichenstellen), an denen sie ' +
+          'vorkommt, mit der Zeile drumherum',
+      ),
   }),
   surfaces: ['mcp', 'ai'],
   domain: 'attachments',
@@ -512,14 +555,16 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
     // (ADR-096), never the model's or the document's.
     const note = attachmentTrustNote(result.trust);
     const body =
-      result.view === 'map' && result.map !== null
-        ? renderAttachmentTextMap(result.map, {
-            filename: result.filename,
-            range: result.range,
-            totalChars: result.totalChars,
-            pages: result.pages,
-          })
-        : `${describeRange(result)}${result.text ?? ''}`;
+      result.view === 'matches' && input.find !== undefined
+        ? describeMatches(result, input.find)
+        : result.view === 'map' && result.map !== null
+          ? renderAttachmentTextMap(result.map, {
+              filename: result.filename,
+              range: result.range,
+              totalChars: result.totalChars,
+              pages: result.pages,
+            })
+          : `${describeRange(result)}${result.text ?? ''}`;
     return {
       text: `${note === null ? '' : `${note}\n\n`}${describeMetadata(result.metadata)}${describeCorrection(result)}${body}`,
       data: result,
