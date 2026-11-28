@@ -26,7 +26,7 @@ import {
   tableCellSafeSlice,
 } from './table-cell-blocks';
 import { migrateTableCellBlocksInYjsDoc } from './table-cell-yjs';
-import { proseMirrorJsonToYjsState, yDocToProseMirrorJson,YJS_DOCUMENT_FIELD } from './yjs';
+import { proseMirrorJsonToYjsState, yDocToProseMirrorJson, YJS_DOCUMENT_FIELD } from './yjs';
 import { migrateYjsState } from './yjs-migrations';
 
 /** Issue #312: no database in a table cell, on every way in. */
