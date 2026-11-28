@@ -1022,7 +1022,8 @@ describe('message catalogues (check-i18n.mjs)', () => {
 
   it('goes red when a translation was edited by hand and the German moved on', () => {
     editJson(english, (value) => {
-      if (value.language !== undefined) value.language.legend = 'Interface language';
+      if (value.language !== undefined)
+        value.language.legend = 'Language of the interface, by hand';
     });
     editJson(german, (value) => {
       if (value.language !== undefined) value.language.legend = 'Sprache der Bedienoberfläche';
