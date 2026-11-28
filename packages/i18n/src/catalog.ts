@@ -27,7 +27,7 @@ type Tree = { readonly [key: string]: string | Tree };
  * The i18n gate refuses a catalogue with a missing key, so in a build that
  * passed this changes nothing. It exists for the deployment that is running
  * while a gate is being fixed: a German sentence in a French interface is a
- * blemish, a raw key like `settings.language.title` is a broken screen.
+ * blemish, a raw key like `settings.dialog.title` is a broken screen.
  */
 function withFallback(target: Tree, fallback: Tree): Tree {
   const merged: Record<string, string | Tree> = {};

@@ -18,8 +18,8 @@ describe('messagesFor', () => {
   });
 
   it('answers in the locale asked for, not in German', () => {
-    expect(messagesFor('en').settings.language.title).not.toBe(
-      messagesFor('de').settings.language.title,
+    expect(messagesFor('en').settings.dialog.sections.language.label).not.toBe(
+      messagesFor('de').settings.dialog.sections.language.label,
     );
   });
 });
