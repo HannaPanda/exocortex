@@ -273,6 +273,11 @@ function renderHighlightNode(node: HighlightNode, key: string): React.ReactNode 
  * than wrapping it) means this never picks up that stylesheet's *other*
  * `.exocortex-editor pre` / `.exocortex-editor code` background rules, which
  * are sized for the full editor, not a chat bubble.
+ *
+ * The block sits on `sunken` like every other piece of code (the
+ * Code-Is-A-Well Rule in DESIGN.md): the syntax colours are measured against
+ * that surface, and on a raised `card` the comment colour would fall under
+ * 4.5:1 (issue #317).
  */
 function ChatCodeBlock({ node, keyPrefix }: { node: ProseMirrorNode; keyPrefix: string }) {
   const language = typeof node.attrs?.language === 'string' ? node.attrs.language : '';
@@ -283,7 +288,7 @@ function ChatCodeBlock({ node, keyPrefix }: { node: ProseMirrorNode; keyPrefix: 
   const highlighted = React.useMemo(() => highlightCode(text, language), [text, language]);
 
   return (
-    <pre className="mb-1.5 overflow-x-auto rounded-md border border-border bg-card p-3 font-mono text-xs last:mb-0">
+    <pre className="mb-1.5 overflow-x-auto rounded-md border border-border bg-sunken p-3 font-mono text-xs last:mb-0">
       <code>
         <span className="exocortex-editor">{renderHighlightNodes(highlighted, keyPrefix)}</span>
       </code>

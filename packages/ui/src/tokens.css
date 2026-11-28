@@ -278,6 +278,34 @@
   --content-bg-pink: oklch(0.285 0.055 342);
   --content-bg-red: oklch(0.285 0.06 25);
 
+  /* Syntax colours (issue #317): what a code block's grammar found, on --sunken,
+     the one surface code sits on (the Code-Is-A-Well Rule). They are not the
+     content colours above: those sit at one lightness on purpose, so that no
+     colour an author picks shouts, and that is exactly what made highlighted
+     code pale and, under deuteranopia, made a keyword and a function name the
+     same colour (OKLab distance 0.2). Here the roles are told apart by three
+     things that survive red-green colour blindness, never by red against
+     green:
+       * lightness: comments sink (0.70), names and strings sit in the middle
+         (0.76-0.79), constants and variables are light (0.85-0.92), and the
+         plain text stays the brightest at --foreground;
+       * the blue-orange axis: names are blue, literals are orange;
+       * the type: a keyword is semibold, a comment is italic.
+     Every one of them clears 5.6:1 on --sunken (WCAG AA is 4.5:1), and still
+     5.6:1 under a simulated deuteranopia or protanopia. Measured values and the
+     simulation are in DESIGN.md, section 2, "Syntax". */
+  --syntax-comment: oklch(0.7 0.03 240);
+  --syntax-keyword: oklch(0.85 0.09 305);
+  --syntax-function: oklch(0.76 0.12 252);
+  --syntax-string: oklch(0.79 0.12 58);
+  --syntax-constant: oklch(0.92 0.12 98);
+  --syntax-variable: oklch(0.85 0.12 205);
+  /* A diff's lines: blue for added, orange for removed, the pairing GitHub's
+     colour-blind themes use, and the + and - in front of each line carry the
+     meaning without any colour. */
+  --syntax-inserted: oklch(0.85 0.08 240);
+  --syntax-deleted: oklch(0.76 0.13 42);
+
   /* Layout metrics used by the application shell. */
   --header-height: 3rem;
   --sidebar-width: 17rem;

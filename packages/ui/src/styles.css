@@ -4,11 +4,17 @@
 /* Self-hosted, bundled at build time: the same "never fetched at runtime"
    rule that already applies to KaTeX (apps/web/src/app/globals.css). Both
    are SIL OFL 1.1, free to embed. Regular + italic cover every weight the
-   type ladder in DESIGN.md uses; JetBrains Mono only ever appears upright. */
+   type ladder in DESIGN.md uses. JetBrains Mono comes in 400 and 500 for
+   values and code, plus the two cuts a code block's syntax colours lean on
+   (issue #317): italic for a comment and 600 for a keyword, drawn by the
+   typeface rather than slanted and smeared by the browser. Each file is only
+   fetched once a glyph in it is on screen. */
 @import '@fontsource-variable/inter/wght.css';
 @import '@fontsource-variable/inter/wght-italic.css';
 @import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/400-italic.css';
 @import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/600.css';
 
 /*
  * Tailwind 4 theme mapping.

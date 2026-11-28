@@ -158,6 +158,23 @@ export const TOKEN_GROUPS: readonly TokenGroup[] = [
     },
   },
   {
+    id: 'syntax',
+    title: 'Syntaxfarben',
+    kind: 'colour',
+    description:
+      'Was die Grammatik eines Codeblocks findet, auf der Vertiefung. Getrennt über Helligkeit, Blau gegen Orange und den Schnitt, nie über Rot gegen Grün.',
+    tokens: {
+      '--syntax-comment': 'Kommentar, Prompt, Shebang; kursiv beim Kommentar',
+      '--syntax-keyword': 'Schlüsselwort, halbfett',
+      '--syntax-function': 'Befehl, Funktion, Tag, Überschrift',
+      '--syntax-string': 'Zeichenkette, Pfad, regulärer Ausdruck',
+      '--syntax-constant': 'Zahl, Literal, Konstante',
+      '--syntax-variable': 'Variable, Option, Attribut, Schlüssel, Typ',
+      '--syntax-inserted': 'Hinzugefügte Zeile im Diff',
+      '--syntax-deleted': 'Entfernte Zeile im Diff',
+    },
+  },
+  {
     id: 'radien',
     title: 'Radien',
     kind: 'radius',

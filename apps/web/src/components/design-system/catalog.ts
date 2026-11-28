@@ -53,6 +53,7 @@ export const DESIGN_SYSTEM_CATALOG: readonly CatalogGroup[] = [
       { id: 'zustaende', title: 'Laden, leer, Fehler' },
       { id: 'bestaetigung', title: 'Bestätigung' },
       { id: 'markierte-bloecke', title: 'Markierte Blöcke' },
+      { id: 'codeblock', title: 'Codeblock' },
       { id: 'einstellungszeile', title: 'Einstellungszeile' },
       { id: 'seitenbaum', title: 'Seitenbaum' },
       { id: 'seitengliederung', title: 'Seitengliederung' },

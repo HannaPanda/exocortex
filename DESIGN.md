@@ -330,6 +330,62 @@ desktop has drawn one for thirty years.
 all at a single 0.865. On a near-black background those values would have been
 glare. On this one they are the floor.
 
+### Syntax
+
+Eight `syntax-*` tokens colour what a code block's grammar finds (issue #317).
+They are a group of their own, not the content colours reused: the content
+colours sit at one lightness so that no colour an author picks shouts, and
+borrowed for code that same evenness made every token look alike. Under a
+simulated deuteranopia a keyword and a function name measured an OKLab
+distance of 0.2, which is the same colour.
+
+The roles are separated by three things that survive red-green colour
+blindness, and never by red against green:
+
+- **lightness:** comments sink, names and literals sit in the middle,
+  constants and variables are light, the plain text stays brightest;
+- **blue against orange:** names are blue, literals orange;
+- **the type:** a keyword is semibold (JetBrains Mono 600), a comment italic
+  (400 italic). Both cuts are bundled, so neither is a synthetic slant.
+
+All values on `sunken`, the only surface code sits on. Contrast is WCAG 2.1;
+the simulations apply the Machado 2009 matrices at full severity to both the
+colour and the surface.
+
+| Token             | Value                    | Role                                   | Contrast | Deut. | Prot. |
+| ----------------- | ------------------------ | -------------------------------------- | -------: | ----: | ----: |
+| (plain text)      | `foreground`             | everything without a role              |   12.3:1 |  12.5 |  12.1 |
+| `syntax-comment`  | `oklch(0.700 0.030 240)` | comment (italic), prompt, shebang      |    5.6:1 |   5.6 |   5.7 |
+| `syntax-keyword`  | `oklch(0.850 0.090 305)` | keyword, semibold                      |    9.2:1 |   9.4 |   9.0 |
+| `syntax-function` | `oklch(0.760 0.120 252)` | command, function, tag name, heading   |    7.0:1 |   6.7 |   7.5 |
+| `syntax-string`   | `oklch(0.790 0.120 58)`  | string, path, regular expression       |    7.5:1 |   8.2 |   6.5 |
+| `syntax-constant` | `oklch(0.920 0.120 98)`  | number, literal (`true`, `null`)       |   11.9:1 |  12.4 |  11.2 |
+| `syntax-variable` | `oklch(0.850 0.120 205)` | variable, option, attribute, key, type |    9.9:1 |   9.4 |  10.6 |
+| `syntax-inserted` | `oklch(0.850 0.080 240)` | added line in a diff                   |    9.6:1 |   9.4 |  10.0 |
+| `syntax-deleted`  | `oklch(0.760 0.130 42)`  | removed line in a diff                 |    6.7:1 |   7.4 |   5.6 |
+
+Pairs that appear together and share a type stay at least 10 OKLab units
+(×100) apart under deuteranopia and protanopia, with two stated exceptions,
+both carried by shape as well: plain text against a variable falls to 5.2 under
+protanopia, where the variable still starts with `$` or `-`; and a diff's
+context line against an added one to 8.4, where the added line starts with `+`.
+The diff pair itself is 18 or more apart; each of the two sits close to a role
+(string, variable) that never appears in a diff. A keyword against a variable
+collapses under deuteranopia (1.2), which is what the semibold weight is for.
+
+A diff uses blue for added and orange for removed, the pairing GitHub's
+colour-blind themes use, and the `+` and `-` before every line carry the
+meaning without colour (the Never-Only-Colour Rule).
+
+The theme maps highlight.js classes to these eight roles in
+`apps/web/src/app/globals.css`; operators, punctuation and a command
+substitution stay in the plain ink. A block without a language draws no colour
+at all, never a guessed one.
+
+The product is dark only (`data-theme="dark"`, tokens.css). A light theme,
+when it comes, needs its own eight values against its own well, not these
+inverted.
+
 ### Named Rules
 
 **The One Signal Rule.** Amber is used on at most ~10% of any screen and only
@@ -364,7 +420,9 @@ bug: pointer feedback and "you are here" are different questions.
 **The Code-Is-A-Well Rule.** Code, identifiers and machine readouts sit on
 `sunken`, below the page, never on `muted` above it. A code block is something
 the sheet is cut into, not a card stacked on top of it, and on a mid-tone page
-the difference is the whole legibility of the block.
+the difference is the whole legibility of the block. That holds for code in the
+AI chat too: the syntax colours are measured against `sunken`, and on a `card`
+the comment colour falls to 2.9:1.
 
 ## 3. Typography
 

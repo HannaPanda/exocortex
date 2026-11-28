@@ -365,59 +365,82 @@
   }
 
   /*
-   * Syntax highlighting theme for highlight.js, built from the content colour
-   * tokens rather than from a downloaded theme file. Two reasons: a stock theme
-   * ships hexadecimal values, which rule 9 of CLAUDE.md forbids, and its palette
-   * was not designed against this surface.
+   * Syntax highlighting theme for highlight.js, built from the syntax tokens
+   * (`--syntax-*` in tokens.css) rather than from a downloaded theme file: a
+   * stock theme ships hexadecimal values, which rule 9 of CLAUDE.md forbids,
+   * and its palette was not designed against this surface.
    *
-   * The mapping is deliberately coarse — six roles, not thirty. Code is read for
-   * structure, and a rainbow makes structure harder to see, not easier.
+   * Eight roles, not thirty. Code is read for structure, and a rainbow makes
+   * structure harder to see, not easier. The roles are separated by lightness,
+   * by blue against orange and by the type (italic comments, semibold
+   * keywords), so they survive red-green colour blindness (issue #317,
+   * DESIGN.md section 2, "Syntax"). Operators, punctuation and a command
+   * substitution's brackets stay in the plain ink on purpose.
+   *
+   * Order matters where highlight.js nests: a variable inside a string carries
+   * both classes, and the later rule, the variable, wins.
    */
   .exocortex-editor .hljs-comment,
   .exocortex-editor .hljs-quote {
-    color: var(--content-gray);
+    color: var(--syntax-comment);
     font-style: italic;
+  }
+
+  /* A prompt, a shebang, a preprocessor line: there, but not the point. */
+  .exocortex-editor .hljs-meta {
+    color: var(--syntax-comment);
   }
 
   .exocortex-editor .hljs-keyword,
   .exocortex-editor .hljs-selector-tag,
-  .exocortex-editor .hljs-literal,
   .exocortex-editor .hljs-doctag {
-    color: var(--content-purple);
-  }
-
-  .exocortex-editor .hljs-string,
-  .exocortex-editor .hljs-regexp,
-  .exocortex-editor .hljs-addition,
-  .exocortex-editor .hljs-attribute {
-    color: var(--content-green);
-  }
-
-  .exocortex-editor .hljs-number,
-  .exocortex-editor .hljs-symbol,
-  .exocortex-editor .hljs-bullet,
-  .exocortex-editor .hljs-meta {
-    color: var(--content-orange);
+    color: var(--syntax-keyword);
+    font-weight: 600;
   }
 
   .exocortex-editor .hljs-title,
   .exocortex-editor .hljs-section,
   .exocortex-editor .hljs-name,
+  .exocortex-editor .hljs-built_in,
   .exocortex-editor .hljs-selector-id,
   .exocortex-editor .hljs-selector-class {
-    color: var(--content-blue);
+    color: var(--syntax-function);
   }
 
-  .exocortex-editor .hljs-type,
-  .exocortex-editor .hljs-built_in,
-  .exocortex-editor .hljs-class .hljs-title,
+  .exocortex-editor .hljs-string,
+  .exocortex-editor .hljs-regexp,
+  .exocortex-editor .hljs-char,
+  .exocortex-editor .hljs-link,
+  .exocortex-editor .hljs-template-tag,
+  .exocortex-editor .hljs-selector-attr,
+  .exocortex-editor .hljs-selector-pseudo {
+    color: var(--syntax-string);
+  }
+
+  .exocortex-editor .hljs-number,
+  .exocortex-editor .hljs-literal,
+  .exocortex-editor .hljs-symbol,
+  .exocortex-editor .hljs-bullet,
+  .exocortex-editor .hljs-variable.constant_ {
+    color: var(--syntax-constant);
+  }
+
   .exocortex-editor .hljs-variable,
-  .exocortex-editor .hljs-template-variable {
-    color: var(--content-yellow);
+  .exocortex-editor .hljs-template-variable,
+  .exocortex-editor .hljs-attr,
+  .exocortex-editor .hljs-attribute,
+  .exocortex-editor .hljs-property,
+  .exocortex-editor .hljs-type,
+  .exocortex-editor .hljs-title.class_ {
+    color: var(--syntax-variable);
+  }
+
+  .exocortex-editor .hljs-addition {
+    color: var(--syntax-inserted);
   }
 
   .exocortex-editor .hljs-deletion {
-    color: var(--content-red);
+    color: var(--syntax-deleted);
   }
 
   .exocortex-editor .hljs-emphasis {

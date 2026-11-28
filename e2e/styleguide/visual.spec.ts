@@ -65,6 +65,8 @@ const DESKTOP_SECTIONS = [
   'instrument',
   'zustaende',
   'markierte-bloecke',
+  // The syntax colours (#317): every role of the --syntax-* tokens in one shot.
+  'codeblock',
   'einstellungszeile',
   'seitenbaum',
   'seitengliederung',
