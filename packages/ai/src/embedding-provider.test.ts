@@ -2,9 +2,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createLogger } from '@exocortex/logger';
 
+import { EMBEDDING_MAX_INPUT_TOKENS } from './embedding-budget';
 import {
+  createEmbeddingClient,
   createEmbeddingProvider,
   EMBEDDING_DIMENSIONS,
+  EMBEDDING_INPUT_TOO_LONG,
+  type EmbeddingProvider,
+  type EmbeddingRequest,
   hashEmbedding,
   MockEmbeddingProvider,
   OpenRouterEmbeddingProvider,
@@ -154,6 +159,34 @@ describe('OpenRouterEmbeddingProvider', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('names a refusal for length, so it can be told from an outage (issue #329)', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      jsonResponse(
+        {
+          error: {
+            message: "HTTP 400: Invalid 'input[0]': maximum input length is 8192 tokens.",
+            code: 400,
+          },
+        },
+        400,
+      ),
+    );
+
+    await expect(
+      provider.embed({ input: ['a'], model: 'm', correlationId: 'c1' }),
+    ).rejects.toMatchObject({ code: EMBEDDING_INPUT_TOO_LONG, status: 400 });
+  });
+
+  it('keeps every other refusal an outage', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      jsonResponse({ error: { message: 'Insufficient credits' } }, 402),
+    );
+
+    await expect(
+      provider.embed({ input: ['a'], model: 'm', correlationId: 'c1' }),
+    ).rejects.toMatchObject({ code: 'ai_embedding_unavailable' });
+  });
+
   it('returns nothing for no input without a request', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch');
     const result = await provider.embed({ input: [], model: 'm', correlationId: 'c1' });
@@ -186,5 +219,82 @@ describe('createEmbeddingProvider', () => {
         baseUrl: 'https://openrouter.test/api/v1',
       }),
     ).toBeNull();
+  });
+});
+
+describe('createEmbeddingClient', () => {
+  /** A provider that answers from a script of failures, then with vectors. */
+  function scripted(failures: Error[]): { provider: EmbeddingProvider; calls: EmbeddingRequest[] } {
+    const calls: EmbeddingRequest[] = [];
+    const provider: EmbeddingProvider = {
+      id: 'scripted',
+      embed: async (request) => {
+        calls.push(request);
+        const failure = failures.shift();
+        if (failure !== undefined) throw failure;
+        return {
+          vectors: request.input.map(() => [1]),
+          model: request.model,
+          totalTokens: 0,
+          costMicroUsd: null,
+        };
+      },
+    };
+    return { provider, calls };
+  }
+
+  const tooLong = (): AiProviderError =>
+    new AiProviderError(EMBEDDING_INPUT_TOO_LONG, 'maximum input length is 8192 tokens', {
+      status: 400,
+    });
+
+  it('fits what it is handed to the token budget, not to a character count', () => {
+    const client = createEmbeddingClient(new MockEmbeddingProvider());
+    const figures = '12.345,67 EUR | 01.02.2026 | 4711-0815\n'.repeat(600);
+
+    const fitted = client?.fitInput(figures) ?? '';
+
+    expect(fitted.length).toBeLessThan(figures.length);
+    expect(figures.startsWith(fitted)).toBe(true);
+  });
+
+  it('answers a refusal for length once more, with only the texts that could be too long cut to the byte bound', async () => {
+    const { provider, calls } = scripted([tooLong()]);
+    const client = createEmbeddingClient(provider);
+    const passage = 'Ein Absatz.';
+    const long = '9'.repeat(EMBEDDING_MAX_INPUT_TOKENS * 2);
+
+    const vectors = await client?.embed({
+      texts: [passage, long],
+      model: 'm',
+      correlationId: 'c1',
+    });
+
+    expect(vectors).toHaveLength(2);
+    expect(calls).toHaveLength(2);
+    expect(calls[1]?.input[0]).toBe(passage);
+    expect(calls[1]?.input[1]).toHaveLength(EMBEDDING_MAX_INPUT_TOKENS);
+  });
+
+  it('asks only once more, so a refusal can never become a loop', async () => {
+    const { provider, calls } = scripted([tooLong(), tooLong()]);
+    const client = createEmbeddingClient(provider);
+
+    await expect(
+      client?.embed({ texts: ['x'.repeat(20_000)], model: 'm', correlationId: 'c1' }),
+    ).rejects.toMatchObject({ code: EMBEDDING_INPUT_TOO_LONG });
+    expect(calls).toHaveLength(2);
+  });
+
+  it('does not retry an outage', async () => {
+    const { provider, calls } = scripted([
+      new AiProviderError('ai_embedding_unavailable', 'no credit'),
+    ]);
+    const client = createEmbeddingClient(provider);
+
+    await expect(
+      client?.embed({ texts: ['a'], model: 'm', correlationId: 'c1' }),
+    ).rejects.toMatchObject({ code: 'ai_embedding_unavailable' });
+    expect(calls).toHaveLength(1);
   });
 });

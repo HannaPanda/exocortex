@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { type Logger } from '@exocortex/logger';
 
+import { boundEmbeddingInputByBytes, fitEmbeddingInput } from './embedding-budget';
 import { AiProviderError } from './provider';
 
 /**
@@ -20,13 +21,16 @@ import { AiProviderError } from './provider';
 export const EMBEDDING_DIMENSIONS = 1536;
 
 /**
- * Longest text one embedding is built from.
+ * Longest text one embedding is built from, in characters.
  *
- * `text-embedding-3-small` accepts 8191 tokens, which is roughly 30k characters
- * of German prose. Cutting at 24k leaves room for the token estimate to be
- * wrong in the expensive direction. A page longer than this loses its tail from
- * the *semantic* index only: full-text search still sees every word, and
- * per-block chunking (the `blockId` column) is the way to fix it properly.
+ * Only the first cut, and a cheap one: what really bounds an input is the token
+ * budget in `embedding-budget.ts` (issue #329), because a character costs a
+ * different number of tokens depending on what it is. Prose reaches the token
+ * budget at about 22000 characters, a table of figures at about 12000, so this
+ * ceiling only keeps the estimate from reading further than it ever could use.
+ * A page longer than what fits loses its tail from the *semantic* whole-page
+ * vector only: full-text search still sees every word, and the passages of
+ * ADR-034 reach well beyond it.
  */
 export const EMBEDDING_MAX_CHARS = 24_000;
 
@@ -74,6 +78,25 @@ const embeddingResponseSchema = z.object({
     })
     .optional(),
 });
+
+/**
+ * The code a refusal for length is raised with, so the bridge below can tell it
+ * from an outage. Anything else the provider refuses stays
+ * `ai_embedding_unavailable`.
+ */
+export const EMBEDDING_INPUT_TOO_LONG = 'ai_embedding_input_too_long';
+
+/**
+ * Whether the provider refused because an input was longer than the model
+ * takes. OpenAI says "maximum input length is 8192 tokens" and OpenRouter passes
+ * that through; the other phrasings are what other upstreams answer with.
+ */
+function isLengthRefusal(status: number, detail: string): boolean {
+  return (
+    (status === 400 || status === 413) &&
+    /maximum (?:input|context) length|too many tokens|token limit|input is too long/i.test(detail)
+  );
+}
 
 export interface OpenRouterEmbeddingProviderOptions {
   apiKey: string;
@@ -131,8 +154,11 @@ export class OpenRouterEmbeddingProvider implements EmbeddingProvider {
         correlationId: request.correlationId,
       });
       throw new AiProviderError(
-        'ai_embedding_unavailable',
+        isLengthRefusal(response.status, detail)
+          ? EMBEDDING_INPUT_TOO_LONG
+          : 'ai_embedding_unavailable',
         `OpenRouter responded with ${response.status}: ${detail.slice(0, 200)}`,
+        { status: response.status },
       );
     }
 
@@ -231,10 +257,21 @@ export function hashEmbedding(text: string, dimensions: number): number[] {
  * structurally. Written once here rather than in both composition roots; if
  * the two shapes ever drift, the assignment in `apps/api` and `apps/worker`
  * stops compiling, which is where it should be noticed.
+ *
+ * `fitInput` is the token budget (issue #329), handed to the adapter so that
+ * what it hashes is exactly what is sent. `embed` adds the one answer an
+ * estimate cannot give itself: when the provider still refuses for length, the
+ * same request goes out once more with every input that could have been the
+ * culprit cut to the byte bound, which no tokenizer of this family can exceed.
+ * Only an input longer than the bound in bytes can be over the limit in
+ * tokens, so a passage in the same request is sent unchanged. The row keeps
+ * the hash of the fitted text, which is what stops the backfill from asking
+ * again: the page is settled, with a shorter whole-page vector than it could
+ * have had.
  */
 export function createEmbeddingClient(provider: EmbeddingProvider | null): {
   dimensions: number;
-  maxInputChars: number;
+  fitInput(text: string): string;
   embed(input: {
     texts: readonly string[];
     model: string;
@@ -242,17 +279,32 @@ export function createEmbeddingClient(provider: EmbeddingProvider | null): {
   }): Promise<readonly (readonly number[])[]>;
 } | null {
   if (provider === null) return null;
+  const send = async (
+    texts: readonly string[],
+    model: string,
+    correlationId: string,
+  ): Promise<readonly (readonly number[])[]> => {
+    const result = await provider.embed({
+      input: texts,
+      model,
+      dimensions: EMBEDDING_DIMENSIONS,
+      correlationId,
+    });
+    return result.vectors;
+  };
   return {
     dimensions: EMBEDDING_DIMENSIONS,
-    maxInputChars: EMBEDDING_MAX_CHARS,
+    fitInput: (text) => fitEmbeddingInput(text.slice(0, EMBEDDING_MAX_CHARS)),
     embed: async (input) => {
-      const result = await provider.embed({
-        input: input.texts,
-        model: input.model,
-        dimensions: EMBEDDING_DIMENSIONS,
-        correlationId: input.correlationId,
-      });
-      return result.vectors;
+      try {
+        return await send(input.texts, input.model, input.correlationId);
+      } catch (error) {
+        if (!(error instanceof AiProviderError) || error.code !== EMBEDDING_INPUT_TOO_LONG) {
+          throw error;
+        }
+        const bounded = input.texts.map((text) => boundEmbeddingInputByBytes(text));
+        return send(bounded, input.model, `${input.correlationId}-bounded`);
+      }
     },
   };
 }

@@ -56,7 +56,7 @@ function bagOfWords(text: string): number[] {
 let embeddingsWork = true;
 const embeddings: EmbeddingClient = {
   dimensions: DIMENSIONS,
-  maxInputChars: 24_000,
+  fitInput: (text: string) => text.slice(0, 24_000),
   embed: async ({ texts }) => {
     if (!embeddingsWork) throw new Error('model unreachable');
     return texts.map(bagOfWords);

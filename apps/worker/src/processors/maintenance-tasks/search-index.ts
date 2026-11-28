@@ -280,9 +280,11 @@ export const backfillEmbeddings: MaintenanceTask = async (context) => {
         break;
       }
     } catch (error) {
-      // A batch the model refuses (a rate limit, a page too long even
-      // after truncation) must not fail the job into a retry loop.
-      // Nothing was written for it, so the next run sees it again.
+      // A batch the model refuses (a rate limit, an exhausted account)
+      // must not fail the job into a retry loop. Nothing was written for
+      // it, so the next run sees it again. A refusal for length does not
+      // end up here: the embedding client answers it once with the byte
+      // bound, which settles the page (issue #329).
       logger.warn('Could not backfill a batch of embeddings', {
         batch: pending.length,
         reason: error instanceof Error ? error.message : String(error),

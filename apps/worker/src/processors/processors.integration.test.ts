@@ -14,6 +14,8 @@ import {
   createEmbeddingClient,
   type DecisionProvider,
   type DocumentTextExtractor,
+  EMBEDDING_INPUT_TOO_LONG,
+  EMBEDDING_MAX_INPUT_TOKENS,
   MockAiProvider,
   MockEmbeddingProvider,
   MockImageGenerator,
@@ -1058,7 +1060,7 @@ describe('semantic search', () => {
         keyword: new PostgresSearchAdapter(prisma),
         embeddings: {
           dimensions: 1536,
-          maxInputChars: 24_000,
+          fitInput: (text: string) => text.slice(0, 24_000),
           embed: async () => {
             throw new Error('no credit');
           },
@@ -1114,6 +1116,84 @@ describe('semantic search', () => {
     }
   }, 60_000);
 
+  it('settles a page of figures the model refuses at full length, and asks no more (issue #329)', async () => {
+    semanticModel = null;
+    // About 24000 characters of amounts and dates, which the old character
+    // limit let through whole and the real model refuses.
+    const figures = '12.345,67 EUR | 01.02.2026 | Bel. 4711-0815 | 19,0 %\n'.repeat(450);
+    const documentId = await indexedPage('Kontoauszug Zahlenprobe', figures);
+
+    // A model that counts every byte as a token: stricter than any real one,
+    // so the estimate alone does not get the page through and the byte bound
+    // has to settle it.
+    const asked: string[][] = [];
+    const strict = new HybridSearchAdapter({
+      prisma,
+      keyword: new PostgresSearchAdapter(prisma),
+      embeddings: createEmbeddingClient({
+        id: 'strict',
+        embed: async (request) => {
+          asked.push([...request.input]);
+          if (request.input.some((text) => Buffer.byteLength(text) > EMBEDDING_MAX_INPUT_TOKENS)) {
+            throw new AiProviderError(
+              EMBEDDING_INPUT_TOO_LONG,
+              'maximum input length is 8192 tokens',
+              { status: 400 },
+            );
+          }
+          return new MockEmbeddingProvider().embed(request);
+        },
+      }),
+      options: async () => ({ model: TEST_EMBEDDING_MODEL, weight: 0.5 }),
+      logger,
+    });
+    const aboutThisPage = (): number =>
+      asked.filter((texts) => texts.some((text) => text.startsWith('Kontoauszug Zahlenprobe')))
+        .length;
+
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        search: strict,
+        settings: stubSettings({
+          'search.semanticEnabled': true,
+          'search.embeddingModelSlug': TEST_EMBEDDING_MODEL,
+        }),
+      });
+      const backfill = async (): Promise<void> => {
+        await processor(
+          contextFor<'maintenance'>({
+            correlationId: 'backfill-329',
+            task: 'backfill-embeddings',
+            workspaceId,
+            documentId: null,
+          }).context,
+        );
+      };
+
+      await backfill();
+      expect(await prisma.documentEmbedding.count({ where: { documentId, blockId: null } })).toBe(
+        1,
+      );
+      expect(
+        await prisma.documentEmbedding.count({ where: { documentId, blockId: { not: null } } }),
+      ).toBeGreaterThan(0);
+      // The refusal and the one answer to it, nothing more.
+      expect(aboutThisPage()).toBe(2);
+
+      await backfill();
+      expect(aboutThisPage()).toBe(2);
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
   it('asks the model once for a whole batch, not once per page', async () => {
     semanticModel = null;
     const ids = [
@@ -1128,7 +1208,7 @@ describe('semantic search', () => {
       keyword: new PostgresSearchAdapter(prisma),
       embeddings: {
         dimensions: 1536,
-        maxInputChars: 24_000,
+        fitInput: (text: string) => text.slice(0, 24_000),
         embed: async (input) => {
           requests += 1;
           return (
@@ -1272,7 +1352,7 @@ describe('related documents', () => {
         keyword: new PostgresSearchAdapter(prisma),
         embeddings: {
           dimensions: 1536,
-          maxInputChars: 24_000,
+          fitInput: (text: string) => text.slice(0, 24_000),
           embed: async () => {
             requests += 1;
             throw new Error('findRelated must not ask the model');

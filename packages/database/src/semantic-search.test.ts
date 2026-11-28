@@ -77,15 +77,20 @@ describe('fuse', () => {
   });
 });
 
+/** A character cut, standing in for the client's token budget. */
+const fit = (text: string): string => text.slice(0, 24_000);
+
 describe('embeddingInputFor', () => {
   it('puts the title in front of the body', () => {
-    expect(embeddingInputFor({ title: 'Kalender', plainText: 'Termine' }, 100)).toBe(
+    expect(embeddingInputFor({ title: 'Kalender', plainText: 'Termine' }, fit)).toBe(
       'Kalender\n\nTermine',
     );
   });
 
   it('truncates to the model window', () => {
-    const input = embeddingInputFor({ title: 'T', plainText: 'x'.repeat(1_000) }, 20);
+    const input = embeddingInputFor({ title: 'T', plainText: 'x'.repeat(1_000) }, (text) =>
+      text.slice(0, 20),
+    );
     expect(input).toHaveLength(20);
   });
 });
@@ -107,17 +112,17 @@ describe('embeddingTargetsFor', () => {
   });
 
   it('gives a database row with nothing but its title no vector (issue #221)', () => {
-    expect(embeddingTargetsFor({ ...page(' \n '), isDatabaseRow: true }, 24_000, 'm')).toEqual([]);
+    expect(embeddingTargetsFor({ ...page(' \n '), isDatabaseRow: true }, fit, 'm')).toEqual([]);
     // A row somebody wrote on is a page like any other.
     expect(
-      embeddingTargetsFor({ ...page('Gut vertragen.'), isDatabaseRow: true }, 24_000, 'm'),
+      embeddingTargetsFor({ ...page('Gut vertragen.'), isDatabaseRow: true }, fit, 'm'),
     ).toHaveLength(1);
     // And a page that is not a row keeps its title vector.
-    expect(embeddingTargetsFor(page(''), 24_000, 'm')).toHaveLength(1);
+    expect(embeddingTargetsFor(page(''), fit, 'm')).toHaveLength(1);
   });
 
   it('gives a short page exactly the one vector it had before', () => {
-    const targets = embeddingTargetsFor(page('Termine am Freitag.'), 24_000, 'm');
+    const targets = embeddingTargetsFor(page('Termine am Freitag.'), fit, 'm');
 
     expect(targets).toHaveLength(1);
     expect(targets[0]?.blockId).toBeNull();
@@ -125,7 +130,7 @@ describe('embeddingTargetsFor', () => {
   });
 
   it('keeps the whole-document vector when it adds passages', () => {
-    const targets = embeddingTargetsFor(page('Absatz.\n'.repeat(500)), 24_000, 'm');
+    const targets = embeddingTargetsFor(page('Absatz.\n'.repeat(500)), fit, 'm');
 
     expect(targets.length).toBeGreaterThan(1);
     expect(targets.filter((target) => target.blockId === null)).toHaveLength(1);
@@ -133,13 +138,13 @@ describe('embeddingTargetsFor', () => {
   });
 
   it('puts the page title in front of every passage as well', () => {
-    const targets = embeddingTargetsFor(page('Absatz.\n'.repeat(500)), 24_000, 'm');
+    const targets = embeddingTargetsFor(page('Absatz.\n'.repeat(500)), fit, 'm');
 
     expect(targets.every((target) => target.text.startsWith('Kalender\n\n'))).toBe(true);
   });
 
   it('stores the passage, so a hit can show the paragraph that matched', () => {
-    const targets = embeddingTargetsFor(page('Absatz.\n'.repeat(500)), 24_000, 'm');
+    const targets = embeddingTargetsFor(page('Absatz.\n'.repeat(500)), fit, 'm');
     const passage = targets[1];
     if (passage === undefined) throw new Error('expected a passage');
 
@@ -149,22 +154,36 @@ describe('embeddingTargetsFor', () => {
 
   it('hashes per row, so an edit pays for the passages it touched', () => {
     const body = `${'Absatz eins. '.repeat(200)}\n${'Absatz zwei. '.repeat(200)}`;
-    const before = embeddingTargetsFor(page(body), 24_000, 'm');
-    const after = embeddingTargetsFor(page(`${body}\nEin Nachtrag am Ende.`), 24_000, 'm');
+    const before = embeddingTargetsFor(page(body), fit, 'm');
+    const after = embeddingTargetsFor(page(`${body}\nEin Nachtrag am Ende.`), fit, 'm');
 
     expect(before[1]?.hash).toBe(after[1]?.hash);
     expect(before[0]?.hash).not.toBe(after[0]?.hash);
   });
 
   it('still embeds a page that is only a title, and nothing for an empty one', () => {
-    expect(embeddingTargetsFor(page(''), 24_000, 'm')).toHaveLength(1);
-    expect(embeddingTargetsFor({ ...page(''), title: '' }, 24_000, 'm')).toEqual([]);
+    expect(embeddingTargetsFor(page(''), fit, 'm')).toHaveLength(1);
+    expect(embeddingTargetsFor({ ...page(''), title: '' }, fit, 'm')).toEqual([]);
+  });
+
+  it('puts every passage through the same budget as the page (issue #329)', () => {
+    const budget = (text: string): string => text.slice(0, 120);
+    const targets = embeddingTargetsFor(
+      page('Absatz mit Zahlen 1,23 4,56.\n'.repeat(400)),
+      budget,
+      'm',
+    );
+
+    expect(targets.length).toBeGreaterThan(2);
+    expect(targets.every((target) => target.text.length <= 120)).toBe(true);
+    // What is stored for a hit to show stays the whole passage.
+    expect(targets[1]?.chunkText?.length).toBeGreaterThan(120);
   });
 
   it('asks the chunker with the page text alone, not with the title in front', () => {
     const justBelow = 'w'.repeat(CHUNK_THRESHOLD_CHARS);
 
-    expect(embeddingTargetsFor(page(justBelow), 24_000, 'm')).toHaveLength(1);
+    expect(embeddingTargetsFor(page(justBelow), fit, 'm')).toHaveLength(1);
   });
 });
 
@@ -185,7 +204,7 @@ describe('where a passage says it is', () => {
       page(`Tumorambulanz\n${body}`, [
         { offset: 0, blockId: 'tumorambu01', path: ['Gesundheit', 'Tumorambulanz'] },
       ]),
-      24_000,
+      fit,
       'm',
     );
 
@@ -197,8 +216,8 @@ describe('where a passage says it is', () => {
   });
 
   it('tells a page nobody worked the headings out for from one that has none', () => {
-    const unknown = embeddingTargetsFor(page(body), 24_000, 'm');
-    const none = embeddingTargetsFor(page(body, []), 24_000, 'm');
+    const unknown = embeddingTargetsFor(page(body), fit, 'm');
+    const none = embeddingTargetsFor(page(body, []), fit, 'm');
 
     // `null` is what the sweep looks for, `[]` is what makes it stop looking.
     expect(unknown[1]?.headingPath).toBeNull();
@@ -206,10 +225,10 @@ describe('where a passage says it is', () => {
   });
 
   it('keeps the hash off the heading, so an anchor costs no second embedding', () => {
-    const before = embeddingTargetsFor(page(body), 24_000, 'm');
+    const before = embeddingTargetsFor(page(body), fit, 'm');
     const after = embeddingTargetsFor(
       page(body, [{ offset: 0, blockId: 'kopfzeile01', path: ['Kopfzeile'] }]),
-      24_000,
+      fit,
       'm',
     );
 

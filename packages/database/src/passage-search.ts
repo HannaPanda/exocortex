@@ -223,7 +223,7 @@ export class PostgresPassageSearch implements PassageSearchPort {
     const client = this.deps.embeddings;
     if (client === null) return [];
     const [vector] = await client.embed({
-      texts: [query.query.slice(0, client.maxInputChars)],
+      texts: [client.fitInput(query.query)],
       model: semantic.model,
       correlationId: 'context-compile',
     });
