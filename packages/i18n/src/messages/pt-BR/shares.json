@@ -51,6 +51,7 @@
     "scope": "Escopo",
     "scopePageOnly": "Apenas esta página",
     "scopeSubtree": "Esta página e tudo abaixo dela",
+    "scopeDatabaseRows": "Em um banco de dados, seus registros estão incluídos, mesmo em „Apenas esta página”: quem o recebe por meio de uma conta vê todas as linhas com seus campos. Abrir um registro como uma página própria ou alterar seus campos só é possível para quem recebe „Esta página e tudo abaixo dela”. Um link público mostra apenas a própria página.",
     "expiry": "Validade",
     "expiryNever": "Sem expiração",
     "expiryDays": "{count, plural, one {# dia} many {# dias} other {# dias}}",

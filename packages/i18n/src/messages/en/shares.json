@@ -51,6 +51,7 @@
     "scope": "Scope",
     "scopePageOnly": "This page only",
     "scopeSubtree": "This page and everything underneath",
+    "scopeDatabaseRows": "For a database, its entries are included, even with “This page only”: anyone who receives it via an account sees all rows with their fields. Opening an entry as its own page or changing its fields is only possible for those who receive “This page and everything below”. A public link only shows the page itself.",
     "expiry": "Expiration",
     "expiryNever": "Never",
     "expiryDays": "{count, plural, one {# day} other {# days}}",

@@ -51,6 +51,7 @@
     "scope": "Ambito",
     "scopePageOnly": "Solo questa pagina",
     "scopeSubtree": "Questa pagina e tutto ciò che si trova sotto",
+    "scopeDatabaseRows": "Nel caso di un database, le relative voci sono incluse, anche con «Solo questa pagina»: chi lo riceve tramite un account vede tutte le righe con i rispettivi campi. Solo chi riceve «Questa pagina e tutto il contenuto sottostante» può aprire una voce come pagina a sé stante o modificarne i campi. Un link pubblico mostra solo la pagina stessa.",
     "expiry": "Validità",
     "expiryNever": "Senza scadenza",
     "expiryDays": "{count, plural, one {# giorno} many {# giorni} other {# giorni}}",

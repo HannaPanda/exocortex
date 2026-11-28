@@ -68,11 +68,19 @@ function expiresInDays(value: ExpiryOption): number | null {
 export function ShareDialog({
   documentId,
   documentTitle,
+  isDatabase,
   open,
   onOpenChange,
 }: {
   documentId: string;
   documentTitle: string;
+  /**
+   * A database's rows come with it even under "only this page" (issue #264,
+   * decided so): the table is the database, and the reader sees every row
+   * with its values. Said under the scope, so nobody shares more than they
+   * meant to.
+   */
+  isDatabase: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
@@ -208,6 +216,11 @@ export function ShareDialog({
               </SelectContent>
             </Select>
           </div>
+          {isDatabase && scope === 'PAGE_ONLY' ? (
+            <p className="text-xs text-muted-foreground" data-testid="share-database-rows">
+              {t('scopeDatabaseRows')}
+            </p>
+          ) : null}
         </div>
 
         <form className="flex flex-wrap items-end gap-2" onSubmit={handleInvite}>

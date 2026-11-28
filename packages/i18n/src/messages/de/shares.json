@@ -51,6 +51,7 @@
     "scope": "Umfang",
     "scopePageOnly": "Nur diese Seite",
     "scopeSubtree": "Diese Seite und alles darunter",
+    "scopeDatabaseRows": "Bei einer Datenbank gehören ihre Einträge dazu, auch bei „Nur diese Seite“: wer sie über ein Konto bekommt, sieht alle Zeilen mit ihren Feldern. Einen Eintrag als eigene Seite öffnen oder seine Felder ändern kann nur, wer „Diese Seite und alles darunter“ bekommt. Ein öffentlicher Link zeigt nur die Seite selbst.",
     "expiry": "Gültigkeit",
     "expiryNever": "Unbefristet",
     "expiryDays": "{count, plural, one {# Tag} other {# Tage}}",

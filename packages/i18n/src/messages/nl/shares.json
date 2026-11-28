@@ -51,6 +51,7 @@
     "scope": "Omvang",
     "scopePageOnly": "Alleen deze pagina",
     "scopeSubtree": "Deze pagina en alles eronder",
+    "scopeDatabaseRows": "Bij een database horen de items erbij, ook bij „Alleen deze pagina”: wie deze via een account ontvangt, ziet alle rijen met hun velden. Een item als eigen pagina openen of de velden ervan bewerken kan alleen wie „Deze pagina en alles eronder” krijgt. Een openbare link toont alleen de pagina zelf.",
     "expiry": "Geldigheid",
     "expiryNever": "Onbeperkt",
     "expiryDays": "{count, plural, one {# dag} other {# dagen}}",

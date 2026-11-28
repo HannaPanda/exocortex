@@ -51,6 +51,7 @@
     "scope": "Alcance",
     "scopePageOnly": "Solo esta página",
     "scopeSubtree": "Esta página y todo lo que hay debajo",
+    "scopeDatabaseRows": "En una base de datos, sus entradas están incluidas, incluso con «Solo esta página»: quien la reciba a través de una cuenta verá todas las filas con sus campos. Abrir una entrada como su propia página o modificar sus campos solo es posible para quien reciba «Esta página y todo lo que cuelga de ella». Un enlace público solo muestra la propia página.",
     "expiry": "Validez",
     "expiryNever": "Sin caducidad",
     "expiryDays": "{count, plural, one {# día} many {# días} other {# días}}",

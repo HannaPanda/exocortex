@@ -51,6 +51,7 @@
     "scope": "Zakres",
     "scopePageOnly": "Tylko ta strona",
     "scopeSubtree": "Ta strona i wszystko poniżej",
+    "scopeDatabaseRows": "W przypadku bazy danych jej wpisy są częścią całości, nawet przy opcji „Tylko ta strona”: każdy, kto otrzyma do niej dostęp przez konto, widzi wszystkie wiersze wraz z polami. Otworzyć wpis jako osobną stronę lub edytować jego pola może tylko osoba z uprawnieniem „Ta strona i wszystko pod nią”. Link publiczny pokazuje tylko samą stronę.",
     "expiry": "Ważność",
     "expiryNever": "Bezterminowo",
     "expiryDays": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}}",

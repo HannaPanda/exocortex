@@ -200,6 +200,7 @@ export function DocumentTopBar({
       <ShareDialog
         documentId={documentId}
         documentTitle={detail.title}
+        isDatabase={detail.type === 'COLLECTION'}
         open={sharing}
         onOpenChange={setSharing}
       />
