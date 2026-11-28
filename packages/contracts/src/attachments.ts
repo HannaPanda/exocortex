@@ -525,18 +525,20 @@ export type AttachmentTextReadQuery = z.infer<typeof attachmentTextReadQuerySche
  * `machineText` is null, because the point of asking is not to receive
  * 400,000 characters.
  */
+// The added fields default to "the whole text" so a reader one deploy ahead of
+// the API, or behind it, still parses the answer as what it was before.
 export const attachmentTextReadResponseSchema = attachmentTextResponseSchema.extend({
-  view: z.enum(['content', 'map']),
-  map: attachmentTextMapSchema.nullable(),
-  range: attachmentTextRangeSchema.nullable(),
+  view: z.enum(['content', 'map']).default('content'),
+  map: attachmentTextMapSchema.nullable().default(null),
+  range: attachmentTextRangeSchema.nullable().default(null),
   /** Length of the effective text; null when there is none. */
-  totalChars: z.number().int().nonnegative().nullable(),
+  totalChars: z.number().int().nonnegative().nullable().default(null),
   /**
    * Pages whose start the extraction knew, for the effective text: null for a
    * correction (a person may have moved text between pages), an office file
    * and a row extracted before pages were kept.
    */
-  pages: z.number().int().positive().nullable(),
+  pages: z.number().int().positive().nullable().default(null),
 });
 export type AttachmentTextReadResponse = z.infer<typeof attachmentTextReadResponseSchema>;
 
