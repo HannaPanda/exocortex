@@ -1076,8 +1076,14 @@ passage that matched, with its block identifier, on both surfaces
 ([ADR-058](adr/ADR-058-a-hit-carries-the-section-it-came-from.md)). That is
 what `exo_page_block_read` takes, so a hit on a page of forty thousand
 characters is an address rather than an invitation to read the page. A hit
-found by keyword alone carries `section: null` and says so, because mapping a
-`tsquery` position back onto a block needs the offset table of issue #110.
+found by keyword says more: `blockId` is the block its words stand in, in a
+list the list point itself, and `section` the heading above it, both read from
+the block map the indexer stores beside the text
+([ADR-100](adr/ADR-100-a-keyword-hit-is-located-through-a-block-map.md)).
+`exo_search` prints it as `Stelle: ^id`; words out of an attached file name the
+file (`attachment`) and the block that shows it, never a block of the page that
+does not. A hit with all three `null` is not located: a title match, or a page
+the backfill has not mapped yet.
 
 `remember` writes into the caller's own memory workspace (`Workspace.isMemory`), under a page
 per project, appending to today's note. It is the same endpoint the capture job

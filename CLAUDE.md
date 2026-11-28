@@ -605,10 +605,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   stores the heading above it (`headingBlockId`, `headingPath`), so a hit is an
   address rather than the page the caller already knew; the anchor is not part
   of the embedding hash, which is what lets an old passage gain one for free.
-  `null` says the hit is not located, and a keyword-only match says exactly
-  that until the offset-to-block table of issue #110 exists. `NULL` and `[]`
-  are different answers: the first is a passage still owed an anchor, the
-  second one that sits under no heading.
+  A keyword hit is located too since ADR-100. `NULL` and `[]` are different
+  answers: the first is a passage still owed an anchor, the second one that
+  sits under no heading.
 - ADR-059: a run says what it spent its calls on, and never answers itself
   twice. A finished tool call is hashed against what that same call answered
   earlier in the run; an identical answer is replaced by a short hint naming
@@ -1003,6 +1002,17 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   permission, the right to change columns and the requester's own material. A
   column fills itself through the outbox as the instruction's author, in
   `replace_ai`, never through an automation rule.
+- ADR-100: a keyword hit is located through a block map stored with its text.
+  `document_search_index.blockMap` is written in the same upsert as
+  `plainText`, parallel arrays of unit offsets (in code points), blocks,
+  sections and attachments; a unit is a top-level block or a list point at
+  any depth, and a container whose text is not its children joined stays one
+  unit. The hit is the first highlighted word of the snippet's first fragment,
+  found in the text with private-use markers, so snippet and location never
+  disagree; a fragment not found again locates nothing. Attachment text names
+  the file and the block showing it, never another block. `NULL` is still owed
+  and `backfill-search-block-map` fills it in batches; fusion keeps a located
+  keyword hit whole and borrows the semantic section only for an unlocated one.
   Full list: `docs/adr/`.
 
 ## How to extend the system

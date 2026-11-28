@@ -1,6 +1,6 @@
 # ADR-058: a semantic hit carries the section it came out of
 
-- Status: accepted
+- Status: accepted, amended by [ADR-100](ADR-100-a-keyword-hit-is-located-through-a-block-map.md)
 - Date: 2026-09-21
 
 ## Context
@@ -79,6 +79,13 @@ no reason to start.
 A keyword-only hit stays unlocated until issue #110 builds the offset-to-block
 table. That is visible in the contract rather than hidden: `section: null` is
 what a caller sees, and the sentence saying why is in the schema.
+
+_Amended 2026-11-28 (issue #280):_ issue #110 closed without that table, and
+the gap was what made the built-in AI read the wrong one of two lists in issue
+#274. [ADR-100](ADR-100-a-keyword-hit-is-located-through-a-block-map.md) builds
+it as a block map stored beside the search text: a keyword hit now carries its
+block (`blockId`), the section above it and, for attachment text, the file. The
+decisions above stand; only this consequence no longer holds.
 
 A page indexed before this change answers without a section until the sweep
 reaches it, which takes ten minutes per 200 pages and costs no model call. A

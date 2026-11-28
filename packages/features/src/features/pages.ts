@@ -194,7 +194,7 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     id: 'suche',
     area: 'suche',
     since: '2026-08-05',
-    references: ['ADR-020', 'ADR-034', 'ADR-058'],
+    references: ['ADR-020', 'ADR-034', 'ADR-058', 'ADR-100'],
     ui: {},
     shortcuts: ['Strg+K'],
     settings: [

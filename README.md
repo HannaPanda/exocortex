@@ -169,7 +169,10 @@ What is deliberately still missing is listed under
 - PostgreSQL full-text search with trigram-tolerant titles and highlighted
   snippets, fused by reciprocal rank with `pgvector` nearest neighbours when
   semantic search is on (ADR-020); the text extracted from a page's attachments
-  is part of what it is found by, so a PDF is findable by a sentence inside it
+  is part of what it is found by, so a PDF is findable by a sentence inside it;
+  a hit names where it stands: a keyword hit its block (in a long list the list
+  point) and section, or the attached file, a semantic hit its section
+  (ADR-058, ADR-100)
 - a context compiler for agents: one question and a character budget in,
   the verbatim passages out of several pages and workspaces that answer it,
   each with title, path, date and heading, exact keyword hits protected and no

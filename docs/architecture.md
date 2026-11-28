@@ -254,6 +254,10 @@ application uses. `PostgresSearchAdapter` combines:
 - a generated, weighted `tsvector` (title weight A, body weight B) with a GIN index,
 - trigram similarity on the title for typo tolerance,
 - `ts_headline` for highlighted snippets,
+- a block map beside the text (`document_search_index.blockMap`, ADR-100) that
+  locates a hit: the first highlighted word of the snippet is found in the
+  text, and the map names its block, list point or attachment and the heading
+  above it,
 - a hard workspace filter in SQL.
 
 Adding OpenSearch means adding a second implementation.

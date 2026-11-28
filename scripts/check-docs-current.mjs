@@ -220,6 +220,12 @@ const CONTRADICTED = [
       'The operator scripts have their own typecheck project since issue #95, and the coverage gate fails the build when a TypeScript file falls outside every project.',
   },
   {
+    claim: /until the offset-to-block table|needs the offset table of issue #110/i,
+    evidence: 'packages/database/src/search-block-map.ts',
+    reason:
+      'Keyword hits are located since issue #280 (ADR-100): the indexer stores a block map beside the search text.',
+  },
+  {
     claim: /streams from a local mock provider/i,
     evidence: 'packages/ai/src/registry.ts',
     reason:
