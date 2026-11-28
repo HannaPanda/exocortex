@@ -44,6 +44,16 @@ function navigationTargetOf(event: MouseEvent): string | null {
 }
 
 /**
+ * Where a draft reports how much of it is unsaved, when it sits inside a
+ * surface that can close without a navigation (the settings dialog, issue
+ * #279). Closing a dialog is not a click on a link, so the guard below cannot
+ * see it; the dialog asks this instead before it lets the draft go.
+ */
+export const UnsavedDraftReport = React.createContext<((changedCount: number) => void) | null>(
+  null,
+);
+
+/**
  * Asks before unsaved settings are thrown away (issue #113).
  *
  * A settings form keeps its whole draft in the browser and sends it in one
@@ -78,6 +88,13 @@ export function useUnsavedChangesGuard(
   const t = useTranslations('settings.unsaved');
   const [pendingHref, setPendingHref] = React.useState<string | null>(null);
   const dirty = changedCount > 0;
+  const report = React.useContext(UnsavedDraftReport);
+
+  React.useEffect(() => {
+    if (report === null) return;
+    report(changedCount);
+    return () => report(0);
+  }, [changedCount, report]);
 
   React.useEffect(() => {
     if (!dirty) return;
@@ -108,12 +125,42 @@ export function useUnsavedChangesGuard(
   }, [dirty]);
 
   return (
-    <Dialog
+    <UnsavedChangesDialog
       open={pendingHref !== null}
-      onOpenChange={(open: boolean) => {
+      description={description ?? t('description', { count: changedCount })}
+      onStay={() => setPendingHref(null)}
+      onLeave={() => {
+        const href = pendingHref;
+        setPendingHref(null);
+        if (href !== null) router.push(href);
+      }}
+    />
+  );
+}
+
+/**
+ * The question itself, for the guard above and for a surface that closes
+ * without navigating (the settings dialog).
+ */
+export function UnsavedChangesDialog({
+  open,
+  description,
+  onStay,
+  onLeave,
+}: {
+  open: boolean;
+  description: string;
+  onStay: () => void;
+  onLeave: () => void;
+}) {
+  const t = useTranslations('settings.unsaved');
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next: boolean) => {
         // Escape and the backdrop mean the same as "stay here": the safe
         // answer is the one an accidental dismissal gives.
-        if (!open) setPendingHref(null);
+        if (!next) onStay();
       }}
     >
       <DialogContent data-testid="unsaved-changes-dialog">
@@ -125,27 +172,13 @@ export function useUnsavedChangesGuard(
               across thirteen groups and "you have unsaved changes" tells
               somebody nothing about whether it was the one switch they just
               flipped or an afternoon's work. */}
-          <DialogDescription>
-            {description ?? t('description', { count: changedCount })}
-          </DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button
-            variant="outline"
-            data-testid="unsaved-changes-stay"
-            onClick={() => setPendingHref(null)}
-          >
+          <Button variant="outline" data-testid="unsaved-changes-stay" onClick={onStay}>
             {t('stay')}
           </Button>
-          <Button
-            variant="destructive"
-            data-testid="unsaved-changes-leave"
-            onClick={() => {
-              const href = pendingHref;
-              setPendingHref(null);
-              if (href !== null) router.push(href);
-            }}
-          >
+          <Button variant="destructive" data-testid="unsaved-changes-leave" onClick={onLeave}>
             {t('leave')}
           </Button>
         </DialogFooter>
