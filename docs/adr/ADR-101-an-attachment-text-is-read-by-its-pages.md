@@ -92,6 +92,16 @@ exceeds it. So the floor is always content, every character is reachable,
 and no map can contain only itself. Over `maxEntries` neighbours are merged,
 never dropped, and opening a merged entry maps it finer.
 
+**A map names first lines, so a phrase is found literally.** The live check
+of this decision showed the limit of an outline: asked about a fact in the
+middle of page 27 of 30, the built-in AI read the map, sampled six pages,
+missed page 27 and concluded the fact was not in the document. `find` on the
+same route answers where a word or phrase stands in the stretch (case
+ignored, whitespace matched loosely, at most 20 places listed, the count
+beside them), each with its page and the line around it. It is a scan of the
+stored text at read time: no index, no vectors, no model, and a miss says
+what was searched rather than that the document is silent.
+
 **The tool sends the page read's budget.** `exo_attachment_read_text` sends
 `PAGE_CONTENT_BUDGET_CHARS` (10,000) and `PAGE_MAP_MAX_ENTRIES` (40) on every
 call, the numbers `exo_page_read` sends, on both agent surfaces. A read never

@@ -1026,7 +1026,8 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   correction has no pages. `GET /api/attachments/:id/text` takes `maxChars`,
   `maxEntries` and `fromPage`/`toPage` or `fromChar`/`toChar`; without them it
   answers as before, over the budget with a map (pages, then headings, then
-  paragraph windows no larger than the budget) and never a prefix.
+  paragraph windows no larger than the budget) and never a prefix; `find`
+  names the pages a phrase stands on, a literal scan at read time.
   `exo_attachment_read_text` sends the page read's budget; the map is fenced
   like the text. No vectors, no attachment passages in the context compiler.
   Full list: `docs/adr/`.

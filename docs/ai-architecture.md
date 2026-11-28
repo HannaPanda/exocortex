@@ -1079,6 +1079,8 @@ it always has. Over the budget `view` is `map` and `text` is empty: the
 stretch's pages when it covers two or more, else its Markdown headings, else
 windows of paragraphs no larger than the budget, built by
 `readAttachmentText` in `packages/contracts/src/attachment-text-map.ts`.
+`find` answers instead where a word or phrase stands, with its page and the
+line around it, because a map shows each part's first line only.
 `exo_attachment_read_text` sends the page read's budget (10 000 characters, 40
 entries) on every call. Pages come from `Attachment.textPageStarts`, the
 UTF-16 offset of each page in `extractedText` (`-1` where a page could not be
