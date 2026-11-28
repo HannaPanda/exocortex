@@ -15,7 +15,7 @@ import {
   type JsonRpcResponse,
   LATEST_PROTOCOL_VERSION,
   type McpRequestHandler,
-  TOOL_EXECUTE_NAME,
+  TOOL_DISPATCHER_NAMES,
   type ToolDomain,
   type ToolSurface,
 } from '@exocortex/mcp-tools';
@@ -94,8 +94,10 @@ export class McpController {
   async handleCompact(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
     await this.handle(request, reply, 'mcp', {
       domains: COMPACT_ENDPOINT_DOMAINS,
-      // What the rest of the catalogue is reachable through (issue #256):
-      // `exo_tool_search` finds it, `exo_tool_execute` runs this short list.
+      // What the rest of the catalogue is reachable through (issues #256,
+      // #265): `exo_tool_search` finds it, `exo_tool_read` and
+      // `exo_tool_write` run what passes the criteria of
+      // `compact-executable.ts`.
       executable: COMPACT_ENDPOINT_EXECUTABLE,
     });
   }
@@ -332,10 +334,12 @@ export class McpController {
       typeof message.params.name === 'string'
         ? message.params.name
         : undefined;
-    // The tool an `exo_tool_execute` call is really about (issue #256), so the
+    // The tool a dispatcher call is really about (issues #256, #265), so the
     // line names what ran and not only the envelope it came in.
     const callArguments =
-      toolName === TOOL_EXECUTE_NAME && isRecord(message.params) ? message.params.arguments : null;
+      toolName !== undefined && TOOL_DISPATCHER_NAMES.includes(toolName) && isRecord(message.params)
+        ? message.params.arguments
+        : null;
     const targetTool =
       isRecord(callArguments) && typeof callArguments.tool === 'string'
         ? callArguments.tool.slice(0, 100)

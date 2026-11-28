@@ -28,6 +28,7 @@ import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
 import { McpStreamsService } from './mcp-streams.service';
+import { toolSearchWords } from './tool-search-words';
 
 /** How long the loopback credential minted for an OAuth client stays valid. */
 const LOOPBACK_TOKEN_TTL_SECONDS = 120;
@@ -213,7 +214,8 @@ export class McpService {
     agentSessionId: string,
     /**
      * Narrows the surface to these domains (`/api/mcp/compact`), and names
-     * the hidden tools `exo_tool_execute` may still run (issue #256).
+     * the hidden tools `exo_tool_read` and `exo_tool_write` may still run
+     * (issues #256, #265).
      */
     narrowing?: { domains: readonly ToolDomain[]; executable?: readonly string[] },
   ): Promise<McpRequestHandler> {
@@ -236,7 +238,15 @@ export class McpService {
       // connection can never discover more than the full one would list.
       ...(narrowing?.executable === undefined
         ? {}
-        : { discovery: { catalogue: toolsFor(surface), executable: narrowing.executable } }),
+        : {
+            discovery: {
+              catalogue: toolsFor(surface),
+              executable: narrowing.executable,
+              // The feature registry's words per tool, in every interface
+              // language, so the search finds a tool by what a person calls it.
+              searchText: toolSearchWords(),
+            },
+          }),
       // What groups this connection's writes (ADR-022). It holds no state
       // here: the id is stamped on the loopback calls and recorded in the
       // journal, so a second API process serves the same client unchanged.
