@@ -10,7 +10,9 @@ import { cn } from '../lib/utils';
  *
  * `ResizablePanel` is implemented locally instead of pulling in a panel library:
  * the requirement is a single draggable divider with keyboard support, which is
- * ~60 lines and keeps the dependency surface small (docs/ui-system.md).
+ * ~60 lines and keeps the dependency surface small (docs/ui-system.md). Its
+ * divider is `ResizeHandle`, which a panel that is not a column of the shell
+ * (the row panel over the page area, issue #239) uses on its own.
  */
 
 export function AppShell({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
@@ -121,33 +123,6 @@ export function ResizablePanel({
   children,
   ...props
 }: ResizablePanelProps) {
-  const dragging = React.useRef(false);
-
-  const clamp = React.useCallback(
-    (value: number) => Math.min(maxWidth, Math.max(minWidth, value)),
-    [maxWidth, minWidth],
-  );
-
-  React.useEffect(() => {
-    const onPointerMove = (event: PointerEvent): void => {
-      if (!dragging.current) return;
-      const next = handle === 'right' ? event.clientX : window.innerWidth - event.clientX;
-      onWidthChange(clamp(next));
-    };
-    const onPointerUp = (): void => {
-      if (!dragging.current) return;
-      dragging.current = false;
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-    };
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    return () => {
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-    };
-  }, [clamp, handle, onWidthChange]);
-
   return (
     <div
       className={cn('relative flex shrink-0 flex-col overflow-hidden', className)}
@@ -155,39 +130,136 @@ export function ResizablePanel({
       {...props}
     >
       {children}
-      <div
-        role="separator"
-        aria-orientation="vertical"
-        aria-label={label}
-        aria-valuenow={width}
-        aria-valuemin={minWidth}
-        aria-valuemax={maxWidth}
-        tabIndex={0}
-        data-testid={`resize-handle-${handle}`}
-        className={cn(
-          // Inset: the panel clips, and an outset ring would be cut off.
-          'absolute top-0 h-full w-1 cursor-col-resize transition-colors hover:bg-primary/50 focus-visible:ring-inset',
-          handle === 'right' ? 'right-0' : 'left-0',
-        )}
-        onPointerDown={(event) => {
-          event.preventDefault();
-          dragging.current = true;
-          document.body.style.cursor = 'col-resize';
-          document.body.style.userSelect = 'none';
-        }}
-        onKeyDown={(event) => {
-          const step = event.shiftKey ? 32 : 8;
-          if (event.key === 'ArrowLeft') {
-            event.preventDefault();
-            onWidthChange(clamp(width + (handle === 'right' ? -step : step)));
-          }
-          if (event.key === 'ArrowRight') {
-            event.preventDefault();
-            onWidthChange(clamp(width + (handle === 'right' ? step : -step)));
-          }
-        }}
+      <ResizeHandle
+        width={width}
+        onWidthChange={onWidthChange}
+        minWidth={minWidth}
+        maxWidth={maxWidth}
+        edge={handle}
+        label={label}
+        // Inset: the panel clips, and an outset ring would be cut off.
+        className="focus-visible:ring-inset"
       />
     </div>
+  );
+}
+
+export interface ResizeHandleProps {
+  /** The panel's current width in pixels. */
+  width: number;
+  onWidthChange: (width: number) => void;
+  minWidth: number;
+  maxWidth: number;
+  /** The panel edge the handle sits on; the opposite edge stays where it is. */
+  edge: 'right' | 'left';
+  label: string;
+  /** Hover hint, for a handle whose double-click does something. */
+  title?: string;
+  /** Double-click: back to the panel's own default width. */
+  onReset?: () => void;
+  className?: string;
+  'data-testid'?: string;
+}
+
+/**
+ * The draggable divider of a panel, as a focusable `separator`: the pointer
+ * (mouse, pen and touch alike) drags it, the arrow keys move it by 8 px (32
+ * with Shift), Home and End go to the limits, and a double-click resets.
+ *
+ * It must be a direct child of the panel it sizes, which has to be
+ * positioned: the width is measured from the panel's fixed edge, so a panel
+ * that does not start at the window's edge (one lying over the page area,
+ * issue #239) is sized the same way as one that does.
+ */
+export function ResizeHandle({
+  width,
+  onWidthChange,
+  minWidth,
+  maxWidth,
+  edge,
+  label,
+  title,
+  onReset,
+  className,
+  'data-testid': testId,
+}: ResizeHandleProps) {
+  // The x coordinate of the panel's fixed edge while a drag is under way.
+  const anchor = React.useRef<number | null>(null);
+
+  const clamp = React.useCallback(
+    (value: number) => Math.round(Math.min(maxWidth, Math.max(minWidth, value))),
+    [maxWidth, minWidth],
+  );
+
+  React.useEffect(() => {
+    const onPointerMove = (event: PointerEvent): void => {
+      if (anchor.current === null) return;
+      const next =
+        edge === 'right' ? event.clientX - anchor.current : anchor.current - event.clientX;
+      onWidthChange(clamp(next));
+    };
+    const onPointerUp = (): void => {
+      if (anchor.current === null) return;
+      anchor.current = null;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
+    };
+  }, [clamp, edge, onWidthChange]);
+
+  return (
+    <div
+      role="separator"
+      aria-orientation="vertical"
+      aria-label={label}
+      title={title}
+      aria-valuenow={Math.round(width)}
+      aria-valuemin={minWidth}
+      aria-valuemax={maxWidth}
+      tabIndex={0}
+      data-testid={testId ?? `resize-handle-${edge}`}
+      className={cn(
+        // `touch-none`: a finger on the handle drags it instead of scrolling.
+        'absolute top-0 h-full w-1 cursor-col-resize touch-none transition-colors hover:bg-primary/50',
+        edge === 'right' ? 'right-0' : 'left-0',
+        className,
+      )}
+      onPointerDown={(event) => {
+        if (event.button !== 0) return;
+        const panel = event.currentTarget.parentElement;
+        if (panel === null) return;
+        event.preventDefault();
+        const rect = panel.getBoundingClientRect();
+        anchor.current = edge === 'right' ? rect.left : rect.right;
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+      }}
+      onDoubleClick={onReset}
+      onKeyDown={(event) => {
+        const step = event.shiftKey ? 32 : 8;
+        const grow = (by: number): void => {
+          event.preventDefault();
+          onWidthChange(clamp(width + by));
+        };
+        if (event.key === 'ArrowLeft') grow(edge === 'right' ? -step : step);
+        if (event.key === 'ArrowRight') grow(edge === 'right' ? step : -step);
+        if (event.key === 'Home') {
+          event.preventDefault();
+          onWidthChange(minWidth);
+        }
+        if (event.key === 'End') {
+          event.preventDefault();
+          onWidthChange(maxWidth);
+        }
+      }}
+    />
   );
 }
 
