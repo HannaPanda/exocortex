@@ -169,14 +169,17 @@ function keywordSearchSql(query: SearchQuery): Prisma.Sql {
       ORDER BY "rank" DESC, index."updatedAt" DESC
       LIMIT ${query.limit}
     ),
-    headlined AS (
+    -- MATERIALIZED, or PostgreSQL inlines the headline into every place that
+    -- reads it, the lookup below included, and cuts it again for each unit of
+    -- the map: 850 ms instead of 50 on a page with a large map.
+    headlined AS MATERIALIZED (
       SELECT ranked.*,
         CASE WHEN ${tsQuery} = '' THEN NULL ELSE
           ts_headline('simple', ranked."plainText", to_tsquery('simple', ${tsQuery}), ${HEADLINE_OPTIONS}::text)
         END AS "headline"
       FROM ranked
     ),
-    positioned AS (
+    positioned AS MATERIALIZED (
       SELECT headlined.*,
         CASE
           WHEN headlined."blockMap" IS NULL OR strpos(first."fragment", ${HIT_START}::text) = 0 THEN NULL
