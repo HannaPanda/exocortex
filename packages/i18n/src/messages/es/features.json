@@ -943,6 +943,16 @@
     },
     "where": "El borde izquierdo del panel de contexto, a la derecha de la página."
   },
+  "chat-titel-vorschlagen": {
+    "title": "Sugerir un título para el chat",
+    "summary": "Al cambiar el nombre de un chat, la IA te sugiere con solo pulsar un botón un título acorde con la conversación mantenida hasta el momento. La sugerencia aparece en el campo, puedes modificarla y solo se guarda cuando tú decides guardar.",
+    "details": {
+      "p1": "Abre la opción de cambiar nombre con el lápiz junto a un chat, en el selector de chats arriba en la sección de IA o en la lista de la página de chats. El botón «Sugerir título» lee el historial y coloca un título breve en el campo, ya seleccionado para que puedas aceptarlo directamente, ajustarlo o sobrescribirlo. Si vuelves a hacer clic, obtendrás una nueva sugerencia.",
+      "p2": "Solo se leen tus mensajes y las respuestas de la IA, no el texto de los archivos adjuntos. La sugerencia la redacta el modelo que también genera los resúmenes; se factura como un chat de este espacio de trabajo, usando su propia clave de IA si la tiene configurada.",
+      "p3": "El título nunca cambia por sí solo: como siempre, un chat nuevo recibe como título las primeras palabras de tu primera pregunta, y a partir de ahí tú decides."
+    },
+    "where": "El cuadro de diálogo «Cambiar nombre del chat», mediante el lápiz junto a un chat."
+  },
   "chat-je-tab": {
     "title": "Trabajar en varias pestañas con distintos chats",
     "summary": "Cada pestaña del navegador tiene su propio chat y cada página recuerda en ella qué chat tuvo al lado por última vez. Si cambias de chat en una pestaña, las demás se quedan como están.",

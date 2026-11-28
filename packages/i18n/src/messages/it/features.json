@@ -943,6 +943,16 @@
     },
     "where": "Il bordo sinistro del pannello contestuale, a destra della pagina."
   },
+  "chat-titel-vorschlagen": {
+    "title": "Farsi suggerire un titolo per la chat",
+    "summary": "Quando rinomini una chat, l’IA ti suggerisce con un clic un titolo adatto alla conversazione svolta finora. Il suggerimento appare nel campo, puoi modificarlo e viene salvato solo quando lo confermi.",
+    "details": {
+      "p1": "Apri la schermata per rinominare tramite l’icona della matita accanto a una chat, nel selettore delle chat in alto nella sezione IA o nell’elenco della pagina delle chat. Il pulsante «Suggerisci titolo» legge la cronologia e inserisce nel campo un breve titolo già selezionato, così puoi accettarlo subito, adattarlo o sovrascriverlo. Un secondo clic genera un nuovo suggerimento.",
+      "p2": "Vengono letti solo i tuoi messaggi e le risposte dell’IA, non il testo dei file allegati. Il suggerimento viene scritto dal modello che genera anche i riassunti; il costo viene conteggiato come una chat di questa area di lavoro, usando la sua chiave IA se presente.",
+      "p3": "Il titolo non cambia mai da solo: come prima, una nuova chat riceve come titolo le prime parole della tua prima domanda, e tutto il resto lo decidi tu."
+    },
+    "where": "La finestra di dialogo «Rinomina chat», accessibile tramite la matita accanto a una chat."
+  },
   "chat-je-tab": {
     "title": "Lavorare con chat diverse in più schede",
     "summary": "Ogni scheda del browser ha la propria chat e ogni pagina ricorda quale chat era aperta per ultima accanto ad essa. Se cambi chat in una scheda, le altre schede rimangono invariate.",

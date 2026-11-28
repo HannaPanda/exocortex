@@ -48,6 +48,7 @@ import { usePersistentState } from '@/lib/use-persistent-state';
 import { ChatList } from './chat-list';
 import { ChatReader } from './chat-reader';
 import { ChatSaveDialog } from './chat-save-dialog';
+import { ConversationRenameDialog } from './conversation-rename-dialog';
 import { chooseConversationForPage } from './use-active-conversation';
 
 /**
@@ -77,7 +78,6 @@ export function ChatsPage() {
   const [workspaceId, setWorkspaceId] = React.useState<string | null>(null);
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [renaming, setRenaming] = React.useState<AiConversation | null>(null);
-  const [renameValue, setRenameValue] = React.useState('');
   const [deleting, setDeleting] = React.useState<AiConversation | null>(null);
   const [saving, setSaving] = React.useState<AiConversation | null>(null);
 
@@ -184,15 +184,6 @@ export function ChatsPage() {
     });
   };
 
-  const submitRename = (): void => {
-    if (renaming === null) return;
-    const title = renameValue.trim();
-    if (title.length > 0) {
-      void updateConversation.mutateAsync({ conversationId: renaming.id, request: { title } });
-    }
-    setRenaming(null);
-  };
-
   const confirmDelete = (): void => {
     if (deleting === null) return;
     void deleteConversation
@@ -240,10 +231,7 @@ export function ChatsPage() {
                 workspaceNames={workspaceNames}
                 selectedId={shownId}
                 onSelect={(conversation) => setSelectedId(conversation.id)}
-                onRename={(conversation) => {
-                  setRenaming(conversation);
-                  setRenameValue(conversation.title);
-                }}
+                onRename={setRenaming}
                 onToggleArchived={toggleArchived}
               />
               {!searching && chats.hasNextPage ? (
@@ -272,13 +260,7 @@ export function ChatsPage() {
         </div>
       </div>
 
-      <RenameDialog
-        open={renaming !== null}
-        value={renameValue}
-        onValueChange={setRenameValue}
-        onClose={() => setRenaming(null)}
-        onSubmit={submitRename}
-      />
+      <ConversationRenameDialog conversation={renaming} onClose={() => setRenaming(null)} />
 
       <DeleteDialog
         conversation={deleting}
@@ -383,55 +365,6 @@ function ChatFilters({
         </Select>
       </div>
     </div>
-  );
-}
-
-function RenameDialog({
-  open,
-  value,
-  onValueChange,
-  onClose,
-  onSubmit,
-}: {
-  open: boolean;
-  value: string;
-  onValueChange: (value: string) => void;
-  onClose: () => void;
-  onSubmit: () => void;
-}) {
-  const t = useTranslations('ai.conversations');
-  return (
-    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('renameTitle')}</DialogTitle>
-        </DialogHeader>
-        <label htmlFor="chat-rename-title" className="sr-only">
-          {t('newTitle')}
-        </label>
-        <Input
-          id="chat-rename-title"
-          value={value}
-          data-testid="chat-rename-input"
-          onChange={(event) => onValueChange(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault();
-              onSubmit();
-            }
-          }}
-          autoFocus
-        />
-        <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
-            {t('cancel')}
-          </Button>
-          <Button onClick={onSubmit} disabled={value.trim().length === 0}>
-            {t('save')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
 

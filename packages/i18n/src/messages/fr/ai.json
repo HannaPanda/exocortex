@@ -279,7 +279,18 @@
     "renameTitle": "Renommer le chat",
     "newTitle": "Nouveau titre",
     "cancel": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "suggestTitle": "Suggérer un titre",
+    "suggestingTitle": "Suggestion en cours…",
+    "suggestTitleHint": "La suggestion s’appuie sur l’historique et s’affiche dans le champ. Rien n’est enregistré tant que tu ne l’as pas fait.",
+    "suggestedTitle": "Suggestion appliquée. Tu peux encore la modifier.",
+    "suggestTitleFailed": {
+      "nothing_to_name": "Cette conversation ne contient pas encore assez d’éléments pour suggérer un titre.",
+      "provider_failed": "Le modèle n’a pas renvoyé de titre utilisable. Réessaie dans un instant.",
+      "key_unreadable": "La clé d’IA personnalisée de cet espace de travail est illisible, impossible de proposer une suggestion.",
+      "timed_out": "La suggestion a pris trop de temps. Réessaie dans un instant.",
+      "error": "La suggestion a échoué."
+    }
   },
   "chats": {
     "title": "Chats",

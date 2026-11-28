@@ -8,26 +8,21 @@ import * as React from 'react';
 import { type AiConversation } from '@exocortex/contracts';
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  Input,
 } from '@exocortex/ui';
 
 import {
   PANEL_CONVERSATION_LIMIT,
   useAiConversations,
   useArchiveAiConversation,
-  useUpdateAiConversation,
 } from '@/lib/api/ai-queries';
 import { useRelativeTime } from '@/lib/relative-time';
+
+import { ConversationRenameDialog } from './conversation-rename-dialog';
 
 export interface ConversationSwitcherProps {
   workspaceId: string;
@@ -54,12 +49,10 @@ export function ConversationSwitcher({
   const t = useTranslations('ai.conversations');
   const formatRelativeTime = useRelativeTime();
   const conversations = useAiConversations(workspaceId);
-  const updateConversation = useUpdateAiConversation();
   const archiveConversation = useArchiveAiConversation();
 
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [renaming, setRenaming] = React.useState<AiConversation | null>(null);
-  const [renameValue, setRenameValue] = React.useState('');
 
   const list = conversations.data ?? [];
   const visible = list.slice(0, PANEL_CONVERSATION_LIMIT);
@@ -73,17 +66,6 @@ export function ConversationSwitcher({
       .filter((entry) => entry.id !== conversation.id)
       .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
     onSelect(remaining[0]?.id ?? null);
-  };
-
-  const submitRename = async (): Promise<void> => {
-    if (renaming === null) return;
-    const title = renameValue.trim();
-    if (title.length === 0) {
-      setRenaming(null);
-      return;
-    }
-    await updateConversation.mutateAsync({ conversationId: renaming.id, request: { title } });
-    setRenaming(null);
   };
 
   return (
@@ -141,7 +123,6 @@ export function ConversationSwitcher({
                 onClick={(event) => {
                   event.stopPropagation();
                   setRenaming(conversation);
-                  setRenameValue(conversation.title);
                 }}
               >
                 <PencilIcon className="size-3.5" />
@@ -162,36 +143,7 @@ export function ConversationSwitcher({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={renaming !== null} onOpenChange={(open) => !open && setRenaming(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('renameTitle')}</DialogTitle>
-          </DialogHeader>
-          <label htmlFor="ai-conversation-rename" className="sr-only">
-            {t('newTitle')}
-          </label>
-          <Input
-            id="ai-conversation-rename"
-            value={renameValue}
-            onChange={(event) => setRenameValue(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                void submitRename();
-              }
-            }}
-            autoFocus
-          />
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setRenaming(null)}>
-              {t('cancel')}
-            </Button>
-            <Button onClick={() => void submitRename()} disabled={renameValue.trim().length === 0}>
-              {t('save')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConversationRenameDialog conversation={renaming} onClose={() => setRenaming(null)} />
     </>
   );
 }

@@ -943,6 +943,16 @@
     },
     "where": "Der linke Rand des Kontextbereichs, rechts neben der Seite."
   },
+  "chat-titel-vorschlagen": {
+    "title": "Einen Chat-Titel vorschlagen lassen",
+    "summary": "Beim Umbenennen eines Chats schlägt dir die KI auf Knopfdruck einen Titel vor, der zum bisherigen Gespräch passt. Der Vorschlag landet im Feld, du kannst ihn ändern, und gespeichert wird erst, wenn du speicherst.",
+    "details": {
+      "p1": "Öffne das Umbenennen über den Stift neben einem Chat, in der Chat-Auswahl oben im KI-Bereich oder in der Liste auf der Chats-Seite. Der Knopf „Titel vorschlagen“ liest den Verlauf und setzt einen kurzen Titel ins Feld, markiert, sodass du ihn direkt übernehmen, anpassen oder überschreiben kannst. Ein zweiter Klick bringt einen neuen Vorschlag.",
+      "p2": "Gelesen werden nur deine Nachrichten und die Antworten der KI, nicht der Text angehängter Dateien. Den Vorschlag schreibt das Modell, das auch Zusammenfassungen schreibt, bezahlt wird er wie ein Chat dieses Arbeitsbereichs, mit dessen eigenem KI-Schlüssel, wenn es einen gibt.",
+      "p3": "Von selbst ändert sich ein Titel nie: Ein neuer Chat bekommt wie bisher die ersten Worte deiner ersten Frage als Titel, und alles danach entscheidest du."
+    },
+    "where": "Der Dialog „Chat umbenennen“, über den Stift neben einem Chat."
+  },
   "chat-je-tab": {
     "title": "In mehreren Tabs mit verschiedenen Chats arbeiten",
     "summary": "Jeder Browser-Tab hat seinen eigenen Chat, und jede Seite merkt sich darin, welcher Chat zuletzt neben ihr stand. Wechselst du in einem Tab den Chat, bleiben die anderen Tabs, wie sie sind.",

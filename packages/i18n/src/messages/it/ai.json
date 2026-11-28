@@ -279,7 +279,18 @@
     "renameTitle": "Rinomina chat",
     "newTitle": "Nuovo titolo",
     "cancel": "Annulla",
-    "save": "Salva"
+    "save": "Salva",
+    "suggestTitle": "Suggerisci titolo",
+    "suggestingTitle": "Generazione suggerimento…",
+    "suggestTitleHint": "Il suggerimento si basa sulla cronologia e viene inserito nel campo. Verrà salvato solo quando salvi.",
+    "suggestedTitle": "Suggerimento inserito. Puoi ancora modificarlo.",
+    "suggestTitleFailed": {
+      "nothing_to_name": "In questa chat non c’è ancora nulla da cui poter ricavare un titolo.",
+      "provider_failed": "Il modello non ha fornito un titolo utilizzabile. Riprova tra poco.",
+      "key_unreadable": "La chiave IA personalizzata di questa area di lavoro non è leggibile, perciò non è possibile generare un suggerimento.",
+      "timed_out": "La generazione del suggerimento ha richiesto troppo tempo. Riprova tra poco.",
+      "error": "Non è stato possibile generare un suggerimento."
+    }
   },
   "chats": {
     "title": "Chat",

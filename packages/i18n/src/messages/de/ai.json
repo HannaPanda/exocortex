@@ -279,7 +279,18 @@
     "renameTitle": "Chat umbenennen",
     "newTitle": "Neuer Titel",
     "cancel": "Abbrechen",
-    "save": "Speichern"
+    "save": "Speichern",
+    "suggestTitle": "Titel vorschlagen",
+    "suggestingTitle": "Wird vorgeschlagen …",
+    "suggestTitleHint": "Der Vorschlag kommt aus dem Verlauf und steht danach im Feld. Gespeichert wird erst, wenn du speicherst.",
+    "suggestedTitle": "Vorschlag eingesetzt. Du kannst ihn noch ändern.",
+    "suggestTitleFailed": {
+      "nothing_to_name": "In diesem Chat steht noch nichts, woraus sich ein Titel ergeben könnte.",
+      "provider_failed": "Das Modell hat keinen brauchbaren Titel geliefert. Versuch es gleich noch einmal.",
+      "key_unreadable": "Der eigene KI-Schlüssel dieses Arbeitsbereichs ist nicht lesbar, deshalb gibt es keinen Vorschlag.",
+      "timed_out": "Der Vorschlag hat zu lange gedauert. Versuch es gleich noch einmal.",
+      "error": "Der Vorschlag hat nicht geklappt."
+    }
   },
   "chats": {
     "title": "Chats",

@@ -943,6 +943,16 @@
     },
     "where": "Lewa krawędź panelu bocznego, na prawo od strony."
   },
+  "chat-titel-vorschlagen": {
+    "title": "Zaproponuj tytuł czatu",
+    "summary": "Podczas zmiany nazwy czatu AI może jednym kliknięciem zaproponować tytuł pasujący do dotychczasowej rozmowy. Propozycja pojawia się w polu, możesz ją zmienić, a zapis następuje dopiero po zatwierdzeniu.",
+    "details": {
+      "p1": "Otwórz zmianę nazwy za pomocą ikony ołówka obok czatu – w menu wyboru czatu u góry panelu AI lub na liście na stronie czatów. Przycisk „Zaproponuj tytuł” odczytuje historię i wstawia krótki tytuł do pola jako zaznaczony tekst, dzięki czemu możesz go od razu zaakceptować, dostosować lub zastąpić. Kolejne kliknięcie generuje nową propozycję.",
+      "p2": "Odczytywane są tylko twoje wiadomości i odpowiedzi AI, bez treści załączonych plików. Propozycję tworzy ten sam model, który generuje podsumowania, a koszt jest rozliczany jak zwykły czat w tym obszarze roboczym – z użyciem jego własnego klucza AI, jeśli został skonfigurowany.",
+      "p3": "Tytuł nigdy nie zmienia się samoczynnie: nowy czat otrzymuje, tak jak dotychczas, pierwsze słowa twojego pierwszego pytania, a o wszelkich dalszych zmianach decydujesz ty."
+    },
+    "where": "Okno „Zmień nazwę czatu”, dostępne pod ikoną ołówka obok czatu."
+  },
   "chat-je-tab": {
     "title": "Praca w wielu kartach z różnymi czatami",
     "summary": "Każda karta przeglądarki ma swój własny czat, a każda strona zapamiętuje w niej, który czat był ostatnio otwarty obok niej. Jeśli zmienisz czat w jednej karcie, pozostałe karty pozostaną bez zmian.",

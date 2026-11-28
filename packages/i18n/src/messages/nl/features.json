@@ -943,6 +943,16 @@
     },
     "where": "De linkerrand van het contextgebied, rechts naast de pagina."
   },
+  "chat-titel-vorschlagen": {
+    "title": "Een chattitel laten voorstellen",
+    "summary": "Bij het hernoemen van een chat stelt de AI met één druk op de knop een titel voor die bij het gevoerde gesprek past. Het voorstel verschijnt in het veld, je kunt het aanpassen en het wordt pas opgeslagen wanneer jij opslaat.",
+    "details": {
+      "p1": "Open het hernoemen via het potlood naast een chat, in de chatselectie bovenaan in het AI-gedeelte of in de lijst op de chatspagina. De knop „Titel voorstellen” leest de geschiedenis en plaatst een korte titel in het veld, geselecteerd, zodat je deze direct kunt overnemen, aanpassen of overschrijven. Een tweede klik zorgt voor een nieuw voorstel.",
+      "p2": "Alleen jouw berichten en de antwoorden van de AI worden gelezen, niet de tekst van bijgevoegde bestanden. Het voorstel wordt geschreven door het model dat ook samenvattingen schrijft; de kosten worden verrekend zoals een chat van deze werkruimte, met diens eigen AI-sleutel als die er is.",
+      "p3": "Een titel verandert nooit vanzelf: een nieuwe chat krijgt zoals gebruikelijk de eerste woorden van je eerste vraag als titel, en alles daarna bepaal jij."
+    },
+    "where": "Het dialoogvenster „Chat hernoemen”, via het potlood naast een chat."
+  },
   "chat-je-tab": {
     "title": "In meerdere tabbladen met verschillende chats werken",
     "summary": "Elk browsertabblad heeft zijn eigen chat, en elke pagina onthoudt daarin welke chat er het laatst naast openstond. Wissel je in het ene tabblad van chat, dan blijven de andere tabbladen zoals ze zijn.",

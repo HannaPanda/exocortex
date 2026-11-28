@@ -2792,6 +2792,42 @@
       "source": "f6b2ff39f540eb81",
       "output": "1509f561f2416598"
     },
+    "ai.conversations.suggestTitle": {
+      "source": "2acd57756c81b352",
+      "output": "5c1cecc1367eccc2"
+    },
+    "ai.conversations.suggestTitleFailed.error": {
+      "source": "a48ce4da11f874c1",
+      "output": "8a3f23cd38f7112e"
+    },
+    "ai.conversations.suggestTitleFailed.key_unreadable": {
+      "source": "22ef061662bf3b22",
+      "output": "cbba635d471d6173"
+    },
+    "ai.conversations.suggestTitleFailed.nothing_to_name": {
+      "source": "18495b992be61ba7",
+      "output": "dae3a463a931b9ff"
+    },
+    "ai.conversations.suggestTitleFailed.provider_failed": {
+      "source": "f1294c1e4a313dfe",
+      "output": "3144fd733eaa2f9b"
+    },
+    "ai.conversations.suggestTitleFailed.timed_out": {
+      "source": "0da81754b23d31b8",
+      "output": "1fb5e94292a0d789"
+    },
+    "ai.conversations.suggestTitleHint": {
+      "source": "fc074e54dd0ac18f",
+      "output": "ca60a81ff2436814"
+    },
+    "ai.conversations.suggestedTitle": {
+      "source": "11fe12c11337b4dd",
+      "output": "e8184dfe0c76825a"
+    },
+    "ai.conversations.suggestingTitle": {
+      "source": "dc2e426952f8fed6",
+      "output": "74b93135617e62bd"
+    },
     "ai.message.attachmentDescribed": {
       "source": "a141ffa2127afb22",
       "output": "7485b0ab3bcc6eb9"
@@ -13763,6 +13799,30 @@
     "features.chat-ohne-seite.where": {
       "source": "7803e5ad3496aeb4",
       "output": "d582b9ab83071a5d"
+    },
+    "features.chat-titel-vorschlagen.details.p1": {
+      "source": "f3f31c3f7fcc86b3",
+      "output": "f872ac35842cc136"
+    },
+    "features.chat-titel-vorschlagen.details.p2": {
+      "source": "eb12132f84961100",
+      "output": "c602a1ad03893fec"
+    },
+    "features.chat-titel-vorschlagen.details.p3": {
+      "source": "944c15299dbd9969",
+      "output": "bdfa2313f7f35799"
+    },
+    "features.chat-titel-vorschlagen.summary": {
+      "source": "a7f64efc4910d663",
+      "output": "3a910e0d360d59e3"
+    },
+    "features.chat-titel-vorschlagen.title": {
+      "source": "b4ba9a85276b068d",
+      "output": "5c7324a4005e06d4"
+    },
+    "features.chat-titel-vorschlagen.where": {
+      "source": "021b730121681a45",
+      "output": "d4731bc2bbd1de47"
     },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
@@ -29646,6 +29706,42 @@
       "source": "f6b2ff39f540eb81",
       "output": "13e51a210f45ed1b"
     },
+    "ai.conversations.suggestTitle": {
+      "source": "2acd57756c81b352",
+      "output": "be187963389f34e4"
+    },
+    "ai.conversations.suggestTitleFailed.error": {
+      "source": "a48ce4da11f874c1",
+      "output": "c9929ec9e40100d8"
+    },
+    "ai.conversations.suggestTitleFailed.key_unreadable": {
+      "source": "22ef061662bf3b22",
+      "output": "090af9e36a40504e"
+    },
+    "ai.conversations.suggestTitleFailed.nothing_to_name": {
+      "source": "18495b992be61ba7",
+      "output": "6b81e86191fc249b"
+    },
+    "ai.conversations.suggestTitleFailed.provider_failed": {
+      "source": "f1294c1e4a313dfe",
+      "output": "d09e0a278ed1f468"
+    },
+    "ai.conversations.suggestTitleFailed.timed_out": {
+      "source": "0da81754b23d31b8",
+      "output": "4c983803349470bd"
+    },
+    "ai.conversations.suggestTitleHint": {
+      "source": "fc074e54dd0ac18f",
+      "output": "9ff827157e8c0714"
+    },
+    "ai.conversations.suggestedTitle": {
+      "source": "11fe12c11337b4dd",
+      "output": "95b293eafb17cc03"
+    },
+    "ai.conversations.suggestingTitle": {
+      "source": "dc2e426952f8fed6",
+      "output": "3e4608b32c817836"
+    },
     "ai.message.attachmentDescribed": {
       "source": "a141ffa2127afb22",
       "output": "5052c8774b319452"
@@ -40617,6 +40713,30 @@
     "features.chat-ohne-seite.where": {
       "source": "7803e5ad3496aeb4",
       "output": "2197bd1d005272ec"
+    },
+    "features.chat-titel-vorschlagen.details.p1": {
+      "source": "f3f31c3f7fcc86b3",
+      "output": "70d571cbc042b850"
+    },
+    "features.chat-titel-vorschlagen.details.p2": {
+      "source": "eb12132f84961100",
+      "output": "8c58dbdb388ea5f0"
+    },
+    "features.chat-titel-vorschlagen.details.p3": {
+      "source": "944c15299dbd9969",
+      "output": "7ff6739c6cebb3b4"
+    },
+    "features.chat-titel-vorschlagen.summary": {
+      "source": "a7f64efc4910d663",
+      "output": "878943d92c17cc8d"
+    },
+    "features.chat-titel-vorschlagen.title": {
+      "source": "b4ba9a85276b068d",
+      "output": "b6b2b73bd99de06e"
+    },
+    "features.chat-titel-vorschlagen.where": {
+      "source": "021b730121681a45",
+      "output": "5bd7a98f8514eb90"
     },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
@@ -56500,6 +56620,42 @@
       "source": "f6b2ff39f540eb81",
       "output": "71dc74873e23107d"
     },
+    "ai.conversations.suggestTitle": {
+      "source": "2acd57756c81b352",
+      "output": "7eabd399a61ef040"
+    },
+    "ai.conversations.suggestTitleFailed.error": {
+      "source": "a48ce4da11f874c1",
+      "output": "e5c95fbfe85cf3f6"
+    },
+    "ai.conversations.suggestTitleFailed.key_unreadable": {
+      "source": "22ef061662bf3b22",
+      "output": "d349189f2891c0e3"
+    },
+    "ai.conversations.suggestTitleFailed.nothing_to_name": {
+      "source": "18495b992be61ba7",
+      "output": "151ba10e36109805"
+    },
+    "ai.conversations.suggestTitleFailed.provider_failed": {
+      "source": "f1294c1e4a313dfe",
+      "output": "155cee75093e4adf"
+    },
+    "ai.conversations.suggestTitleFailed.timed_out": {
+      "source": "0da81754b23d31b8",
+      "output": "0375a9672d883965"
+    },
+    "ai.conversations.suggestTitleHint": {
+      "source": "fc074e54dd0ac18f",
+      "output": "62f2486f48a9e1ec"
+    },
+    "ai.conversations.suggestedTitle": {
+      "source": "11fe12c11337b4dd",
+      "output": "1d629beed67e25a4"
+    },
+    "ai.conversations.suggestingTitle": {
+      "source": "dc2e426952f8fed6",
+      "output": "7f68627f7b9c7dfc"
+    },
     "ai.message.attachmentDescribed": {
       "source": "a141ffa2127afb22",
       "output": "9be5bc1d3c3976e7"
@@ -67471,6 +67627,30 @@
     "features.chat-ohne-seite.where": {
       "source": "7803e5ad3496aeb4",
       "output": "307192e0681f4068"
+    },
+    "features.chat-titel-vorschlagen.details.p1": {
+      "source": "f3f31c3f7fcc86b3",
+      "output": "3ce065bc94149837"
+    },
+    "features.chat-titel-vorschlagen.details.p2": {
+      "source": "eb12132f84961100",
+      "output": "1be06bb21ff07fcf"
+    },
+    "features.chat-titel-vorschlagen.details.p3": {
+      "source": "944c15299dbd9969",
+      "output": "f8aabcf5253b3ec7"
+    },
+    "features.chat-titel-vorschlagen.summary": {
+      "source": "a7f64efc4910d663",
+      "output": "3d8dd7dea2258a8f"
+    },
+    "features.chat-titel-vorschlagen.title": {
+      "source": "b4ba9a85276b068d",
+      "output": "68428ea0ee58e326"
+    },
+    "features.chat-titel-vorschlagen.where": {
+      "source": "021b730121681a45",
+      "output": "be321d58c66481ec"
     },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
@@ -83354,6 +83534,42 @@
       "source": "f6b2ff39f540eb81",
       "output": "c5997e85ae513c07"
     },
+    "ai.conversations.suggestTitle": {
+      "source": "2acd57756c81b352",
+      "output": "5685c464b5412999"
+    },
+    "ai.conversations.suggestTitleFailed.error": {
+      "source": "a48ce4da11f874c1",
+      "output": "d0a566c6ac978c51"
+    },
+    "ai.conversations.suggestTitleFailed.key_unreadable": {
+      "source": "22ef061662bf3b22",
+      "output": "36e005e80c33a645"
+    },
+    "ai.conversations.suggestTitleFailed.nothing_to_name": {
+      "source": "18495b992be61ba7",
+      "output": "54f13e54ef2cfb32"
+    },
+    "ai.conversations.suggestTitleFailed.provider_failed": {
+      "source": "f1294c1e4a313dfe",
+      "output": "c560dfe30c7ce6a2"
+    },
+    "ai.conversations.suggestTitleFailed.timed_out": {
+      "source": "0da81754b23d31b8",
+      "output": "d2d382b076c7b843"
+    },
+    "ai.conversations.suggestTitleHint": {
+      "source": "fc074e54dd0ac18f",
+      "output": "9e9c7b4126fbd4ca"
+    },
+    "ai.conversations.suggestedTitle": {
+      "source": "11fe12c11337b4dd",
+      "output": "639cbf298c71de99"
+    },
+    "ai.conversations.suggestingTitle": {
+      "source": "dc2e426952f8fed6",
+      "output": "b9b7e23af12ce2a3"
+    },
     "ai.message.attachmentDescribed": {
       "source": "a141ffa2127afb22",
       "output": "a80daa1525e64b19"
@@ -94325,6 +94541,30 @@
     "features.chat-ohne-seite.where": {
       "source": "7803e5ad3496aeb4",
       "output": "6577c505a0401863"
+    },
+    "features.chat-titel-vorschlagen.details.p1": {
+      "source": "f3f31c3f7fcc86b3",
+      "output": "93285145ed387e0b"
+    },
+    "features.chat-titel-vorschlagen.details.p2": {
+      "source": "eb12132f84961100",
+      "output": "0a39c6bd8c573598"
+    },
+    "features.chat-titel-vorschlagen.details.p3": {
+      "source": "944c15299dbd9969",
+      "output": "f641f5f2a1efc25f"
+    },
+    "features.chat-titel-vorschlagen.summary": {
+      "source": "a7f64efc4910d663",
+      "output": "347bd8f0899ad622"
+    },
+    "features.chat-titel-vorschlagen.title": {
+      "source": "b4ba9a85276b068d",
+      "output": "0e12b420bcca7155"
+    },
+    "features.chat-titel-vorschlagen.where": {
+      "source": "021b730121681a45",
+      "output": "4e8445b3f0d7171f"
     },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
@@ -110208,6 +110448,42 @@
       "source": "f6b2ff39f540eb81",
       "output": "3caa6d88a258af55"
     },
+    "ai.conversations.suggestTitle": {
+      "source": "2acd57756c81b352",
+      "output": "bc9e1113af6f7ed9"
+    },
+    "ai.conversations.suggestTitleFailed.error": {
+      "source": "a48ce4da11f874c1",
+      "output": "7b11fdb7d08b31be"
+    },
+    "ai.conversations.suggestTitleFailed.key_unreadable": {
+      "source": "22ef061662bf3b22",
+      "output": "8370daa2852a334f"
+    },
+    "ai.conversations.suggestTitleFailed.nothing_to_name": {
+      "source": "18495b992be61ba7",
+      "output": "43da0371b41ef589"
+    },
+    "ai.conversations.suggestTitleFailed.provider_failed": {
+      "source": "f1294c1e4a313dfe",
+      "output": "4a17b5a7269c36cc"
+    },
+    "ai.conversations.suggestTitleFailed.timed_out": {
+      "source": "0da81754b23d31b8",
+      "output": "2d448ea5da69a8f6"
+    },
+    "ai.conversations.suggestTitleHint": {
+      "source": "fc074e54dd0ac18f",
+      "output": "696874afc776e378"
+    },
+    "ai.conversations.suggestedTitle": {
+      "source": "11fe12c11337b4dd",
+      "output": "37f1a452bc7728fb"
+    },
+    "ai.conversations.suggestingTitle": {
+      "source": "dc2e426952f8fed6",
+      "output": "7abef718359e7385"
+    },
     "ai.message.attachmentDescribed": {
       "source": "a141ffa2127afb22",
       "output": "36bd57f1dc933b36"
@@ -121179,6 +121455,30 @@
     "features.chat-ohne-seite.where": {
       "source": "7803e5ad3496aeb4",
       "output": "01983ff132ac466c"
+    },
+    "features.chat-titel-vorschlagen.details.p1": {
+      "source": "f3f31c3f7fcc86b3",
+      "output": "6233d82e39977f27"
+    },
+    "features.chat-titel-vorschlagen.details.p2": {
+      "source": "eb12132f84961100",
+      "output": "16780f49b186743f"
+    },
+    "features.chat-titel-vorschlagen.details.p3": {
+      "source": "944c15299dbd9969",
+      "output": "2bf0e128913e3804"
+    },
+    "features.chat-titel-vorschlagen.summary": {
+      "source": "a7f64efc4910d663",
+      "output": "54be0f9edbdef39d"
+    },
+    "features.chat-titel-vorschlagen.title": {
+      "source": "b4ba9a85276b068d",
+      "output": "3ea9442fea07dc8d"
+    },
+    "features.chat-titel-vorschlagen.where": {
+      "source": "021b730121681a45",
+      "output": "593e94703f84fc03"
     },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
@@ -137062,6 +137362,42 @@
       "source": "f6b2ff39f540eb81",
       "output": "b6a0c0c469c5b62d"
     },
+    "ai.conversations.suggestTitle": {
+      "source": "2acd57756c81b352",
+      "output": "dd12ed3372c60b1f"
+    },
+    "ai.conversations.suggestTitleFailed.error": {
+      "source": "a48ce4da11f874c1",
+      "output": "227c13dae3bf0b7e"
+    },
+    "ai.conversations.suggestTitleFailed.key_unreadable": {
+      "source": "22ef061662bf3b22",
+      "output": "6ef51b53fa3d04f6"
+    },
+    "ai.conversations.suggestTitleFailed.nothing_to_name": {
+      "source": "18495b992be61ba7",
+      "output": "133cafcbfc34cbd2"
+    },
+    "ai.conversations.suggestTitleFailed.provider_failed": {
+      "source": "f1294c1e4a313dfe",
+      "output": "8a9c7c9e9bb60c82"
+    },
+    "ai.conversations.suggestTitleFailed.timed_out": {
+      "source": "0da81754b23d31b8",
+      "output": "9e8cd9f4fcaf7455"
+    },
+    "ai.conversations.suggestTitleHint": {
+      "source": "fc074e54dd0ac18f",
+      "output": "d997fe090bb3c668"
+    },
+    "ai.conversations.suggestedTitle": {
+      "source": "11fe12c11337b4dd",
+      "output": "4429936968aa1833"
+    },
+    "ai.conversations.suggestingTitle": {
+      "source": "dc2e426952f8fed6",
+      "output": "4eb2d416ecd52ecb"
+    },
     "ai.message.attachmentDescribed": {
       "source": "a141ffa2127afb22",
       "output": "78ec09ca11f14adf"
@@ -148033,6 +148369,30 @@
     "features.chat-ohne-seite.where": {
       "source": "7803e5ad3496aeb4",
       "output": "77c8bb85779f7b80"
+    },
+    "features.chat-titel-vorschlagen.details.p1": {
+      "source": "f3f31c3f7fcc86b3",
+      "output": "1957d5298c40a841"
+    },
+    "features.chat-titel-vorschlagen.details.p2": {
+      "source": "eb12132f84961100",
+      "output": "9afb2c409be6afc7"
+    },
+    "features.chat-titel-vorschlagen.details.p3": {
+      "source": "944c15299dbd9969",
+      "output": "d4280f59246bdfc6"
+    },
+    "features.chat-titel-vorschlagen.summary": {
+      "source": "a7f64efc4910d663",
+      "output": "a34aaf6bc00c1e97"
+    },
+    "features.chat-titel-vorschlagen.title": {
+      "source": "b4ba9a85276b068d",
+      "output": "d0f00417d85f06a9"
+    },
+    "features.chat-titel-vorschlagen.where": {
+      "source": "021b730121681a45",
+      "output": "5a7f8b9d4c2f313c"
     },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",
@@ -163916,6 +164276,42 @@
       "source": "f6b2ff39f540eb81",
       "output": "aef7cd5b2081351d"
     },
+    "ai.conversations.suggestTitle": {
+      "source": "2acd57756c81b352",
+      "output": "be187963389f34e4"
+    },
+    "ai.conversations.suggestTitleFailed.error": {
+      "source": "a48ce4da11f874c1",
+      "output": "6388f9cf0b455e8d"
+    },
+    "ai.conversations.suggestTitleFailed.key_unreadable": {
+      "source": "22ef061662bf3b22",
+      "output": "86d36044b72ba727"
+    },
+    "ai.conversations.suggestTitleFailed.nothing_to_name": {
+      "source": "18495b992be61ba7",
+      "output": "90a20786f0f8dd4e"
+    },
+    "ai.conversations.suggestTitleFailed.provider_failed": {
+      "source": "f1294c1e4a313dfe",
+      "output": "83dd80739b43603d"
+    },
+    "ai.conversations.suggestTitleFailed.timed_out": {
+      "source": "0da81754b23d31b8",
+      "output": "2496599584891133"
+    },
+    "ai.conversations.suggestTitleHint": {
+      "source": "fc074e54dd0ac18f",
+      "output": "f6b6994ef94053ae"
+    },
+    "ai.conversations.suggestedTitle": {
+      "source": "11fe12c11337b4dd",
+      "output": "b7756b76c8a2671b"
+    },
+    "ai.conversations.suggestingTitle": {
+      "source": "dc2e426952f8fed6",
+      "output": "3867b7a58dfe826b"
+    },
     "ai.message.attachmentDescribed": {
       "source": "a141ffa2127afb22",
       "output": "3489f55ae46acfc0"
@@ -174887,6 +175283,30 @@
     "features.chat-ohne-seite.where": {
       "source": "7803e5ad3496aeb4",
       "output": "4cd3de455a7e618a"
+    },
+    "features.chat-titel-vorschlagen.details.p1": {
+      "source": "f3f31c3f7fcc86b3",
+      "output": "6c6a3e948c8ec60c"
+    },
+    "features.chat-titel-vorschlagen.details.p2": {
+      "source": "eb12132f84961100",
+      "output": "a69c00cd38c6acce"
+    },
+    "features.chat-titel-vorschlagen.details.p3": {
+      "source": "944c15299dbd9969",
+      "output": "75f5b0fda30d9320"
+    },
+    "features.chat-titel-vorschlagen.summary": {
+      "source": "a7f64efc4910d663",
+      "output": "a33a9817756212d3"
+    },
+    "features.chat-titel-vorschlagen.title": {
+      "source": "b4ba9a85276b068d",
+      "output": "75254a9a825c7a33"
+    },
+    "features.chat-titel-vorschlagen.where": {
+      "source": "021b730121681a45",
+      "output": "cc0fd5f105c7cc1f"
     },
     "features.datenbank-ansichten.details.p1": {
       "source": "61f186f4936dfc85",

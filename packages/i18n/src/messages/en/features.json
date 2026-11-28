@@ -943,6 +943,16 @@
     },
     "where": "The left edge of the context panel, to the right of the page."
   },
+  "chat-titel-vorschlagen": {
+    "title": "Suggest a chat title",
+    "summary": "When renaming a chat, the AI suggests a title that fits the conversation so far at the push of a button. The suggestion appears in the field, you can edit it, and nothing is saved until you save.",
+    "details": {
+      "p1": "Open renaming via the pencil icon next to a chat, in the chat selector at the top of the AI pane, or in the list on the chats page. The “Suggest title” button reads the history and enters a short title into the field, selected so you can accept, tweak, or overwrite it right away. A second click generates a new suggestion.",
+      "p2": "Only your messages and the AI’s responses are read, not the text of attached files. The suggestion is written by the model that also writes summaries, and it is billed like a chat in this workspace, using its own AI key if one is set.",
+      "p3": "A title never changes on its own: as before, a new chat gets the first words of your first question as its title, and everything after that is up to you."
+    },
+    "where": "The “Rename chat” dialog, via the pencil icon next to a chat."
+  },
   "chat-je-tab": {
     "title": "Working in multiple tabs with different chats",
     "summary": "Each browser tab has its own chat, and each page in it remembers which chat was last open beside it. Switching chats in one tab leaves the other tabs untouched.",

@@ -18,6 +18,7 @@ import {
   type AiConversationListResponse,
   type AiConversationSearchResponse,
   type AiConversationSourcesResponse,
+  type AiConversationTitleSuggestionResponse,
   type AiModelListResponse,
   type AiRuleListResponse,
   type AiRuleSummary,
@@ -295,6 +296,21 @@ export function useUpdateAiConversation() {
       void client.invalidateQueries({ queryKey: ['ai', 'chats'] });
       void client.invalidateQueries({ queryKey: ['ai', 'chat-search'] });
     },
+  });
+}
+
+/**
+ * Asks for a title from the conversation itself (issue #233). Stores nothing,
+ * so nothing is invalidated: the rename dialog puts the answer into its field
+ * and the person's save goes through `useUpdateAiConversation`.
+ */
+export function useSuggestAiConversationTitle() {
+  return useMutation({
+    mutationFn: (input: { conversationId: string }) =>
+      apiRequest<AiConversationTitleSuggestionResponse>(
+        `/api/ai/conversations/${input.conversationId}/title-suggestion`,
+        { method: 'POST' },
+      ),
   });
 }
 

@@ -943,6 +943,16 @@
     },
     "where": "Le bord gauche du panneau contextuel, à droite de la page."
   },
+  "chat-titel-vorschlagen": {
+    "title": "Faire suggérer un titre de chat",
+    "summary": "Lors du renommage d’un chat, l’IA te suggère sur simple clic un titre adapté à la conversation en cours. La suggestion s’affiche dans le champ, tu peux la modifier, et rien n’est enregistré tant que tu ne l’as pas validé.",
+    "details": {
+      "p1": "Ouvre le renommage via le crayon à côté d’un chat, dans la sélection des chats en haut de la section IA ou dans la liste sur la page des chats. Le bouton « Suggérer un titre » lit l’historique et insère un titre court dans le champ, déjà sélectionné pour que tu puisses directement le valider, l’adapter ou le remplacer. Un deuxième clic génère une nouvelle suggestion.",
+      "p2": "Seuls tes messages et les réponses de l’IA sont lus, pas le texte des fichiers joints. La suggestion est rédigée par le modèle qui produit également les résumés ; elle est facturée comme un chat de cet espace de travail, avec sa propre clé d’IA si elle est configurée.",
+      "p3": "Un titre ne change jamais de lui-même : un nouveau chat reçoit comme auparavant les premiers mots de ta première question comme titre, et tout le reste dépend de toi."
+    },
+    "where": "La boîte de dialogue « Renommer le chat », via le crayon à côté d’un chat."
+  },
   "chat-je-tab": {
     "title": "Travailler dans plusieurs onglets avec différents chats",
     "summary": "Chaque onglet du navigateur a son propre chat, et chaque page s’y souvient du dernier chat ouvert à côté d’elle. Si tu changes de chat dans un onglet, les autres onglets ne sont pas modifiés.",

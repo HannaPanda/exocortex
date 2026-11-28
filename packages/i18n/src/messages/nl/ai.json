@@ -279,7 +279,18 @@
     "renameTitle": "Chat hernoemen",
     "newTitle": "Nieuwe titel",
     "cancel": "Annuleren",
-    "save": "Opslaan"
+    "save": "Opslaan",
+    "suggestTitle": "Titel voorstellen",
+    "suggestingTitle": "Wordt voorgesteld …",
+    "suggestTitleHint": "Het voorstel is gebaseerd op het gespreksverloop en verschijnt in het veld. Het wordt pas opgeslagen als jij opslaat.",
+    "suggestedTitle": "Voorstel ingevuld. Je kunt het nog aanpassen.",
+    "suggestTitleFailed": {
+      "nothing_to_name": "In deze chat staat nog niets waar een titel uit kan worden afgeleid.",
+      "provider_failed": "Het model heeft geen bruikbare titel geleverd. Probeer het zo meteen nog eens.",
+      "key_unreadable": "De eigen AI-sleutel van deze werkruimte is niet leesbaar, daarom kan er geen voorstel worden gedaan.",
+      "timed_out": "Het voorstel duurde te lang. Probeer het zo meteen nog eens.",
+      "error": "Het voorstel is mislukt."
+    }
   },
   "chats": {
     "title": "Chats",

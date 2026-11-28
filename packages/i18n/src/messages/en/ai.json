@@ -279,7 +279,18 @@
     "renameTitle": "Rename chat",
     "newTitle": "New title",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "suggestTitle": "Suggest title",
+    "suggestingTitle": "Suggesting …",
+    "suggestTitleHint": "The suggestion is based on the chat history and will be placed in the field. It won’t be saved until you save.",
+    "suggestedTitle": "Suggestion inserted. You can still change it.",
+    "suggestTitleFailed": {
+      "nothing_to_name": "There is nothing in this chat yet that a title could be based on.",
+      "provider_failed": "The model did not return a usable title. Please try again in a moment.",
+      "key_unreadable": "This workspace’s custom AI key cannot be read, so no suggestion could be generated.",
+      "timed_out": "The suggestion took too long. Please try again in a moment.",
+      "error": "The suggestion didn’t work."
+    }
   },
   "chats": {
     "title": "Chats",

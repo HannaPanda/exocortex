@@ -279,7 +279,18 @@
     "renameTitle": "Renombrar chat",
     "newTitle": "Nuevo título",
     "cancel": "Cancelar",
-    "save": "Guardar"
+    "save": "Guardar",
+    "suggestTitle": "Sugerir título",
+    "suggestingTitle": "Sugiriendo…",
+    "suggestTitleHint": "La sugerencia se basa en el historial y se coloca en el campo. No se guardará hasta que tú guardes.",
+    "suggestedTitle": "Sugerencia aplicada. Todavía puedes modificarla.",
+    "suggestTitleFailed": {
+      "nothing_to_name": "En este chat aún no hay nada a partir de lo cual sugerir un título.",
+      "provider_failed": "El modelo no ha devuelto un título válido. Inténtalo de nuevo en un momento.",
+      "key_unreadable": "La clave de IA propia de este espacio de trabajo no se puede leer, por lo que no es posible generar una sugerencia.",
+      "timed_out": "La sugerencia ha tardado demasiado. Inténtalo de nuevo en un momento.",
+      "error": "No se ha podido generar la sugerencia."
+    }
   },
   "chats": {
     "title": "Chats",

@@ -279,7 +279,18 @@
     "renameTitle": "Zmień nazwę czatu",
     "newTitle": "Nowy tytuł",
     "cancel": "Anuluj",
-    "save": "Zapisz"
+    "save": "Zapisz",
+    "suggestTitle": "Zaproponuj tytuł",
+    "suggestingTitle": "Generowanie propozycji…",
+    "suggestTitleHint": "Propozycja powstaje na podstawie historii i pojawi się w polu. Zapisze się dopiero wtedy, gdy klikniesz zapisz.",
+    "suggestedTitle": "Wstawiono propozycję. Możesz ją jeszcze zmienić.",
+    "suggestTitleFailed": {
+      "nothing_to_name": "W tej rozmowie nie ma jeszcze nic, z czego można by stworzyć tytuł.",
+      "provider_failed": "Model nie zwrócił odpowiedniego tytułu. Spróbuj ponownie za chwilę.",
+      "key_unreadable": "Własny klucz AI tego obszaru roboczego jest nieczytelny, dlatego nie można wygenerować propozycji.",
+      "timed_out": "Generowanie propozycji trwało zbyt długo. Spróbuj ponownie za chwilę.",
+      "error": "Nie udało się wygenerować propozycji."
+    }
   },
   "chats": {
     "title": "Czaty",
