@@ -244,7 +244,7 @@ test.describe('a row in the side panel (issue #239)', () => {
     await page.mouse.move(box.x + box.width / 2 - 150, y, { steps: 5 });
     await page.mouse.up();
     const dragged = await widthOf();
-    expect(Math.abs(dragged - (defaultWidth + 150))).toBeLessThanOrEqual(2);
+    expect(Math.abs(dragged - (defaultWidth + 150))).toBeLessThanOrEqual(1);
     expect(await valueOf()).toBe(dragged);
 
     // The keys: the arrows step by 8 px, Home and End go to the limits.

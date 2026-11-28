@@ -167,9 +167,9 @@ export interface ResizeHandleProps {
  * with Shift), Home and End go to the limits, and a double-click resets.
  *
  * It must be a direct child of the panel it sizes, which has to be
- * positioned: the width is measured from the panel's fixed edge, so a panel
- * that does not start at the window's edge (one lying over the page area,
- * issue #239) is sized the same way as one that does.
+ * positioned: the width is measured from the panel's own rectangle, not the
+ * window's edge, so a panel that does not start there (one lying over the
+ * page area, issue #239) is sized the same way as one that does.
  */
 export function ResizeHandle({
   width,
@@ -183,7 +183,9 @@ export function ResizeHandle({
   className,
   'data-testid': testId,
 }: ResizeHandleProps) {
-  // The x coordinate of the panel's fixed edge while a drag is under way.
+  // While a drag is under way: where the pointer would be if the panel had no
+  // width at all. The fixed edge, shifted by where on the handle it was
+  // grabbed, so the edge follows the pointer without jumping to it first.
   const anchor = React.useRef<number | null>(null);
 
   const clamp = React.useCallback(
@@ -237,7 +239,7 @@ export function ResizeHandle({
         if (panel === null) return;
         event.preventDefault();
         const rect = panel.getBoundingClientRect();
-        anchor.current = edge === 'right' ? rect.left : rect.right;
+        anchor.current = edge === 'right' ? event.clientX - rect.width : event.clientX + rect.width;
         document.body.style.cursor = 'col-resize';
         document.body.style.userSelect = 'none';
       }}
