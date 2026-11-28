@@ -38,6 +38,17 @@ const FETCH_TIMEOUT_MS = 15_000;
 
 const REDIRECT_STATUS = new Set([301, 302, 303, 307, 308]);
 
+/**
+ * Who is asking, as the far side's robot policy wants it said (issue #212).
+ *
+ * Without one, Wikimedia Commons -- where most public photographs an agent
+ * finds live -- answers 403 to every request, so the import failed exactly
+ * where it is needed most. The product and its public repository, never the
+ * deployment or the person: the request is made for somebody, and who that
+ * is stays here.
+ */
+export const REMOTE_FILE_USER_AGENT = 'eXocortex/1.0 (+https://github.com/HannaPanda/exocortex)';
+
 export interface RemoteFile {
   /** The address that finally answered, after any redirects. */
   url: string;
@@ -103,9 +114,10 @@ async function readCapped(body: IncomingMessage, maxBytes: number, url: string):
  * One request, no redirects followed, on a socket whose address came from
  * `lookup`. `agent: false` so no pooled socket from another lookup is reused.
  * `accept-encoding: identity` because `node:http` decompresses nothing, and
- * the size ceiling is meant for the bytes that are stored.
+ * the size ceiling is meant for the bytes that are stored. The user agent
+ * because a host like Wikimedia refuses a request without one.
  */
-function requestOnce(
+export function requestOnce(
   url: string,
   lookup: LookupFunction,
   timeoutMs: number,
@@ -120,7 +132,11 @@ function requestOnce(
         agent: false,
         lookup,
         signal: AbortSignal.timeout(timeoutMs),
-        headers: { accept: '*/*', 'accept-encoding': 'identity' },
+        headers: {
+          accept: '*/*',
+          'accept-encoding': 'identity',
+          'user-agent': REMOTE_FILE_USER_AGENT,
+        },
       },
       resolve,
     );

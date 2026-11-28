@@ -1,6 +1,6 @@
 import { type LookupAddress } from 'node:dns';
 import { createServer, type IncomingMessage, request as httpRequest, type Server } from 'node:http';
-import { type AddressInfo } from 'node:net';
+import { type AddressInfo, type LookupFunction } from 'node:net';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -8,7 +8,7 @@ import { createLogger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
 
-import { fetchRemoteFile } from './remote-file';
+import { fetchRemoteFile, REMOTE_FILE_USER_AGENT, requestOnce } from './remote-file';
 
 /**
  * DNS rebinding against the URL attachment fetch (issue #178).
@@ -62,6 +62,30 @@ async function refusal(promise: Promise<unknown>): Promise<AppError> {
 }
 
 describe('fetching a file by address', () => {
+  it('says who is asking, because Wikimedia refuses a request that does not', async () => {
+    let seen: string | undefined;
+    const probe = createServer((request, response) => {
+      seen = request.headers['user-agent'];
+      response.end();
+    });
+    await new Promise<void>((resolve) => probe.listen(0, '127.0.0.1', resolve));
+    const probePort = (probe.address() as AddressInfo).port;
+    // The real hop, with a lookup that lets it reach this local server; the
+    // production lookup would rightly refuse loopback.
+    const toProbe: LookupFunction = (_host, _options, callback) => {
+      (callback as (error: null, address: LookupAddress[]) => void)(null, [
+        { address: '127.0.0.1', family: 4 },
+      ]);
+    };
+    try {
+      const response = await requestOnce(`http://probe.example:${probePort}/`, toProbe, 2000);
+      response.destroy();
+    } finally {
+      await new Promise<void>((resolve) => probe.close(() => resolve()));
+    }
+    expect(seen).toBe(REMOTE_FILE_USER_AGENT);
+  });
+
   it('never reaches loopback when the name rebinds after the check', async () => {
     hits = 0;
     const error = await refusal(

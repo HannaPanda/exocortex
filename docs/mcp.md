@@ -487,7 +487,8 @@ Two steps:
      it here through the same address check web research uses
      ([ADR-033](adr/ADR-033-web-research-is-two-rest-calls.md)): checked again
      on every redirect hop (at most three), the socket pinned to the address
-     that was judged (issue #178), 15 seconds per hop, cut off at
+     that was judged (issue #178), 15 seconds per hop, with a user agent naming
+     the product (Wikimedia Commons refuses a request without one), cut off at
      `MAX_UPLOAD_BYTES` while reading, and the type decided from the bytes, so
      a server calling a web page `image/png` is refused. One call per address;
      three pictures are three calls. It is on every agent surface: stdio,
