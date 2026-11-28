@@ -895,6 +895,114 @@ test.describe('editor', () => {
   });
 
   /**
+   * Issue #250: a nested list's marker says its depth, a disc, a circle, a
+   * square and 1., a., i., in the editor and on the public link, which reads
+   * the page through the Markdown renderer instead. A task keeps its box, and
+   * the pale marker of a continuation is the one of its level. The table is
+   * unit-tested in `packages/editor`; what only a browser proves is what the
+   * stylesheet really draws.
+   */
+  test('nested lists change their marker with the depth, everywhere', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Ebenen ${Date.now().toString(36)}`);
+    const markdown = [
+      '- [ ] Aufgabe',
+      '  - [ ] Unteraufgabe',
+      '',
+      'Absatz',
+      '',
+      '- eins',
+      '  - zwei',
+      '    - drei',
+      '      - vier',
+      '',
+      'Absatz',
+      '',
+      '1. eins',
+      '   1. zwei',
+      '      1. drei',
+      '',
+      'weg',
+      '',
+    ].join('\n');
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: { markdown, mode: 'replace' },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    await page.reload();
+    const surface = page.getByTestId('editor-surface');
+    await expect(surface.locator('li', { hasText: 'vier' })).toBeVisible({ timeout: 30_000 });
+
+    /** The marker style of every list of one kind, outermost first. */
+    const styles = (root: Locator, selector: string) =>
+      root.locator(selector).evaluateAll((lists) => {
+        // The e2e project has no DOM library: the browser's globals are typed here.
+        const browser = globalThis as unknown as {
+          getComputedStyle: (target: unknown) => { listStyleType: string };
+        };
+        return lists.map((list) => browser.getComputedStyle(list).listStyleType);
+      });
+
+    await expect
+      .poll(() => styles(surface, 'ul:not([data-type])'))
+      .toEqual(['disc', 'circle', 'square', 'disc']);
+    await expect
+      .poll(() => styles(surface, 'ol'))
+      .toEqual(['decimal', 'lower-alpha', 'lower-roman']);
+    await expect.poll(() => styles(surface, "ul[data-type='taskList']")).toEqual(['none', 'none']);
+
+    // Right below the numbered list the next point joins its deepest level,
+    // so the preview counts on in that level's numerals.
+    const line = surface.locator(':scope > p', { hasText: 'weg' });
+    await line.click();
+    await page.keyboard.press('End');
+    await page.keyboard.press('Shift+Home');
+    await page.keyboard.press('Backspace');
+    const ghost = surface.locator('p.exocortex-list-ghost');
+    await expect(ghost).toHaveAttribute('data-list-ghost-marker', 'ii.');
+    await page.keyboard.type('weg');
+    await expect(ghost).toHaveCount(0);
+
+    // The public link draws the same markers through the Markdown reader.
+    const granted = await page.request.post(`/api/documents/${documentId}/shares`, {
+      data: { kind: 'PUBLIC_LINK', scope: 'PAGE_ONLY' },
+    });
+    expect(granted.status(), await granted.text()).toBe(201);
+    const { share } = (await granted.json()) as { share: { id: string; token: string } };
+    try {
+      // The reader shows the stored Markdown, which the worker derives a
+      // moment after the write.
+      const reader = page.locator('article');
+      await expect
+        .poll(
+          async () => {
+            await page.goto(`/freigabe/${share.token}`);
+            return reader.getByText('vier').count();
+          },
+          { timeout: 60_000 },
+        )
+        .toBe(1);
+      // The tasks first, which the reader shows as bullets, then the bullets.
+      expect(await styles(reader, 'ul.exocortex-list')).toEqual([
+        'disc',
+        'circle',
+        'disc',
+        'circle',
+        'square',
+        'disc',
+      ]);
+      expect(await styles(reader, 'ol.exocortex-list')).toEqual([
+        'decimal',
+        'lower-alpha',
+        'lower-roman',
+      ]);
+    } finally {
+      await page.request.delete(`/api/shares/${share.id}`);
+    }
+  });
+
+  /**
    * Issue #302: `Backspace` in the empty line below a list removes the line
    * and puts the caret after the last point, in one press, also when that
    * point is a sub-point. Before, the first presses wrapped the line into the
