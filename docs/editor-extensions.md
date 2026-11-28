@@ -775,6 +775,29 @@ The change is planned on a transaction of its own and copied over only when
 it worked, so it is one dispatch and `Strg+Z` takes it back in one step.
 Covered by `code-block-placement.test.ts` and `e2e/tests/editor.spec.ts`.
 
+### The language a new code block starts with
+
+The code blocks of one page are mostly in one language, so each of the ways
+above, when it names no language (the catalog entry behind the slash menu,
+the toolbar and "Umwandeln in", `Mod-Alt-c`, a bare ` ``` `), starts the new
+block with its neighbour's (`neighbourCodeLanguage` in
+`code-block-language.ts`, issue #258): the nearest code block before it,
+wherever it stands (list, callout, column), else the nearest one after it,
+else none as before. ` ```sql ` keeps its own name, and the picker in the
+block's corner changes it afterwards as always.
+
+The page is read, nothing is remembered: there is no state to store or to
+keep in step between two people on one page, and a reload gives the same
+answer. A neighbour without a language counts as a choice, so the plain
+output block right above wins over a shell block further up; "the block
+above decides" is a rule a reader can predict. Inside a code block nothing
+is looked up, because there the command turns the block back into a
+paragraph and a language would make upstream's toggle miss it.
+
+Only the editor's own commands do this. A Markdown fence without a language
+from an agent, an import or a paste stays without one: that text said what
+it meant. Covered by `code-block-language.test.ts`.
+
 ## Backspace and Delete next to a code block
 
 ProseMirror's `joinBackward` and `joinForward` treat a code block like any
