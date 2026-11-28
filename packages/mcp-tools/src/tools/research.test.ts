@@ -62,6 +62,8 @@ function hit(overrides: Record<string, unknown> = {}) {
     path: [],
     snippet: 'Der <mark>Kalender</mark> läuft über eXocortex.',
     section: null,
+    blockId: null,
+    attachment: null,
     rank: 0.5,
     archivedAt: null,
     updatedAt: NOW,

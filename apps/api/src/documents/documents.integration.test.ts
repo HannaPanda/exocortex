@@ -2055,6 +2055,8 @@ describe('document links', () => {
             type: 'PAGE' as const,
             snippet: 'Ein Auszug.',
             section: null,
+            blockId: null,
+            attachment: null,
             rank: 0.9 - position / 10,
             archivedAt: null,
             updatedAt: new Date().toISOString(),

@@ -111,6 +111,8 @@ function hit(input: {
     path: input.path ?? [],
     snippet: `Ausschnitt zu ${input.title}`,
     section: null,
+    blockId: null,
+    attachment: null,
     rank: input.rank,
     archivedAt: null,
     updatedAt: new Date().toISOString(),

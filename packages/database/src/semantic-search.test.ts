@@ -14,6 +14,8 @@ function hit(documentId: string, rank: number): SearchHit {
     type: 'PAGE',
     snippet: `Auszug ${documentId}`,
     section: null,
+    blockId: null,
+    attachment: null,
     rank,
     archivedAt: null,
     updatedAt: '2026-08-12T00:00:00.000Z',
@@ -224,6 +226,29 @@ describe('fusing a located hit with an unlocated one', () => {
 
     expect(fused?.snippet).toBe('Auszug a');
     expect(fused?.section).toEqual({ blockId: 'tumorambu01', path: ['Tumorambulanz'] });
+  });
+
+  it('keeps a located keyword hit whole rather than mixing in the semantic section', () => {
+    // The keyword half now knows the block of its snippet (issue #280). A
+    // section out of a different passage beside that snippet would point the
+    // reader somewhere the snippet is not.
+    const keyword: SearchHit = {
+      ...hit('a', 0.9),
+      blockId: 'punktquitte',
+      section: { blockId: 'zweitehead1', path: ['Zweite Liste'] },
+    };
+    const [fused] = fuse([keyword], [located('a', 0.8)], 0.5);
+
+    expect(fused?.blockId).toBe('punktquitte');
+    expect(fused?.section).toEqual({ blockId: 'zweitehead1', path: ['Zweite Liste'] });
+  });
+
+  it('keeps a keyword hit located before the first heading without a borrowed section', () => {
+    const keyword: SearchHit = { ...hit('a', 0.9), blockId: 'vorwort0001' };
+    const [fused] = fuse([keyword], [located('a', 0.8)], 0.5);
+
+    expect(fused?.section).toBeNull();
+    expect(fused?.blockId).toBe('vorwort0001');
   });
 
   it('leaves a page only the keyword half found without one', () => {

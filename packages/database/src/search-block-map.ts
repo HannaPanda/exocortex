@@ -1,3 +1,5 @@
+import { type SearchResult } from '@exocortex/contracts';
+
 /**
  * Where every stretch of a page's search projection came from (issue #280).
  *
@@ -87,4 +89,44 @@ export function codePointOffsets(text: string, offsets: readonly number[]): numb
     result.push(points);
   }
   return result;
+}
+
+/** What one search row's lookup in the map produced, as raw SQL hands it back. */
+export interface LocatedRow {
+  hitBlockId: string | null;
+  hitHeading: unknown;
+  hitAttachment: unknown;
+}
+
+/** Where on the page a keyword hit stands, in the contract's words. */
+export function hitLocation(
+  row: LocatedRow,
+): Pick<SearchResult, 'blockId' | 'section' | 'attachment'> {
+  return {
+    blockId: row.hitBlockId ?? null,
+    section: headingOf(row.hitHeading),
+    attachment: attachmentOf(row.hitAttachment),
+  };
+}
+
+function headingOf(value: unknown): SearchResult['section'] {
+  if (typeof value !== 'object' || value === null) return null;
+  const record = value as { b?: unknown; p?: unknown };
+  if (!Array.isArray(record.p) || record.p.length === 0) return null;
+  return {
+    blockId: typeof record.b === 'string' ? record.b : null,
+    path: record.p.filter((entry): entry is string => typeof entry === 'string'),
+  };
+}
+
+function attachmentOf(value: unknown): SearchResult['attachment'] {
+  if (typeof value !== 'object' || value === null) return null;
+  const record = value as { id?: unknown; n?: unknown };
+  if (typeof record.id !== 'string') return null;
+  return { attachmentId: record.id, filename: typeof record.n === 'string' ? record.n : '' };
+}
+
+/** Whether a hit says anything about where on its page it stands. */
+export function isLocated(hit: Pick<SearchResult, 'blockId' | 'section' | 'attachment'>): boolean {
+  return hit.section !== null || hit.blockId !== null || hit.attachment !== null;
 }

@@ -284,7 +284,7 @@ const TWO_LISTS_MARKDOWN = `# Zwei Listen
 
 ## Einkauf
 
-- Hafermilch
+- Hafermilch 🥛 und 🍞
 - Brot
 - Linsen
 
@@ -642,6 +642,41 @@ describe('search indexing', () => {
   }, 60_000);
 
   /**
+   * The case behind #274: the word stands only in the second of two lists,
+   * and the hit has to name that list's point, not the page (issue #280).
+   * The emoji in the first list is there on purpose: JavaScript counts each
+   * as two characters and PostgreSQL as one.
+   */
+  it('names the list point a keyword hit stands in, and the section above it', async () => {
+    const documentId = await createDocument(TWO_LISTS_MARKDOWN);
+    await materializeAndIndex(documentId);
+    const itemIds = listItemIds(
+      (await prisma.documentContent.findUniqueOrThrow({ where: { documentId } })).proseMirrorJson,
+    );
+
+    const results = await keywordSearch.search({
+      workspaceId,
+      query: 'Mirabellenbaum',
+      limit: 10,
+      includeArchived: false,
+    });
+    const found = results.find((result) => result.documentId === documentId);
+
+    expect(found?.snippet).toContain('<mark>Mirabellenbaum</mark>');
+    expect(found?.blockId).toBe(itemIds[5]);
+    expect(found?.section?.path.at(-1)).toBe('Garten');
+    expect(found?.attachment).toBeNull();
+
+    const first = await keywordSearch.search({
+      workspaceId,
+      query: 'Brot',
+      limit: 10,
+      includeArchived: false,
+    });
+    expect(first.find((result) => result.documentId === documentId)?.blockId).toBe(itemIds[1]);
+  }, 60_000);
+
+  /**
    * What a person can read in an attachment, they can search for (issue #101).
    *
    * Until this existed the projection held only what was written on the page,
@@ -680,6 +715,11 @@ describe('search indexing', () => {
       includeArchived: false,
     });
     expect(results.map((result) => result.documentId)).toContain(documentId);
+    // Words out of a file name the file, and no block of the page, because
+    // no block on this page shows it (issue #280).
+    const found = results.find((result) => result.documentId === documentId);
+    expect(found?.attachment?.filename).toBe('kontoauszug.pdf');
+    expect(found?.blockId).toBeNull();
   }, 60_000);
 
   it('indexes a hand-corrected text rather than the machine result it replaced', async () => {

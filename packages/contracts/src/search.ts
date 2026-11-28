@@ -37,15 +37,16 @@ export const searchResultSchema = z.object({
    */
   snippet: z.string(),
   /**
-   * Where on the page the hit sits (issue #118).
+   * The section the hit sits in (issue #118): the heading above it.
    *
    * A page can hold a hundred thousand characters, and a hit that names only
    * the page is the answer the caller already had: the run this came out of
    * searched fourteen times and every hit pointed at the page it had just
    * read. A semantic hit knows its passage (ADR-034) and therefore the heading
-   * above it. `null` means the hit is not located: a match found by keyword
-   * alone has no passage, and mapping a character offset back onto a block
-   * needs a table this deployment does not keep yet (issue #110).
+   * above it; a keyword hit knows the block its words stand in (issue #280,
+   * ADR-100) and therefore the heading above that. `null` when the hit sits
+   * under no heading or is not located at all; `blockId` and `attachment`
+   * tell the two apart.
    */
   section: z
     .object({
@@ -57,6 +58,27 @@ export const searchResultSchema = z.object({
       blockId: z.string().nullable(),
       /** The heading and the headings it sits under, outermost first. */
       path: z.array(z.string()),
+    })
+    .nullable(),
+  /**
+   * The block the matched words stand in (issue #280, ADR-100): a paragraph,
+   * a heading, a whole table, and in a list the list point itself. It is the
+   * place of the first highlighted word of `snippet`, so the two always agree,
+   * and `exo_page_block_read` reads exactly it. For words out of an
+   * attachment, the block that shows the file, if one does. `null` for a hit
+   * found by meaning alone (its passage spans several blocks), a match on the
+   * title only, or a page not mapped yet.
+   */
+  blockId: z.string().nullable(),
+  /**
+   * Set when the words stand in the text of a file attached to the page
+   * rather than on the page itself (ADR-050): which file. Never attributed to
+   * a block of the page that does not show it.
+   */
+  attachment: z
+    .object({
+      attachmentId: z.string(),
+      filename: z.string(),
     })
     .nullable(),
   rank: z.number(),

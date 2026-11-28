@@ -84,11 +84,16 @@ export const memoryHitSchema = z.object({
   /** A few distilled lines, never a whole page. `fetch` loads the rest. */
   snippet: z.string(),
   /**
-   * The section the snippet came out of, when the hit was found by meaning
-   * (issue #118). Same field and same meaning as on a search result: `null`
-   * says the hit is not located, never that it sits at the top of the page.
+   * The section the snippet came out of (issue #118). Same field and same
+   * meaning as on a search result: `null` never says the hit sits at the top
+   * of the page.
    */
   section: searchResultSchema.shape.section,
+  /**
+   * The block the words stand in, for a hit found by keyword (issue #280).
+   * Same field and same meaning as on a search result.
+   */
+  blockId: searchResultSchema.shape.blockId,
   source: memorySourceSchema,
   score: z.number(),
   updatedAt: isoDateTimeSchema,

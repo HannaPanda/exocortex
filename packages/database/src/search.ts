@@ -2,7 +2,7 @@ import { type SearchResult } from '@exocortex/contracts';
 
 import { type PassageAnchor } from './chunking';
 import { Prisma, type PrismaClient } from './client';
-import { type StoredSearchBlockMap } from './search-block-map';
+import { hitLocation, type LocatedRow, type StoredSearchBlockMap } from './search-block-map';
 
 export interface SearchQuery {
   workspaceId: string;
@@ -71,7 +71,7 @@ export interface SearchAdapter {
   healthCheck(): Promise<boolean>;
 }
 
-interface SearchRow {
+interface SearchRow extends LocatedRow {
   documentId: string;
   workspaceId: string;
   title: string;
@@ -130,6 +130,85 @@ export function keywordMatchSql(query: string): { predicate: Prisma.Sql; rank: P
 }
 
 /**
+ * Markers `ts_headline` is asked to use instead of `<mark>`, `</mark>` and
+ * ` ... ` (issue #280). Private-use characters cannot occur in a page's text
+ * the way a literal `<mark>` can, so the first fragment with them stripped is
+ * exactly a stretch of `plainText` and can be found in it again. They become
+ * the usual markup before the snippet leaves the query.
+ */
+const HIT_START = '\uE000';
+const HIT_STOP = '\uE001';
+const FRAGMENT_BREAK = '\uE002';
+const HEADLINE_OPTIONS = `StartSel="${HIT_START}", StopSel="${HIT_STOP}", FragmentDelimiter="${FRAGMENT_BREAK}", MaxFragments=2, MaxWords=18, MinWords=5`;
+
+/**
+ * The keyword search, with every hit located on its page.
+ *
+ * Ranking and filtering first, so the headline (the expensive part) is only
+ * cut for the rows that are returned. The hit's offset is where the first
+ * highlighted word of the first fragment stands in `plainText`, found by
+ * searching for the fragment itself; the location is the last unit of the
+ * block map starting at or before it (ADR-100). Snippet and location therefore
+ * describe the same occurrence of the word, and a fragment that cannot be
+ * found again locates nothing rather than something wrong.
+ */
+function keywordSearchSql(query: SearchQuery): Prisma.Sql {
+  const tsQuery = buildTsQuery(query.query);
+  const match = keywordMatchSql(query.query);
+  return Prisma.sql`
+    WITH ranked AS (
+      SELECT
+        index."documentId", index."workspaceId", document."title", document."icon",
+        document."iconColor", document."type", index."plainText", index."blockMap",
+        ${match.rank} AS "rank", index."archivedAt", index."updatedAt"
+      FROM "document_search_index" AS index
+      JOIN "document" AS document ON document."id" = index."documentId"
+      WHERE index."workspaceId" = ${query.workspaceId}
+        AND (${query.includeArchived} OR index."archivedAt" IS NULL)
+        AND ${match.predicate}
+      ORDER BY "rank" DESC, index."updatedAt" DESC
+      LIMIT ${query.limit}
+    ),
+    headlined AS (
+      SELECT ranked.*,
+        CASE WHEN ${tsQuery} = '' THEN NULL ELSE
+          ts_headline('simple', ranked."plainText", to_tsquery('simple', ${tsQuery}), ${HEADLINE_OPTIONS}::text)
+        END AS "headline"
+      FROM ranked
+    ),
+    positioned AS (
+      SELECT headlined.*,
+        CASE
+          WHEN headlined."blockMap" IS NULL OR strpos(first."fragment", ${HIT_START}::text) = 0 THEN NULL
+          ELSE nullif(strpos(headlined."plainText", translate(first."fragment", ${HIT_START}::text || ${HIT_STOP}::text, '')), 0)
+            - 1 + length(split_part(first."fragment", ${HIT_START}::text, 1))
+        END AS "matchOffset"
+      FROM headlined
+      CROSS JOIN LATERAL (SELECT split_part(headlined."headline", ${FRAGMENT_BREAK}::text, 1) AS "fragment") AS first
+    )
+    SELECT
+      p."documentId", p."workspaceId", p."title", p."icon", p."iconColor", p."type",
+      CASE WHEN p."headline" IS NULL THEN left(p."plainText", 200)
+        ELSE replace(replace(replace(p."headline", ${HIT_START}::text, '<mark>'), ${HIT_STOP}::text, '</mark>'), ${FRAGMENT_BREAK}::text, ' ... ')
+      END AS "snippet",
+      p."rank", p."archivedAt", p."updatedAt",
+      unit."blockId" AS "hitBlockId", unit."heading" AS "hitHeading", unit."attachment" AS "hitAttachment"
+    FROM positioned AS p
+    LEFT JOIN LATERAL (
+      SELECT
+        p."blockMap"->'b'->>(u.i::int - 1)                                   AS "blockId",
+        p."blockMap"->'h'->((p."blockMap"->'s'->>(u.i::int - 1))::int)       AS "heading",
+        p."blockMap"->'f'->((p."blockMap"->'a'->>(u.i::int - 1))::int)       AS "attachment"
+      FROM jsonb_array_elements_text(p."blockMap"->'o') WITH ORDINALITY AS u(v, i)
+      WHERE p."matchOffset" IS NOT NULL AND u.v::int <= p."matchOffset"
+      ORDER BY u.i DESC
+      LIMIT 1
+    ) AS unit ON TRUE
+    ORDER BY p."rank" DESC, p."updatedAt" DESC
+  `;
+}
+
+/**
  * PostgreSQL full-text search plus trigram-based tolerant title matching.
  *
  * Ranking combines:
@@ -145,37 +224,7 @@ export class PostgresSearchAdapter implements SearchAdapter {
   constructor(private readonly prisma: PrismaClient) {}
 
   async search(query: SearchQuery): Promise<SearchHit[]> {
-    const tsQuery = buildTsQuery(query.query);
-    const match = keywordMatchSql(query.query);
-
-    const rows = await this.prisma.$queryRaw<SearchRow[]>(Prisma.sql`
-      SELECT
-        index."documentId"                                             AS "documentId",
-        index."workspaceId"                                            AS "workspaceId",
-        document."title"                                               AS "title",
-        document."icon"                                                AS "icon",
-        document."iconColor"                                           AS "iconColor",
-        document."type"                                                AS "type",
-        CASE
-          WHEN ${tsQuery} = '' THEN left(index."plainText", 200)
-          ELSE ts_headline(
-            'simple',
-            index."plainText",
-            to_tsquery('simple', ${tsQuery}),
-            'StartSel=<mark>, StopSel=</mark>, MaxFragments=2, MaxWords=18, MinWords=5'
-          )
-        END                                                            AS "snippet",
-        ${match.rank}                                                  AS "rank",
-        index."archivedAt"                                             AS "archivedAt",
-        index."updatedAt"                                              AS "updatedAt"
-      FROM "document_search_index" AS index
-      JOIN "document" AS document ON document."id" = index."documentId"
-      WHERE index."workspaceId" = ${query.workspaceId}
-        AND (${query.includeArchived} OR index."archivedAt" IS NULL)
-        AND ${match.predicate}
-      ORDER BY "rank" DESC, index."updatedAt" DESC
-      LIMIT ${query.limit}
-    `);
+    const rows = await this.prisma.$queryRaw<SearchRow[]>(keywordSearchSql(query));
 
     return rows.map((row) => ({
       documentId: row.documentId,
@@ -185,13 +234,10 @@ export class PostgresSearchAdapter implements SearchAdapter {
       iconColor: row.iconColor,
       type: row.type,
       snippet: row.snippet.replace(/\s+/g, ' ').trim(),
-      // A keyword match is a position in a `tsvector`, and nothing maps that
-      // position back onto a block; guessing at one would be worse than saying
-      // nothing. The semantic half does locate its hits, and fusion keeps that
-      // when both halves found the same page. The context compiler locates
-      // keyword passages by borrowing the heading of the passage vector with
-      // the same text (ADR-061), which a page hit has no passage to do with.
-      section: null,
+      // Where the first highlighted word of the snippet stands (issue #280,
+      // ADR-100): its block, the heading above it, or the attachment it is
+      // in. All three `null` for a title-only match or an unmapped page.
+      ...hitLocation(row),
       rank: Number(row.rank),
       archivedAt: row.archivedAt === null ? null : row.archivedAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
