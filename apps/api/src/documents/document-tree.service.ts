@@ -57,7 +57,11 @@ export class DocumentTreeService {
     userId: string,
     request: DocumentTreeRequest = {},
   ): Promise<DocumentTreeResponse> {
-    const scoped = await this.access.requireScopedRole(workspaceId, userId);
+    // A recipient of page grants gets the pages those grants reach and
+    // nothing else (issue #327): the branch below a shared page, never what
+    // sits above it or beside it. `buildTree` makes each shared page a root,
+    // because its parent is not in the list.
+    const scoped = await this.access.requireScopedReach(workspaceId, userId);
 
     const all = await this.prisma.document.findMany({
       where: { workspaceId },
@@ -90,7 +94,9 @@ export class DocumentTreeService {
           })();
 
     const active = scope.filter((row) => row.archivedAt === null);
-    const archived = scope.filter((row) => row.archivedAt !== null);
+    // The trash belongs to the workspace, not to the pages somebody was handed.
+    const archived =
+      scoped.throughGrants === true ? [] : scope.filter((row) => row.archivedAt !== null);
 
     // Only a database *below* the starting point loses its rows: the roots of
     // a branch asked for by a database's own id are its rows, and they never
@@ -168,7 +174,9 @@ export class DocumentTreeService {
     userId: string,
     request: ResolveDocumentLinkRequest,
   ): Promise<ResolveDocumentLinkResponse> {
-    const scoped = await this.access.requireScopedRole(workspaceId, userId);
+    // A link on a shared page resolves for its recipient when its target is
+    // a page their grants reach, and to nothing otherwise (issue #327).
+    const scoped = await this.access.requireScopedReach(workspaceId, userId);
     const visible = (documentId: string): boolean =>
       scoped.documentIds === null || scoped.documentIds.has(documentId);
 

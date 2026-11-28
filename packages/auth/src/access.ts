@@ -75,6 +75,11 @@ export interface DocumentAccessContext {
 export interface ScopedWorkspaceAccess {
   role: WorkspaceRole;
   documentIds: Set<string> | null;
+  /**
+   * Set only by `requireScopedReach`: the caller is no member, and
+   * `documentIds` is what their page grants reach (issue #327).
+   */
+  throughGrants?: true;
 }
 
 /**
@@ -264,6 +269,62 @@ export class WorkspaceAccessService {
       select: { id: true },
     });
     return { role: role as WorkspaceRole, documentIds: new Set(here.map((row) => row.id)) };
+  }
+
+  /**
+   * `requireScopedRole`, extended to somebody who is no member here but holds
+   * page grants in this workspace (issue #327, ADR-044 addendum 2026-11-28).
+   *
+   * For the two readers whose answer is a set of pages and nothing else, the
+   * tree and link resolution: a recipient of a `SUBTREE` grant has every page
+   * of the branch and otherwise no way to find one. The set is the union of
+   * the caller's live grants in this workspace, `SUBTREE` resolved against the
+   * hierarchy on this request and `PAGE_ONLY` as the page alone, so it names
+   * nothing above a shared page and no sibling of it. A confined credential is
+   * narrowed further, as everywhere. `throughGrants` tells the caller the set
+   * came from grants rather than a membership, so a reader can leave out what
+   * belongs to the workspace rather than to the pages (the trash).
+   *
+   * Read-only by construction: the role is always `GUEST`, whatever a grant
+   * allows on its page. Writing goes through `findDocumentContext` per page.
+   * No grant at all is the refusal `requireScopedRole` gives a non-member.
+   */
+  async requireScopedReach(workspaceId: string, userId: string): Promise<ScopedWorkspaceAccess> {
+    this.refuseOutsideConfinement(workspaceId);
+    const membership = await this.findMembershipRole(workspaceId, userId);
+    if (membership !== null) return this.requireScopedRole(workspaceId, userId);
+
+    const now = new Date();
+    const grants = await this.prisma.documentShare.findMany({
+      where: {
+        kind: 'USER',
+        granteeId: userId,
+        revokedAt: null,
+        OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+        document: { workspaceId },
+      },
+      select: { documentId: true, scope: true },
+    });
+    assertPolicy(canReadWorkspace(grants.length === 0 ? null : 'GUEST'));
+
+    const reached = await loadSubtreeIds(
+      this.prisma,
+      grants.filter((grant) => grant.scope === 'SUBTREE').map((grant) => grant.documentId),
+    );
+    for (const grant of grants) {
+      if (grant.scope === 'PAGE_ONLY') reached.add(grant.documentId);
+    }
+
+    const restriction = this.currentRestriction();
+    if (!isRestricted(restriction)) {
+      return { role: 'GUEST', documentIds: reached, throughGrants: true };
+    }
+    const confined = await this.confinedDocumentIds(restriction as PageScopeRestriction);
+    return {
+      role: 'GUEST',
+      documentIds: new Set([...reached].filter((id) => confined.has(id))),
+      throughGrants: true,
+    };
   }
 
   /**

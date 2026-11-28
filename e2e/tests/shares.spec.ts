@@ -209,10 +209,16 @@ test.describe('shares', () => {
     expect(detail.breadcrumb).toEqual([]);
     expect((await stefanApi.get(`${origin}/api/documents/${sectionId}`)).status()).toBe(403);
     expect((await stefanApi.get(`${origin}/api/documents/${secretId}`)).status()).toBe(403);
-    // And the workspace itself stays closed: no tree, no search, no settings.
-    expect(
-      (await stefanApi.get(`${origin}/api/workspaces/${workspaceId}/documents/tree`)).status(),
-    ).toBe(403);
+    // The tree answers with what the grant reaches and nothing else (issue
+    // #327): the shared page as its only root, no section above it, no
+    // unrelated page beside it.
+    const tree = await stefanApi.get(`${origin}/api/workspaces/${workspaceId}/documents/tree`);
+    expect(tree.status(), await tree.text()).toBe(200);
+    const treeBody = (await tree.json()) as { nodes: { id: string; children: unknown[] }[] };
+    expect(treeBody.nodes.map((node) => node.id)).toEqual([documentId]);
+    expect(JSON.stringify(treeBody)).not.toContain('Bereich');
+    expect(JSON.stringify(treeBody)).not.toContain('Geheim');
+    // And the rest of the workspace stays closed: no search, no settings.
     expect(
       (await stefanApi.get(`${origin}/api/workspaces/${workspaceId}/search?q=Geheim`)).status(),
     ).toBe(403);

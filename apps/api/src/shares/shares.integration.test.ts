@@ -284,6 +284,61 @@ describe('a share hands over the page and nothing around it', () => {
     expect(asRecipient.incoming).toEqual([]);
   });
 
+  /** Issue #327: a SUBTREE grant has to be walkable without knowing addresses. */
+  it('lets a SUBTREE recipient read the branch through the tree, and nothing above it', async () => {
+    const outsider = await prisma.user.findUniqueOrThrow({ where: { id: outsiderId } });
+    await shareWith(sharedPageId, outsider.email, 'READ', 'SUBTREE');
+
+    const branch = await tree.getTree(workspaceId, outsiderId, { parentId: sharedPageId });
+    expect(branch.nodes.map((node) => node.id)).toEqual([childPageId]);
+    // The path stops at the shared page: the section above it is no title here.
+    expect(branch.path.map((entry) => entry.id)).toEqual([sharedPageId]);
+    expect(branch.archived).toEqual([]);
+
+    // Without a starting point the shared page is the only root, and neither
+    // its section nor an unrelated page is in the answer.
+    const whole = await tree.getTree(workspaceId, outsiderId);
+    expect(whole.nodes.map((node) => node.id)).toEqual([sharedPageId]);
+    expect(JSON.stringify(whole)).not.toContain('Worldbuilding');
+    expect(JSON.stringify(whole)).not.toContain('Steuerunterlagen');
+
+    // Above the grant is refused exactly like an unknown page.
+    await expect(
+      tree.getTree(workspaceId, outsiderId, { parentId: sectionId }),
+    ).rejects.toBeInstanceOf(AppError);
+
+    // A link inside the branch resolves; one to a page outside it does not.
+    const inside = await tree.resolveLink(workspaceId, outsiderId, {
+      title: 'Konzerne',
+      includeArchived: false,
+      limit: 5,
+    });
+    expect(inside.matches.map((match) => match.id)).toEqual([childPageId]);
+    const outside = await tree.resolveLink(workspaceId, outsiderId, {
+      documentId: secretPageId,
+      includeArchived: false,
+      limit: 5,
+    });
+    expect(outside.matches).toEqual([]);
+  });
+
+  it('gives a PAGE_ONLY recipient the page alone, and a revoked one nothing', async () => {
+    const outsider = await prisma.user.findUniqueOrThrow({ where: { id: outsiderId } });
+    const shareId = await shareWith(sharedPageId, outsider.email, 'READ', 'PAGE_ONLY');
+
+    const branch = await tree.getTree(workspaceId, outsiderId, { parentId: sharedPageId });
+    expect(branch.nodes).toEqual([]);
+    expect(branch.totalCount).toBe(0);
+    expect(JSON.stringify(branch)).not.toContain('Konzerne');
+
+    await shares.revoke({ shareId, userId: ownerId, correlationId });
+    await expect(
+      tree.getTree(workspaceId, outsiderId, { parentId: sharedPageId }),
+    ).rejects.toThrow();
+    // Somebody with no grant at all is refused as before.
+    await expect(tree.getTree(workspaceId, strangerId)).rejects.toThrow();
+  });
+
   it('withdraws access the moment the grant is revoked', async () => {
     const outsider = await prisma.user.findUniqueOrThrow({ where: { id: outsiderId } });
     const shareId = await shareWith(sharedPageId, outsider.email, 'READ', 'PAGE_ONLY');
