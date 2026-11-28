@@ -1,6 +1,11 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
-import { createPage, presetPanelPreference, requireSeedCredentials } from '../support/fixtures';
+import {
+  createPage,
+  presetPanelPreference,
+  requireSeedCredentials,
+  waitForCollaboration,
+} from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
 // Reuse the session created by the global setup instead of logging in again:
@@ -784,6 +789,84 @@ test.describe('editor', () => {
     await page.keyboard.type('!');
     await expect(surface.locator('ul ul > li')).toHaveText('unter!');
     await expect(surface.locator('li')).toHaveCount(2);
+  });
+
+  /**
+   * Issue #318: a code block made under a list item's text took the text with
+   * it and left the list split around it. The rule (an empty line becomes the
+   * block, text stays where it is) is unit-tested beside `placeCodeBlock`;
+   * what only a browser proves is the real keys, the slash menu and the Yjs
+   * undo taking the block back in one step.
+   */
+  test('a code block under a list item leaves the item its text', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Code in Liste ${Date.now().toString(36)}`);
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: {
+        markdown: '- Alpha\n  - Beta\n- Gamma\n\n1. Eins\n2. Zwei\n\n- [ ] Aufgabe\n\nEnde\n',
+        mode: 'replace',
+      },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    await page.reload();
+    const surface = page.getByTestId('editor-surface');
+    const itemText = (text: string): Locator =>
+      surface.locator('li p', { hasText: new RegExp(`^${text}$`) });
+    await expect(itemText('Aufgabe')).toBeVisible({ timeout: 30_000 });
+    await waitForCollaboration(page);
+    const code = surface.locator('pre');
+
+    // Stefan's way: a fresh line under a sub-item with Umschalt+Enter, then
+    // "/code". The block is empty and stands inside the sub-item, under Beta.
+    await itemText('Beta').click();
+    await page.keyboard.press('End');
+    await page.keyboard.press('Shift+Enter');
+    await page.waitForTimeout(800);
+    await page.keyboard.type('/code');
+    await expect(page.getByTestId('slash-option-code-block')).toBeVisible();
+    await page.keyboard.press('Enter');
+    const nested = surface.locator('ul ul > li > pre');
+    await expect(nested).toHaveCount(1);
+    await expect(nested).toHaveText('');
+    await expect(itemText('Beta')).toHaveCount(1);
+    await expect(surface.locator(':scope > ul')).toHaveCount(2);
+    await page.keyboard.type('npm test');
+    await expect(nested).toHaveText('npm test');
+
+    // Typing and the block are two steps; the second takes the block back.
+    await page.waitForTimeout(800);
+    await page.keyboard.press('Control+z');
+    await expect(nested).toHaveText('');
+    await page.keyboard.press('Control+z');
+    await expect(code).toHaveCount(0);
+    await expect(surface.locator('li p', { hasText: /^Beta/ })).toHaveCount(1);
+    await expect(surface.locator(':scope > ul')).toHaveCount(2);
+
+    // The fence after Umschalt+Enter in a task: the same place, and a language.
+    await itemText('Aufgabe').click();
+    await page.keyboard.press('End');
+    await page.keyboard.press('Shift+Enter');
+    await page.keyboard.type('```bash ');
+    const inTask = surface.locator('ul[data-type="taskList"] li pre');
+    await expect(inTask).toHaveCount(1);
+    await expect(inTask.locator('code')).toHaveClass(/language-bash/);
+    await expect(itemText('Aufgabe')).toHaveCount(1);
+    await page.waitForTimeout(800);
+    await page.keyboard.press('Control+z');
+    await expect(code).toHaveCount(0);
+
+    // An empty point becomes the block itself, and the list splits around it.
+    await itemText('Eins').click();
+    await page.keyboard.press('End');
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(800);
+    await page.keyboard.type('/code');
+    await expect(page.getByTestId('slash-option-code-block')).toBeVisible();
+    await page.keyboard.press('Enter');
+    await expect(surface.locator(':scope > ol + pre + ol')).toHaveCount(1);
+    await expect(itemText('Eins')).toHaveCount(1);
+    await expect(itemText('Zwei')).toHaveCount(1);
   });
 
   /**
