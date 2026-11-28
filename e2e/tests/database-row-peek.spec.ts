@@ -204,7 +204,94 @@ test.describe('a row in the side panel (issue #239)', () => {
     const box = await peek.boundingBox();
     expect(box?.width ?? 0).toBeGreaterThanOrEqual(380);
     expect(box?.x ?? 99).toBeLessThanOrEqual(10);
+    // Nothing to drag where the panel is the whole screen.
+    await expect(page.getByTestId('row-peek-resize')).toHaveCount(0);
     await page.getByTestId('row-peek-close').click();
+    await expect(peek).toHaveCount(0);
+  });
+
+  test('is as wide as it is dragged, by pointer and keys, within limits, and remembers it', async ({
+    page,
+    baseURL,
+  }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    // A width a previous test may have left behind is not this test's start.
+    await page.addInitScript(() => {
+      if (sessionStorage.getItem('rowPeekWidthCleared') !== null) return;
+      sessionStorage.setItem('rowPeekWidthCleared', '1');
+      localStorage.removeItem('exocortex.rowPeek');
+    });
+    const { rowIds } = await databaseWithRows(page, baseURL, ['Breit']);
+    await openByArrow(page, rowIds.get('Breit') as string);
+    const peek = page.getByTestId('row-peek');
+    await expect(peek.getByTestId('document-title')).toHaveValue('Breit', { timeout: 15_000 });
+    const handle = page.getByTestId('row-peek-resize');
+    await expect(handle).toHaveAttribute('role', 'separator');
+    const widthOf = async () => Math.round((await peek.boundingBox())?.width ?? 0);
+    const valueOf = async () => Number(await handle.getAttribute('aria-valuenow'));
+    const defaultWidth = await widthOf();
+    expect(defaultWidth).toBeGreaterThanOrEqual(416);
+    expect(defaultWidth).toBeLessThanOrEqual(704);
+    expect(await valueOf()).toBe(defaultWidth);
+
+    // Dragged 150 px to the left by the mouse: 150 px wider.
+    const box = await handle.boundingBox();
+    if (box === null) throw new Error('no handle');
+    const y = box.y + box.height / 2;
+    await page.mouse.move(box.x + box.width / 2, y);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2 - 75, y, { steps: 5 });
+    await page.mouse.move(box.x + box.width / 2 - 150, y, { steps: 5 });
+    await page.mouse.up();
+    const dragged = await widthOf();
+    expect(Math.abs(dragged - (defaultWidth + 150))).toBeLessThanOrEqual(2);
+    expect(await valueOf()).toBe(dragged);
+
+    // The keys: the arrows step by 8 px, Home and End go to the limits.
+    await handle.focus();
+    await page.keyboard.press('ArrowLeft');
+    expect(await widthOf()).toBe(dragged + 8);
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowRight');
+    expect(await widthOf()).toBe(dragged - 8);
+    await page.keyboard.press('Home');
+    expect(await widthOf()).toBe(360);
+    expect(await handle.getAttribute('aria-valuemin')).toBe('360');
+    await page.keyboard.press('End');
+    const max = Number(await handle.getAttribute('aria-valuemax'));
+    expect(await widthOf()).toBe(max);
+    // The table keeps its strip to the left of the panel.
+    const peekBox = await peek.boundingBox();
+    const area = await peek.evaluate((element) => {
+      const parent = (
+        element as unknown as { parentElement: { getBoundingClientRect(): { x: number } } }
+      ).parentElement;
+      return parent.getBoundingClientRect().x;
+    });
+    expect(Math.round((peekBox?.x ?? 0) - area)).toBeGreaterThanOrEqual(239);
+    // Dragging past the limit stops at it.
+    const atMax = await handle.boundingBox();
+    if (atMax === null) throw new Error('no handle');
+    await page.mouse.move(atMax.x + atMax.width / 2, y);
+    await page.mouse.down();
+    await page.mouse.move(atMax.x + 1200, y, { steps: 8 });
+    await page.mouse.up();
+    expect(await widthOf()).toBe(360);
+
+    // Remembered in this browser: a reload opens it at the width it was left.
+    await page.keyboard.press('Shift+ArrowLeft');
+    await page.keyboard.press('Escape');
+    await expect(peek).toHaveCount(0);
+    await openByArrow(page, rowIds.get('Breit') as string);
+    await expect(peek.getByTestId('document-title')).toHaveValue('Breit', { timeout: 15_000 });
+    await page.reload();
+    await expect(peek.getByTestId('document-title')).toHaveValue('Breit', { timeout: 30_000 });
+    expect(await widthOf()).toBe(392);
+
+    // A double-click on the handle goes back to the default.
+    await handle.dblclick();
+    expect(await widthOf()).toBe(defaultWidth);
+    await page.keyboard.press('Escape');
     await expect(peek).toHaveCount(0);
   });
 });
