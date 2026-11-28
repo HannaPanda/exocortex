@@ -18,9 +18,14 @@ export const searchTool: AnyToolDefinition = defineTool({
   description:
     'Durchsucht Titel und Inhalt eines Workspace nach einem Suchbegriff. ' +
     'Ergebnisse enthalten die documentId, mit der exo_page_read den vollen Inhalt lädt, und ' +
-    'den Pfad, unter dem der Treffer hängt. Wurde ein Treffer über die Bedeutung gefunden, ' +
-    'nennt er zusätzlich den Abschnitt samt Blockkennung: damit liest exo_page_block_read ' +
-    'genau diesen Abschnitt statt der ganzen Seite. ' +
+    'den Pfad, unter dem der Treffer hängt. Ein Treffer nennt außerdem, wo auf der Seite er ' +
+    'steht: ein Worttreffer die Stelle als "Stelle: ^kennung" (den Block, in dem das erste ' +
+    'markierte Wort des Auszugs steht, in einer Liste den einzelnen Listenpunkt) und den ' +
+    'Abschnitt darüber; ein Treffer über die Bedeutung den Abschnitt samt Blockkennung. ' +
+    'exo_page_block_read mit documentId und dieser Kennung als blockId (ohne das ^, ohne ' +
+    'toBlockId) liest genau diese Stelle beziehungsweise diesen Abschnitt, statt die ganze ' +
+    'Seite zu laden und darin zu suchen. Steht das Wort in einer angehängten Datei, nennt der ' +
+    'Treffer den Anhang mit attachmentId; dessen Text liest exo_attachment_read_text. ' +
     'Eine Suche zeigt nur Treffer zum Begriff, nie die ' +
     'Struktur: was unter einer Seite hängt, beantwortet exo_page_tree mit deren parentId.',
   inputSchema: searchInputSchema,
@@ -47,7 +52,7 @@ export const searchTool: AnyToolDefinition = defineTool({
           item.path.length === 0
             ? 'oberste Ebene'
             : item.path.map((entry) => entry.title).join(' > ');
-        return `${i + 1}. ${item.title} (id: ${item.documentId}, in: ${location})${sectionOf(item)} — ${item.snippet}`;
+        return `${i + 1}. ${item.title} (id: ${item.documentId}, in: ${location})${placeOf(item)} — ${item.snippet}`;
       })
       .join('\n');
     return { text, data: result };
@@ -55,19 +60,33 @@ export const searchTool: AnyToolDefinition = defineTool({
 });
 
 /**
- * Where on the page the hit sits, when the answer knows (issue #118).
+ * Where on the page the hit sits, when the answer knows (issues #118, #280).
  *
  * The block identifier is what makes the line worth printing: without it a
  * caller is back to reading the whole page to find the paragraph it was just
- * shown. A section that carries none is still named, because knowing the
- * heading is worth more than nothing even when it cannot be opened directly.
+ * shown, and on a page with two long lists it reads the wrong one. A section
+ * that carries none is still named, because knowing the heading is worth more
+ * than nothing even when it cannot be opened directly.
  */
-function sectionOf(hit: SearchResult): string {
-  if (hit.section === null) return '';
-  const path = hit.section.path.join(' > ');
-  return hit.section.blockId === null
-    ? `, Abschnitt: ${path}`
-    : `, Abschnitt: ${path} (^${hit.section.blockId})`;
+export function placeOf(hit: SearchResult): string {
+  const parts: string[] = [];
+  if (hit.section !== null) {
+    const path = hit.section.path.join(' > ');
+    parts.push(
+      hit.section.blockId === null
+        ? `Abschnitt: ${path}`
+        : `Abschnitt: ${path} (^${hit.section.blockId})`,
+    );
+  }
+  if (hit.attachment !== null) {
+    const shownBy = hit.blockId === null ? '' : `, gezeigt von ^${hit.blockId}`;
+    parts.push(
+      `im Anhang „${hit.attachment.filename}“ (attachmentId: ${hit.attachment.attachmentId}${shownBy})`,
+    );
+  } else if (hit.blockId !== null) {
+    parts.push(`Stelle: ^${hit.blockId}`);
+  }
+  return parts.length === 0 ? '' : `, ${parts.join(', ')}`;
 }
 
 /**
