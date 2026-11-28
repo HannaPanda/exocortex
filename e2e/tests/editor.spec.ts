@@ -831,6 +831,8 @@ test.describe('editor', () => {
     await expect(nested).toHaveText('');
     await expect(itemText('Beta')).toHaveCount(1);
     await expect(surface.locator(':scope > ul')).toHaveCount(2);
+    // Apart from the block, or the undo manager makes both one step.
+    await page.waitForTimeout(800);
     await page.keyboard.type('npm test');
     await expect(nested).toHaveText('npm test');
 
