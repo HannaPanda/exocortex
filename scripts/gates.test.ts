@@ -761,6 +761,31 @@ describe('command palette coverage (check-palette-coverage.mjs)', () => {
     expect(result.status).not.toBe(0);
     expect(result.output).toContain('`paletteProbe` has no palette search words');
   });
+
+  it('goes red for a settings dialog group without its words', () => {
+    editFile('apps/web/src/components/settings-dialog/sections.ts', (source) =>
+      source.replace(
+        "  { id: 'admin', area: 'admin', audience: 'admin' },",
+        "  { id: 'admin', area: 'admin', audience: 'admin' },\n  { id: 'paletteprobe', area: 'account', audience: 'everyone' },",
+      ),
+    );
+    const result = gate('check-palette-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('`paletteprobe` has no name or intro in the dialog');
+    expect(result.output).toContain('`paletteprobe` has no palette name or search words');
+  });
+
+  it('goes red for a settings screen that renders instead of opening the dialog', () => {
+    writeProbe(
+      'apps/web/src/app/(app)/einstellungen/__probe__/page.tsx',
+      ['export default function SettingsProbePage() {', '  return null;', '}', ''].join('\n'),
+    );
+    const result = gate('check-palette-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain(
+      'the settings screen /einstellungen/__probe__ renders instead of opening the settings dialog',
+    );
+  });
 });
 
 describe('documentation currency (check-docs-current.mjs)', () => {

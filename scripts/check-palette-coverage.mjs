@@ -20,8 +20,17 @@
  *      derived from `SETTING_GROUPS`, so the words are the one thing a new
  *      group can arrive without.
  *
+ *   3. the settings dialog's groups (issue #279) -- every id in
+ *      `SETTINGS_SECTIONS` has its name and intro under
+ *      `settings.dialog.sections` and its palette name and search words under
+ *      `shell.paletteCommands.settingsSections`, and no words outlive a group.
+ *   4. settings screens -- a screen under an `einstellungen` address either is
+ *      a page on purpose (`SETTINGS_PAGES`, with the reason) or redirects into
+ *      the dialog, because a new setting gets a place in a dialog group and
+ *      never a page of its own (docs/admin.md, "Where a new setting goes").
+ *
  * What it cannot see: an action hidden in a menu, a new tab on an existing
- * page, a dialog. Those are the rule in AGENTS.md and docs/command-palette.md,
+ * page, any other dialog. Those are the rule in AGENTS.md and docs/command-palette.md,
  * checked by whoever reviews the change.
  */
 
@@ -34,6 +43,26 @@ import { readNamespace, SOURCE_LOCALE } from './lib/i18n-catalog.mjs';
 import { collectScreens } from './lib/web-screens.mjs';
 
 const NAVIGATION_FILE = 'apps/web/src/components/palette/navigation-commands.tsx';
+
+const SECTIONS_FILE = 'apps/web/src/components/settings-dialog/sections.ts';
+
+/**
+ * Settings screens that are pages on purpose, each with the reason. Every
+ * other screen under an `einstellungen` address has to redirect.
+ */
+const SETTINGS_PAGES = new Map([
+  [
+    '/admin/einstellungen',
+    'The deployment’s hundred settings in fourteen groups under one save button: a page the width of the screen, which the dialog’s Verwaltung group links to group by group.',
+  ],
+]);
+
+/** The ids of `SETTINGS_SECTIONS`, in their order. */
+function collectSectionIds() {
+  const source = readFileSync(join(repoRoot, SECTIONS_FILE), 'utf8');
+  const list = source.slice(source.indexOf('SETTINGS_SECTIONS = ['));
+  return [...list.matchAll(/\{\s*id:\s*'([a-z]+)',\s*area:/g)].map((match) => match[1]);
+}
 
 /**
  * Screens no command has to open, each with the reason.
@@ -208,6 +237,58 @@ for (const group of Object.keys(words)) {
   hints.add('Delete them, or rename them with the group.');
 }
 
+// 3. The settings dialog (issue #279). Its groups are listed once, in
+//    SECTIONS_FILE; each needs the name and intro the dialog shows and the
+//    name and search words the palette and the dialog's search read, and a
+//    group that is gone must take its words along.
+const sectionIds = collectSectionIds();
+const dialogWords = readNamespace(SOURCE_LOCALE, 'settings')?.dialog?.sections ?? {};
+const sectionWords = readNamespace(SOURCE_LOCALE, 'shell')?.paletteCommands?.settingsSections ?? {};
+if (sectionIds.length === 0) {
+  findings.push(`${SECTIONS_FILE} lists no settings dialog group`);
+  hints.add(
+    `The groups are read as \`{ id: '…', area: … }\` out of ${SECTIONS_FILE}; check whether that changed.`,
+  );
+}
+const filled = (value) => typeof value === 'string' && value.trim().length > 0;
+for (const id of sectionIds) {
+  if (!filled(dialogWords[id]?.label) || !filled(dialogWords[id]?.intro)) {
+    findings.push(`the settings dialog group \`${id}\` has no name or intro in the dialog`);
+    hints.add(
+      `Write settings.dialog.sections.<group>.label and .intro in ${SOURCE_LOCALE}/settings.json: what the navigation calls the group and the sentence above it.`,
+    );
+  }
+  if (!filled(sectionWords[id]?.label) || !filled(sectionWords[id]?.keywords)) {
+    findings.push(`the settings dialog group \`${id}\` has no palette name or search words`);
+    hints.add(
+      `Write shell.paletteCommands.settingsSections.<group>.label and .keywords in ${SOURCE_LOCALE}/shell.json: the palette and the dialog's search both read them.`,
+    );
+  }
+}
+for (const id of new Set([...Object.keys(dialogWords), ...Object.keys(sectionWords)])) {
+  if (sectionIds.includes(id)) continue;
+  findings.push(
+    `words for the settings dialog group \`${id}\`, which ${SECTIONS_FILE} does not list`,
+  );
+  hints.add('Delete them, or rename them with the group.');
+}
+
+// 4. A setting gets a place in the dialog, not a screen of its own
+//    (docs/admin.md, "Where a new setting goes"). A screen whose address is a
+//    settings address is either one of the few that are pages on purpose, or
+//    a redirect into the dialog kept for old links.
+for (const [screen, where] of screens) {
+  if (!/(^|\/)einstellungen(\/|$)/.test(screen) || SETTINGS_PAGES.has(screen)) continue;
+  const source = readFileSync(join(repoRoot, where), 'utf8');
+  if (/\bredirect\(/.test(source)) continue;
+  findings.push(
+    `the settings screen ${screen} renders instead of opening the settings dialog  (${where})`,
+  );
+  hints.add(
+    `Place the setting in a group of the settings dialog (${SECTIONS_FILE}, docs/admin.md "Where a new setting goes"); a settings address that has to stay is a redirect into it.`,
+  );
+}
+
 if (findings.length > 0) {
   const unique = [...hints];
   fail(
@@ -219,6 +300,7 @@ if (findings.length > 0) {
 
 info(
   `${claims.size} command(s) open ${screens.size - SCREEN_EXEMPT.length} of ${screens.size} screen(s), ` +
-    `${SCREEN_EXEMPT.length} exempt; ${groups.length} settings group(s) have search words`,
+    `${SCREEN_EXEMPT.length} exempt; ${groups.length} settings group(s) have search words; ` +
+    `${sectionIds.length} settings dialog group(s) have their words`,
 );
 ok('Every place in the browser can be opened from the command palette.');
