@@ -177,6 +177,22 @@
     padding-block-end: calc(var(--spacing) * 3 + 1lh);
   }
 
+  /* Room past the end of the page (issue #281, `writing-room.ts`): while the
+     page's own editor is being written in, about half a screen stays below
+     the last block, so the last line can be scrolled up to the middle instead
+     of sitting on the bottom edge. Half the viewport less what lies below the
+     scroller's middle anyway (half the top bar, the page's `pb-8`, the line
+     itself); never less than the trailing line above. It is the editor's own
+     padding, so a click into it is a click below the last block and opens
+     that line. Screen only: a printed page ends with its text. A page that is
+     only read keeps its length, as the trailing line does, and a
+     transclusion's editor is not the canvas. */
+  @media screen {
+    .exocortex-editor .ProseMirror.exocortex-editor-canvas[contenteditable='true'] {
+      padding-block-end: max(calc(var(--spacing) * 3 + 1lh), calc(50dvh - 5rem));
+    }
+  }
+
   /* Heading ladder: `text-section` / `text-subsection` / `text-body` plus
      weight, which is 1.375 / 1.125 / 0.9375 rem against a 0.9375 rem body. The
      sizes, leading and tracking come from the theme tokens in

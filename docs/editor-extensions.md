@@ -514,6 +514,37 @@ made and left empty stays, as one made with `Enter` would. Covered by
 `trailing-paragraph.test.ts` (including that opening a page writes nothing to
 the Yjs state) and `e2e/tests/editor.spec.ts`.
 
+## Room past the end of the page
+
+While the page's own editor is being written in, the last line can be
+scrolled up to about the middle of the screen, and typing on it keeps it off
+the bottom edge (issue #281, "scroll past end"). Nothing of it is stored, so
+the Yjs state, the search projection and the export never see it:
+
+- **The space is padding.** `globals.css` gives
+  `.ProseMirror.exocortex-editor-canvas[contenteditable='true']` a
+  `padding-block-end` of half the viewport less what already lies below the
+  scroller's middle, and never less than the trailing line above. Because it
+  is the editor's own surface, a click into it is a click below the last
+  block: it opens the line `TrailingParagraph` draws, or, on a page already
+  ending in an empty paragraph, puts the caret there. Screen only (`@media
+screen`), so a printed page ends with its text; a page that is only read
+  (no write access, archived, `/geteilt/<id>`) is not `contenteditable` and
+  keeps its length, as with the trailing line; a transclusion's editor is not
+  the canvas.
+- **Following the caret is ProseMirror's.** `WritingRoom`
+  (`apps/web/src/components/editor/writing-room.ts`, page editor only) sets
+  `scrollThreshold` and `scrollMargin` at the bottom to `bottomRoom`: a quarter
+  of the visible page (48 to 200 pixels), plus whatever part of the scroll
+  container the visual viewport does not show. That second part is the
+  on-screen keyboard: it shrinks only the visual viewport, so without it a
+  line made with `Enter` was scrolled into view behind the keyboard. The value
+  is a getter on the prop object, read each time ProseMirror scrolls, so no
+  listener and no scroll code of our own is involved.
+
+Covered by `writing-room.test.ts` and `e2e/tests/writing-room.spec.ts`
+(desktop, print, an archived page, and a phone with a simulated keyboard).
+
 ## Where a new code block goes
 
 The catalog's "Codeblock" (slash menu, selection toolbar), `Mod-Alt-c` and a

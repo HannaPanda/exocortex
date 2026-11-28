@@ -94,6 +94,7 @@ import {
   SavedQueryEmbedPromptContext,
   type SavedQueryEmbedSelection,
 } from './saved-query-embed-context';
+import { WritingRoom } from './writing-room';
 
 interface CollaborativeEditorProps {
   workspaceId: string;
@@ -468,6 +469,10 @@ function EditorSurface({
           // because the plugin cannot resolve a range to grab. The wrapper keeps
           // Shift+Arrow for text selection (issue #251).
           BlockNodeRange,
+          // Keeps the line being written in off the bottom edge, with the
+          // room past the end of the page that `globals.css` gives it
+          // (issue #281).
+          WritingRoom,
           // Drag-and-drop and paste. The block type is chosen from the MIME type,
           // so dropping a video produces a player and not a broken image.
           FileHandler.configure({
