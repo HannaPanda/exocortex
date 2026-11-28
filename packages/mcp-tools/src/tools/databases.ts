@@ -39,13 +39,7 @@ import {
 } from '../local-schemas.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
-import {
-  fileColumnsOf,
-  formatCell,
-  formatFiles,
-  formatRow,
-  wholeDayColumns,
-} from './database-cells.js';
+import { cellColumnsOf, formatRow, formatRowCell } from './database-cells.js';
 import { ICON_COLOR_DESCRIPTION, ICON_DESCRIPTION } from './pages.js';
 
 /**
@@ -513,7 +507,8 @@ const databaseQueryInputSchema = z
 export const databaseQueryTool: AnyToolDefinition = defineTool({
   name: 'exo_database_query',
   description:
-    'Fragt Zeilen einer Datenbank ab, optional über eine gespeicherte Ansicht oder ad-hoc-Filter.',
+    'Fragt Zeilen einer Datenbank ab, optional über eine gespeicherte Ansicht oder ad-hoc-Filter. ' +
+    'Personen (PERSON, erstellt/geändert von) stehen mit Namen und Kennung da, Dateien mit Namen.',
   inputSchema: databaseQueryInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'databases',
@@ -533,8 +528,7 @@ export const databaseQueryTool: AnyToolDefinition = defineTool({
         responseSchema: databasePropertyListResponseSchema,
       }),
     ]);
-    const wholeDays = wholeDayColumns(properties.properties);
-    const fileColumns = fileColumnsOf(properties.properties);
+    const columns = cellColumnsOf(properties.properties);
     const capped = result.rows.slice(0, MAX_QUERY_ROWS);
     const headers = ['Titel', ...propertyLabelsFor(capped)];
     const text =
@@ -542,7 +536,7 @@ export const databaseQueryTool: AnyToolDefinition = defineTool({
         ? 'Keine Zeilen gefunden.'
         : renderMarkdownTable(
             headers,
-            capped.map((row) => formatRow(row, wholeDays, fileColumns)),
+            capped.map((row) => formatRow(row, columns)),
           ) +
           (result.rows.length > MAX_QUERY_ROWS
             ? `\n\n… ${result.rows.length - MAX_QUERY_ROWS} weitere Zeile(n) nicht angezeigt (gekürzt).`
@@ -559,7 +553,8 @@ export const databaseRowGetTool: AnyToolDefinition = defineTool({
     'Liest die Werte einer Seite, die eine Zeile in einer Datenbank ist (ADR-011), mit den Spalten ihrer Datenbank ' +
     '(properties: Name, Typ, Optionen, in deren Reihenfolge): derselbe Stand, den der Kopf der Seite im Browser zeigt; ' +
     'geändert wird mit exo_database_row_update. row: null, wenn die Seite keine Zeile ist (gewöhnliche Seite, ' +
-    'Datenbank selbst, Seite auf oberster Ebene).',
+    'Datenbank selbst, Seite auf oberster Ebene). Personen stehen mit Namen neben ihrer Kennung ' +
+    '(row.people: id, name, member); wer nicht mehr Mitglied ist, behält seinen Namen, ein gelöschtes Konto nur die Kennung.',
   inputSchema: databaseRowGetInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'databases',
@@ -575,15 +570,12 @@ export const databaseRowGetTool: AnyToolDefinition = defineTool({
     }
     // Named by column, as the page header shows them (issue #254).
     const names = new Map(result.properties.map((p) => [p.id, `${p.name} (${p.id})`] as const));
-    const wholeDays = wholeDayColumns(result.properties);
-    const fileColumns = fileColumnsOf(result.properties);
+    const columns = cellColumnsOf(result.properties);
     const row = result.row;
-    const lines = row.values.map(({ propertyId, value }) => {
-      const shown = fileColumns.has(propertyId)
-        ? (formatFiles(value, row) ?? formatCell(value))
-        : formatCell(value, wholeDays.has(propertyId));
-      return `- ${names.get(propertyId) ?? propertyId}: ${shown}`;
-    });
+    const lines = row.values.map(
+      ({ propertyId, value }) =>
+        `- ${names.get(propertyId) ?? propertyId}: ${formatRowCell(row, propertyId, value, columns)}`,
+    );
     return {
       text: `${result.row.document.title} (id: ${result.row.document.id})\n${lines.join('\n')}`,
       data: result,
@@ -626,7 +618,9 @@ const databaseRowUpdateInputSchema = z
 export const databaseRowUpdateTool: AnyToolDefinition = defineTool({
   name: 'exo_database_row_update',
   description:
-    'Aktualisiert einzelne Spaltenwerte einer Zeile. Eine Dateien-Spalte (FILES) ist eine Liste von Anhangs-Kennungen: ' +
+    'Aktualisiert einzelne Spaltenwerte einer Zeile. Eine Personen-Spalte (PERSON) ist eine Liste von userIds ' +
+    'aus exo_workspace_members; hinzufügen lassen sich nur Mitglieder, wer schon drinsteht, darf bleiben. ' +
+    'Eine Dateien-Spalte (FILES) ist eine Liste von Anhangs-Kennungen: ' +
     'entfernen und umsortieren geht hier, eine neue Datei kommt mit exo_attachment_upload, ' +
     'exo_attachment_upload_url oder exo_attachment_upload_ticket mit documentId = Zeile und propertyId = Spalte in die Zelle. ' +
     'Ein Datumswert ist normalerweise ein ISO-String; ist die Eigenschaft ein Zeitraum (isRange), dann { start, end, allDay }. Ein ganzer Tag ist "2026-11-26", ein Zeitpunkt trägt seine Zone: "2026-11-26T12:00:00+01:00" oder "2026-11-26T11:00:00Z". Ohne Zone gilt die Zeitzone der Spalte (config.timeZone), und hat die Spalte keine, UTC.',

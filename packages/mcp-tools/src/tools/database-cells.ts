@@ -65,22 +65,67 @@ export function formatFiles(
     .join(', ');
 }
 
-export function formatRow(
+/**
+ * A PERSON, CREATED_BY or UPDATED_BY value by name (issue #314), beside the
+ * id a write needs. Somebody who left the workspace keeps their name with a
+ * note; an id the row's `people` do not answer for is a deleted account.
+ */
+export function formatPeople(
+  value: DatabaseRowPropertyValue['value'],
   row: DatabaseRow,
-  wholeDays: ReadonlySet<string>,
-  fileColumns: ReadonlySet<string>,
-): string[] {
-  return [
-    row.document.title,
-    ...row.values.map((v) =>
-      fileColumns.has(v.propertyId)
-        ? (formatFiles(v.value, row) ?? formatCell(v.value))
-        : formatCell(v.value, wholeDays.has(v.propertyId)),
-    ),
-  ];
+): string | null {
+  if (row.people === undefined) return null;
+  const ids = typeof value === 'string' ? [value] : Array.isArray(value) ? value : null;
+  if (ids === null) return null;
+  const people = new Map(row.people.map((person) => [person.id, person] as const));
+  return ids
+    .map((id) => {
+      const person = people.get(id);
+      if (person === undefined) return `(gelöschtes Konto, id: ${id})`;
+      return person.member
+        ? `${person.name} (id: ${id})`
+        : `${person.name} (kein Mitglied mehr, id: ${id})`;
+    })
+    .join(', ');
 }
 
-/** The FILES columns, whose values are shown by file name. */
-export function fileColumnsOf(properties: readonly DatabaseProperty[]): Set<string> {
-  return new Set(properties.filter((p) => p.type === 'FILES').map((p) => p.id));
+/** Which columns of a database need more than the bare value to be read. */
+export interface CellColumns {
+  /** DATE columns without a time: their values are whole days. */
+  wholeDays: ReadonlySet<string>;
+  /** FILES columns, shown by file name. */
+  files: ReadonlySet<string>;
+  /** PERSON, CREATED_BY and UPDATED_BY columns, shown by name. */
+  people: ReadonlySet<string>;
+}
+
+export function cellColumnsOf(properties: readonly DatabaseProperty[]): CellColumns {
+  return {
+    wholeDays: wholeDayColumns(properties),
+    files: new Set(properties.filter((p) => p.type === 'FILES').map((p) => p.id)),
+    people: new Set(
+      properties
+        .filter((p) => p.type === 'PERSON' || p.type === 'CREATED_BY' || p.type === 'UPDATED_BY')
+        .map((p) => p.id),
+    ),
+  };
+}
+
+/** One cell of `row` as text, by whatever its column needs to be read. */
+export function formatRowCell(
+  row: DatabaseRow,
+  propertyId: string,
+  value: DatabaseRowPropertyValue['value'],
+  columns: CellColumns,
+): string {
+  if (columns.files.has(propertyId)) return formatFiles(value, row) ?? formatCell(value);
+  if (columns.people.has(propertyId)) return formatPeople(value, row) ?? formatCell(value);
+  return formatCell(value, columns.wholeDays.has(propertyId));
+}
+
+export function formatRow(row: DatabaseRow, columns: CellColumns): string[] {
+  return [
+    row.document.title,
+    ...row.values.map((v) => formatRowCell(row, v.propertyId, v.value, columns)),
+  ];
 }

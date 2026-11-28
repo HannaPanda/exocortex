@@ -142,6 +142,38 @@ describe('databaseRowGetTool', () => {
     );
   });
 
+  it('names the people of a PERSON cell beside their ids (issue #314)', async () => {
+    const { client } = createFakeClient({
+      row: {
+        document: rowDocument,
+        values: [{ propertyId: 'people12345', value: ['useranna01', 'usercarla1', 'usergone01'] }],
+        people: [
+          { id: 'useranna01', name: 'Anna', member: true },
+          { id: 'usercarla1', name: 'Carla', member: false },
+        ],
+      },
+      properties: [
+        {
+          id: 'people12345',
+          documentId: 'coll1234567',
+          type: 'PERSON',
+          name: 'Zuständig',
+          orderKey: 'a0',
+          config: null,
+          options: [],
+          createdAt: '2026-11-28T10:00:00.000Z',
+          updatedAt: '2026-11-28T10:00:00.000Z',
+        },
+      ],
+    });
+
+    const result = await databaseRowGetTool.run(client, { documentId: 'doc123456' });
+
+    expect(result.text).toContain(
+      '- Zuständig (people12345): Anna (id: useranna01), Carla (kein Mitglied mehr, id: usercarla1), (gelöschtes Konto, id: usergone01)',
+    );
+  });
+
   it('says so, not an error, when the document is not a row', async () => {
     const { client } = createFakeClient({ row: null });
 

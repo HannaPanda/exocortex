@@ -251,7 +251,7 @@ const EXEMPT = [
   {
     route: 'GET /api/workspaces/:x',
     reason:
-      'One workspace with its members. `exo_list_workspaces` gives an agent the ids it needs; the member list is a human concern.',
+      "One workspace with its members' addresses and roles, which is what the members' settings screen manages. `exo_list_workspaces` gives an agent the ids it needs, and `exo_workspace_members` the names and user ids a PERSON value is written with (issue #314).",
   },
   {
     route: 'PATCH /api/workspaces/:x/members/:x',

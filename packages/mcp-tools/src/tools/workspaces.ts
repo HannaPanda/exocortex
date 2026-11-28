@@ -7,6 +7,7 @@ import {
   type Workspace,
   workspaceListResponseSchema,
   workspaceOverviewResponseSchema,
+  workspacePeopleResponseSchema,
   workspaceSchema,
   workspaceSlugSchema,
 } from '@exocortex/contracts';
@@ -194,8 +195,34 @@ export const workspaceOverviewTool: AnyToolDefinition = defineTool({
   },
 });
 
+export const workspaceMembersTool: AnyToolDefinition = defineTool({
+  name: 'exo_workspace_members',
+  description:
+    'Listet die Mitglieder eines Arbeitsbereichs mit Namen und Benutzer-Kennung (userId), ' +
+    'nach Namen sortiert. Eine Personen-Spalte (PERSON) einer Datenbank speichert solche ' +
+    'Kennungen: geschrieben wird mit exo_database_row_update und einer Liste von userIds, ' +
+    'und eintragen lässt sich nur, wer hier steht.',
+  inputSchema: z.object({ workspaceId: idSchema }),
+  surfaces: ['mcp', 'ai'],
+  domain: 'databases',
+  mutating: false,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'GET',
+      path: `/api/workspaces/${input.workspaceId}/members`,
+      responseSchema: workspacePeopleResponseSchema,
+    });
+    if (result.members.length === 0) return { text: 'Keine Mitglieder gefunden.', data: result };
+    const text = result.members
+      .map((member) => `- ${member.name} (userId: ${member.userId})`)
+      .join('\n');
+    return { text, data: result };
+  },
+});
+
 export const WORKSPACE_TOOLS: readonly AnyToolDefinition[] = [
   listWorkspacesTool,
+  workspaceMembersTool,
   workspaceOverviewTool,
   workspaceRenameTool,
   workspaceReorderTool,
