@@ -61,6 +61,20 @@ misaligning page A with page B's vector.
   semantics, but it makes the whole pipeline exercisable offline and in tests,
   the same reasoning as `MockImageGenerator`.
 
+What one input may hold is counted in tokens, not characters (issue #329):
+`fitEmbeddingInput` in `packages/ai/src/embedding-budget.ts` keeps the longest
+beginning whose estimated cost stays within `EMBEDDING_TOKEN_BUDGET` (8000 of
+the model's 8191). The estimate prices the pieces `cl100k` cuts text into, so a
+table of figures is cut at about 14000 characters and prose at about 22000;
+`EMBEDDING_MAX_CHARS` (24000) is only the first, cheap cut before it. The
+bridge hands it to the adapter as `EmbeddingClient.fitInput`, which the page
+vector, every passage and the search query go through, and the adapter hashes
+what comes back. A refusal for length that gets past the estimate is raised as
+`ai_embedding_input_too_long`, and the bridge answers it once by cutting every
+input longer than 8191 UTF-8 bytes to that length: no token of these models is
+shorter than a byte, so that request cannot be refused for length again. Where
+the weights come from is in the addendum to ADR-020.
+
 `createEmbeddingProvider` returns `null` without a key, and `null` means "the
 feature is unavailable", not "something broke". What consumes it is
 `HybridSearchAdapter` in `packages/database`, through the `EmbeddingClient`

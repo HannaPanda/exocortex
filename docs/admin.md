@@ -370,7 +370,8 @@ turns every indexed page into a paid embedding call.
 | `search.semanticWeightPercent` | How much the semantic list counts against the full-text list. `0` is pure full-text, `100` pure meaning, `50` weighs them equally.                                                                                                                                                                                                                                                                                                                               |
 
 Cost, so it is not a surprise: `text-embedding-3-small` is about two cents per
-million tokens, one vector per page of up to 24k characters, and a page whose
+million tokens, one vector per page of up to about 8000 tokens (22k characters
+of prose, fewer for a table of figures), and a page whose
 text has not changed is never embedded twice. A page above 2400 characters pays
 for its passages on top of that, at most 64 of them
 ([ADR-034](adr/ADR-034-passages-beside-the-page-vector.md)); on this

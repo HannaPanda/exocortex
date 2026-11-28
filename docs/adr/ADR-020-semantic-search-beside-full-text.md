@@ -70,7 +70,8 @@ no-op once they all have vectors, and a no-op while the setting is off.
 
 ## Consequences
 
-- A page is embedded as `title + plainText`, truncated to 24k characters. Since
+- A page is embedded as `title + plainText`, cut to a budget of estimated
+  tokens and never more than 24k characters (see the addendum below). Since
   issue #36 a long page carries passage vectors as well, beside that one and
   never instead of it; the `blockId` column is what holds them
   ([ADR-034](ADR-034-passages-beside-the-page-vector.md)). A database row
@@ -85,3 +86,43 @@ no-op once they all have vectors, and a no-op while the setting is off.
   The column is fixed-width and an HNSW index needs it to be.
 - Every search with the feature on costs one embedding call for the query. That
   is the price of the second half, and it is why the setting exists.
+
+## Addendum: the budget is counted in tokens (issue #329, 2026-11-28)
+
+The first version cut every input at 24000 characters, a figure estimated for
+German prose. A character does not cost the same everywhere: 24000 characters
+of prose are about 6400 tokens of `text-embedding-3-small`, 24000 characters of
+a bank statement out of a PDF are over 13000, and the model refuses anything
+above 8191. Such a page got no vector, and because nothing was stored for it,
+`backfill-embeddings` asked again every two minutes.
+
+What changed, and why this way:
+
+- **An estimate, not the tokenizer.** `fitEmbeddingInput`
+  (`packages/ai/src/embedding-budget.ts`) keeps the longest beginning of a text
+  whose estimated cost stays within 8000 tokens, cut between two pieces. The
+  estimate follows how `cl100k` cuts text before it looks anything up (letters,
+  one to three digits, punctuation, whitespace) and prices each piece by what
+  it holds, with weights measured against the provider's own `usage` for
+  prose, code, tables, hashes, Base64, emoji and five scripts outside Latin. It
+  came out between 1.02 and 1.8 times the real count, never under it, and the
+  measured strings are fixtures in its test. The tokenizer itself would be a
+  vocabulary of a hundred thousand entries in every indexing process, for an
+  answer the estimate gives well enough. Prose keeps about 22000 characters, a
+  statement about 14000.
+- **The port carries the budget, not a length.** `EmbeddingClient.fitInput`
+  replaces `maxInputChars`, so the adapter hashes exactly what is sent. The
+  page vector, every passage (ADR-034) and the search query go through it.
+- **A refusal is answered with a proof, once.** Should the provider still
+  refuse for length (`ai_embedding_input_too_long`), `createEmbeddingClient`
+  sends the same request once more with every input longer than 8191 bytes cut
+  to that many bytes. The tokenizers of this model family are byte-pair
+  encodings over UTF-8 and no token is shorter than a byte, so that cut cannot
+  be refused for length. It is not a second guess, which is why it may follow
+  the first. The row keeps the hash of the fitted text, so the page counts as
+  settled and the backfill does not come back to it.
+- The figures are those of the `text-embedding-3` family, the default and the
+  model this deployment runs. Of the others in
+  `EMBEDDING_MODELS_FITTING_COLUMN`, `gemini-embedding-001` and
+  `qwen3-embedding-8b` accepted a fitted 22000-character page when measured on
+  2026-11-28; a model with a smaller window would need its own figure.

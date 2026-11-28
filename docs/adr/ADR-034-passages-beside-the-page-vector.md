@@ -104,3 +104,13 @@ that nobody is editing.
   always did.
 - A search costs the same as before: one embedding of the query. Only indexing
   and the size of the table grew.
+
+## Addendum (issue #329, 2026-11-28)
+
+A passage goes through the same token budget as the page vector
+(`EmbeddingClient.fitInput`, see the addendum to
+[ADR-020](ADR-020-semantic-search-beside-full-text.md)) instead of being
+trusted for its length. At 2000 characters it fits for every kind of text
+measured, a passage of CJK or of mathematical symbols included; the budget is
+what keeps that true for a kind nobody measured. `chunkText` still stores the
+whole passage, so a hit shows what the reader would expect.

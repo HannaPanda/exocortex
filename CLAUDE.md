@@ -334,7 +334,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   `HybridSearchAdapter` wraps `PostgresSearchAdapter`, fuses the two lists by
   rank, and falls back to full-text alone whenever the embedding call fails.
   `packages/database` reaches the model through a port, never by importing
-  `@exocortex/ai`.
+  `@exocortex/ai`. One input is cut to an estimated token budget
+  (`fitInput`), never to a character count, and a refusal for length is
+  answered once with the byte bound that cannot be refused (#329).
 - ADR-021: the memory keeps distilled facts above its session notes. A fact is
   an ordinary page plus a `MemoryFact` sidecar row; a nightly job judges notes
   against it and the API applies the judgement; confidence fades with silence
