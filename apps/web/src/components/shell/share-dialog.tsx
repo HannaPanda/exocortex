@@ -170,14 +170,17 @@ export function ShareDialog({
         <DialogHeader>
           {/* A page title can run to two lines: room for the close button, and
               line spacing that keeps the lines apart. */}
-          <DialogTitle className="pr-6 leading-snug break-words">
+          <DialogTitle className="pr-6 leading-snug text-pretty break-words">
             {t('title', { title: documentTitle })}
           </DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         {/* Header and footer stay put; a page with many grants scrolls in here. */}
-        <DialogBody className="flex flex-col gap-4" data-testid="share-dialog-body">
+        <DialogBody
+          className="flex flex-col gap-4 overscroll-contain"
+          data-testid="share-dialog-body"
+        >
           {inherited.length > 0 ? (
             <Alert data-testid="share-inherited">
               <TriangleAlertIcon />
@@ -243,6 +246,8 @@ export function ShareDialog({
               <Input
                 id="share-email"
                 type="email"
+                autoComplete="off"
+                spellCheck={false}
                 value={email}
                 placeholder={t('emailPlaceholder')}
                 data-testid="share-email"
