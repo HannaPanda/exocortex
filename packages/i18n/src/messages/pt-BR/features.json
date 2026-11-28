@@ -81,6 +81,16 @@
     },
     "where": "No editor via „/Destaque” ou „Transformar em outro bloco”; um clique no ícone da caixa abre a seleção."
   },
+  "emoji-per-doppelpunkt": {
+    "title": "Emojis ao digitar com dois-pontos",
+    "summary": "Se você digitar dois-pontos e logo em seguida algumas letras, o eXocortex sugere emojis correspondentes, no editor de páginas e no campo de entrada do chat de IA. A busca é feita no seu idioma e com os atalhos conhecidos, como “tada” ou “+1”.",
+    "details": {
+      "p1": "Digite, por exemplo, “:cora” ou “:polegar”: abaixo dos dois-pontos aparece uma lista que vai diminuindo a cada letra. Use as teclas de seta para selecionar, Enter ou Tab para inserir o emoji, um clique também funciona, e Escape fecha a lista sem alterar nada. Se você digitar o atalho completo, incluindo o segundo dois-pontos como em “:tada:”, o emoji aparece imediatamente. Os nomes vêm dos dados Unicode (CLDR) no idioma em que você usa o eXocortex, e sua seleção também vai para “Usados recentemente” no seletor de emojis.",
+      "p2": "Dois-pontos no meio do texto continuam sendo dois-pontos: após um dígito como em “12:30”, após uma letra como em “https://” ou “Aviso:”, antes de um parêntese como em “:)” e em qualquer lugar dentro de blocos de código ou código inline, nada se abre. Após apenas uma letra, como “:D”, Enter continua criando uma nova linha ou enviando a mensagem do chat; para inserir aí, use Tab ou selecione primeiro com uma tecla de seta.",
+      "p3": "O emoji é inserido no texto como um caractere comum. Por isso, ele sobrevive à exportação para Markdown, é encontrado pela busca e aparece para agentes exatamente como para você."
+    },
+    "where": "No editor de páginas e no campo de entrada do chat de IA, digite dois-pontos diretamente seguidos de uma letra."
+  },
   "inhaltsverzeichnis": {
     "title": "Sumário a partir dos títulos",
     "summary": "Um bloco que exibe todos os títulos da página como uma lista com links, recuados conforme o nível. Ele acompanha a página automaticamente: um título novo, renomeado ou movido aparece logo na posição correta.",

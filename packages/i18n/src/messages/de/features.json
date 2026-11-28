@@ -81,6 +81,16 @@
     },
     "where": "Im Editor über „/Hinweis“ oder „In anderen Block umwandeln“; die Auswahl öffnet ein Klick auf das Symbol des Kastens."
   },
+  "emoji-per-doppelpunkt": {
+    "title": "Emojis beim Tippen mit Doppelpunkt",
+    "summary": "Tippst du einen Doppelpunkt und gleich danach ein paar Buchstaben, schlägt eXocortex passende Emojis vor, im Seiten-Editor und im Eingabefeld des KI-Chats. Gesucht wird in deiner Sprache und mit den bekannten Kurzwörtern wie „tada“ oder „+1“.",
+    "details": {
+      "p1": "Schreib zum Beispiel „:herz“ oder „:daumen“: unter dem Doppelpunkt erscheint eine Liste, die mit jedem Buchstaben kürzer wird. Mit den Pfeiltasten wählst du, Eingabe oder Tab setzen das Emoji ein, ein Klick tut es auch, und Escape schließt die Liste, ohne etwas zu ändern. Tippst du ein Kurzwort ganz aus, samt zweitem Doppelpunkt wie bei „:tada:“, steht das Emoji sofort da. Die Namen kommen aus den Unicode-Daten (CLDR) in der Sprache, in der du eXocortex benutzt, und deine Auswahl landet auch unter „Zuletzt verwendet“ in der Emoji-Auswahl.",
+      "p2": "Ein Doppelpunkt mitten im Text bleibt ein Doppelpunkt: nach einer Ziffer wie bei „12:30“, nach einem Buchstaben wie bei „https://“ oder „Hinweis:“, vor einer Klammer wie bei „:)“ und überall in Codeblöcken und Inline-Code öffnet sich nichts. Nach nur einem Buchstaben, etwa „:D“, macht Eingabe weiterhin eine neue Zeile oder schickt die Chatnachricht ab; zum Einsetzen dort Tab nehmen oder erst mit einer Pfeiltaste wählen.",
+      "p3": "Das Emoji wird als ganz normales Zeichen in den Text geschrieben. Es übersteht deshalb den Markdown-Export, wird von der Suche gefunden und sieht für Agenten genauso aus wie für dich."
+    },
+    "where": "Im Seiten-Editor und im Eingabefeld des KI-Chats einen Doppelpunkt tippen, direkt gefolgt von einem Buchstaben."
+  },
   "inhaltsverzeichnis": {
     "title": "Inhaltsverzeichnis aus den Überschriften",
     "summary": "Ein Block, der alle Überschriften der Seite als verlinkte Liste zeigt, eingerückt nach ihrer Ebene. Er folgt der Seite von selbst: eine neue, umbenannte oder verschobene Überschrift steht sofort richtig darin.",

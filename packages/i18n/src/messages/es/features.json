@@ -81,6 +81,16 @@
     },
     "where": "En el editor mediante «/Aviso» o «Convertir en otro bloque»; al hacer clic en el icono del cuadro se abre la selección."
   },
+  "emoji-per-doppelpunkt": {
+    "title": "Emojis al escribir con dos puntos",
+    "summary": "Si escribes dos puntos y justo después unas pocas letras, eXocortex sugiere emojis coincidentes, tanto en el editor de páginas como en el campo de entrada del chat de IA. Busca en tu idioma y con los atajos habituales como «tada» o «+1».",
+    "details": {
+      "p1": "Escribe, por ejemplo, «:corazon» o «:pulgar»: debajo de los dos puntos aparecerá una lista que se irá acortando con cada letra. Elige con las teclas de flecha; Entrar o Tab insertan el emoji, un clic también sirve y Escape cierra la lista sin cambiar nada. Si escribes el atajo completo, incluido el segundo signo de dos puntos como en «:tada:», el emoji se insertará de inmediato. Los nombres proceden de los datos de Unicode (CLDR) en el idioma en el que usas eXocortex, y tu selección también aparecerá en «Usados recientemente» dentro del selector de emojis.",
+      "p2": "Unos dos puntos en medio del texto siguen siendo dos puntos: tras un dígito como en «12:30», tras una letra como en «https://» o «Nota:», antes de un paréntesis como en «:)» y en cualquier bloque de código o código en línea no se abrirá nada. Tras una sola letra, como «:D», Entrar seguirá creando una nueva línea o enviando el mensaje del chat; para insertarlo ahí, usa Tab o selecciona primero con una tecla de flecha.",
+      "p3": "El emoji se escribe en el texto como un carácter completamente normal. Por tanto, se conserva en la exportación a Markdown, la búsqueda lo encuentra y los agentes lo ven exactamente igual que tú."
+    },
+    "where": "En el editor de páginas y en el campo de entrada del chat de IA, escribe dos puntos seguidos directamente de una letra."
+  },
   "inhaltsverzeichnis": {
     "title": "Índice a partir de los encabezados",
     "summary": "Un bloque que muestra todos los encabezados de la página en forma de lista con enlaces, con sangría según su nivel. Se actualiza automáticamente: cualquier encabezado nuevo, renombrado o movido aparece de inmediato en su sitio.",

@@ -81,6 +81,16 @@
     },
     "where": "In the editor via “/Callout” or “Turn into another block”; clicking the box’s icon opens the selector."
   },
+  "emoji-per-doppelpunkt": {
+    "title": "Emojis while typing with a colon",
+    "summary": "If you type a colon followed immediately by a few letters, eXocortex suggests matching emojis—in the page editor and in the AI chat input field. It searches in your language and with familiar shortcodes like “tada” or “+1”.",
+    "details": {
+      "p1": "Type \":heart\" or \":thumbs\", for example: a list appears below the colon that narrows down with every letter. Use the arrow keys to choose, Enter or Tab inserts the emoji, clicking works too, and Escape closes the list without changing anything. If you type a shortcode in full, including the second colon like in \":tada:\", the emoji appears right away. Names come from Unicode data (CLDR) in the language you use eXocortex in, and your selection also ends up under “Recently used” in the emoji picker.",
+      "p2": "A colon in the middle of text stays a colon: after a digit like in “12:30”, after a letter like in “https://” or “Note:”, before a parenthesis like in “:)”, and anywhere in code blocks and inline code, nothing opens. After just one letter, such as \":D\", Enter continues to create a new line or send the chat message; to insert there, use Tab or select with an arrow key first.",
+      "p3": "The emoji is written into the text as an ordinary character. It therefore survives Markdown export, is found by search, and looks the same to agents as it does to you."
+    },
+    "where": "In the page editor and in the AI chat input field, type a colon immediately followed by a letter."
+  },
   "inhaltsverzeichnis": {
     "title": "Table of contents from headings",
     "summary": "A block that shows all headings on the page as a linked list, indented by their level. It updates automatically: new, renamed, or moved headings appear correctly right away.",

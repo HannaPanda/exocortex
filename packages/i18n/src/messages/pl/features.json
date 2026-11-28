@@ -81,6 +81,16 @@
     },
     "where": "W edytorze przez „/Wyróżnienie” lub „Przekształć w inny blok”; okno wyboru otwiera kliknięcie ikony ramki."
   },
+  "emoji-per-doppelpunkt": {
+    "title": "Wpisywanie emoji za pomocą dwukropka",
+    "summary": "Gdy wpiszesz dwukropek i zaraz po nim kilka liter, eXocortex podpowie pasujące emoji – w edytorze stron oraz w polu wprowadzania czatu SI. Wyszukiwanie działa w twoim języku oraz z popularnymi skrótami, takimi jak „tada” czy „+1”.",
+    "details": {
+      "p1": "Wpisz na przykład „:serce” lub „:kciuk”: pod dwukropkiem pojawi się lista, która zawęża się z każdą wpisaną literą. Klawisze strzałek pozwalają wybrać pozycję, Enter lub Tab wstawiają emoji (możesz też po prostu kliknąć), a Escape zamyka listę bez wprowadzania zmian. Jeśli wpiszesz pełny skrót wraz z drugim dwukropkiem, jak „:tada:”, emoji pojawi się natychmiast. Nazwy pochodzą z danych Unicode (CLDR) w języku, w którym używasz eXocortex, a twój wybór trafia także do sekcji „Ostatnio używane” w menu wyboru emoji.",
+      "p2": "Dwukropek w środku tekstu pozostaje dwukropkiem: po cyfrze jak w „12:30”, po literze jak w „https://” lub „Wskazówka:”, przed nawiasem jak w „:)” oraz w blokach kodu i kodzie w tekście nic się nie otwiera. Po tylko jednej literze, na przykład „:D”, Enter nadal tworzy nowy wiersz lub wysyła wiadomość czatu; aby wstawić emoji w takim przypadku, użyj klawisza Tab lub najpierw wskaż pozycję strzałką.",
+      "p3": "Emoji jest wstawiane do tekstu jako zwykły znak. Dzięki temu zachowuje się w eksporcie Markdown, jest odnajdywane przez wyszukiwarkę i wygląda dla agentów dokładnie tak samo, jak dla ciebie."
+    },
+    "where": "W edytorze stron oraz w polu wprowadzania czatu SI wpisz dwukropek, a bezpośrednio po nim literę."
+  },
   "inhaltsverzeichnis": {
     "title": "Spis treści z nagłówków",
     "summary": "Blok, który wyświetla wszystkie nagłówki strony jako listę z linkami, wciętą według ich poziomów. Aktualizuje się automatycznie: nowy, zmieniony lub przeniesiony nagłówek pojawia się w nim od razu we właściwym miejscu.",

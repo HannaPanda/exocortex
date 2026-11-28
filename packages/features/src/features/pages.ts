@@ -49,6 +49,16 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     ],
   }),
   defineFeature({
+    id: 'emoji-per-doppelpunkt',
+    area: 'seiten',
+    since: '2026-11-28',
+    references: ['#269'],
+    ui: {},
+    shortcuts: [
+      'Doppelpunkt und ein Buchstabe öffnen die Emoji-Liste, Pfeiltasten wählen, Eingabe oder Tab setzen ein, Escape schließt',
+    ],
+  }),
+  defineFeature({
     id: 'inhaltsverzeichnis',
     area: 'seiten',
     since: '2026-11-28',

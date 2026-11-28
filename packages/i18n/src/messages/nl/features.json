@@ -81,6 +81,16 @@
     },
     "where": "In de editor via „/Opmerking” of „Omzetten in ander blok”; de selectie opent met een klik op het pictogram van het kader."
   },
+  "emoji-per-doppelpunkt": {
+    "title": "Emoji’s tijdens het typen met een dubbele punt",
+    "summary": "Typ je een dubbele punt en meteen daarna een paar letters, dan stelt eXocortex passende emoji’s voor, zowel in de pagina-editor als in het invoerveld van de AI-chat. Er wordt gezocht in je eigen taal en met bekende shortcodes zoals „tada” of „+1”.",
+    "details": {
+      "p1": "Typ bijvoorbeeld „:hart” of „:duim”: onder de dubbele punt verschijnt een lijst die met elke letter korter wordt. Met de pijltjestoetsen kies je, Enter of Tab voegt de emoji in, een klik werkt ook, en Escape sluit de lijst zonder iets te wijzigen. Typ je een shortcode helemaal uit, inclusief de tweede dubbele punt zoals bij „:tada:”, dan verschijnt de emoji direct. De namen zijn afkomstig uit de Unicode-gegevens (CLDR) in de taal waarin je eXocortex gebruikt, en je selectie komt ook terecht onder „Recent gebruikt” in de emoji-kiezer.",
+      "p2": "Een dubbele punt midden in de tekst blijft gewoon een dubbele punt: na een cijfer zoals in „12:30”, na een letter zoals in „https://” of „Let op:”, voor een haakje zoals bij „:)” en overal in codeblokken en inline-code opent er niets. Na slechts één letter, zoals bij „:D”, maakt Enter nog steeds een nieuwe regel aan of verzendt het chatbericht; gebruik daar Tab om in te voegen of selecteer eerst met een pijltjestoets.",
+      "p3": "De emoji wordt als een heel normaal teken in de tekst geplaatst. Daardoor blijft deze behouden bij Markdown-export, wordt gevonden via de zoekfunctie en ziet er voor agenten precies hetzelfde uit als voor jou."
+    },
+    "where": "Typ in de pagina-editor en in het invoerveld van de AI-chat een dubbele punt, direct gevolgd door een letter."
+  },
   "inhaltsverzeichnis": {
     "title": "Inhoudsopgave op basis van tussenkoppen",
     "summary": "Een blok dat alle tussenkoppen van de pagina als een gelinkte lijst toont, ingesprongen op basis van hun niveau. Het volgt de pagina automatisch: een nieuwe, hernoemde of verplaatste tussenkop staat er meteen goed in.",

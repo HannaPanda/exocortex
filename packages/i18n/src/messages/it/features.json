@@ -81,6 +81,16 @@
     },
     "where": "Nell’editor tramite «/Avviso» o «Trasforma in un altro blocco»; la selezione si apre cliccando sull’icona del riquadro."
   },
+  "emoji-per-doppelpunkt": {
+    "title": "Emoji durante la digitazione con i due punti",
+    "summary": "Se digiti due punti seguiti subito da qualche lettera, eXocortex suggerisce le emoji corrispondenti, sia nell’editor della pagina sia nel campo di inserimento della chat IA. La ricerca avviene nella tua lingua e con i codici brevi più comuni come „tada“ o „+1“.",
+    "details": {
+      "p1": "Scrivi ad esempio „:cuore“ o „:pollice“: sotto i due punti appare un elenco che si restringe a ogni lettera. Puoi selezionare con i tasti freccia, inserire l’emoji con Invio o Tab, oppure cliccandoci sopra; Esc chiude l’elenco senza modificare nulla. Se digiti per intero un codice breve con il secondo due punti, come in „:tada:“, l’emoji viene inserita all’istante. I nomi provengono dai dati Unicode (CLDR) nella lingua in cui usi eXocortex, e le tue scelte finiscono anche tra le „Usate di recente“ nel selettore di emoji.",
+      "p2": "I due punti in mezzo al testo rimangono semplici due punti: dopo una cifra come in „12:30“, dopo una lettera come in „https://“ o „Nota:“, prima di una parentesi come in „:)“ e ovunque nei blocchi di codice e nel codice inline non si apre nulla. Dopo una sola lettera, come „:D“, Invio continua ad andare a capo o a inviare il messaggio di chat; in questi casi, usa Tab per inserire l’emoji o selezionala prima con un tasto freccia.",
+      "p3": "L’emoji viene inserita nel testo come un normale carattere. Per questo motivo viene mantenuta durante l’esportazione in Markdown, può essere trovata dalla ricerca e appare agli agenti esattamente come appare a te."
+    },
+    "where": "Nell’editor della pagina e nel campo di inserimento della chat IA, digita due punti seguiti direttamente da una lettera."
+  },
   "inhaltsverzeichnis": {
     "title": "Sommario dalle intestazioni",
     "summary": "Un blocco che mostra tutte le intestazioni della pagina come elenco collegato, rientrato in base al rispettivo livello. Segue la pagina automaticamente: un’intestazione nuova, rinominata o spostata vi appare subito corretta.",

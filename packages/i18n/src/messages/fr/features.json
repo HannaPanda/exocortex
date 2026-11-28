@@ -81,6 +81,16 @@
     },
     "where": "Dans l’éditeur via « /Remarque » ou « Transformer en un autre bloc » ; un clic sur le symbole de l’encadré ouvre la sélection."
   },
+  "emoji-per-doppelpunkt": {
+    "title": "Émojis lors de la frappe avec deux-points",
+    "summary": "Si tu tapes deux-points immédiatement suivis de quelques lettres, eXocortex te suggère des émojis pertinents, dans l’éditeur de page comme dans le champ de saisie du chat IA. La recherche s’effectue dans ta langue et avec les raccourcis habituels comme « tada » ou « +1 ».",
+    "details": {
+      "p1": "Écris par exemple « :coeur » ou « :pouce » : une liste apparaît sous les deux-points et s’affine à chaque lettre. Sélectionne avec les flèches, puis appuie sur Entrée ou Tab pour insérer l’émoji (un clic fonctionne aussi), et Échap ferme la liste sans rien modifier. Si tu écris un raccourci complet avec le deuxième deux-points comme « :tada: », l’émoji s’affiche immédiatement. Les noms proviennent des données Unicode (CLDR) dans la langue dans laquelle tu utilises eXocortex, et ta sélection rejoint aussi la section « Récents » du sélecteur d’émojis.",
+      "p2": "Des deux-points au milieu du texte restent de simples deux-points : après un chiffre comme dans « 12:30 », après une lettre comme dans « https:// » ou « Remarque : », devant une parenthèse comme dans « :) », et nulle part dans les blocs de code ou le code en ligne rien ne s’ouvre. Après une seule lettre, par exemple « :D », la touche Entrée continue de créer une nouvelle ligne ou d’envoyer le message de chat ; pour insérer à cet endroit, utilise Tab ou sélectionne d’abord avec une touche fléchée.",
+      "p3": "L’émoji est inséré dans le texte comme un caractère ordinaire. Il survit donc à l’export Markdown, est trouvé par la recherche et apparaît de la même façon pour les agents que pour toi."
+    },
+    "where": "Dans l’éditeur de page et dans le champ de saisie du chat IA, taper deux-points immédiatement suivis d’une lettre."
+  },
   "inhaltsverzeichnis": {
     "title": "Table des matières à partir des titres",
     "summary": "Un bloc qui affiche tous les titres de la page sous forme de liste de liens, indentés selon leur niveau. Il suit la page automatiquement : tout titre ajouté, renommé ou déplacé y apparaît immédiatement à la bonne place.",
