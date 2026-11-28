@@ -207,7 +207,11 @@ test('die Vorschläge lassen sich gesammelt übernehmen, geänderte bleiben auß
     page.getByTestId('mcp-tool-row').nth(0).getByTestId('mcp-tool-suggested'),
   ).toBeVisible();
   await page.getByTestId('external-mcp-suggestions-review').click();
-  const dialog = page.getByRole('dialog');
+  // The review is a dialog inside the settings dialog (issue #279), so it is
+  // picked by what it holds rather than by being the only dialog.
+  const dialog = page
+    .getByRole('dialog')
+    .filter({ has: page.getByTestId('external-mcp-suggestions-apply') });
   await expect(dialog).toContainText('get_weight');
   await expect(dialog).not.toContainText('log_meal');
   await dialog.getByTestId('external-mcp-suggestions-apply').click();
