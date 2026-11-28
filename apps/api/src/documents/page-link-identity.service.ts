@@ -23,6 +23,12 @@ import { PRISMA } from '../platform/platform.module';
 export interface PageIdentityIndex {
   /** Identity of the page carrying `title`, or `null`. */
   identityFor(title: string): string | null;
+  /**
+   * Identity of the database carrying `title`, or `null`: what
+   * `:::database-embed Titel` binds to (issue #226). Only a `COLLECTION`
+   * answers, by the same precedence as `identityFor`.
+   */
+  databaseFor(title: string): string | null;
   /** Title the page with `documentId` carries now, or `null` when it is gone. */
   titleFor(documentId: string): string | null;
 }
@@ -45,30 +51,32 @@ export class PageLinkIdentityService {
   async loadIndex(workspaceId: string): Promise<PageIdentityIndex> {
     const rows = await this.prisma.document.findMany({
       where: { workspaceId },
-      select: { id: true, title: true, archivedAt: true, updatedAt: true },
+      select: { id: true, title: true, type: true, archivedAt: true, updatedAt: true },
       // Same precedence as `DocumentsService.resolveLink`, so an imported title
       // binds to the page a reader following that same link would land on.
       orderBy: [{ updatedAt: 'desc' }, { id: 'asc' }],
     });
 
     const byTitle = new Map<string, string>();
+    const databaseByTitle = new Map<string, string>();
     const byId = new Map<string, string>();
+    const remember = (row: (typeof rows)[number]): void => {
+      const key = documentLinkTitleKey(row.title);
+      if (key.length === 0) return;
+      if (!byTitle.has(key)) byTitle.set(key, row.id);
+      if (row.type === 'COLLECTION' && !databaseByTitle.has(key)) databaseByTitle.set(key, row.id);
+    };
     // Two passes so an archived page never displaces a live one with the same
     // title, whatever their update times are.
     for (const row of rows) {
       byId.set(row.id, row.title);
-      const key = documentLinkTitleKey(row.title);
-      if (key.length === 0 || row.archivedAt !== null) continue;
-      if (!byTitle.has(key)) byTitle.set(key, row.id);
+      if (row.archivedAt === null) remember(row);
     }
-    for (const row of rows) {
-      const key = documentLinkTitleKey(row.title);
-      if (key.length === 0) continue;
-      if (!byTitle.has(key)) byTitle.set(key, row.id);
-    }
+    for (const row of rows) remember(row);
 
     return {
       identityFor: (title) => byTitle.get(documentLinkTitleKey(title)) ?? null,
+      databaseFor: (title) => databaseByTitle.get(documentLinkTitleKey(title)) ?? null,
       titleFor: (documentId) => byId.get(documentId) ?? null,
     };
   }
@@ -76,7 +84,11 @@ export class PageLinkIdentityService {
   /** Binds every reference that carries only a title to a page of this workspace. */
   async bind(workspaceId: string, document: ProseMirrorDocument): Promise<ProseMirrorDocument> {
     const index = await this.loadIndex(workspaceId);
-    return bindPageLinkIdentities(document, (title) => index.identityFor(title));
+    return bindPageLinkIdentities(
+      document,
+      (title) => index.identityFor(title),
+      (title) => index.databaseFor(title),
+    );
   }
 
   /** Rewrites every stored title from its identity, for the Markdown export. */

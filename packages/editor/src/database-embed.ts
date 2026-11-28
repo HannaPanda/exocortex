@@ -27,7 +27,8 @@ function stringAttribute(value: unknown): string {
  * rendering, search and Markdown export, none of which can afford a live
  * fetch. `documentId` is the canonical reference used by the live view; it is
  * intentionally never written to Markdown (see `databaseEmbedMarkdownAdapter`
- * below), matching `pageLink`'s title-only interchange format.
+ * below), matching `pageLink`'s title-only interchange format, and bound back
+ * from the title on import the same way.
  */
 export const DatabaseEmbed = Node.create({
   name: 'databaseEmbed',
@@ -98,8 +99,10 @@ export const databaseEmbedMarkdownAdapter: MarkdownExtensionAdapter = {
   },
   containers: {
     'database-embed': (params, context) => {
-      // The id cannot be recovered from a title (see the module doc); the
-      // embed reopens its database picker the next time it is rendered.
+      // The file carries no id (see the module doc). The application binds
+      // the title to a database of the workspace afterwards
+      // (`bindPageLinkIdentities` with a database lookup, issue #226); one
+      // that finds none leaves the embed to offer its picker.
       context.addNode('databaseEmbed', { title: params, documentId: '', viewId: null });
       return 0;
     },

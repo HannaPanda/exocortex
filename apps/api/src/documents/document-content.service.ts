@@ -384,7 +384,11 @@ export class DocumentContentService {
     let liveUpdate: ProseMirrorDocument;
     try {
       const bind = (document: ProseMirrorDocument): ProseMirrorDocument =>
-        bindPageLinkIdentities(document, (title) => identities.identityFor(title));
+        bindPageLinkIdentities(
+          document,
+          (title) => identities.identityFor(title),
+          (title) => identities.databaseFor(title),
+        );
       liveUpdate = bind(parseMarkdown(incoming.markdown).document);
       /*
        * The stored state is *edited*, never rebuilt from the Markdown: the same

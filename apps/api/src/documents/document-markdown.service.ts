@@ -290,7 +290,11 @@ export class DocumentMarkdownService {
     try {
       imported = markdownToYjsState(body, {
         transformDocument: (document) =>
-          bindPageLinkIdentities(document, (title) => identities.identityFor(title)),
+          bindPageLinkIdentities(
+            document,
+            (title) => identities.identityFor(title),
+            (title) => identities.databaseFor(title),
+          ),
       });
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);

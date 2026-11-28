@@ -17,7 +17,6 @@ import {
   BlockRangeError,
   EXOCORTEX_SCHEMA_VERSION,
   type PageEditResult,
-  type PageIdentityLookup,
   parseMarkdown,
   type PatchEdit,
   type ProseMirrorDocument,
@@ -38,7 +37,7 @@ import { foreignMediaWarnings, sectionLinkWarnings } from './document-content.se
 import { assertExpectedRevision } from './document-revision';
 import { DocumentWriteCommitService } from './document-write-commit.service';
 import { judgePageGrowth, oversizedPageRefusal, pageGrowthLimits } from './page-growth-policy';
-import { PageLinkIdentityService } from './page-link-identity.service';
+import { type PageIdentityIndex, PageLinkIdentityService } from './page-link-identity.service';
 
 /** What `apply` needs, whichever entrance asked for it. */
 interface NarrowWrite {
@@ -321,7 +320,7 @@ export class DocumentEditService {
       }
       const content = isBlank(step.markdown)
         ? EMPTY_FRAGMENT
-        : this.parse(step.markdown, (title) => identities.identityFor(title), input);
+        : this.parse(step.markdown, identities, input);
       warnings.push(...foreignMediaWarnings(content, this.env.APP_URL));
       try {
         applied = applyBlockRangeEditToState(state, content, step.edit);
@@ -502,11 +501,15 @@ export class DocumentEditService {
   /** Parses one piece of incoming Markdown, with references bound to pages. */
   private parse(
     markdown: string,
-    lookup: PageIdentityLookup,
+    identities: PageIdentityIndex,
     input: { documentId: string; correlationId: string },
   ): ProseMirrorDocument {
     try {
-      return bindPageLinkIdentities(parseMarkdown(markdown).document, lookup);
+      return bindPageLinkIdentities(
+        parseMarkdown(markdown).document,
+        (title) => identities.identityFor(title),
+        (title) => identities.databaseFor(title),
+      );
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
       this.logger.warn('Narrow write rejected: markdown could not be parsed', {

@@ -2758,6 +2758,69 @@ describe('exporting a page that embeds another', () => {
   });
 });
 
+/*
+ * Issue #226: an agent embeds a database by writing its title. The title binds
+ * to the database, never to an ordinary page that happens to share the name,
+ * and the export says what the database is called now.
+ */
+describe('embedding a database by its title', () => {
+  function embedIdsOf(yjsState: Uint8Array): string[] {
+    const ids: string[] = [];
+    const walk = (node: {
+      type?: string;
+      attrs?: Record<string, unknown>;
+      content?: unknown[];
+    }) => {
+      if (node.type === 'databaseEmbed') ids.push(String(node.attrs?.documentId ?? ''));
+      for (const child of node.content ?? []) walk(child as typeof node);
+    };
+    walk(yjsStateToProseMirrorJson(yjsState));
+    return ids;
+  }
+
+  it('binds the block to the database and exports its current title', async () => {
+    const page = await createPage('Projekt mit Aufgabenliste');
+    // Newer than the database, so a plain page lookup would pick it.
+    const database = await service.create({
+      workspaceId,
+      userId: ownerId,
+      request: { title: 'Offene Aufgaben 226', type: 'COLLECTION', parentId: page },
+      correlationId,
+    });
+    await createPage('Offene Aufgaben 226');
+
+    await contentService.write({
+      documentId: page,
+      userId: ownerId,
+      request: { markdown: 'Davor.\n\n:::database-embed Offene Aufgaben 226\n:::', mode: 'append' },
+      correlationId,
+      source: 'api',
+      growth: 'guarded',
+    });
+    const stored = await prisma.documentContent.findUniqueOrThrow({ where: { documentId: page } });
+    expect(embedIdsOf(stored.yjsState)).toEqual([database.id]);
+
+    await prisma.document.update({ where: { id: database.id }, data: { title: 'Aufgaben 226' } });
+    const exported = await markdownService.export(page, ownerId);
+    expect(exported.markdown).toContain(':::database-embed Aufgaben 226');
+  });
+
+  it('leaves the block unpicked when no database carries the title', async () => {
+    const page = await createPage('Seite ohne passende Datenbank');
+    await createPage('Nur eine Seite 226');
+    await contentService.write({
+      documentId: page,
+      userId: ownerId,
+      request: { markdown: ':::database-embed Nur eine Seite 226\n:::', mode: 'replace' },
+      correlationId,
+      source: 'api',
+      growth: 'guarded',
+    });
+    const stored = await prisma.documentContent.findUniqueOrThrow({ where: { documentId: page } });
+    expect(embedIdsOf(stored.yjsState)).toEqual(['']);
+  });
+});
+
 /**
  * The narrow writes (issue #111, ADR-055).
  *

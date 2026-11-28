@@ -6,7 +6,10 @@
  * `[[Titel]]` in running text becomes), and the `transclusion` block, which
  * shows the page instead of naming it (issue #78, ADR-045). All four store an
  * identity (`documentId` / `id`) next to the title they display, and all four
- * write only the title to Markdown. That split needs exactly three pure operations,
+ * write only the title to Markdown. The `databaseEmbed` block does the same for
+ * a database (issue #226), but only the export and import below know it: it
+ * is not a link, so it stays out of `collectPageReferences` and the
+ * resolution rule. That split needs exactly three pure operations,
  * and they all live here so the export path, the import path and the editor UI
  * cannot drift apart:
  *
@@ -44,6 +47,12 @@ export interface PageReference {
 
 function stringAttribute(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+/** The database a `databaseEmbed` shows, or `null` while none is picked. */
+function databaseEmbedDocumentId(attrs: Record<string, unknown> | undefined): string | null {
+  const value = attrs?.documentId;
+  return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
 /** `true` for a `mention` node that points at a page rather than a person or a date. */
@@ -139,6 +148,22 @@ export function collectPageReferences(document: ProseMirrorDocument): PageRefere
 export type PageTitleLookup = (documentId: string) => string | null | undefined;
 
 /**
+ * Rewrites the title attribute of one block or node from its identity, or
+ * hands it back untouched when there is no identity, the lookup does not know
+ * it, or the title is already the current one.
+ */
+function refreshStoredTitle(
+  node: ProseMirrorNode,
+  lookup: PageTitleLookup,
+  reference: { documentId: string | null; stored: string; attribute: string },
+): ProseMirrorNode {
+  if (reference.documentId === null) return node;
+  const title = lookup(reference.documentId);
+  if (typeof title !== 'string' || title.length === 0 || title === reference.stored) return node;
+  return { ...node, attrs: { ...node.attrs, [reference.attribute]: title } };
+}
+
+/**
  * Rewrites every stored title from the identity, for the Markdown export.
  *
  * This is what keeps `[[Titel]]` honest after a rename: the file is written
@@ -153,44 +178,40 @@ export function resolvePageLinkTitles(
 ): ProseMirrorDocument {
   return mapDocumentNodes(document, (node) => {
     if (node.type === 'pageLink') {
-      const documentId = pageLinkDocumentId(node.attrs);
-      if (documentId === null) return node;
-      const title = lookup(documentId);
-      if (typeof title !== 'string' || title.length === 0 || title === pageLinkTitle(node.attrs)) {
-        return node;
-      }
-      return { ...node, attrs: { ...node.attrs, title } };
+      return refreshStoredTitle(node, lookup, {
+        documentId: pageLinkDocumentId(node.attrs),
+        stored: pageLinkTitle(node.attrs),
+        attribute: 'title',
+      });
     }
 
     if (isPageMention(node)) {
-      const id = mentionId(node.attrs);
-      if (id === null) return node;
-      const title = lookup(id);
-      if (
-        typeof title !== 'string' ||
-        title.length === 0 ||
-        title === stringAttribute(node.attrs?.label)
-      ) {
-        return node;
-      }
-      return { ...node, attrs: { ...node.attrs, label: title } };
+      return refreshStoredTitle(node, lookup, {
+        documentId: mentionId(node.attrs),
+        stored: stringAttribute(node.attrs?.label),
+        attribute: 'label',
+      });
     }
 
     // A transclusion writes `:::transclusion Titel^block`, so the same rename
     // would otherwise send an export out naming a page that no longer answers
     // to that title -- and an import of that file would bind it to nothing.
     if (node.type === 'transclusion') {
-      const documentId = transclusionDocumentId(node.attrs);
-      if (documentId === null) return node;
-      const title = lookup(documentId);
-      if (
-        typeof title !== 'string' ||
-        title.length === 0 ||
-        title === transclusionLabel(node.attrs)
-      ) {
-        return node;
-      }
-      return { ...node, attrs: { ...node.attrs, label: title } };
+      return refreshStoredTitle(node, lookup, {
+        documentId: transclusionDocumentId(node.attrs),
+        stored: transclusionLabel(node.attrs),
+        attribute: 'label',
+      });
+    }
+
+    // A database embed writes `:::database-embed Titel` (issue #226), so a
+    // rename has to reach its export for the same reason.
+    if (node.type === 'databaseEmbed') {
+      return refreshStoredTitle(node, lookup, {
+        documentId: databaseEmbedDocumentId(node.attrs),
+        stored: stringAttribute(node.attrs?.title),
+        attribute: 'title',
+      });
     }
 
     // `[[Titel]]` in running text.
@@ -227,12 +248,26 @@ export type PageIdentityLookup = (title: string) => string | null | undefined;
  * title no page carries stays identity-less rather than being dropped — an
  * unresolved reference is a feature (it offers to create the page), not an
  * error.
+ *
+ * `databaseLookup` answers for `:::database-embed Titel` (issue #226). It is a
+ * lookup of its own because an embed may only show a database: the newest
+ * page carrying the same title is the right target for a link and the wrong
+ * one for an embed. Without it an embed stays unbound, and the block offers
+ * its picker the next time somebody opens the page.
  */
 export function bindPageLinkIdentities(
   document: ProseMirrorDocument,
   lookup: PageIdentityLookup,
+  databaseLookup?: PageIdentityLookup,
 ): ProseMirrorDocument {
   return mapDocumentNodes(document, (node) => {
+    if (node.type === 'databaseEmbed') {
+      if (databaseLookup === undefined || databaseEmbedDocumentId(node.attrs) !== null) return node;
+      const documentId = databaseLookup(stringAttribute(node.attrs?.title));
+      if (typeof documentId !== 'string' || documentId.length === 0) return node;
+      return { ...node, attrs: { ...node.attrs, documentId } };
+    }
+
     if (node.type === 'pageLink') {
       if (pageLinkDocumentId(node.attrs) !== null) return node;
       const documentId = lookup(pageLinkTitle(node.attrs));

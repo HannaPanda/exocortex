@@ -98,7 +98,12 @@ const databaseCreateInputSchema = z.object({
 
 export const databaseCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_database_create',
-  description: 'Legt eine neue Datenbank (Notion-artige Tabelle) mit optionalen Startspalten an.',
+  description:
+    'Legt eine neue Datenbank (Notion-artige Tabelle) mit optionalen Startspalten an. ' +
+    'Soll sie mitten in einer Seite stehen, lege sie mit parentId unter diese Seite und schreib ' +
+    'dort einen Block ":::database-embed <Titel der Datenbank>" mit einer Zeile ":::" darunter ' +
+    '(exo_page_write mit mode "append", exo_page_patch oder exo_page_section_write); der Titel ' +
+    'bindet sich an die Datenbank dieses Namens.',
   inputSchema: databaseCreateInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'databases',
