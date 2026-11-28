@@ -290,6 +290,8 @@ function ChatCodeBlock({ node, keyPrefix }: { node: ProseMirrorNode; keyPrefix: 
   return (
     <pre
       translate="no"
+      // A long line scrolls the block sideways; the keyboard reaches it too.
+      tabIndex={0}
       className="mb-1.5 overflow-x-auto rounded-md border border-border bg-sunken p-3 font-mono text-xs last:mb-0"
     >
       <code>

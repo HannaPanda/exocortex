@@ -29,7 +29,9 @@ function Code({ language, code }: { language: string; code: string }) {
   const nodes = React.useMemo(() => highlightCode(code, language), [code, language]);
   return (
     <div className="exocortex-editor max-w-measure">
-      <pre translate="no" className="my-0">
+      {/* Focusable, because a line wider than the block scrolls it sideways, and
+          a keyboard has to be able to do that too. */}
+      <pre translate="no" tabIndex={0} className="my-0">
         <code className={language.length > 0 ? `language-${language}` : undefined}>
           {renderNodes(nodes, language)}
         </code>
