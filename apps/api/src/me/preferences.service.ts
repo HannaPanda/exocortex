@@ -65,9 +65,10 @@ const TIME_FORMAT_TO_ROW: Record<TimeFormat, StoredTimeFormat> = {
 /**
  * The person's own settings that follow them from device to device: the
  * interface language (issue #98), the clock a time is written on (issue
- * #255), how the AI chat scrolls while an answer
- * arrives (issue #282) and how a pinned page outline behaves (issue #283). The row they live on is the account itself, because
- * a preference that belongs to the person has no better owner.
+ * #255), how the AI chat scrolls while an answer arrives (issue #282), how a
+ * pinned page outline behaves (issue #283) and whether the editor marks the
+ * block the caret is in (issue #238). The row they live on is the account
+ * itself, because a preference that belongs to the person has no better owner.
  */
 @Injectable()
 export class PreferencesService {
@@ -83,6 +84,7 @@ export class PreferencesService {
         outlineTransparency: true,
         outlineDodge: true,
         outlineHoverExpand: true,
+        activeBlockMarker: true,
         timeFormat: true,
       },
     });
@@ -95,6 +97,7 @@ export class PreferencesService {
       outlineTransparency: OUTLINE_TRANSPARENCY_FROM_ROW[user.outlineTransparency],
       outlineDodge: user.outlineDodge,
       outlineHoverExpand: user.outlineHoverExpand,
+      activeBlockMarker: user.activeBlockMarker,
       timeFormat: TIME_FORMAT_FROM_ROW[user.timeFormat],
     };
   }
@@ -118,6 +121,9 @@ export class PreferencesService {
         ...(body.outlineHoverExpand === undefined
           ? {}
           : { outlineHoverExpand: body.outlineHoverExpand }),
+        ...(body.activeBlockMarker === undefined
+          ? {}
+          : { activeBlockMarker: body.activeBlockMarker }),
         ...(body.timeFormat === undefined
           ? {}
           : { timeFormat: TIME_FORMAT_TO_ROW[body.timeFormat] }),

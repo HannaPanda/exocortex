@@ -225,6 +225,7 @@ describe('user preferences contract (issue #282)', () => {
         outlineTransparency: 'none',
         outlineDodge: true,
         outlineHoverExpand: false,
+        activeBlockMarker: true,
         timeFormat: 'auto',
       }).chatScroll,
     ).toBe('follow');
@@ -255,6 +256,15 @@ describe('outline preferences contract (issue #283)', () => {
       outlineHoverExpand: true,
     });
     expect(() => updateUserPreferencesRequestSchema.parse({ outlineHoverExpand: 1 })).toThrow();
+  });
+});
+
+describe('active block marker contract (issue #238)', () => {
+  it('switches the mark beside the block of the caret on and off', () => {
+    expect(updateUserPreferencesRequestSchema.parse({ activeBlockMarker: false })).toEqual({
+      activeBlockMarker: false,
+    });
+    expect(() => updateUserPreferencesRequestSchema.parse({ activeBlockMarker: 'on' })).toThrow();
   });
 });
 

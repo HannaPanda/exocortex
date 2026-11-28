@@ -74,6 +74,9 @@ model User {
   /// Whether the outline's scale opens its list when the pointer rests on it
   /// (issue #283) rather than on a click.
   outlineHoverExpand     Boolean             @default(false)
+  /// Whether the editor marks the block the caret is in with a short line in
+  /// the left margin (issue #238).
+  activeBlockMarker      Boolean             @default(true)
   /// How a time of day is written for this person (issue #255): as their
   /// interface language writes it (`AUTO`, the behaviour before), or always
   /// on a 24-hour (`H24`) or 12-hour (`H12`) clock. Only the rendering:

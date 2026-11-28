@@ -98,6 +98,15 @@ export const DEFAULT_OUTLINE_DODGE = true;
 export const DEFAULT_OUTLINE_HOVER_EXPAND = false;
 
 /**
+ * Whether the editor marks the block the caret is in with a short line in the
+ * left margin while it has the focus (issue #238). On by default: on a long or
+ * nested page the caret alone is hard to find, and the mark is a hairline in
+ * the gutter that moves nothing. Off for a reader who finds any movement
+ * beside the text a distraction.
+ */
+export const DEFAULT_ACTIVE_BLOCK_MARKER = true;
+
+/**
  * How a time of day is written for this person (issue #255).
  *
  * `auto` follows the interface language, the way `Intl` writes it: German
@@ -126,6 +135,7 @@ export const userPreferencesSchema = z.object({
   outlineTransparency: outlineTransparencySchema,
   outlineDodge: z.boolean(),
   outlineHoverExpand: z.boolean(),
+  activeBlockMarker: z.boolean(),
   timeFormat: timeFormatSchema,
 });
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
@@ -144,6 +154,7 @@ export const updateUserPreferencesRequestSchema = z
     outlineTransparency: outlineTransparencySchema.optional(),
     outlineDodge: z.boolean().optional(),
     outlineHoverExpand: z.boolean().optional(),
+    activeBlockMarker: z.boolean().optional(),
     timeFormat: timeFormatSchema.optional(),
   })
   .refine((value) => Object.values(value).some((field) => field !== undefined), {

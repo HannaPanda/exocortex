@@ -21,7 +21,8 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
 /**
  * The account's personal settings: the interface language (issue #98), how
  * the AI chat scrolls while an answer arrives (issue #282), how a pinned page
- * outline behaves (issue #283), and how the knowledge map looks (issue #189).
+ * outline behaves (issue #283), whether the editor marks the block the caret
+ * is in (issue #238), and how the knowledge map looks (issue #189).
  *
  * On both agent surfaces like everything a person can set in the browser
  * (ADR-025). An agent answering "stell mir die Oberfläche auf Englisch" needs
@@ -69,6 +70,7 @@ function renderPreferences(result: UserPreferences): string {
     `Ausweichen für die Schreibzeile: ${result.outlineDodge ? 'an' : 'aus'}` +
       (result.outlinePinned === 'overlay' ? '.' : ', wirkt nur beim Überlagern.'),
     `Gliederung beim Überfahren aufklappen: ${result.outlineHoverExpand ? 'an' : 'aus'}.`,
+    `Markierung des Blocks mit dem Cursor am linken Rand: ${result.activeBlockMarker ? 'an' : 'aus'}.`,
   ].join('\n');
 }
 
@@ -77,13 +79,14 @@ export const userPreferencesTool: AnyToolDefinition = defineTool({
   description:
     'Zeigt die persönlichen Einstellungen dieses Kontos, die auf jedem Gerät gelten: die ' +
     'Sprache der Oberfläche, wie Uhrzeiten geschrieben werden, wie der KI-Chat scrollt, während eine Antwort entsteht, und wie ' +
-    'sich die angepinnte Gliederung einer Seite verhält. locale null heißt, dass nie eine ' +
+    'sich die angepinnte Gliederung einer Seite verhält, und ob der Editor den Block mit dem ' +
+    'Cursor am linken Rand markiert. locale null heißt, dass nie eine ' +
     'gewählt wurde; dann richtet sich die Oberfläche nach dem Browser. timeFormat ist auto ' +
     '(wie die Sprache es schreibt, Standard), 24h oder 12h. chatScroll ist follow ' +
     '(mitlaufen, Standard) oder answerStart (am Antwortanfang bleiben). outlinePinned ist ' +
     'column (eigene Spalte, der Text weicht aus, Standard) oder overlay (über dem Text), ' +
-    'outlineTransparency none, light oder strong, outlineDodge und outlineHoverExpand true ' +
-    'oder false.',
+    'outlineTransparency none, light oder strong, outlineDodge, outlineHoverExpand und ' +
+    'activeBlockMarker true oder false.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
   domain: 'notifications',
@@ -117,7 +120,9 @@ export const userPreferencesSetTool: AnyToolDefinition = defineTool({
     'überlagernde Gliederung nach oben oder unten ausweichen, sobald der Cursor in einer Zeile ' +
     'steht, die sie verdecken würde; false lässt sie stehen; wirkt nur bei overlay. ' +
     'outlineHoverExpand: true öffnet die Liste der Gliederung, sobald die Maus auf der Skala ' +
-    'am rechten Rand ruht, false (Standard) erst beim Klick.',
+    'am rechten Rand ruht, false (Standard) erst beim Klick. activeBlockMarker: true ' +
+    '(Standard) zeigt beim Schreiben einen feinen Strich im linken Rand neben dem Block, in ' +
+    'dem der Cursor steht; false lässt ihn weg.',
   inputSchema: updateUserPreferencesRequestSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'notifications',
