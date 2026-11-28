@@ -187,7 +187,8 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
   file cover-only; the `collect-orphaned-covers` maintenance task deletes such
   a file once nothing points at it any more.
   `POST /api/documents/:id/cover/generate` is the other way to get one: it
-  queues a `document-cover` job that draws the picture from a prompt and then
+  queues a `document-cover` job that draws the picture from a prompt (and, on
+  request, from the page's title, headings and summary; issue #224) and then
   installs it through the upload route above, so the generated file is subject
   to the same checks. See `docs/ai-architecture.md` for the generator.
 

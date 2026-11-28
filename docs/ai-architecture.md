@@ -235,8 +235,24 @@ against). `createImageGenerator` returns `null` unless both an API key and
 
 The prompt reaches the model as the user wrote it, followed by a fixed framing
 hint (wide banner, no text, nothing important near the edges) because that is
-what a cover is. Nothing about the page's content is sent: the user's words are
-the whole prompt.
+what a cover is. Nothing about the page's content is sent unless the request
+asks for it with `pageContext: true` ("Kontext aus der Seite" in the dialog,
+the same flag on `exo_page_generate_cover`; issue #224). Then the API, which
+has just authorized the page, composes the prompt in `cover-context.ts`: the
+title, the first three heading levels as up to ten topics, a code block's
+language as a topic, and one passage, the ADR-028 digest summary when there is
+one and the opening prose otherwise, each cut short. Code, formulas, embeds
+and attachment text never go over (ADR-030); the selection is deterministic,
+so it costs no second model call. The job carries the finished prompt (at
+most `MAX_IMAGE_PROMPT_CHARS`, 2 500), the worker reads no page, and the
+response names what went (`pageContext: { title, topics, source }`).
+
+The browser keeps the dialog's prompt and the context choice per page in
+`localStorage` (`exocortex.cover.draft.<documentId>`, through
+`usePersistentState`, so a refused storage keeps it for the tab): it survives
+closing, sending, a failure and a reload, and only an emptied field forgets
+it. While a picture is drawn the old cover stays and carries a status veil;
+a failure leaves both cover and prompt as they were.
 
 The flow: `POST /api/documents/:id/cover/generate` checks the edit permission,
 the upload's own question (`requireUploadRole`, so the picture is never paid

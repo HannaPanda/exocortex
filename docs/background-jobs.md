@@ -46,7 +46,8 @@ enqueue. The decision model is paid by the deployment's key, like the PDF
 engines; without one the row is written `FAILED` and the file stays foreign.
 
 `documentCoverJobSchema`: `{ correlationId, documentId, workspaceId, userId,
-prompt }`. `createDocumentCoverProcessor`
+prompt }`, where `prompt` is already the finished prompt, page context
+included when it was asked for (issue #224). `createDocumentCoverProcessor`
 (`apps/worker/src/processors/document-cover.ts`, concurrency 1 — an image model
 is slow and rate limited, and a page has one cover) is the one processor that
 writes through the REST API instead of Prisma: it mints a service token for

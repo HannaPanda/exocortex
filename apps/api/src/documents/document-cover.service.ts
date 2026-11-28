@@ -7,6 +7,7 @@ import {
   QUEUE_NAMES,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
+import { type ProseMirrorNode } from '@exocortex/editor';
 import { QueueRegistry } from '@exocortex/queue';
 
 import { AttachmentsService } from '../attachments/attachments.service';
@@ -16,6 +17,7 @@ import { confinedMembershipWhere, currentAiRunId } from '../common/correlation';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
+import { composeCoverPrompt } from './cover-context';
 import { type CoverPayer, resolveCoverPayer } from './cover-payer';
 import { DocumentsService } from './documents.service';
 
@@ -100,11 +102,18 @@ export class DocumentCoverService {
    *
    * Both gates are checked here rather than in the worker, so a request that
    * cannot succeed is refused while someone is still looking at it.
+   *
+   * With `pageContext` the prompt also names what the page is about (issue
+   * #224): its title, its headings and its summary or opening, cut short
+   * (`cover-context.ts`). Composed here, where the page was just authorized,
+   * so the job carries the finished prompt and the worker reads no page.
    */
   async requestGeneration(input: {
     documentId: string;
     userId: string;
     prompt: string;
+    /** Issue #224: add the page's title, topics and summary or opening. */
+    pageContext?: boolean;
     correlationId: string;
   }): Promise<GenerateDocumentCoverResponse> {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
@@ -141,6 +150,12 @@ export class DocumentCoverService {
       );
     }
 
+    const composed = input.pageContext === true ? await this.withPageContext(input) : null;
+    const prompt = composed?.prompt ?? input.prompt;
+    if (prompt.trim().length === 0) {
+      throw AppError.validation('The page offers nothing to draw from; describe the picture.');
+    }
+
     await this.queues.enqueue(
       QUEUE_NAMES.documentCover,
       {
@@ -152,7 +167,7 @@ export class DocumentCoverService {
           ? {}
           : { billingWorkspaceId: payer.workspaceId }),
         userId: input.userId,
-        prompt: input.prompt,
+        prompt,
       },
       // One attempt: every retry is a second paid image, and the processor
       // reports its own failures rather than throwing, so a retry would only
@@ -160,7 +175,31 @@ export class DocumentCoverService {
       { attempts: 1 },
     );
 
-    return { status: 'pending', documentId: input.documentId };
+    return {
+      status: 'pending',
+      documentId: input.documentId,
+      pageContext: composed?.context ?? null,
+    };
+  }
+
+  /** The prompt with the page's title, topics and summary or opening added. */
+  private async withPageContext(input: { documentId: string; prompt: string }) {
+    const page = await this.prisma.document.findUnique({
+      where: { id: input.documentId },
+      select: {
+        title: true,
+        content: { select: { proseMirrorJson: true } },
+        digest: { select: { summary: true } },
+      },
+    });
+    if (page === null) throw AppError.notFound('Document');
+    const json = page.content?.proseMirrorJson;
+    return composeCoverPrompt({
+      prompt: input.prompt,
+      title: page.title,
+      summary: page.digest?.summary ?? null,
+      document: isProseMirrorNode(json) ? json : null,
+    });
   }
 
   /**
@@ -197,4 +236,14 @@ export class DocumentCoverService {
       },
     );
   }
+}
+
+/** Materialized JSON is written by the editor package; anything else reads as no content. */
+function isProseMirrorNode(value: unknown): value is ProseMirrorNode {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'type' in value &&
+    typeof (value as { type: unknown }).type === 'string'
+  );
 }

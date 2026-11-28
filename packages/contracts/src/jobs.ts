@@ -400,7 +400,11 @@ export const documentCoverJobSchema = jobBase.extend({
    */
   billingWorkspaceId: idSchema.optional(),
   userId: idSchema,
-  prompt: z.string().trim().min(1).max(1_000),
+  /**
+   * The finished prompt. Longer than a person's 1000 characters, because the
+   * page context the API adds on request (issue #224) is part of it.
+   */
+  prompt: z.string().trim().min(1).max(2_500),
 });
 export type DocumentCoverJob = z.infer<typeof documentCoverJobSchema>;
 

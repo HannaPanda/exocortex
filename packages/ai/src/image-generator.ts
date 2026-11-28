@@ -61,8 +61,12 @@ export interface ImageGenerator {
   generate(input: GenerateImageInput): Promise<GeneratedImage>;
 }
 
-/** Longest prompt an image model is asked to read. */
-export const MAX_IMAGE_PROMPT_CHARS = 1_000;
+/**
+ * Longest prompt an image model is asked to read: a person's 1000 characters
+ * plus the page context the API may add on request (issue #224), whose parts
+ * are capped in `apps/api/src/documents/cover-context.ts` to fit beside them.
+ */
+export const MAX_IMAGE_PROMPT_CHARS = 2_500;
 
 /**
  * Framing added around the user's prompt.

@@ -69,14 +69,39 @@ export const coverPositionSchema = z.number().min(0).max(100);
  * request only enqueues the work and the page learns the outcome from the
  * `document.cover.generated` event.
  */
-export const generateDocumentCoverRequestSchema = z.object({
-  prompt: z.string().trim().min(3).max(1_000),
-});
+export const generateDocumentCoverRequestSchema = z
+  .object({
+    /** What to draw. May stay empty when the page's own context is asked for. */
+    prompt: z.string().trim().max(1_000).default(''),
+    /**
+     * Whether the picture may also be drawn from the page itself (issue #224):
+     * its title, its headings as topics and its summary or opening, cut short.
+     * Off unless chosen, because it sends page text to the image model.
+     */
+    pageContext: z.boolean().default(false),
+  })
+  .refine((value) => value.pageContext || value.prompt.length >= 3, {
+    message: 'A prompt of at least three characters, or the page context, is required.',
+    path: ['prompt'],
+  });
 export type GenerateDocumentCoverRequest = z.infer<typeof generateDocumentCoverRequestSchema>;
+
+/** What of the page went to the image model, so a caller can see it (issue #224). */
+export const documentCoverContextSchema = z.object({
+  /** The page title the prompt named. */
+  title: z.string(),
+  /** The headings handed over as the page's main topics, at most ten. */
+  topics: z.array(z.string()),
+  /** Where the sentence about the page came from: its digest summary, its opening, or nothing. */
+  source: z.enum(['summary', 'opening', 'none']),
+});
+export type DocumentCoverContext = z.infer<typeof documentCoverContextSchema>;
 
 export const generateDocumentCoverResponseSchema = z.object({
   status: z.literal('pending'),
   documentId: idSchema,
+  /** `null` unless the page context was asked for. */
+  pageContext: documentCoverContextSchema.nullable().default(null),
 });
 export type GenerateDocumentCoverResponse = z.infer<typeof generateDocumentCoverResponseSchema>;
 

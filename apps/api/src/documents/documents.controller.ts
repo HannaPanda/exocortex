@@ -305,9 +305,10 @@ export class DocumentsController {
   }
 
   /**
-   * Asks the AI to draw this page's cover. Answers as soon as the job is
-   * queued; the picture arrives later as a `document.updated` event and the
-   * outcome as `document.cover.generated`.
+   * Asks the AI to draw this page's cover, from a prompt, from the page's own
+   * context (issue #224) or both. Answers as soon as the job is queued; the
+   * picture arrives later as a `document.updated` event and the outcome as
+   * `document.cover.generated`.
    */
   @Post(':documentId/cover/generate')
   @ApiBody({ schema: openApiSchema(generateDocumentCoverRequestSchema) })
@@ -321,6 +322,7 @@ export class DocumentsController {
       documentId,
       userId: session.userId,
       prompt: body.prompt,
+      pageContext: body.pageContext,
       correlationId: currentCorrelationId(),
     });
   }

@@ -761,7 +761,7 @@ describe('generating a cover', () => {
       correlationId,
     });
 
-    expect(result).toEqual({ status: 'pending', documentId });
+    expect(result).toEqual({ status: 'pending', documentId, pageContext: null });
 
     const queue = queues.getQueue(QUEUE_NAMES.documentCover);
     const jobs = await queue.getJobs(['waiting', 'delayed', 'active', 'completed', 'failed']);
@@ -774,6 +774,59 @@ describe('generating a cover', () => {
     expect(job?.data.workspaceId).toBe(workspaceId);
     expect(job?.data.billingWorkspaceId).toBeUndefined();
     await job?.remove();
+  });
+
+  it('adds the page context only when asked, and says what went (#224)', async () => {
+    const documentId = await createPage('Rechner einrichten');
+    await prisma.documentContent.update({
+      where: { documentId },
+      data: {
+        proseMirrorJson: {
+          type: 'doc',
+          content: [
+            { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Linux' }] },
+            { type: 'paragraph', content: [{ type: 'text', text: 'Pakete installieren.' }] },
+            {
+              type: 'codeBlock',
+              attrs: { language: 'bash' },
+              content: [{ type: 'text', text: 'apt install geheimes-paket' }],
+            },
+          ],
+        },
+      },
+    });
+
+    const result = await coverService({
+      'ai.imageGenerationEnabled': true,
+      'ai.imageModelSlug': 'a/b',
+    }).requestGeneration({
+      documentId,
+      userId: ownerId,
+      prompt: '',
+      pageContext: true,
+      correlationId,
+    });
+
+    expect(result.pageContext).toEqual({
+      title: 'Rechner einrichten',
+      topics: ['Linux', 'bash'],
+      source: 'opening',
+    });
+    const queue = queues.getQueue(QUEUE_NAMES.documentCover);
+    const jobs = await queue.getJobs(['waiting', 'delayed', 'active', 'completed', 'failed']);
+    const job = jobs.find((entry) => entry.data.documentId === documentId);
+    expect(job?.data.prompt).toContain('Rechner einrichten');
+    expect(job?.data.prompt).toContain('Pakete installieren.');
+    expect(job?.data.prompt).not.toContain('geheimes-paket');
+    await job?.remove();
+
+    // Without the choice, an empty prompt is refused rather than drawn from the page.
+    await expect(
+      coverService({
+        'ai.imageGenerationEnabled': true,
+        'ai.imageModelSlug': 'a/b',
+      }).requestGeneration({ documentId, userId: ownerId, prompt: '', correlationId }),
+    ).rejects.toMatchObject({ code: 'validation_failed' });
   });
 
   /**
