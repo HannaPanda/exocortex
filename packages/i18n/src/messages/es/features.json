@@ -169,6 +169,16 @@
     },
     "where": "Ajustes, Editor. También en la paleta de comandos."
   },
+  "aktiver-block-am-rand": {
+    "title": "Marca en el margen donde está el cursor",
+    "summary": "Al escribir, aparece una línea sutil en el margen izquierdo junto al bloque donde está el cursor. Así puedes reencontrar al instante dónde te encuentras en una página larga o en listas anidadas.",
+    "details": {
+      "p1": "La línea tiene la misma altura que el bloque en el que está el cursor: en una lista, el elemento en el que estás escribiendo; en una tabla, el párrafo de la celda; en un bloque de código, el bloque entero. Sigue al cursor incluso al moverte con las teclas de flecha y no desplaza nada en el texto.",
+      "p2": "Solo aparece mientras estás escribiendo en el texto. Si haces clic en otro lugar, como en la barra lateral o en un menú, desaparece, y no se muestra en páginas de solo lectura. Su diseño es discreto y se distingue de las áreas coloreadas con las que se marcan los cambios de un agente o los comentarios.",
+      "p3": "Puedes activarla o desactivarla en Ajustes → Editor, o con Strg + K («Ocultar marca del cursor en el margen»). Los agentes leen y modifican este ajuste mediante exo_me_preferences y exo_me_preferences_set como activeBlockMarker (true o false)."
+    },
+    "where": "En el editor al escribir. Se desactiva en Ajustes, Editor o en la paleta de comandos."
+  },
   "seiten-editor": {
     "title": "Escribir páginas, entre dos a la vez",
     "summary": "Cada página es un editor de bloques que varias personas pueden editar simultáneamente. El texto se guarda continuamente, incluso si la conexión se interrumpe un momento, y después se sincroniza de nuevo por sí solo.",

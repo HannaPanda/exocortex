@@ -116,6 +116,9 @@
     "scaleIntro": "When the outline is not pinned, a narrow scale appears on the right edge, with one tick per heading.",
     "hoverExpandLabel": "Expand on hover",
     "hoverExpandHint": "If the mouse rests briefly on the scale, the list of headings expands without a click. It closes again when the mouse moves away. The cursor stays in the text; using the keyboard or on mobile, it opens as before.",
+    "writingHeading": "While writing",
+    "activeBlockLabel": "Highlight block with cursor in the margin",
+    "activeBlockHint": "A subtle line appears to the left of the block you’re currently writing in. This helps you find the cursor faster on long pages. It disappears as soon as you click outside the text.",
     "saveFailed": "Could not save setting. Please try again in a moment.",
     "loading": "Loading settings…",
     "loadError": "Could not load settings"

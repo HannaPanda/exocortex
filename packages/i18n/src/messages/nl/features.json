@@ -169,6 +169,16 @@
     },
     "where": "Instellingen, Editor. Ook in het opdrachtpalet."
   },
+  "aktiver-block-am-rand": {
+    "title": "Markering in de marge waar de cursor staat",
+    "summary": "Terwijl je typt, staat er links van het blok met de cursor een dunne lijn in de marge. Zo vind je op een lange pagina of in geneste lijsten meteen weer terug waar je gebleven bent.",
+    "details": {
+      "p1": "De lijn is precies zo hoog als het blok waarin de cursor staat: in een lijst het punt waar je typt, in een tabel de alinea in de cel, bij een codeblok het hele blok. Hij volgt de cursor, ook wanneer je met de pijltjestoetsen navigeert, en verschuift niets aan de tekst.",
+      "p2": "Hij verschijnt alleen zolang je in de tekst schrijft. Klik je ergens anders, zoals in de zijbalk of een menu, dan verdwijnt hij, en op pagina’s die je alleen mag lezen is hij er niet. Hij oogt rustig en verschilt van de gekleurde vlakken waarmee wijzigingen van een agent of opmerkingen worden gemarkeerd.",
+      "p3": "Onder Instellingen → Editor zet je hem uit en weer aan, of via Strg + K („Cursormarkering in de marge verbergen”). Agenten lezen en wijzigen de instelling via exo_me_preferences en exo_me_preferences_set, als activeBlockMarker (true of false)."
+    },
+    "where": "In de editor tijdens het schrijven. Uitschakelen via Instellingen, Editor, of in het opdrachtpalet."
+  },
   "seiten-editor": {
     "title": "Pagina’s schrijven, tegelijkertijd met twee personen",
     "summary": "Elke pagina is een blokiseditor waarin meerdere mensen tegelijkertijd kunnen werken. De tekst wordt doorlopend opgeslagen, ook als de verbinding even wegvalt, en synchroniseert daarna vanzelf weer.",

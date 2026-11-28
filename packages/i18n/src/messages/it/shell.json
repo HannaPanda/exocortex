@@ -203,6 +203,12 @@
       "hint": "Vale per il tuo account",
       "keywords": "struttura sommario indice scala espandi passaggio hover mouse cursore apri automatico clic"
     },
+    "activeBlockMarker": {
+      "on": "Mostra indicatore del cursore a margine",
+      "off": "Nascondi indicatore del cursore a margine",
+      "hint": "Vale per il tuo account",
+      "keywords": "cursore indicatore margine linea blocco attivo riga scrittura dove sono trovare evidenziare margine sinistro gutter"
+    },
     "timeFormat": {
       "auto": "Formatta l’ora in base alla lingua ({example})",
       "h24": "Formatta l’ora su 24 ore ({example})",
@@ -363,7 +369,7 @@
       },
       "editor": {
         "label": "Impostazioni dell’editor",
-        "keywords": "editor impostazioni struttura sommario fissa sovrapponi trasparenza traslucido evita espandi passaggio del mouse scala"
+        "keywords": "editor impostazioni sommario indice blocca sovrapposizione trasparenza traslucido evitare espandi passaggio mouse scala cursore indicatore margine linea blocco attivo"
       },
       "chat": {
         "label": "Impostazioni chat IA",

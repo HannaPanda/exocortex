@@ -203,6 +203,12 @@
       "hint": "Applies to your account",
       "keywords": "outline table of contents toc scale expand hover mouse auto open click"
     },
+    "activeBlockMarker": {
+      "on": "Show cursor gutter marker",
+      "off": "Hide cursor gutter marker",
+      "hint": "Applies to your account",
+      "keywords": "cursor marker margin gutter line active block line writing where am i find highlight left margin"
+    },
     "timeFormat": {
       "auto": "Format time based on language ({example})",
       "h24": "Format time using 24 hours ({example})",
@@ -363,7 +369,7 @@
       },
       "editor": {
         "label": "Editor settings",
-        "keywords": "editor settings outline table of contents pin overlay transparency translucent avoid expand hover scale"
+        "keywords": "editor settings outline table of contents pin overlay transparency translucent dodge expand hover scale cursor marker margin gutter line active block"
       },
       "chat": {
         "label": "AI chat settings",

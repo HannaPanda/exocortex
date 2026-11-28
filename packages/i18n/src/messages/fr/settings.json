@@ -116,6 +116,9 @@
     "scaleIntro": "Si le plan n’est pas épinglé, une fine échelle apparaît sur le bord droit, avec un trait par titre.",
     "hoverExpandLabel": "Développer au survol",
     "hoverExpandHint": "Si la souris s’arrête brièvement sur l’échelle, la liste des titres se déploie sans clic. Elle se referme lorsque la souris s’éloigne. Le curseur reste dans le texte ; avec le clavier ou sur mobile, elle s’ouvre comme d’habitude.",
+    "writingHeading": "Pendant l’écriture",
+    "activeBlockLabel": "Marquer le bloc avec le curseur dans la marge",
+    "activeBlockHint": "Un fin trait apparaît à gauche du bloc dans lequel tu écris. Tu retrouves ainsi le curseur plus vite sur les longues pages. Il disparaît dès que tu cliques en dehors du texte.",
     "saveFailed": "Impossible d’enregistrer le paramètre. Réessaie dans un instant.",
     "loading": "Chargement des paramètres…",
     "loadError": "Impossible de charger les paramètres"

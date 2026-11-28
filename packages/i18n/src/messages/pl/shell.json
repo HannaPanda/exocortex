@@ -203,6 +203,12 @@
       "hint": "Dotyczy twojego konta",
       "keywords": "konspekt spis treści skala rozwiń rozwijanie najechanie hover mysz automatycznie otwórz kliknięcie"
     },
+    "activeBlockMarker": {
+      "on": "Pokaż znacznik kursora na marginesie",
+      "off": "Ukryj znacznik kursora na marginesie",
+      "hint": "Dotyczy twojego konta",
+      "keywords": "kursor znacznik margines kreska aktywny blok wiersz pisanie gdzie jestem znajdź wyróżnienie lewy margines gutter"
+    },
     "timeFormat": {
       "auto": "Zapisuj czas zgodnie z językiem ({example})",
       "h24": "Zapisuj czas w formacie 24-godzinnym ({example})",
@@ -363,7 +369,7 @@
       },
       "editor": {
         "label": "Ustawienia edytora",
-        "keywords": "edytor ustawienia konspekt spis treści przypnij nakładanie przezroczystość półprzezroczysty omijanie rozwiń najechanie skala"
+        "keywords": "edytor ustawienia konspekt spis treści przypnij nakładanie przezroczystość prześwitujący omijanie rozwiń najechanie skala kursor znacznik margines kreska aktywny blok"
       },
       "chat": {
         "label": "Ustawienia czatu AI",

@@ -203,6 +203,12 @@
       "hint": "Gilt für dein Konto",
       "keywords": "gliederung inhaltsverzeichnis skala aufklappen überfahren hover maus automatisch öffnen klick"
     },
+    "activeBlockMarker": {
+      "on": "Cursor-Markierung am Rand einblenden",
+      "off": "Cursor-Markierung am Rand ausblenden",
+      "hint": "Gilt für dein Konto",
+      "keywords": "cursor markierung rand strich aktiver block zeile schreiben wo bin ich finden hervorheben linker rand gutter"
+    },
     "timeFormat": {
       "auto": "Uhrzeit wie die Sprache schreiben ({example})",
       "h24": "Uhrzeit mit 24 Stunden schreiben ({example})",
@@ -363,7 +369,7 @@
       },
       "editor": {
         "label": "Editor-Einstellungen",
-        "keywords": "editor einstellungen gliederung inhaltsverzeichnis anpinnen überlagern transparenz durchscheinend ausweichen aufklappen überfahren skala"
+        "keywords": "editor einstellungen gliederung inhaltsverzeichnis anpinnen überlagern transparenz durchscheinend ausweichen aufklappen überfahren skala cursor markierung rand strich aktiver block"
       },
       "chat": {
         "label": "KI-Chat-Einstellungen",

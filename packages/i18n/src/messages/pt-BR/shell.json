@@ -203,6 +203,12 @@
       "hint": "Aplica-se à sua conta",
       "keywords": "estrutura sumário índice escala expandir passar cursor hover mouse abrir automaticamente clique"
     },
+    "activeBlockMarker": {
+      "on": "Mostrar marcador do cursor na margem",
+      "off": "Ocultar marcador do cursor na margem",
+      "hint": "Aplica-se à sua conta",
+      "keywords": "cursor marcador margem traço bloco ativo linha escrever onde estou encontrar destacar margem esquerda calha gutter"
+    },
     "timeFormat": {
       "auto": "Formato de hora de acordo com o idioma ({example})",
       "h24": "Formato de hora em 24 horas ({example})",
@@ -363,7 +369,7 @@
       },
       "editor": {
         "label": "Configurações do editor",
-        "keywords": "editor configurações sumário índice fixar sobrepor transparência translúcido desviar expandir passar o mouse escala"
+        "keywords": "editor configurações sumário índice fixar sobrepor transparência translúcido desviar expandir passar o mouse escala cursor marcador margem traço bloco ativo"
       },
       "chat": {
         "label": "Configurações do chat de IA",

@@ -169,6 +169,16 @@
     },
     "where": "Settings, Editor. Also in the command palette."
   },
+  "aktiver-block-am-rand": {
+    "title": "Marker in the margin where the cursor is",
+    "summary": "While you write, a subtle line appears in the left margin next to the block containing the cursor. This helps you instantly spot where you are on a long page or in nested lists.",
+    "details": {
+      "p1": "The line matches the height of the block where the cursor is located: in a list, the item you are writing in; in a table, the paragraph inside the cell; for a code block, the entire block. It follows the cursor even as you move with the arrow keys, without shifting any text.",
+      "p2": "It only appears while you are writing in the text. If you click elsewhere, such as in the sidebar or a menu, it disappears, and it does not show up on pages you can only read. It remains understated, distinct from the colored highlights that mark an agent’s changes or comments.",
+      "p3": "Under Settings → Editor, you can turn it off and on again, or with Strg + K (“Hide cursor margin marker”). Agents read and update this setting via exo_me_preferences and exo_me_preferences_set, as activeBlockMarker (true or false)."
+    },
+    "where": "In the editor while writing. Turn off under Settings, Editor, or in the command palette."
+  },
   "seiten-editor": {
     "title": "Write pages, collaboratively in real time",
     "summary": "Every page is a block editor that multiple people can edit at the same time. Text is saved continuously, even if the connection briefly drops, and merges back together automatically afterwards.",

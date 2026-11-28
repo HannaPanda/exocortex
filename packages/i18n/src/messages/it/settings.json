@@ -116,6 +116,9 @@
     "scaleIntro": "Se la struttura non è fissata, sul bordo destro appare una scala sottile, con un trattino per ogni intestazione.",
     "hoverExpandLabel": "Espandi al passaggio del mouse",
     "hoverExpandHint": "Se lasci il mouse fermo sulla scala, l’elenco delle intestazioni si espande senza fare clic. Si richiude quando sposti il mouse. Il cursore rimane nel testo; da tastiera e su smartphone si apre come prima.",
+    "writingHeading": "Durante la scrittura",
+    "activeBlockLabel": "Evidenzia il blocco con il cursore a margine",
+    "activeBlockHint": "A sinistra del blocco in cui stai scrivendo appare una linea sottile. In questo modo ritrovi più velocemente il cursore nelle pagine lunghe. Scompare non appena fai clic all’esterno del testo.",
     "saveFailed": "Impossibile salvare l’impostazione. Riprova tra poco.",
     "loading": "Caricamento delle impostazioni…",
     "loadError": "Impossibile caricare le impostazioni"

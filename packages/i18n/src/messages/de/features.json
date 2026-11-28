@@ -169,6 +169,16 @@
     },
     "where": "Einstellungen, Editor. Außerdem in der Befehlspalette."
   },
+  "aktiver-block-am-rand": {
+    "title": "Markierung am Rand, wo der Cursor steht",
+    "summary": "Während du schreibst, steht links neben dem Block mit dem Cursor ein feiner Strich im Rand. So findest du auf einer langen Seite oder in verschachtelten Listen sofort wieder, wo du gerade bist.",
+    "details": {
+      "p1": "Der Strich ist so hoch wie der Block, in dem der Cursor steht: in einer Liste der Punkt, an dem du schreibst, in einer Tabelle der Absatz in der Zelle, bei einem Codeblock der ganze Block. Er folgt dem Cursor, auch wenn du dich mit den Pfeiltasten bewegst, und er verschiebt nichts am Text.",
+      "p2": "Er erscheint nur, solange du im Text schreibst. Klickst du woanders hin, etwa in die Seitenleiste oder ein Menü, verschwindet er, und auf Seiten, die du nur lesen kannst, gibt es ihn nicht. Er ist ruhig gehalten und unterscheidet sich von den farbigen Flächen, mit denen Änderungen eines Agenten oder Kommentare markiert werden.",
+      "p3": "Unter Einstellungen → Editor schaltest du ihn ab und wieder an, oder mit Strg + K („Cursor-Markierung am Rand ausblenden“). Agenten lesen und setzen die Einstellung über exo_me_preferences und exo_me_preferences_set, als activeBlockMarker (true oder false)."
+    },
+    "where": "Im Editor beim Schreiben. Abschalten unter Einstellungen, Editor, oder in der Befehlspalette."
+  },
   "seiten-editor": {
     "title": "Seiten schreiben, zu zweit gleichzeitig",
     "summary": "Jede Seite ist ein Blockeditor, den mehrere Leute gleichzeitig bearbeiten können. Der Text wird laufend gespeichert, auch wenn die Verbindung kurz weg ist, und läuft danach von selbst wieder zusammen.",

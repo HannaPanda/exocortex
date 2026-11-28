@@ -116,6 +116,9 @@
     "scaleIntro": "Gdy spis treści nie jest przypięty, przy prawej krawędzi widać wąską skalę z jedną kreską na każdy nagłówek.",
     "hoverExpandLabel": "Rozwiń po najechaniu kursorem",
     "hoverExpandHint": "Gdy zatrzymasz kursor na skali, lista nagłówków rozwinie się bez klikania. Zwinie się z powrotem, gdy przesuniesz kursor dalej. Kursor tekstowy pozostaje w tekście; za pomocą klawiatury i na telefonie otwiera się tak jak dotychczas.",
+    "writingHeading": "Podczas pisania",
+    "activeBlockLabel": "Wyróżnianie bloku z kursorem na marginesie",
+    "activeBlockHint": "Cienka linia pojawia się po lewej stronie bloku, w którym akurat piszesz. Dzięki temu łatwiej odnajdziesz kursor na długich stronach. Znika ona, gdy klikniesz poza tekstem.",
     "saveFailed": "Nie udało się zapisać ustawienia. Spróbuj ponownie za chwilę.",
     "loading": "Wczytywanie ustawień…",
     "loadError": "Nie udało się wczytać ustawień"

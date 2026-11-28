@@ -203,6 +203,12 @@
       "hint": "Geldt voor je account",
       "keywords": "overzicht inhoudsopgave schaal uitvouwen aanwijzen hover muis automatisch openen klik"
     },
+    "activeBlockMarker": {
+      "on": "Cursormarkering in de marge tonen",
+      "off": "Cursormarkering in de marge verbergen",
+      "hint": "Geldt voor je account",
+      "keywords": "cursor markering marge streepje actief blok regel schrijven waar ben ik vinden accentueren linkermarge gutter"
+    },
     "timeFormat": {
       "auto": "Tijd volgens de taal noteren ({example})",
       "h24": "Tijd in 24 uur noteren ({example})",
@@ -363,7 +369,7 @@
       },
       "editor": {
         "label": "Editor-instellingen",
-        "keywords": "editor instellingen overzicht inhoudsopgave vastpinnen overlappen transparantie doorschijnend uitwijken uitvouwen aanwijzen schaal"
+        "keywords": "editor instellingen overzicht inhoudsopgave vastpinnen overlappen transparantie doorschijnend uitwijken uitvouwen hoveren schaal cursor markering marge streepje actief blok"
       },
       "chat": {
         "label": "AI-chatinstellingen",

@@ -169,6 +169,16 @@
     },
     "where": "Impostazioni, Editor. Anche nella tavolozza dei comandi."
   },
+  "aktiver-block-am-rand": {
+    "title": "Contrassegno a margine della posizione del cursore",
+    "summary": "Mentre scrivi, una sottile linea a margine compare a sinistra del blocco in cui si trova il cursore. In questo modo ritrovi subito la tua posizione su una pagina lunga o all’interno di elenchi annidati.",
+    "details": {
+      "p1": "La linea ha la stessa altezza del blocco in cui si trova il cursore: in un elenco corrisponde alla voce su cui stai scrivendo, in una tabella al paragrafo all’interno della cella, in un blocco di codice all’intero blocco. Segue il cursore anche quando ti sposti con i tasti freccia, senza spostare il testo.",
+      "p2": "Compare solo mentre scrivi nel testo. Se fai clic altrove, ad esempio nella barra laterale o in un menu, scompare, e non è presente nelle pagine accessibili in sola lettura. Ha uno stile sobrio e si distingue dalle aree colorate usate per contrassegnare le modifiche di un agente o i commenti.",
+      "p3": "Puoi disattivarlo e riattivarlo in Impostazioni → Editor, oppure con Strg + K („Nascondi contrassegno del cursore a margine”). Gli agenti leggono e impostano questa preferenza tramite exo_me_preferences ed exo_me_preferences_set, come activeBlockMarker (true o false)."
+    },
+    "where": "Nell’editor durante la scrittura. Si disattiva in Impostazioni, Editor o nella tavolozza dei comandi."
+  },
   "seiten-editor": {
     "title": "Scrivere pagine, a quattro mani in contemporanea",
     "summary": "Ogni pagina è un editor a blocchi a cui più persone possono lavorare contemporaneamente. Il testo viene salvato continuamente, anche in caso di breve disconnessione, e si riconcilia poi automaticamente.",

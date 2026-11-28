@@ -12984,6 +12984,30 @@
       "source": "d0d95b5b6143e92a",
       "output": "6c7b0b0d4f4e24fa"
     },
+    "features.aktiver-block-am-rand.details.p1": {
+      "source": "53888bad64fcc3ba",
+      "output": "49f860b605b1e9e7"
+    },
+    "features.aktiver-block-am-rand.details.p2": {
+      "source": "b53f92627d24eb0f",
+      "output": "2cb709d7f00eea01"
+    },
+    "features.aktiver-block-am-rand.details.p3": {
+      "source": "d97af10af09f47f3",
+      "output": "0a61b4cda55e93b3"
+    },
+    "features.aktiver-block-am-rand.summary": {
+      "source": "33c52170297693a3",
+      "output": "b631adbfc0225cfa"
+    },
+    "features.aktiver-block-am-rand.title": {
+      "source": "02397a49f20c3eb9",
+      "output": "73e7f0c4cea4f49a"
+    },
+    "features.aktiver-block-am-rand.where": {
+      "source": "cffc2b6c6dd4abdb",
+      "output": "dfd3903b33930b46"
+    },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
       "output": "cd5e0bf39204dadf"
@@ -19512,6 +19536,14 @@
       "source": "430d4f88b043670d",
       "output": "94b211b56e22d4d9"
     },
+    "settings.editor.activeBlockHint": {
+      "source": "28251ecdb9ace26a",
+      "output": "5b5607d7c0b19ef9"
+    },
+    "settings.editor.activeBlockLabel": {
+      "source": "d514f37e7268edcb",
+      "output": "f2f7ddfcecd33a8e"
+    },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
       "output": "23fe6dc3dc01f2ca"
@@ -19607,6 +19639,10 @@
     "settings.editor.transparencyStrong": {
       "source": "88f0b8c685ad90ff",
       "output": "a7f0e1ec9bb7f6ee"
+    },
+    "settings.editor.writingHeading": {
+      "source": "4785f10096bd95f7",
+      "output": "7d7f5537c6fee919"
     },
     "settings.externalMcp.add": {
       "source": "47b9b02ac07ead71",
@@ -22612,6 +22648,22 @@
       "source": "7e19da9cfe375dfc",
       "output": "d0c6577f4830f5ad"
     },
+    "shell.paletteCommands.activeBlockMarker.hint": {
+      "source": "56e2496e102d9000",
+      "output": "8e5b5eef50045f96"
+    },
+    "shell.paletteCommands.activeBlockMarker.keywords": {
+      "source": "d842a06b267d8f88",
+      "output": "d5ff0d7f658f4ac5"
+    },
+    "shell.paletteCommands.activeBlockMarker.off": {
+      "source": "604f6ce1a57d97c9",
+      "output": "6c0248864162a985"
+    },
+    "shell.paletteCommands.activeBlockMarker.on": {
+      "source": "d354396ddcc04f49",
+      "output": "ea1e0134e7e26cce"
+    },
     "shell.paletteCommands.capture": {
       "source": "e3c3d98ed1508b8f",
       "output": "bb0ab8ed125b539c"
@@ -23565,8 +23617,8 @@
       "output": "93a2bb5ea7c4ca68"
     },
     "shell.paletteCommands.settingsSections.editor.keywords": {
-      "source": "2e0fe4ebbe3ee25c",
-      "output": "1800f026f4d1c76d"
+      "source": "b209b49f7a48be9e",
+      "output": "63039c9e59078592"
     },
     "shell.paletteCommands.settingsSections.editor.label": {
       "source": "df07a315a8a1f546",
@@ -39734,6 +39786,30 @@
       "source": "d0d95b5b6143e92a",
       "output": "a00ccb172efd98b3"
     },
+    "features.aktiver-block-am-rand.details.p1": {
+      "source": "53888bad64fcc3ba",
+      "output": "96322e922688ffe6"
+    },
+    "features.aktiver-block-am-rand.details.p2": {
+      "source": "b53f92627d24eb0f",
+      "output": "a555d06e8dcd03ed"
+    },
+    "features.aktiver-block-am-rand.details.p3": {
+      "source": "d97af10af09f47f3",
+      "output": "39509a8f08b7bccf"
+    },
+    "features.aktiver-block-am-rand.summary": {
+      "source": "33c52170297693a3",
+      "output": "a8efac6f4c207934"
+    },
+    "features.aktiver-block-am-rand.title": {
+      "source": "02397a49f20c3eb9",
+      "output": "1b1e0793149b6f0e"
+    },
+    "features.aktiver-block-am-rand.where": {
+      "source": "cffc2b6c6dd4abdb",
+      "output": "62b644c93e49702d"
+    },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
       "output": "4d07ecee3a3b3180"
@@ -46262,6 +46338,14 @@
       "source": "430d4f88b043670d",
       "output": "6cf14a8a7ac60fe1"
     },
+    "settings.editor.activeBlockHint": {
+      "source": "28251ecdb9ace26a",
+      "output": "7cd0836cf8b79f6c"
+    },
+    "settings.editor.activeBlockLabel": {
+      "source": "d514f37e7268edcb",
+      "output": "b4101bba113f4b2d"
+    },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
       "output": "3798a4e23ec37cae"
@@ -46357,6 +46441,10 @@
     "settings.editor.transparencyStrong": {
       "source": "88f0b8c685ad90ff",
       "output": "4d91fcc509b9e79b"
+    },
+    "settings.editor.writingHeading": {
+      "source": "4785f10096bd95f7",
+      "output": "4a6f99761c40e90f"
     },
     "settings.externalMcp.add": {
       "source": "47b9b02ac07ead71",
@@ -49362,6 +49450,22 @@
       "source": "7e19da9cfe375dfc",
       "output": "967d72bd4b5ad9c6"
     },
+    "shell.paletteCommands.activeBlockMarker.hint": {
+      "source": "56e2496e102d9000",
+      "output": "e7a13ba480ac5fbf"
+    },
+    "shell.paletteCommands.activeBlockMarker.keywords": {
+      "source": "d842a06b267d8f88",
+      "output": "c0ba8411d403f9e1"
+    },
+    "shell.paletteCommands.activeBlockMarker.off": {
+      "source": "604f6ce1a57d97c9",
+      "output": "e23b15c9314c5d97"
+    },
+    "shell.paletteCommands.activeBlockMarker.on": {
+      "source": "d354396ddcc04f49",
+      "output": "e5ada505a8f25128"
+    },
     "shell.paletteCommands.capture": {
       "source": "e3c3d98ed1508b8f",
       "output": "c35302f00ae391f9"
@@ -50315,8 +50419,8 @@
       "output": "2ec808844f0baa8d"
     },
     "shell.paletteCommands.settingsSections.editor.keywords": {
-      "source": "2e0fe4ebbe3ee25c",
-      "output": "e9c84908ea683096"
+      "source": "b209b49f7a48be9e",
+      "output": "67607235ed40824d"
     },
     "shell.paletteCommands.settingsSections.editor.label": {
       "source": "df07a315a8a1f546",
@@ -66484,6 +66588,30 @@
       "source": "d0d95b5b6143e92a",
       "output": "c9f5794be6cfc0e7"
     },
+    "features.aktiver-block-am-rand.details.p1": {
+      "source": "53888bad64fcc3ba",
+      "output": "063b14ae9bae98cf"
+    },
+    "features.aktiver-block-am-rand.details.p2": {
+      "source": "b53f92627d24eb0f",
+      "output": "9c9cbb4ba0d660bb"
+    },
+    "features.aktiver-block-am-rand.details.p3": {
+      "source": "d97af10af09f47f3",
+      "output": "fc9db85225f4c4ea"
+    },
+    "features.aktiver-block-am-rand.summary": {
+      "source": "33c52170297693a3",
+      "output": "e8342aa73f73af69"
+    },
+    "features.aktiver-block-am-rand.title": {
+      "source": "02397a49f20c3eb9",
+      "output": "bf6cb61969828655"
+    },
+    "features.aktiver-block-am-rand.where": {
+      "source": "cffc2b6c6dd4abdb",
+      "output": "f68bbb2a3758c7d1"
+    },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
       "output": "4fa822caaecc313a"
@@ -73012,6 +73140,14 @@
       "source": "430d4f88b043670d",
       "output": "c20428536e1fa110"
     },
+    "settings.editor.activeBlockHint": {
+      "source": "28251ecdb9ace26a",
+      "output": "f475297e6eb5bc8c"
+    },
+    "settings.editor.activeBlockLabel": {
+      "source": "d514f37e7268edcb",
+      "output": "1a1f47c2517451a6"
+    },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
       "output": "0dae925284072411"
@@ -73107,6 +73243,10 @@
     "settings.editor.transparencyStrong": {
       "source": "88f0b8c685ad90ff",
       "output": "ce1acf14c5fe01c4"
+    },
+    "settings.editor.writingHeading": {
+      "source": "4785f10096bd95f7",
+      "output": "d4d4a86b44c20c5a"
     },
     "settings.externalMcp.add": {
       "source": "47b9b02ac07ead71",
@@ -76112,6 +76252,22 @@
       "source": "7e19da9cfe375dfc",
       "output": "58fab12c0300e19b"
     },
+    "shell.paletteCommands.activeBlockMarker.hint": {
+      "source": "56e2496e102d9000",
+      "output": "5f89ef44e6192639"
+    },
+    "shell.paletteCommands.activeBlockMarker.keywords": {
+      "source": "d842a06b267d8f88",
+      "output": "79e48f4a24a92036"
+    },
+    "shell.paletteCommands.activeBlockMarker.off": {
+      "source": "604f6ce1a57d97c9",
+      "output": "e51b2d713c6c63b0"
+    },
+    "shell.paletteCommands.activeBlockMarker.on": {
+      "source": "d354396ddcc04f49",
+      "output": "c2a68db7d66f869b"
+    },
     "shell.paletteCommands.capture": {
       "source": "e3c3d98ed1508b8f",
       "output": "c6627ab2b6ceb0f3"
@@ -77065,8 +77221,8 @@
       "output": "4efa16cfa54b4b2b"
     },
     "shell.paletteCommands.settingsSections.editor.keywords": {
-      "source": "2e0fe4ebbe3ee25c",
-      "output": "d38b435180b0e165"
+      "source": "b209b49f7a48be9e",
+      "output": "4f4072b5ce3fdd51"
     },
     "shell.paletteCommands.settingsSections.editor.label": {
       "source": "df07a315a8a1f546",
@@ -93234,6 +93390,30 @@
       "source": "d0d95b5b6143e92a",
       "output": "4569c721462f79dd"
     },
+    "features.aktiver-block-am-rand.details.p1": {
+      "source": "53888bad64fcc3ba",
+      "output": "ea034dc11686f8a6"
+    },
+    "features.aktiver-block-am-rand.details.p2": {
+      "source": "b53f92627d24eb0f",
+      "output": "e87d78b106c07a38"
+    },
+    "features.aktiver-block-am-rand.details.p3": {
+      "source": "d97af10af09f47f3",
+      "output": "b3d759adab0e0a59"
+    },
+    "features.aktiver-block-am-rand.summary": {
+      "source": "33c52170297693a3",
+      "output": "952dbc09586c8252"
+    },
+    "features.aktiver-block-am-rand.title": {
+      "source": "02397a49f20c3eb9",
+      "output": "4ba5eaeaa9db506a"
+    },
+    "features.aktiver-block-am-rand.where": {
+      "source": "cffc2b6c6dd4abdb",
+      "output": "b58b4269cc736026"
+    },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
       "output": "fc2bb2941f974ae2"
@@ -99762,6 +99942,14 @@
       "source": "430d4f88b043670d",
       "output": "de7889200788a6a3"
     },
+    "settings.editor.activeBlockHint": {
+      "source": "28251ecdb9ace26a",
+      "output": "abceb74941344dbb"
+    },
+    "settings.editor.activeBlockLabel": {
+      "source": "d514f37e7268edcb",
+      "output": "4cac7632e70385a5"
+    },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
       "output": "5ec982193d63ca6c"
@@ -99857,6 +100045,10 @@
     "settings.editor.transparencyStrong": {
       "source": "88f0b8c685ad90ff",
       "output": "f14cfb816c23df71"
+    },
+    "settings.editor.writingHeading": {
+      "source": "4785f10096bd95f7",
+      "output": "51871c4f5042b59d"
     },
     "settings.externalMcp.add": {
       "source": "47b9b02ac07ead71",
@@ -102862,6 +103054,22 @@
       "source": "7e19da9cfe375dfc",
       "output": "a6d13fa892805408"
     },
+    "shell.paletteCommands.activeBlockMarker.hint": {
+      "source": "56e2496e102d9000",
+      "output": "57e5cbbb32b3a0d4"
+    },
+    "shell.paletteCommands.activeBlockMarker.keywords": {
+      "source": "d842a06b267d8f88",
+      "output": "4b5370a110ddd70d"
+    },
+    "shell.paletteCommands.activeBlockMarker.off": {
+      "source": "604f6ce1a57d97c9",
+      "output": "fe8533997231a70b"
+    },
+    "shell.paletteCommands.activeBlockMarker.on": {
+      "source": "d354396ddcc04f49",
+      "output": "e814d3d0615ed0ac"
+    },
     "shell.paletteCommands.capture": {
       "source": "e3c3d98ed1508b8f",
       "output": "f144810fb8ce232a"
@@ -103815,8 +104023,8 @@
       "output": "a1afbd06a20b98c5"
     },
     "shell.paletteCommands.settingsSections.editor.keywords": {
-      "source": "2e0fe4ebbe3ee25c",
-      "output": "50590697605f1010"
+      "source": "b209b49f7a48be9e",
+      "output": "354edf925db0d3fa"
     },
     "shell.paletteCommands.settingsSections.editor.label": {
       "source": "df07a315a8a1f546",
@@ -119984,6 +120192,30 @@
       "source": "d0d95b5b6143e92a",
       "output": "07e8c68682b77c32"
     },
+    "features.aktiver-block-am-rand.details.p1": {
+      "source": "53888bad64fcc3ba",
+      "output": "539e427a33330632"
+    },
+    "features.aktiver-block-am-rand.details.p2": {
+      "source": "b53f92627d24eb0f",
+      "output": "04e481243ef99701"
+    },
+    "features.aktiver-block-am-rand.details.p3": {
+      "source": "d97af10af09f47f3",
+      "output": "bec7f9d6ffb11b38"
+    },
+    "features.aktiver-block-am-rand.summary": {
+      "source": "33c52170297693a3",
+      "output": "dd3b7f8c8463ef5f"
+    },
+    "features.aktiver-block-am-rand.title": {
+      "source": "02397a49f20c3eb9",
+      "output": "17c0ce04c5d7845c"
+    },
+    "features.aktiver-block-am-rand.where": {
+      "source": "cffc2b6c6dd4abdb",
+      "output": "9293ad78f9dd1fff"
+    },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
       "output": "2979feb468198ea9"
@@ -126512,6 +126744,14 @@
       "source": "430d4f88b043670d",
       "output": "ca1341ec094ebfa7"
     },
+    "settings.editor.activeBlockHint": {
+      "source": "28251ecdb9ace26a",
+      "output": "f0f4f53a177e44c5"
+    },
+    "settings.editor.activeBlockLabel": {
+      "source": "d514f37e7268edcb",
+      "output": "34c7cfea9d8422a7"
+    },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
       "output": "f48f3f081a7d17b9"
@@ -126607,6 +126847,10 @@
     "settings.editor.transparencyStrong": {
       "source": "88f0b8c685ad90ff",
       "output": "2db6034b24ef22b8"
+    },
+    "settings.editor.writingHeading": {
+      "source": "4785f10096bd95f7",
+      "output": "63cf4d61a4cdcd1d"
     },
     "settings.externalMcp.add": {
       "source": "47b9b02ac07ead71",
@@ -129612,6 +129856,22 @@
       "source": "7e19da9cfe375dfc",
       "output": "2aae64d8f988489a"
     },
+    "shell.paletteCommands.activeBlockMarker.hint": {
+      "source": "56e2496e102d9000",
+      "output": "14b5cab44361344a"
+    },
+    "shell.paletteCommands.activeBlockMarker.keywords": {
+      "source": "d842a06b267d8f88",
+      "output": "656a9dd5efe851ba"
+    },
+    "shell.paletteCommands.activeBlockMarker.off": {
+      "source": "604f6ce1a57d97c9",
+      "output": "4e5f1d0cb99f45b4"
+    },
+    "shell.paletteCommands.activeBlockMarker.on": {
+      "source": "d354396ddcc04f49",
+      "output": "3a8ec7bd2a281735"
+    },
     "shell.paletteCommands.capture": {
       "source": "e3c3d98ed1508b8f",
       "output": "dda41f2f5c6e335b"
@@ -130565,8 +130825,8 @@
       "output": "aadaa0e2c459f6ca"
     },
     "shell.paletteCommands.settingsSections.editor.keywords": {
-      "source": "2e0fe4ebbe3ee25c",
-      "output": "d89b43b490060d88"
+      "source": "b209b49f7a48be9e",
+      "output": "6c6eeb31279467bb"
     },
     "shell.paletteCommands.settingsSections.editor.label": {
       "source": "df07a315a8a1f546",
@@ -146734,6 +146994,30 @@
       "source": "d0d95b5b6143e92a",
       "output": "9fbe825f8e16f318"
     },
+    "features.aktiver-block-am-rand.details.p1": {
+      "source": "53888bad64fcc3ba",
+      "output": "2ada9e7838eea088"
+    },
+    "features.aktiver-block-am-rand.details.p2": {
+      "source": "b53f92627d24eb0f",
+      "output": "2613a01c9641e877"
+    },
+    "features.aktiver-block-am-rand.details.p3": {
+      "source": "d97af10af09f47f3",
+      "output": "14ce4ddc5c423f13"
+    },
+    "features.aktiver-block-am-rand.summary": {
+      "source": "33c52170297693a3",
+      "output": "d19602a5ad98298c"
+    },
+    "features.aktiver-block-am-rand.title": {
+      "source": "02397a49f20c3eb9",
+      "output": "9557947ab6d79a97"
+    },
+    "features.aktiver-block-am-rand.where": {
+      "source": "cffc2b6c6dd4abdb",
+      "output": "0514e72355114d74"
+    },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
       "output": "8672d359324bbeaf"
@@ -153262,6 +153546,14 @@
       "source": "430d4f88b043670d",
       "output": "279737515c94e1d6"
     },
+    "settings.editor.activeBlockHint": {
+      "source": "28251ecdb9ace26a",
+      "output": "4819e46554ee7509"
+    },
+    "settings.editor.activeBlockLabel": {
+      "source": "d514f37e7268edcb",
+      "output": "784fe203245d3fdc"
+    },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
       "output": "739c4a16dc381acd"
@@ -153357,6 +153649,10 @@
     "settings.editor.transparencyStrong": {
       "source": "88f0b8c685ad90ff",
       "output": "0121bac26cf0f8f2"
+    },
+    "settings.editor.writingHeading": {
+      "source": "4785f10096bd95f7",
+      "output": "17f1638e92634f21"
     },
     "settings.externalMcp.add": {
       "source": "47b9b02ac07ead71",
@@ -156362,6 +156658,22 @@
       "source": "7e19da9cfe375dfc",
       "output": "f0d6a55e78200ece"
     },
+    "shell.paletteCommands.activeBlockMarker.hint": {
+      "source": "56e2496e102d9000",
+      "output": "d1dc37c0683ad734"
+    },
+    "shell.paletteCommands.activeBlockMarker.keywords": {
+      "source": "d842a06b267d8f88",
+      "output": "772ab6373e3bf9fa"
+    },
+    "shell.paletteCommands.activeBlockMarker.off": {
+      "source": "604f6ce1a57d97c9",
+      "output": "d7abf47a44b65e53"
+    },
+    "shell.paletteCommands.activeBlockMarker.on": {
+      "source": "d354396ddcc04f49",
+      "output": "cf0dc00250a68af3"
+    },
     "shell.paletteCommands.capture": {
       "source": "e3c3d98ed1508b8f",
       "output": "a46ee876151c1a00"
@@ -157315,8 +157627,8 @@
       "output": "7c9ec315ee5c45ea"
     },
     "shell.paletteCommands.settingsSections.editor.keywords": {
-      "source": "2e0fe4ebbe3ee25c",
-      "output": "fb8f7689ba70363c"
+      "source": "b209b49f7a48be9e",
+      "output": "b10dbec6521467d4"
     },
     "shell.paletteCommands.settingsSections.editor.label": {
       "source": "df07a315a8a1f546",
@@ -173484,6 +173796,30 @@
       "source": "d0d95b5b6143e92a",
       "output": "c3d24fde51a1bb81"
     },
+    "features.aktiver-block-am-rand.details.p1": {
+      "source": "53888bad64fcc3ba",
+      "output": "79d9718715071224"
+    },
+    "features.aktiver-block-am-rand.details.p2": {
+      "source": "b53f92627d24eb0f",
+      "output": "13de503dc13de855"
+    },
+    "features.aktiver-block-am-rand.details.p3": {
+      "source": "d97af10af09f47f3",
+      "output": "e4f4ae3cd3ad5a93"
+    },
+    "features.aktiver-block-am-rand.summary": {
+      "source": "33c52170297693a3",
+      "output": "aa6337174f24cf1d"
+    },
+    "features.aktiver-block-am-rand.title": {
+      "source": "02397a49f20c3eb9",
+      "output": "d3e8f52d3e492d38"
+    },
+    "features.aktiver-block-am-rand.where": {
+      "source": "cffc2b6c6dd4abdb",
+      "output": "46845b4445451871"
+    },
     "features.anbieter-routing.details.p1": {
       "source": "7e27e66f0a765c08",
       "output": "de5d46cad000644c"
@@ -180012,6 +180348,14 @@
       "source": "430d4f88b043670d",
       "output": "0cd1163e3357aacc"
     },
+    "settings.editor.activeBlockHint": {
+      "source": "28251ecdb9ace26a",
+      "output": "2da93b562e6e04c1"
+    },
+    "settings.editor.activeBlockLabel": {
+      "source": "d514f37e7268edcb",
+      "output": "313e23b1afb0c2be"
+    },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
       "output": "a670762964786b8c"
@@ -180107,6 +180451,10 @@
     "settings.editor.transparencyStrong": {
       "source": "88f0b8c685ad90ff",
       "output": "4f02f2c84e61c6aa"
+    },
+    "settings.editor.writingHeading": {
+      "source": "4785f10096bd95f7",
+      "output": "780ee8b9f3815347"
     },
     "settings.externalMcp.add": {
       "source": "47b9b02ac07ead71",
@@ -183112,6 +183460,22 @@
       "source": "7e19da9cfe375dfc",
       "output": "530b1a3da690a035"
     },
+    "shell.paletteCommands.activeBlockMarker.hint": {
+      "source": "56e2496e102d9000",
+      "output": "8bc2aceb9451cc2a"
+    },
+    "shell.paletteCommands.activeBlockMarker.keywords": {
+      "source": "d842a06b267d8f88",
+      "output": "f34857840c73bcb3"
+    },
+    "shell.paletteCommands.activeBlockMarker.off": {
+      "source": "604f6ce1a57d97c9",
+      "output": "ddeafed931202420"
+    },
+    "shell.paletteCommands.activeBlockMarker.on": {
+      "source": "d354396ddcc04f49",
+      "output": "0a7db4fd63917893"
+    },
     "shell.paletteCommands.capture": {
       "source": "e3c3d98ed1508b8f",
       "output": "c35302f00ae391f9"
@@ -184065,8 +184429,8 @@
       "output": "8f06c78ab582ee5a"
     },
     "shell.paletteCommands.settingsSections.editor.keywords": {
-      "source": "2e0fe4ebbe3ee25c",
-      "output": "d7be6d6d4a3660b5"
+      "source": "b209b49f7a48be9e",
+      "output": "ed8696bf9d10ccda"
     },
     "shell.paletteCommands.settingsSections.editor.label": {
       "source": "df07a315a8a1f546",

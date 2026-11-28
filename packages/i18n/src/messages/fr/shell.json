@@ -203,6 +203,12 @@
       "hint": "S’applique à ton compte",
       "keywords": "plan sommaire table des matières échelle déplier survol hover souris ouvrir automatiquement clic"
     },
+    "activeBlockMarker": {
+      "on": "Afficher le repère de curseur dans la marge",
+      "off": "Masquer le repère de curseur dans la marge",
+      "hint": "S’applique à ton compte",
+      "keywords": "curseur repère marge trait bloc actif ligne écrire où suis-je trouver surbrillance marge gauche gouttière gutter"
+    },
     "timeFormat": {
       "auto": "Format d’heure selon la langue ({example})",
       "h24": "Format d’heure sur 24 heures ({example})",
@@ -363,7 +369,7 @@
       },
       "editor": {
         "label": "Paramètres de l’éditeur",
-        "keywords": "éditeur paramètres plan table des matières épingler superposer transparence translucide esquiver déplier survol échelle"
+        "keywords": "éditeur paramètres plan table des matières épingler superposer transparence translucide esquiver déplier survol échelle curseur repère marge trait bloc actif"
       },
       "chat": {
         "label": "Paramètres du chat IA",

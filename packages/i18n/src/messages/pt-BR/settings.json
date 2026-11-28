@@ -116,6 +116,9 @@
     "scaleIntro": "Se o sumário não estiver fixado, uma escala estreita aparece na borda direita, com um traço para cada título.",
     "hoverExpandLabel": "Expandir ao passar o cursor",
     "hoverExpandHint": "Se o mouse repousar brevemente sobre a escala, a lista de títulos se expande, sem precisar clicar. Ela se fecha novamente quando o mouse se afasta. O cursor permanece no texto; com o teclado e no celular, ela se abre como antes.",
+    "writingHeading": "Ao escrever",
+    "activeBlockLabel": "Destacar na margem o bloco com o cursor",
+    "activeBlockHint": "Uma linha sutil aparece à esquerda do bloco em que você está escrevendo. Assim, fica mais fácil reencontrar o cursor em páginas longas. Ela desaparece assim que você clica fora do texto.",
     "saveFailed": "Não foi possível salvar a configuração. Tente novamente em instantes.",
     "loading": "Carregando configurações…",
     "loadError": "Não foi possível carregar as configurações"

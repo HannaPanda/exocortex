@@ -116,6 +116,9 @@
     "scaleIntro": "Ist die Gliederung nicht angepinnt, steht am rechten Rand eine schmale Skala, ein Strich je Überschrift.",
     "hoverExpandLabel": "Beim Überfahren aufklappen",
     "hoverExpandHint": "Ruht die Maus kurz auf der Skala, klappt die Liste der Überschriften auf, ohne Klick. Sie schließt wieder, wenn die Maus weiterzieht. Der Cursor bleibt dabei im Text; mit der Tastatur und auf dem Handy öffnet sie sich wie bisher.",
+    "writingHeading": "Beim Schreiben",
+    "activeBlockLabel": "Block mit dem Cursor am Rand markieren",
+    "activeBlockHint": "Links neben dem Block, in dem du gerade schreibst, steht ein feiner Strich. So findest du den Cursor auf langen Seiten schneller wieder. Er verschwindet, sobald du außerhalb des Textes klickst.",
     "saveFailed": "Die Einstellung konnte nicht gespeichert werden. Versuch es gleich noch einmal.",
     "loading": "Einstellungen werden geladen …",
     "loadError": "Die Einstellungen konnten nicht geladen werden"

@@ -203,6 +203,12 @@
       "hint": "Se aplica a tu cuenta",
       "keywords": "esquema índice tabla de contenidos escala desplegar pasar el cursor hover ratón abrir automáticamente clic"
     },
+    "activeBlockMarker": {
+      "on": "Mostrar indicador del cursor en el margen",
+      "off": "Ocultar indicador del cursor en el margen",
+      "hint": "Se aplica a tu cuenta",
+      "keywords": "cursor indicador marca margen linea trazo bloque activo renglon escribir donde estoy encontrar resaltar margen izquierdo gutter"
+    },
     "timeFormat": {
       "auto": "Escribir la hora según el idioma ({example})",
       "h24": "Escribir la hora en formato 24 horas ({example})",
@@ -363,7 +369,7 @@
       },
       "editor": {
         "label": "Ajustes del editor",
-        "keywords": "editor ajustes esquema tabla de contenidos fijar superponer transparencia translúcido esquivar desplegar pasar por encima escala"
+        "keywords": "editor ajustes configuracion esquema indice fijar superponer transparencia translucido esquivar desplegar pasar por encima escala cursor indicador marca margen linea trazo bloque activo"
       },
       "chat": {
         "label": "Ajustes del chat de IA",

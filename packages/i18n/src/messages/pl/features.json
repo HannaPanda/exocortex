@@ -169,6 +169,16 @@
     },
     "where": "Ustawienia, Edytor. Także w palecie poleceń."
   },
+  "aktiver-block-am-rand": {
+    "title": "Wskaźnik na marginesie przy pozycji kursora",
+    "summary": "Podczas pisania po lewej stronie bloku z kursorem pojawia się na marginesie cienka linia. Dzięki temu na długiej stronie lub w zagnieżdżonych listach od razu widać, gdzie się znajdujesz.",
+    "details": {
+      "p1": "Linia ma taką samą wysokość jak blok, w którym stoi kursor: na liście jest to punkt, w którym piszesz, w tabeli akapit w komórce, a przy bloku kodu – cały blok. Podąża za kursorem również podczas poruszania się strzałkami i w żaden sposób nie przesuwa tekstu.",
+      "p2": "Pojawia się tylko podczas pisania w tekście. Jeśli klikniesz gdzie indziej, na przykład na pasek boczny lub w menu, linia znika, a na stronach dostępnych tylko do odczytu w ogóle się nie wyświetla. Ma subtelny wygląd i różni się od kolorowych wyróżnień oznaczających zmiany wprowadzone przez agenta lub komentarze.",
+      "p3": "W sekcji Ustawienia → Edytor możesz ją wyłączyć i ponownie włączyć, albo za pomocą skrótu Strg + K („Ukryj wskaźnik kursora na marginesie”). Agenci odczytują i modyfikują to ustawienie za pomocą exo_me_preferences i exo_me_preferences_set jako activeBlockMarker (true lub false)."
+    },
+    "where": "W edytorze podczas pisania. Do wyłączenia w Ustawieniach, w sekcji Edytor lub w palecie poleceń."
+  },
   "seiten-editor": {
     "title": "Pisanie stron wspólnie w tym samym czasie",
     "summary": "Każda strona jest edytorem blokowym, nad którym może jednocześnie pracować kilka osób. Tekst jest zapisywany na bieżąco, nawet przy chwilowej utracie połączenia, a po jego przywróceniu zmiany samoczynnie się synchronizują.",

@@ -26,6 +26,7 @@ import {
 
 import {
   type OutlinePreferenceChange,
+  useActiveBlockMarkerPreference,
   useOutlinePreferences,
   useUserPreferences,
 } from '@/lib/api/preferences-queries';
@@ -42,7 +43,8 @@ function isOutlineTransparency(value: unknown): value is OutlineTransparency {
  * How pages behave for this account while it reads and writes (issue #283):
  * for now, how a pinned page outline sits beside the text, and whether a list
  * laid over the text steps aside for the line being written on, and whether
- * the scale opens its list on hover.
+ * the scale opens its list on hover; and whether the block the caret is in is
+ * marked in the left margin (issue #238).
  *
  * Selects like the language and chat pages beside it, each with the chosen
  * option explained underneath, because "über dem Text liegen" only says what
@@ -55,11 +57,17 @@ export function EditorSettings() {
   const t = useTranslations('settings.editor');
   const query = useUserPreferences();
   const outline = useOutlinePreferences();
+  const activeBlock = useActiveBlockMarkerPreference();
   const [failed, setFailed] = React.useState(false);
 
   const change = (value: OutlinePreferenceChange) => {
     setFailed(false);
     outline.change(value, { onError: () => setFailed(true) });
+  };
+
+  const changeActiveBlock = (enabled: boolean) => {
+    setFailed(false);
+    activeBlock.change(enabled, { onError: () => setFailed(true) });
   };
 
   const pinnedLabel = (mode: OutlinePinnedMode) =>
@@ -90,6 +98,32 @@ export function EditorSettings() {
       ) : query.isError ? (
         <ErrorState title={t('loadError')} onRetry={() => void query.refetch()} />
       ) : (
+        <section className="flex flex-col gap-5" aria-labelledby="editor-writing-heading">
+          <SectionRule as="h2" id="editor-writing-heading">
+            {t('writingHeading')}
+          </SectionRule>
+          <div className="flex items-start gap-3">
+            <Switch
+              id="active-block-marker"
+              checked={activeBlock.enabled}
+              onCheckedChange={changeActiveBlock}
+              aria-describedby="active-block-marker-hint"
+              data-testid="active-block-marker-setting"
+              className="mt-0.5"
+            />
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="active-block-marker">{t('activeBlockLabel')}</Label>
+              <p
+                id="active-block-marker-hint"
+                className="max-w-measure text-xs text-muted-foreground"
+              >
+                {t('activeBlockHint')}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+      {query.isPending || query.isError ? null : (
         <section className="flex flex-col gap-5" aria-labelledby="editor-outline-heading">
           <div className="flex flex-col gap-1">
             <SectionRule as="h2" id="editor-outline-heading">

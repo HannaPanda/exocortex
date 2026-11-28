@@ -1,10 +1,19 @@
 'use client';
 
-import { Columns2Icon, LayersIcon, MousePointerClickIcon, PointerIcon } from 'lucide-react';
+import {
+  Columns2Icon,
+  LayersIcon,
+  MousePointerClickIcon,
+  PointerIcon,
+  TextCursorIcon,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { useOutlinePreferences } from '@/lib/api/preferences-queries';
+import {
+  useActiveBlockMarkerPreference,
+  useOutlinePreferences,
+} from '@/lib/api/preferences-queries';
 
 import { useLatest } from './contributions';
 import { keywordsOf, type PaletteCommand } from './palette-command';
@@ -19,7 +28,8 @@ const ICON = 'size-4 text-muted-foreground';
  * "über dem Text liegen" while the text moves aside, "Text ausweichen
  * lassen" while the list lies over it. Offered everywhere, because the
  * choice is the person's and not the open page's. Opening the scale on hover
- * is a toggle of the same kind. The transparency and stepping aside are
+ * is a toggle of the same kind, and so is the line in the left margin beside
+ * the caret's block (issue #238). The transparency and stepping aside are
  * finer choices and live on the settings page the palette also opens.
  */
 export function useOutlinePreferenceCommands(): PaletteCommand[] {
@@ -29,6 +39,10 @@ export function useOutlinePreferenceCommands(): PaletteCommand[] {
   const latest = useLatest(preferences);
   const pinned = preferences.pinned;
   const hoverExpand = preferences.hoverExpand;
+  const tMarker = useTranslations('shell.paletteCommands.activeBlockMarker');
+  const marker = useActiveBlockMarkerPreference();
+  const latestMarker = useLatest(marker);
+  const markerOn = marker.enabled;
 
   return React.useMemo(() => {
     const next = pinned === 'column' ? 'overlay' : 'column';
@@ -56,6 +70,15 @@ export function useOutlinePreferenceCommands(): PaletteCommand[] {
         keywords: keywordsOf(tHover('keywords')),
         run: () => latest.current.change({ outlineHoverExpand: !hoverExpand }),
       },
+      {
+        id: 'command-active-block-marker',
+        group: 'settings',
+        label: markerOn ? tMarker('off') : tMarker('on'),
+        hint: tMarker('hint'),
+        icon: <TextCursorIcon className={ICON} />,
+        keywords: keywordsOf(tMarker('keywords')),
+        run: () => latestMarker.current.change(!markerOn),
+      },
     ];
-  }, [pinned, hoverExpand, t, tHover, latest]);
+  }, [pinned, hoverExpand, markerOn, t, tHover, tMarker, latest, latestMarker]);
 }

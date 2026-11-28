@@ -169,6 +169,16 @@
     },
     "where": "Paramètres, Éditeur. Également dans la palette de commandes."
   },
+  "aktiver-block-am-rand": {
+    "title": "Repère dans la marge à l’emplacement du curseur",
+    "summary": "Pendant que tu écris, un fin trait s’affiche dans la marge à gauche du bloc où se trouve le curseur. Tu repères ainsi immédiatement où tu en es sur une longue page ou dans des listes imbriquées.",
+    "details": {
+      "p1": "Le trait a la même hauteur que le bloc dans lequel se trouve le curseur : dans une liste, l’élément sur lequel tu écris ; dans un tableau, le paragraphe dans la cellule ; dans un bloc de code, tout le bloc. Il suit le curseur, même lorsque tu te déplaces avec les touches fléchées, sans rien décaler dans le texte.",
+      "p2": "Il n’apparaît que tant que tu écris dans le texte. Si tu cliques ailleurs, par exemple dans la barre latérale ou un menu, il disparaît, et il n’existe pas sur les pages en lecture seule. Discret, il se distingue des zones colorées qui signalent les modifications d’un agent ou les commentaires.",
+      "p3": "Dans Paramètres → Éditeur, tu peux le désactiver et le réactiver, ou avec Strg + K (« Masquer le repère de curseur dans la marge »). Les agents lisent et modifient ce paramètre via exo_me_preferences et exo_me_preferences_set, sous le nom activeBlockMarker (true ou false)."
+    },
+    "where": "Dans l’éditeur pendant l’écriture. Désactivable dans Paramètres, Éditeur, ou depuis la palette de commandes."
+  },
   "seiten-editor": {
     "title": "Rédiger des pages, à deux en simultané",
     "summary": "Chaque page est un éditeur de blocs que plusieurs personnes peuvent modifier en même temps. Le texte est enregistré en continu, même en cas de brève coupure de connexion, puis synchronisé automatiquement par la suite.",

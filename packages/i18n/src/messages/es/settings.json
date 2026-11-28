@@ -116,6 +116,9 @@
     "scaleIntro": "Si el esquema no está fijado, aparece una escala estrecha en el margen derecho, con una línea por cada encabezado.",
     "hoverExpandLabel": "Desplegar al pasar el cursor",
     "hoverExpandHint": "Al posar el ratón brevemente sobre la escala, se despliega la lista de encabezados sin necesidad de hacer clic. Se vuelve a cerrar cuando el ratón se mueve. El cursor permanece en el texto; con el teclado y en el móvil se abre como siempre.",
+    "writingHeading": "Al escribir",
+    "activeBlockLabel": "Resaltar en el margen el bloque con el cursor",
+    "activeBlockHint": "A la izquierda del bloque en el que estés escribiendo aparece una línea fina. Así encontrarás el cursor más rápido en páginas largas. Desaparece en cuanto haces clic fuera del texto.",
     "saveFailed": "No se ha podido guardar la preferencia. Inténtalo de nuevo en unos instantes.",
     "loading": "Cargando ajustes…",
     "loadError": "No se han podido cargar los ajustes"

@@ -116,6 +116,9 @@
     "scaleIntro": "Als het overzicht niet is vastgepind, staat er aan de rechterkant een smalle schaal, met één streepje per kop.",
     "hoverExpandLabel": "Uitvouwen bij aanwijzen",
     "hoverExpandHint": "Als de muis even op de schaal rust, vouwt de lijst met koppen uit, zonder te klikken. Hij sluit weer zodra de muis weggaat. De cursor blijft gewoon in de tekst; met het toetsenbord en op je telefoon opent het zoals voorheen.",
+    "writingHeading": "Tijdens het schrijven",
+    "activeBlockLabel": "Blok met de cursor in de marge markeren",
+    "activeBlockHint": "Links van het blok waarin je op dat moment schrijft, staat een subtiele lijn. Zo vind je de cursor op lange pagina’s sneller terug. De lijn verdwijnt zodra je buiten de tekst klikt.",
     "saveFailed": "De instelling kon niet worden opgeslagen. Probeer het zo nog eens.",
     "loading": "Instellingen laden …",
     "loadError": "De instellingen konden niet worden geladen"

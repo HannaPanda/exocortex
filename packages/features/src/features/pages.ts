@@ -124,6 +124,13 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     ui: { path: '/arbeitsbereich?einstellungen=editor' },
   }),
   defineFeature({
+    id: 'aktiver-block-am-rand',
+    area: 'seiten',
+    since: '2026-11-28',
+    references: ['#238'],
+    ui: { path: '/arbeitsbereich?einstellungen=editor' },
+  }),
+  defineFeature({
     id: 'seiten-layout',
     area: 'seiten',
     since: '2026-08-05',
