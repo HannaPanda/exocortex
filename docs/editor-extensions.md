@@ -98,9 +98,12 @@ and it cannot be worked with at that width. The rule is one module,
   "Document migrations"). `repairProseMirrorDocument` does the same instead of
   dropping the cell.
 
-Other large blocks in a cell (PDF, video, external embed, transclusion, saved
-search, file) stay allowed: they shrink to the cell's width rather than
-running over it.
+Other large blocks in a cell (PDF, video, external embed, bookmark, table of
+contents, transclusion, saved search, file) stay allowed. Measured live on
+2026-11-28 in a six-column table, each stayed inside its cell's width; the
+one that suffers is the PDF viewer, which keeps its full height and cuts its
+own toolbar off in a narrow cell. Whether that is worth a rule too is an open
+decision, not an oversight.
 
 ## Editor UI
 
