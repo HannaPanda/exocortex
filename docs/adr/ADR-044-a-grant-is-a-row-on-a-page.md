@@ -186,3 +186,29 @@ refused like an unknown page. Search, settings and every other workspace
 question stay a member's: a set of pages is safe to hand over because it is
 cut at the grant, a full-text answer would have to be cut the same way and
 is not.
+
+## Addendum 2026-11-28: writing on a page includes its files
+
+Johanna's decision in #326 (point 11), carried out in issue #264: whoever may
+write on a page may change its content, and a file or a cover is content.
+Until now an upload asked `requireRoleAnchoredAt`, which counts a grant only
+when it covers the branch, so a `WRITE` grant on the page alone could change
+every word and add no picture. Uploading onto a page is not creating
+something under it, so the two questions are now separate:
+`requireRoleAnchoredAt` stays the question for creating a page or importing
+below one and for a file in a database cell (the row is a page of its own),
+and `requireRoleOnPage` is the question for writing onto the page itself.
+It answers a member and a confined credential exactly like the first; a
+grant counts whenever it covers the page, `PAGE_ONLY` included, and the role
+it stands for decides through `canUploadFile` as before, so a `READ` grant
+still uploads nothing. The upload, the upload from an address, an upload
+ticket and a cover all ask it through one function, `requireUploadRole`.
+
+Two rules follow from the same sentence. Deleting a file on a page is now
+open to whoever may edit that page, not only to its uploader or an admin
+(`canDeleteAttachment` is given the page as the caller reached it); a file
+on no page keeps the old rule. And a cover may only name a file the caller
+may read, so a grant on one page is no way to hang the file of another page
+on it. Reading, deleting and correcting a file are still decided by the page
+it hangs on, and ADR-096 is unchanged: an upload is its uploader's own
+material and foreign for every other reader.

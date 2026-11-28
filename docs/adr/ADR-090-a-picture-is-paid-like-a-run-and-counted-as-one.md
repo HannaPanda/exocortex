@@ -87,3 +87,10 @@ settings, key and usage apply in full, ADR-091 included; a reader with no
 workspace of their own is refused (`ai_image_no_own_workspace`). The cover
 is still installed on, and announced in, the page's workspace. See ADR-092's
 addendum for the reasoning.
+
+Since the ADR-044 addendum of the same day, any `WRITE` grant covering the
+page can have a cover drawn, "only this page" included; until then only a
+grant on the branch could install the picture, and the route refused the
+rest before anything was paid for. That early refusal stays, asked through
+the same `requireUploadRole` the upload asks, so it now turns away exactly a
+`READ` grant. Who pays is unchanged.

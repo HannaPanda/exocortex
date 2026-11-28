@@ -493,7 +493,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   scopes on a token are read by `SessionGuard` into the request context and
   consulted only there: `findRole` and `requireRole` fail closed for a confined
   credential, and the readers that can narrow opt in through
-  `requireScopedRole`, `requireRoleAnchoredAt` and `visibleDocumentIds`.
+  `requireScopedRole`, `requireRoleAnchoredAt` (`requireRoleOnPage` for a
+  file onto the page itself, which any writing grant on it carries) and
+  `visibleDocumentIds`.
   The tree and link resolution also answer a non-member through
   `requireScopedReach`: exactly the pages their grants reach, cut at the
   grant, never above it or beside it (issue #327).

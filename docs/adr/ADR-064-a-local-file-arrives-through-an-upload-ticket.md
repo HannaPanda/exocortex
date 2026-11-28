@@ -60,7 +60,8 @@ user and, when an `exo_` token minted it, that token. On redemption the token
 is checked exactly as `SessionGuard` checks one in a header -- the same
 function, `assertApiTokenUsable` in `apps/api/src/auth/api-token-credential.ts` --
 and must still carry `write`. Its page confinement is installed in the request
-context, and the upload's own `requireRoleAnchoredAt` then applies it. So a
+context, and the upload's own access check then applies it (`requireRoleOnPage`
+since issue #264, `requireRoleAnchoredAt` for a database cell). So a
 revoked token, a narrowed scope, a lost page or a lost membership all close
 the ticket, even inside its ten minutes. The ticket grants nothing the
 credential could not do itself; it only moves where the request comes from.

@@ -48,10 +48,22 @@ checklist rather than a paragraph. Pick the one that fits and the rest follows.
    automations, anything administrative). Use `requireRole` or `findRole` and do
    nothing else. Both refuse a confined credential with `token_scope_exceeded`,
    which is the intended answer.
-5. **The route creates something under a page** (a new page, an upload, an
-   import). Use `requireRoleAnchoredAt(workspaceId, userId, parentId)`. It
-   refuses a confined credential at the workspace root, and it is also what lets
-   the holder of a `WRITE` + `SUBTREE` share add a page inside the branch.
+5. **The route creates something under a page** (a new page, an import, a
+   file for a database cell, which hangs on a row below the database). Use
+   `requireRoleAnchoredAt(workspaceId, userId, parentId)`. It refuses a
+   confined credential at the workspace root, and it is also what lets the
+   holder of a `WRITE` + `SUBTREE` share add a page inside the branch, and
+   nobody with a grant on the page alone.
+6. **The route writes onto the page itself without creating a page** (an
+   upload onto the page, an upload from an address or through a ticket, its
+   cover). Use `requireUploadRole` from `apps/api/src/attachments/upload-access.ts`,
+   which asks `requireRoleOnPage` (and `requireRoleAnchoredAt` when the file
+   is for a database cell). It answers a member and a confined credential
+   exactly like point 5; a grant counts whenever it covers the page,
+   `PAGE_ONLY` included, because a file on a page is part of the page a
+   `WRITE` grant lets its holder edit (issue #264). Never use it for anything
+   that makes a new page: a page below this one is a page the grant never
+   named.
 
 One page-level answer carries a little of what sits above the page: a row of a
 database (`GET /api/documents/:id/row`, `exo_database_row_get`) comes with the
@@ -111,12 +123,40 @@ Three decisions of issue #264 (ADR-092's addendum) belong here too:
   reader's first own workspace, and never the page's workspace
   (`resolveCoverPayer`, ADR-090's addendum). A reader with no workspace of
   their own gets `ai_image_no_own_workspace`. Members pay as before. Installing
-  the picture is an upload onto the page, and `requireRoleAnchoredAt` lets a
-  grant carry a file only when it is a `WRITE` grant on the branch; the cover
-  route asks that before it queues anything, so a `PAGE_ONLY` grant is refused
-  up front instead of paying for a picture that could not be set.
+  the picture is an upload onto the page, so the cover route asks the upload's
+  question (`requireUploadRole`) before it queues anything: a `READ` grant is
+  refused before anything is paid for. Any `WRITE` grant covering the page
+  carries it, "only this page" included (see the next section).
 - **A database shares its rows, even as "only this page".** See the paragraph
   after the access checklist above.
+
+## Files on a shared page
+
+Issue #264, after Johanna's decision in #326: whoever may write on a page may
+change what is on it. A `WRITE` grant, `PAGE_ONLY` as well as `SUBTREE`,
+therefore lets its holder on the page itself
+
+- upload files and pictures (the editor, pasting, dropping, a PDF, an upload
+  from an address, an upload ticket),
+- delete any file of that page, not only their own: `canDeleteAttachment`
+  lets whoever may edit a file's page delete it (`findAttachmentContext`
+  carries the page as the caller reached it), while a file on no page keeps
+  the uploader-or-admin rule,
+- set, change, upload and remove its cover, and have the AI draw one (paid as
+  in the section above).
+
+What stays with `SUBTREE`: creating a page below it, importing below it, and
+a file in a database cell, because a row is a page of its own below the
+database (ADR-098); a database shared as "only this page" shares its rows'
+values, not the rows as pages.
+
+What the grant does not reach: a file is read, deleted and corrected through
+the page it hangs on (`findAttachmentContext`), so a file of a page the grant
+does not cover answers like a file that does not exist; and a cover can only
+name a file the caller may read (`assertUsableCover`), so nobody can hang a
+file of a page they were never given on theirs. A file a guest uploads is
+their own material for their own assistant and foreign for every other
+reader, exactly as ADR-096 says for any upload.
 
 ## Adding a kind of grant
 

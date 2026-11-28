@@ -209,8 +209,10 @@ hint (wide banner, no text, nothing important near the edges) because that is
 what a cover is. Nothing about the page's content is sent: the user's words are
 the whole prompt.
 
-The flow: `POST /api/documents/:id/cover/generate` checks the edit permission
-and both settings, then queues a `document-cover` job and answers `pending`.
+The flow: `POST /api/documents/:id/cover/generate` checks the edit permission,
+the upload's own question (`requireUploadRole`, so the picture is never paid
+for when it could not be installed; any `WRITE` grant on the page passes it,
+"only this page" included, issue #264) and both settings, then queues a `document-cover` job and answers `pending`.
 `createDocumentCoverProcessor` draws the picture and installs it by posting it
 to `POST /api/documents/:id/cover` with a service token minted for the
 requesting user, so the generated file passes the ordinary permission and

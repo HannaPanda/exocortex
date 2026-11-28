@@ -320,7 +320,9 @@ that _can_ narrow opt in — `requireScopedRole` for search, the trash and
 filing suggestions, `requireScopedReach` for the tree and link resolution
 (which also answer a non-member with exactly the pages their grants reach,
 cut at the grant, issue #327), `requireRoleAnchoredAt` for
-creating under a parent or uploading onto a page, `visibleDocumentIds` for
+creating under a parent, `requireRoleOnPage` for uploading onto a page
+(which, unlike the first, a grant on that page alone satisfies, issue #264),
+`visibleDocumentIds` for
 backlinks and related pages. A new workspace-wide route therefore costs a
 confined token a refusal, never a leak.
 
@@ -373,7 +375,7 @@ public. Properties worth stating:
 - **Redeeming acts as the minting credential.** The `exo_` token is checked by the
   same function `SessionGuard` uses (`assertApiTokenUsable`), must still carry
   `write`, and its page confinement is installed in the request context before
-  the upload's own `requireRoleAnchoredAt` runs. Revoking the token, narrowing it,
+  the upload's own access check (`requireUploadRole`) runs. Revoking the token, narrowing it,
   deleting its page or removing the member all close an open ticket. If the
   request context is missing, redemption refuses rather than upload with the
   owner's full reach.
