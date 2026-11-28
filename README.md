@@ -50,6 +50,11 @@ What is deliberately still missing is listed under
 - a blockwise comparison of two states of a page, matched on stable block
   identifiers so a moved block reads as moved, and a selective restore that
   takes single blocks back into the current content (issue #77)
+- a page history ("Seitenverlauf") over every stored version: who caused it
+  (a person, an agent session or a run of the built-in AI), versions in short
+  succession folded into one entry without dropping any, a read-only preview
+  of the version or its changes, and a confirmed restore that saves the
+  current state first and can be taken back (issue #235)
 - transclusion: a block that shows a page, or one section of it, without
   copying its text. The source is addressed by identity and block id, so a
   rename or a move keeps it intact; it is read as the reader, so the source's

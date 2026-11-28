@@ -437,6 +437,16 @@
     },
     "where": "Zakładka „Aktywność” w panelu kontekstowym po prawej stronie: kliknięcie wersji porównuje ją, a menu obok zawiera opcje porównywania i przywracania."
   },
+  "seitenverlauf": {
+    "title": "Historia strony z podglądem",
+    "summary": "Duże okno pokazuje wszystkie wcześniejsze wersje strony: kiedy powstały, przez kogo oraz czy była to osoba, agent czy asystent AI. Jedno kliknięcie pokazuje wersję dokładnie tak, jak strona wtedy wyglądała, lub co się od tego czasu zmieniło, a kolejne ją przywraca.",
+    "details": {
+      "p1": "Po prawej stronie wersje są uporządkowane według dni, od najnowszych. Zmiany wprowadzone w krótkich odstępach czasu tworzą jeden wpis: sesję pisania lub serię operacji zapisu agenta. Strzałka obok rozwija poszczególne wersje – żadna nie ginie. Seria zapisów reprezentuje stronę sprzed tej serii, czyli stan, do którego najczęściej chce się wrócić.",
+      "p2": "Po lewej stronie widać podgląd wybranej wersji, dokładnie tak, jak strona wtedy wyglądała (tylko do odczytu). Przełącznik „Zmiany” pokazuje zamiast tego, co się od tamtej pory zmieniło, blok po bloku; stamtąd można też przywrócić pojedyncze bloki.",
+      "p3": "Opcja „Przywróć tę wersję” prosi o potwierdzenie i najpierw zapisuje bieżący stan. Następnie na dole pojawia się komunikat „Cofnij”, a każda osoba mająca akurat otwartą stronę od razu widzi zmianę. Agenci mają te same możliwości jako narzędzia: odczyt historii, odczyt wersji jako Markdown, porównywanie i przywracanie."
+    },
+    "where": "W menu w prawym górnym rogu każdej strony („Historia strony”), skrótem Strg + K („Otwórz historię strony”) oraz w zakładce „Aktywność”."
+  },
   "agenten-journal": {
     "title": "Co zmienił agent podczas sesji",
     "summary": "Operacje zapisu wykonywane przez agenta są łączone w sesję i rejestrowane w dzienniku, każda z migawką sprzed zmiany. Pozwala to sprawdzić, co zostało zmodyfikowane w danym przebiegu, i precyzyjnie przywrócić wybrane strony.",

@@ -159,6 +159,8 @@
     "restoreDescription": "Zawartość strony zostanie przywrócona do stanu z {date}. Bieżący stan zostanie wcześniej automatycznie zapisany, ale samego przywrócenia nie można cofnąć. Otwarta strona natychmiast zastosuje tę zmianę.",
     "restoreUnknownError": "Nieznany błąd",
     "cancel": "Anuluj",
-    "restore": "Przywróć"
+    "restore": "Przywróć",
+    "openHistory": "Otwórz historię strony",
+    "viewInHistory": "Zobacz w historii strony"
   }
 }

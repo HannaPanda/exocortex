@@ -1,19 +1,14 @@
 'use client';
 
 import { type NodeViewProps } from '@tiptap/core';
-import { EditorContent, NodeViewWrapper, useEditor } from '@tiptap/react';
+import { NodeViewWrapper } from '@tiptap/react';
 import { ExternalLinkIcon, ListTreeIcon, PencilIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentOutlineBlock } from '@exocortex/contracts';
-import {
-  buildEditorExtensions,
-  transclusionBlockId,
-  transclusionDocumentId,
-  transclusionLabel,
-} from '@exocortex/editor';
+import { transclusionBlockId, transclusionDocumentId, transclusionLabel } from '@exocortex/editor';
 import {
   Badge,
   Button,
@@ -29,10 +24,10 @@ import {
 } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { useEditorWords } from '@/components/editor/editor-words';
 import { useDocumentFragment } from '@/lib/api/transclusion-queries';
 
 import { PageLinkPromptContext } from './page-link-context';
+import { ReadOnlyDocument } from './read-only-document';
 
 interface TransclusionNodeViewProps extends NodeViewProps {
   workspaceId: string;
@@ -211,7 +206,7 @@ function TransclusionBody({
 
   return (
     <div className="p-3" data-testid="transclusion-content">
-      <ReadOnlyFragment content={state.data.proseMirrorJson} />
+      <ReadOnlyDocument content={state.data.proseMirrorJson} />
       {state.data.nested === 0 ? null : (
         <p className="mt-2 text-xs text-muted-foreground">
           {t('nested', { count: state.data.nested })}
@@ -219,37 +214,6 @@ function TransclusionBody({
       )}
     </div>
   );
-}
-
-/**
- * The fragment, rendered by the canonical schema and nothing else.
- *
- * A second editor instance rather than a Markdown renderer: this is the
- * source's own content in the source's own vocabulary, and anything that
- * re-derived it would be a second rendering of one document, free to drift from
- * the first. Read-only, so nothing typed here could reach the source -- editing
- * at the place of the embedding is the "synced block" issue #78 explicitly
- * leaves for later.
- */
-function ReadOnlyFragment({ content }: { content: unknown }) {
-  // A transcluded PDF or table of contents speaks the reader's language too.
-  const words = useEditorWords();
-  const editor = useEditor(
-    {
-      immediatelyRender: false,
-      editable: false,
-      extensions: buildEditorExtensions({ words }),
-      content: content as object,
-    },
-    [words],
-  );
-
-  React.useEffect(() => {
-    if (editor === null) return;
-    editor.commands.setContent(content as object, { emitUpdate: false });
-  }, [content, editor]);
-
-  return <EditorContent editor={editor} className="exocortex-editor" />;
 }
 
 /** Picks which block of the source the reference addresses. */

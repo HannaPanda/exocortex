@@ -5,6 +5,7 @@ import {
   ArchiveIcon,
   ArrowRightLeftIcon,
   EllipsisIcon,
+  EyeIcon,
   FilePlusIcon,
   GitCompareIcon,
   HistoryIcon,
@@ -42,6 +43,7 @@ import { useDocument } from '@/lib/api/document-queries';
 import { useDocumentActivity, useRestoreSnapshot } from '@/lib/api/snapshot-queries';
 import { useFormatter } from '@/lib/formatter';
 
+import { PageHistoryDialog } from './page-history-dialog';
 import { type DiffableSnapshot, SnapshotDiffDialog } from './snapshot-diff-dialog';
 
 type Formatter = ReturnType<typeof useFormatter>;
@@ -192,11 +194,13 @@ function ActivityEntryRow({
   readOnly,
   onRequestRestore,
   onRequestCompare,
+  onRequestHistory,
 }: {
   entry: DocumentActivityEntry;
   readOnly: boolean;
   onRequestRestore: (entry: SnapshotEntry) => void;
   onRequestCompare: (entry: SnapshotEntry) => void;
+  onRequestHistory: (entry: SnapshotEntry) => void;
 }) {
   const t = useTranslations('dialogs.activity');
   const format = useFormatter();
@@ -301,6 +305,12 @@ function ActivityEntryRow({
                 >
                   <GitCompareIcon /> {t('compare')}
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  data-testid="activity-history-item"
+                  onClick={() => onRequestHistory(entry)}
+                >
+                  <EyeIcon /> {t('viewInHistory')}
+                </DropdownMenuItem>
                 {readOnly ? null : (
                   <DropdownMenuItem
                     data-testid="activity-restore-item"
@@ -373,6 +383,8 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
   const [pendingRestore, setPendingRestore] = React.useState<SnapshotEntry | null>(null);
   const [comparing, setComparing] = React.useState<DiffableSnapshot | null>(null);
   const [restoreError, setRestoreError] = React.useState<string | null>(null);
+  /** `undefined`: closed; `null`: open at the newest entry; an id: open at that version. */
+  const [historyAt, setHistoryAt] = React.useState<string | null | undefined>(undefined);
 
   if (documentId === null || workspaceId === null) {
     return (
@@ -419,6 +431,17 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
       <SectionRule as="h3" trailing={entries.length === 0 ? undefined : entries.length}>
         {t('history')}
       </SectionRule>
+      {/* The full history with a rendered preview of every version (issue
+          #235); this tab stays the compact timeline beside the page. */}
+      <Button
+        variant="outline"
+        size="sm"
+        className="self-start"
+        data-testid="activity-open-history"
+        onClick={() => setHistoryAt(null)}
+      >
+        <HistoryIcon /> {t('openHistory')}
+      </Button>
       {entries.length === 0 ? (
         <EmptyState
           title={t('emptyTitle')}
@@ -450,12 +473,23 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
                   onRequestCompare={(target) =>
                     setComparing({ id: target.id, createdAt: target.occurredAt })
                   }
+                  onRequestHistory={(target) => setHistoryAt(target.id)}
                 />
               ))}
             </section>
           ))}
         </div>
       )}
+
+      <PageHistoryDialog
+        documentId={documentId}
+        open={historyAt !== undefined}
+        onOpenChange={(open) => {
+          if (!open) setHistoryAt(undefined);
+        }}
+        readOnly={readOnly || document.data.archivedAt !== null}
+        initialSnapshotId={historyAt ?? null}
+      />
 
       <SnapshotDiffDialog
         documentId={documentId}

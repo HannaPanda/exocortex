@@ -437,6 +437,16 @@
     },
     "where": "La pestaña «Actividad» en el panel contextual de la derecha: al hacer clic en una versión se compara, y el menú contiguo permite comparar y restaurar."
   },
+  "seitenverlauf": {
+    "title": "Historial de la página con vista previa",
+    "summary": "Una ventana amplia muestra todas las versiones anteriores de una página: cuándo, quién y si fue una persona, un agente o el asistente de IA. Un clic muestra la versión tal como se veía la página en ese momento o lo que ha cambiado desde entonces, y otro clic la restaura.",
+    "details": {
+      "p1": "A la derecha figuran las versiones por días, las más recientes primero. Lo que haya ocurrido en rápida sucesión aparece agrupado en una sola entrada: una sesión de escritura, una serie de operaciones de escritura de un agente. La flecha contigua despliega las distintas versiones individuales; no se pierde ninguna. Una serie de escritura representa la página antes de dicha serie, es decir, el estado al que casi siempre se quiere volver.",
+      "p2": "A la izquierda ves la versión seleccionada como vista previa, tal como lucía la página en ese momento, solo en modo lectura. El selector «Cambios» muestra en su lugar lo que ha cambiado desde entonces, bloque a bloque; desde ahí también puedes recuperar bloques individuales.",
+      "p3": "«Restaurar esta versión» pide confirmación una vez y guarda previamente el estado actual. Luego aparece abajo «Deshacer», y quien tenga la página abierta en ese momento ve el cambio de inmediato. Los agentes disponen de lo mismo como herramientas: leer el historial, leer una versión como Markdown, comparar y restaurar."
+    },
+    "where": "En el menú superior derecho de cada página («Historial de la página»), con Strg + K «Abrir historial de la página» y en la pestaña «Actividad»."
+  },
   "agenten-journal": {
     "title": "Qué ha cambiado un agente en una sesión",
     "summary": "Las escrituras de un agente se agrupan en una sesión y se registran en el diario, cada una con la instantánea previa al cambio. Así se puede consultar qué ha tocado una ejecución y revertir páginas concretas de forma selectiva.",

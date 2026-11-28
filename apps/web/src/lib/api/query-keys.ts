@@ -33,6 +33,10 @@ export const queryKeys = {
   documentDiff: (documentId: string, snapshotId: string, against: string) =>
     ['document', documentId, 'diff', snapshotId, against] as const,
   documentRelated: (documentId: string) => ['document', documentId, 'related'] as const,
+  /** The page history of issue #235; the prefix every page of it shares. */
+  documentHistory: (documentId: string) => ['document', documentId, 'history'] as const,
+  snapshotContent: (documentId: string, snapshotId: string) =>
+    ['document', documentId, 'snapshot', snapshotId] as const,
   /** Every resolved reference of a workspace; the prefix all of them share. */
   pageLinks: (workspaceId: string) => ['workspace', workspaceId, 'page-link'] as const,
   pageLink: (workspaceId: string, reference: { documentId?: string | null; title?: string }) =>

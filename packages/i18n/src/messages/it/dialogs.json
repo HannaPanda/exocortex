@@ -159,6 +159,8 @@
     "restoreDescription": "Il contenuto della pagina verrà ripristinato alla versione del {date}. La versione attuale verrà salvata automaticamente prima, ma il ripristino stesso non può essere annullato. Una pagina aperta applicherà immediatamente la modifica.",
     "restoreUnknownError": "Errore sconosciuto",
     "cancel": "Annulla",
-    "restore": "Ripristina"
+    "restore": "Ripristina",
+    "openHistory": "Apri cronologia della pagina",
+    "viewInHistory": "Vedi nella cronologia della pagina"
   }
 }

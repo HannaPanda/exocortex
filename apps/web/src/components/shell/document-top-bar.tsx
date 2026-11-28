@@ -4,6 +4,7 @@ import {
   DownloadIcon,
   FileTextIcon,
   FolderTreeIcon,
+  HistoryIcon,
   LayoutTemplateIcon,
   MoreHorizontalIcon,
   RotateCcwIcon,
@@ -40,6 +41,7 @@ import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { AiWorkingHint } from './ai-working-hint';
 import { useGuardedMove } from './guarded-move';
 import { PageBreadcrumb } from './page-breadcrumb';
+import { usePageHistoryDialog } from './page-history-dialog';
 import { SaveIndicator } from './save-indicator';
 import { ShareDialog } from './share-dialog';
 import { SuggestParentDialog } from './suggest-parent-dialog';
@@ -82,6 +84,7 @@ export function DocumentTopBar({
   const [filing, setFiling] = React.useState(false);
   const [templateSettings, setTemplateSettings] = React.useState(false);
   const [sharing, setSharing] = React.useState(false);
+  const history = usePageHistoryDialog({ documentId, access: detail.access, archived });
   /*
    * Asked on every page view, not only when the dialog opens (issue #83): the
    * badge below is the only thing that tells somebody a page is readable from
@@ -118,6 +121,7 @@ export function DocumentTopBar({
     {
       openTemplate: () => setTemplateSettings(true),
       openShare: () => setSharing(true),
+      openHistory: history.open,
       file: () => setFiling(true),
       moveTo: guardedMove.propose,
       archive,
@@ -174,6 +178,7 @@ export function DocumentTopBar({
           onOpenProperties={onOpenProperties}
           onOpenTemplateSettings={() => setTemplateSettings(true)}
           onOpenShare={() => setSharing(true)}
+          onOpenHistory={history.open}
           onExport={onExport}
           onOpenRender={onOpenRender}
           onOpenImport={onOpenImport}
@@ -204,6 +209,8 @@ export function DocumentTopBar({
         open={sharing}
         onOpenChange={setSharing}
       />
+
+      {history.dialog}
     </div>
   );
 }
@@ -222,6 +229,7 @@ function PageActionsMenu({
   onOpenProperties,
   onOpenTemplateSettings,
   onOpenShare,
+  onOpenHistory,
   onExport,
   onOpenRender,
   onOpenImport,
@@ -232,6 +240,7 @@ function PageActionsMenu({
   onOpenProperties: () => void;
   onOpenTemplateSettings: () => void;
   onOpenShare: () => void;
+  onOpenHistory: () => void;
   onExport: () => void;
   onOpenRender: () => void;
   onOpenImport: () => void;
@@ -264,6 +273,9 @@ function PageActionsMenu({
             <Share2Icon /> {t('share')}
           </DropdownMenuItem>
         ) : null}
+        <DropdownMenuItem data-testid="open-page-history" onClick={onOpenHistory}>
+          <HistoryIcon /> {t('history')}
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem data-testid="export-markdown" onClick={onExport}>
           <DownloadIcon /> {t('exportMarkdown')}

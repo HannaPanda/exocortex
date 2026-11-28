@@ -159,6 +159,8 @@
     "restoreDescription": "Le contenu de la page sera rétabli à la version du {date}. La version actuelle sera d’abord sauvegardée automatiquement, mais la restauration elle-même ne peut pas être annulée. Une page ouverte appliquera immédiatement la modification.",
     "restoreUnknownError": "Erreur inconnue",
     "cancel": "Annuler",
-    "restore": "Restaurer"
+    "restore": "Restaurer",
+    "openHistory": "Ouvrir l’historique de la page",
+    "viewInHistory": "Voir dans l’historique de la page"
   }
 }

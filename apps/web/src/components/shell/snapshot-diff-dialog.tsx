@@ -274,8 +274,11 @@ export function SnapshotDiffDialog({
   );
 }
 
-/** The list itself, split out so the dialog above stays readable. */
-function DiffBody({
+/**
+ * The list itself, split out so the dialog above stays readable. The page
+ * history (issue #235) shows it too, read-only, in its "Änderungen" view.
+ */
+export function DiffBody({
   diff,
   selected,
   readOnly,

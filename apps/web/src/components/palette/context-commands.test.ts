@@ -125,6 +125,7 @@ describe('pageMenuCommands', () => {
     current: {
       openTemplate: vi.fn(),
       openShare: vi.fn(),
+      openHistory: vi.fn(),
       file: vi.fn(),
       moveTo: vi.fn(),
       archive: vi.fn(),
@@ -165,8 +166,16 @@ describe('pageMenuCommands', () => {
     expect(ids(pageMenuCommands(moving, false, menu, tPage))).not.toContain('page-move');
   });
 
-  it('offers only the way back on an archived page', () => {
-    expect(ids(pageMenuCommands(page(), true, menu, tPage))).toEqual(['page-restore']);
+  it('offers only the way back and the history on an archived page', () => {
+    expect(ids(pageMenuCommands(page(), true, menu, tPage))).toEqual([
+      'page-restore',
+      'page-history',
+    ]);
+  });
+
+  it('offers the page history to a reader, because it changes nothing', () => {
+    const reader = page({ access: 'read', canShare: false } as Partial<DocumentDetail>);
+    expect(ids(pageMenuCommands(reader, false, menu, tPage))).toEqual(['page-history']);
   });
 
   it('offers sharing only where the page may be shared', () => {

@@ -7080,6 +7080,10 @@
       "source": "e24b634d8d1403b4",
       "output": "30e921b14863e33a"
     },
+    "dialogs.activity.openHistory": {
+      "source": "77cf5a6629625f9f",
+      "output": "f55785d06cd693ea"
+    },
     "dialogs.activity.pageLoadError": {
       "source": "f387138f7a1f89d2",
       "output": "eeeacd584bb2b154"
@@ -7163,6 +7167,10 @@
     "dialogs.activity.unknownActor": {
       "source": "276ffa1fb4f97010",
       "output": "b764cdc0eab71374"
+    },
+    "dialogs.activity.viewInHistory": {
+      "source": "e483a2bcd431dfed",
+      "output": "7ea7082694661efc"
     },
     "dialogs.activity.yesterday": {
       "source": "caa9da780fd67a6e",
@@ -8391,6 +8399,206 @@
     "document.overview.stale": {
       "source": "ab2cbd984c9ffd81",
       "output": "ee3cadeefedd25c4"
+    },
+    "document.pageHistory.back": {
+      "source": "5121c610374f357a",
+      "output": "5da8f7fbc29dcda9"
+    },
+    "document.pageHistory.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "19766ed6ccb2f4a3"
+    },
+    "document.pageHistory.changes": {
+      "source": "34538baeda2cc10d",
+      "output": "bbd4b6a86bc65b6a"
+    },
+    "document.pageHistory.changesLead": {
+      "source": "f0fa36beaf45b3fc",
+      "output": "e814c3e566934934"
+    },
+    "document.pageHistory.close": {
+      "source": "b808f6e97075772f",
+      "output": "7d9eb7acb13e2462"
+    },
+    "document.pageHistory.current": {
+      "source": "6ad691638eb66be8",
+      "output": "a74487de8969b1f1"
+    },
+    "document.pageHistory.currentMeta": {
+      "source": "8036095fa35f1c43",
+      "output": "33d7586eb6803ae5"
+    },
+    "document.pageHistory.description": {
+      "source": "160b7003352a0586",
+      "output": "54c3a8c6f3a39195"
+    },
+    "document.pageHistory.editCount": {
+      "source": "417996cf9ced3071",
+      "output": "f4c9348a3d03fc6f"
+    },
+    "document.pageHistory.emptyDescription": {
+      "source": "38deb4e5d2950157",
+      "output": "9fb1515fc7f3ef1c"
+    },
+    "document.pageHistory.emptyTitle": {
+      "source": "759994696bc3fe7e",
+      "output": "3e21daf6c342fe3d"
+    },
+    "document.pageHistory.groups.edit": {
+      "source": "5c1fa90dea4b2226",
+      "output": "64ff3795a5f07b9f"
+    },
+    "document.pageHistory.groups.import": {
+      "source": "b8e0a4e88ac50b2d",
+      "output": "3b10a9e102b3d3fe"
+    },
+    "document.pageHistory.groups.manual": {
+      "source": "8eef1f619bb33385",
+      "output": "1c08e456be5709f1"
+    },
+    "document.pageHistory.groups.restore": {
+      "source": "2db6bf9368e99cf1",
+      "output": "801f6a47f6f3d677"
+    },
+    "document.pageHistory.groups.writeAgent": {
+      "source": "4758b0ad26f2d228",
+      "output": "ed3c6445d46bb5fc"
+    },
+    "document.pageHistory.groups.writeAiRun": {
+      "source": "39274395d55ec910",
+      "output": "5bae89f0643b3e36"
+    },
+    "document.pageHistory.groups.writePerson": {
+      "source": "be8d0d793bd4d79f",
+      "output": "6c04653083c450c2"
+    },
+    "document.pageHistory.hideMembers": {
+      "source": "c7c35834b9a2028f",
+      "output": "ed32eda098ac8c04"
+    },
+    "document.pageHistory.listLabel": {
+      "source": "e0c652b618950426",
+      "output": "bddb9129d59e6cf1"
+    },
+    "document.pageHistory.loadError": {
+      "source": "8703664713a291c2",
+      "output": "b56665163abcd456"
+    },
+    "document.pageHistory.loadMore": {
+      "source": "06517a0df5f021c7",
+      "output": "30aa5d0757f1157a"
+    },
+    "document.pageHistory.loading": {
+      "source": "137d483c0dfe6fd7",
+      "output": "953cd391f1549c6a"
+    },
+    "document.pageHistory.memberLabel": {
+      "source": "4c5ce8b5cce43bef",
+      "output": "fbbe72e029db1a32"
+    },
+    "document.pageHistory.noSelection": {
+      "source": "df103b6f4c5d6fab",
+      "output": "c5c707c497ab612c"
+    },
+    "document.pageHistory.onBehalfOf": {
+      "source": "f4791a3e4dacf76c",
+      "output": "270f438124586b8a"
+    },
+    "document.pageHistory.otherCount": {
+      "source": "fe916c23aa74bdbc",
+      "output": "46f3f46014a72086"
+    },
+    "document.pageHistory.pickBlocks": {
+      "source": "e81d8af93b6a6876",
+      "output": "901c13401102354c"
+    },
+    "document.pageHistory.preview": {
+      "source": "69337f6de91475ad",
+      "output": "324b134f57c70c72"
+    },
+    "document.pageHistory.previewEmpty": {
+      "source": "9979ab235ede2f80",
+      "output": "3837378b6b7d3e16"
+    },
+    "document.pageHistory.previewError": {
+      "source": "a5d942ae7ca8d04f",
+      "output": "1ca73437972ed558"
+    },
+    "document.pageHistory.previewLoading": {
+      "source": "80aa48bcf07849f0",
+      "output": "300997f9ba191341"
+    },
+    "document.pageHistory.readOnlyHint": {
+      "source": "75925d1d5a1a23b2",
+      "output": "a4a48c7d63c33ad5"
+    },
+    "document.pageHistory.representsWrite": {
+      "source": "9fff51d997b83387",
+      "output": "16e6556ae2ab5781"
+    },
+    "document.pageHistory.restore": {
+      "source": "443eca65946e3427",
+      "output": "0570daa12fe55db8"
+    },
+    "document.pageHistory.restoreConfirm": {
+      "source": "ab99a15c6bcda979",
+      "output": "a76e13b9839270eb"
+    },
+    "document.pageHistory.restoreDescription": {
+      "source": "5ba8996f7b642604",
+      "output": "9fd87592d65a52e2"
+    },
+    "document.pageHistory.restoreError": {
+      "source": "f7644a21d8c687e2",
+      "output": "29eb9a338353f723"
+    },
+    "document.pageHistory.restoreTitle": {
+      "source": "6f2f67db8c82f364",
+      "output": "b848abb1c391a30a"
+    },
+    "document.pageHistory.restored": {
+      "source": "b19195481a853dbb",
+      "output": "7f8e402eb2d12506"
+    },
+    "document.pageHistory.showMembers": {
+      "source": "38efbbd3e8963ab7",
+      "output": "9460d226cc540668"
+    },
+    "document.pageHistory.span": {
+      "source": "066595cb67cce09b",
+      "output": "ba318cc195ceff48"
+    },
+    "document.pageHistory.title": {
+      "source": "94425f37f5c47ff6",
+      "output": "0ab115a5c8c0feee"
+    },
+    "document.pageHistory.unavailable": {
+      "source": "5db96a2a9332950f",
+      "output": "ca184496974204a0"
+    },
+    "document.pageHistory.undoRestore": {
+      "source": "0a976cf72047a954",
+      "output": "a8283ade31856f71"
+    },
+    "document.pageHistory.undone": {
+      "source": "a850f96605258f6b",
+      "output": "7255f8b30aedfe44"
+    },
+    "document.pageHistory.unknownAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "647936ec3e40783d"
+    },
+    "document.pageHistory.unknownName": {
+      "source": "276ffa1fb4f97010",
+      "output": "b764cdc0eab71374"
+    },
+    "document.pageHistory.viewLabel": {
+      "source": "a6d6105cf99c1b52",
+      "output": "dcc839a4015c4b7d"
+    },
+    "document.pageHistory.writeCount": {
+      "source": "d91693bd76fd2e74",
+      "output": "5691fc1084d2ebaa"
     },
     "document.pdf.clickHint": {
       "source": "549c34a2659eb57c",
@@ -14831,6 +15039,30 @@
     "features.seitenkontext.where": {
       "source": "1196095f393aadcb",
       "output": "6fe03ddbae1bce4e"
+    },
+    "features.seitenverlauf.details.p1": {
+      "source": "6af03a356662ce7c",
+      "output": "77993099173b92d4"
+    },
+    "features.seitenverlauf.details.p2": {
+      "source": "76ed19005aa827bb",
+      "output": "84cb53997623d782"
+    },
+    "features.seitenverlauf.details.p3": {
+      "source": "60891327d5d29f82",
+      "output": "794c60f16bce2237"
+    },
+    "features.seitenverlauf.summary": {
+      "source": "50bb7545401313ff",
+      "output": "fab7fa748603bb9e"
+    },
+    "features.seitenverlauf.title": {
+      "source": "8ceb17336983d155",
+      "output": "70a6ae6b139697de"
+    },
+    "features.seitenverlauf.where": {
+      "source": "dc9935e3011f7f4c",
+      "output": "d4c9626a12b8122f"
     },
     "features.sprache-waehlen.details.p1": {
       "source": "81753afc7bb035de",
@@ -21668,6 +21900,10 @@
       "source": "3d36e0e2c60ec0eb",
       "output": "c021b9d372e5b106"
     },
+    "shell.documentTopBar.history": {
+      "source": "94425f37f5c47ff6",
+      "output": "0ab115a5c8c0feee"
+    },
     "shell.documentTopBar.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "9430b1911debeb19"
@@ -22507,6 +22743,14 @@
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
       "output": "a811eec0cfb75a75"
+    },
+    "shell.paletteCommands.page.history": {
+      "source": "77cf5a6629625f9f",
+      "output": "f55785d06cd693ea"
+    },
+    "shell.paletteCommands.page.historyKeywords": {
+      "source": "2754192b41f42788",
+      "output": "18b60381f6c3a06d"
     },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
@@ -33046,6 +33290,10 @@
       "source": "e24b634d8d1403b4",
       "output": "d1b9122542f32220"
     },
+    "dialogs.activity.openHistory": {
+      "source": "77cf5a6629625f9f",
+      "output": "d1a66915d581d7c7"
+    },
     "dialogs.activity.pageLoadError": {
       "source": "f387138f7a1f89d2",
       "output": "93444aa552f1c80f"
@@ -33129,6 +33377,10 @@
     "dialogs.activity.unknownActor": {
       "source": "276ffa1fb4f97010",
       "output": "2669e033a1213e64"
+    },
+    "dialogs.activity.viewInHistory": {
+      "source": "e483a2bcd431dfed",
+      "output": "60c70b38f3f06e1f"
     },
     "dialogs.activity.yesterday": {
       "source": "caa9da780fd67a6e",
@@ -34357,6 +34609,206 @@
     "document.overview.stale": {
       "source": "ab2cbd984c9ffd81",
       "output": "3354795ff6037134"
+    },
+    "document.pageHistory.back": {
+      "source": "5121c610374f357a",
+      "output": "87875c7a2fd6e4d6"
+    },
+    "document.pageHistory.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "document.pageHistory.changes": {
+      "source": "34538baeda2cc10d",
+      "output": "8544c53630607f75"
+    },
+    "document.pageHistory.changesLead": {
+      "source": "f0fa36beaf45b3fc",
+      "output": "1c3afff963df8421"
+    },
+    "document.pageHistory.close": {
+      "source": "b808f6e97075772f",
+      "output": "aeccae342e4bd0a7"
+    },
+    "document.pageHistory.current": {
+      "source": "6ad691638eb66be8",
+      "output": "246587f3c597f781"
+    },
+    "document.pageHistory.currentMeta": {
+      "source": "8036095fa35f1c43",
+      "output": "bd852b7f519573eb"
+    },
+    "document.pageHistory.description": {
+      "source": "160b7003352a0586",
+      "output": "e888750aff0884ec"
+    },
+    "document.pageHistory.editCount": {
+      "source": "417996cf9ced3071",
+      "output": "6a6bbb3167517190"
+    },
+    "document.pageHistory.emptyDescription": {
+      "source": "38deb4e5d2950157",
+      "output": "4acf469514146904"
+    },
+    "document.pageHistory.emptyTitle": {
+      "source": "759994696bc3fe7e",
+      "output": "9fb7f16b352d141d"
+    },
+    "document.pageHistory.groups.edit": {
+      "source": "5c1fa90dea4b2226",
+      "output": "491a13a0ead30524"
+    },
+    "document.pageHistory.groups.import": {
+      "source": "b8e0a4e88ac50b2d",
+      "output": "a2e0c50f57f08ac0"
+    },
+    "document.pageHistory.groups.manual": {
+      "source": "8eef1f619bb33385",
+      "output": "d395e4e9d4cf0149"
+    },
+    "document.pageHistory.groups.restore": {
+      "source": "2db6bf9368e99cf1",
+      "output": "4c60b26e1c060edb"
+    },
+    "document.pageHistory.groups.writeAgent": {
+      "source": "4758b0ad26f2d228",
+      "output": "5fecf7af83b42cab"
+    },
+    "document.pageHistory.groups.writeAiRun": {
+      "source": "39274395d55ec910",
+      "output": "8679110df375c161"
+    },
+    "document.pageHistory.groups.writePerson": {
+      "source": "be8d0d793bd4d79f",
+      "output": "3973dfe263a068cd"
+    },
+    "document.pageHistory.hideMembers": {
+      "source": "c7c35834b9a2028f",
+      "output": "c418d730a59cc6e3"
+    },
+    "document.pageHistory.listLabel": {
+      "source": "e0c652b618950426",
+      "output": "aef8258ab27ffe77"
+    },
+    "document.pageHistory.loadError": {
+      "source": "8703664713a291c2",
+      "output": "72e0ccd04956ea26"
+    },
+    "document.pageHistory.loadMore": {
+      "source": "06517a0df5f021c7",
+      "output": "729dfbc7b44785df"
+    },
+    "document.pageHistory.loading": {
+      "source": "137d483c0dfe6fd7",
+      "output": "a3851e595e0cad49"
+    },
+    "document.pageHistory.memberLabel": {
+      "source": "4c5ce8b5cce43bef",
+      "output": "ae202a80efa4468d"
+    },
+    "document.pageHistory.noSelection": {
+      "source": "df103b6f4c5d6fab",
+      "output": "9c2d21ee7cd0865d"
+    },
+    "document.pageHistory.onBehalfOf": {
+      "source": "f4791a3e4dacf76c",
+      "output": "6df76b8c6aef7337"
+    },
+    "document.pageHistory.otherCount": {
+      "source": "fe916c23aa74bdbc",
+      "output": "bc9561d42051c750"
+    },
+    "document.pageHistory.pickBlocks": {
+      "source": "e81d8af93b6a6876",
+      "output": "7d32b890d0ba85e4"
+    },
+    "document.pageHistory.preview": {
+      "source": "69337f6de91475ad",
+      "output": "c5341f198fc2f4f8"
+    },
+    "document.pageHistory.previewEmpty": {
+      "source": "9979ab235ede2f80",
+      "output": "8ff13cd29aab85b8"
+    },
+    "document.pageHistory.previewError": {
+      "source": "a5d942ae7ca8d04f",
+      "output": "8006869453deb32f"
+    },
+    "document.pageHistory.previewLoading": {
+      "source": "80aa48bcf07849f0",
+      "output": "2eeedad9e88ba2c8"
+    },
+    "document.pageHistory.readOnlyHint": {
+      "source": "75925d1d5a1a23b2",
+      "output": "9db5bebaf8814f07"
+    },
+    "document.pageHistory.representsWrite": {
+      "source": "9fff51d997b83387",
+      "output": "09208bdec44e3730"
+    },
+    "document.pageHistory.restore": {
+      "source": "443eca65946e3427",
+      "output": "2e413b00cb67f4b8"
+    },
+    "document.pageHistory.restoreConfirm": {
+      "source": "ab99a15c6bcda979",
+      "output": "eda02893d340c1be"
+    },
+    "document.pageHistory.restoreDescription": {
+      "source": "5ba8996f7b642604",
+      "output": "017e06b731d057ef"
+    },
+    "document.pageHistory.restoreError": {
+      "source": "f7644a21d8c687e2",
+      "output": "e2a4aa679b0a8eb0"
+    },
+    "document.pageHistory.restoreTitle": {
+      "source": "6f2f67db8c82f364",
+      "output": "aaf06d1aaf8b8412"
+    },
+    "document.pageHistory.restored": {
+      "source": "b19195481a853dbb",
+      "output": "56ef00092fd234ab"
+    },
+    "document.pageHistory.showMembers": {
+      "source": "38efbbd3e8963ab7",
+      "output": "0916039149f2a5e4"
+    },
+    "document.pageHistory.span": {
+      "source": "066595cb67cce09b",
+      "output": "abbc8d5083b9df15"
+    },
+    "document.pageHistory.title": {
+      "source": "94425f37f5c47ff6",
+      "output": "fb3ebbde9bfded76"
+    },
+    "document.pageHistory.unavailable": {
+      "source": "5db96a2a9332950f",
+      "output": "b781f6bd9b98e43d"
+    },
+    "document.pageHistory.undoRestore": {
+      "source": "0a976cf72047a954",
+      "output": "29fa864fd744397e"
+    },
+    "document.pageHistory.undone": {
+      "source": "a850f96605258f6b",
+      "output": "1d21205d5d4c1983"
+    },
+    "document.pageHistory.unknownAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "830b3e396570a71b"
+    },
+    "document.pageHistory.unknownName": {
+      "source": "276ffa1fb4f97010",
+      "output": "2669e033a1213e64"
+    },
+    "document.pageHistory.viewLabel": {
+      "source": "a6d6105cf99c1b52",
+      "output": "05df1c8dbf759907"
+    },
+    "document.pageHistory.writeCount": {
+      "source": "d91693bd76fd2e74",
+      "output": "001c3ae48b048f79"
     },
     "document.pdf.clickHint": {
       "source": "549c34a2659eb57c",
@@ -40797,6 +41249,30 @@
     "features.seitenkontext.where": {
       "source": "1196095f393aadcb",
       "output": "510c52afecc754d9"
+    },
+    "features.seitenverlauf.details.p1": {
+      "source": "6af03a356662ce7c",
+      "output": "e70a54b2716f3150"
+    },
+    "features.seitenverlauf.details.p2": {
+      "source": "76ed19005aa827bb",
+      "output": "33e35f75eb4ba708"
+    },
+    "features.seitenverlauf.details.p3": {
+      "source": "60891327d5d29f82",
+      "output": "e6ba4d0a87f62e16"
+    },
+    "features.seitenverlauf.summary": {
+      "source": "50bb7545401313ff",
+      "output": "c2888d4e957b8df8"
+    },
+    "features.seitenverlauf.title": {
+      "source": "8ceb17336983d155",
+      "output": "f5ef9db316eb2e03"
+    },
+    "features.seitenverlauf.where": {
+      "source": "dc9935e3011f7f4c",
+      "output": "64c58733330b8212"
     },
     "features.sprache-waehlen.details.p1": {
       "source": "81753afc7bb035de",
@@ -47634,6 +48110,10 @@
       "source": "3d36e0e2c60ec0eb",
       "output": "690b189f5e065ad7"
     },
+    "shell.documentTopBar.history": {
+      "source": "94425f37f5c47ff6",
+      "output": "fb3ebbde9bfded76"
+    },
     "shell.documentTopBar.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "27841c5e60790d88"
@@ -48473,6 +48953,14 @@
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
       "output": "e07ae93a0213c824"
+    },
+    "shell.paletteCommands.page.history": {
+      "source": "77cf5a6629625f9f",
+      "output": "d1a66915d581d7c7"
+    },
+    "shell.paletteCommands.page.historyKeywords": {
+      "source": "2754192b41f42788",
+      "output": "b90389f43b5cb921"
     },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
@@ -59012,6 +59500,10 @@
       "source": "e24b634d8d1403b4",
       "output": "b89645faef433a6a"
     },
+    "dialogs.activity.openHistory": {
+      "source": "77cf5a6629625f9f",
+      "output": "1b49a47ea217f12e"
+    },
     "dialogs.activity.pageLoadError": {
       "source": "f387138f7a1f89d2",
       "output": "61ba342e23a59143"
@@ -59095,6 +59587,10 @@
     "dialogs.activity.unknownActor": {
       "source": "276ffa1fb4f97010",
       "output": "3b986a55bf84917c"
+    },
+    "dialogs.activity.viewInHistory": {
+      "source": "e483a2bcd431dfed",
+      "output": "e4e3386ef6c7c3e0"
     },
     "dialogs.activity.yesterday": {
       "source": "caa9da780fd67a6e",
@@ -60323,6 +60819,206 @@
     "document.overview.stale": {
       "source": "ab2cbd984c9ffd81",
       "output": "c5dd7c01ae26f3e1"
+    },
+    "document.pageHistory.back": {
+      "source": "5121c610374f357a",
+      "output": "40b78d0dd318fb42"
+    },
+    "document.pageHistory.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "46ad3916f6a09798"
+    },
+    "document.pageHistory.changes": {
+      "source": "34538baeda2cc10d",
+      "output": "8b3ba0d31742e3bf"
+    },
+    "document.pageHistory.changesLead": {
+      "source": "f0fa36beaf45b3fc",
+      "output": "dfdf638d8f121ffb"
+    },
+    "document.pageHistory.close": {
+      "source": "b808f6e97075772f",
+      "output": "711e5f2e198df1b6"
+    },
+    "document.pageHistory.current": {
+      "source": "6ad691638eb66be8",
+      "output": "0d19d1b0fb23c228"
+    },
+    "document.pageHistory.currentMeta": {
+      "source": "8036095fa35f1c43",
+      "output": "50e66c3d4986cd3e"
+    },
+    "document.pageHistory.description": {
+      "source": "160b7003352a0586",
+      "output": "564d5bee2b2b4dd4"
+    },
+    "document.pageHistory.editCount": {
+      "source": "417996cf9ced3071",
+      "output": "d2054b3471fb14a4"
+    },
+    "document.pageHistory.emptyDescription": {
+      "source": "38deb4e5d2950157",
+      "output": "bd0259c08c78afc2"
+    },
+    "document.pageHistory.emptyTitle": {
+      "source": "759994696bc3fe7e",
+      "output": "4ad39d780061a79b"
+    },
+    "document.pageHistory.groups.edit": {
+      "source": "5c1fa90dea4b2226",
+      "output": "d6c1cb8f1d6e829f"
+    },
+    "document.pageHistory.groups.import": {
+      "source": "b8e0a4e88ac50b2d",
+      "output": "f9d7a557664433bc"
+    },
+    "document.pageHistory.groups.manual": {
+      "source": "8eef1f619bb33385",
+      "output": "d6114ef70371f40c"
+    },
+    "document.pageHistory.groups.restore": {
+      "source": "2db6bf9368e99cf1",
+      "output": "241ad465d669e28a"
+    },
+    "document.pageHistory.groups.writeAgent": {
+      "source": "4758b0ad26f2d228",
+      "output": "ed2f14d5a7e06f94"
+    },
+    "document.pageHistory.groups.writeAiRun": {
+      "source": "39274395d55ec910",
+      "output": "ff1cb1126c0d24bb"
+    },
+    "document.pageHistory.groups.writePerson": {
+      "source": "be8d0d793bd4d79f",
+      "output": "ee0a72af39957f00"
+    },
+    "document.pageHistory.hideMembers": {
+      "source": "c7c35834b9a2028f",
+      "output": "6bfed644a8407fa7"
+    },
+    "document.pageHistory.listLabel": {
+      "source": "e0c652b618950426",
+      "output": "828ce8cb3bb4b8f6"
+    },
+    "document.pageHistory.loadError": {
+      "source": "8703664713a291c2",
+      "output": "0b526cf794c1b2a2"
+    },
+    "document.pageHistory.loadMore": {
+      "source": "06517a0df5f021c7",
+      "output": "c2d149781ee51688"
+    },
+    "document.pageHistory.loading": {
+      "source": "137d483c0dfe6fd7",
+      "output": "91b31e679fbfeb47"
+    },
+    "document.pageHistory.memberLabel": {
+      "source": "4c5ce8b5cce43bef",
+      "output": "afc4dd31a0ea6bd5"
+    },
+    "document.pageHistory.noSelection": {
+      "source": "df103b6f4c5d6fab",
+      "output": "79c3df2a62a56343"
+    },
+    "document.pageHistory.onBehalfOf": {
+      "source": "f4791a3e4dacf76c",
+      "output": "881512f1bbcaceb0"
+    },
+    "document.pageHistory.otherCount": {
+      "source": "fe916c23aa74bdbc",
+      "output": "42c7b705594c61aa"
+    },
+    "document.pageHistory.pickBlocks": {
+      "source": "e81d8af93b6a6876",
+      "output": "8958f8478b110991"
+    },
+    "document.pageHistory.preview": {
+      "source": "69337f6de91475ad",
+      "output": "bb28a9f4a4e34fac"
+    },
+    "document.pageHistory.previewEmpty": {
+      "source": "9979ab235ede2f80",
+      "output": "e16cac84c1810b32"
+    },
+    "document.pageHistory.previewError": {
+      "source": "a5d942ae7ca8d04f",
+      "output": "1d1a0fe1f3d3bca4"
+    },
+    "document.pageHistory.previewLoading": {
+      "source": "80aa48bcf07849f0",
+      "output": "53634cbd8e6e54f3"
+    },
+    "document.pageHistory.readOnlyHint": {
+      "source": "75925d1d5a1a23b2",
+      "output": "66d8e5ff11d2e33f"
+    },
+    "document.pageHistory.representsWrite": {
+      "source": "9fff51d997b83387",
+      "output": "492e3679179fdb4e"
+    },
+    "document.pageHistory.restore": {
+      "source": "443eca65946e3427",
+      "output": "de10adfea8796719"
+    },
+    "document.pageHistory.restoreConfirm": {
+      "source": "ab99a15c6bcda979",
+      "output": "dc8219c4ff0f3afd"
+    },
+    "document.pageHistory.restoreDescription": {
+      "source": "5ba8996f7b642604",
+      "output": "18776dd38fe57ab9"
+    },
+    "document.pageHistory.restoreError": {
+      "source": "f7644a21d8c687e2",
+      "output": "10ab4db5b9801b50"
+    },
+    "document.pageHistory.restoreTitle": {
+      "source": "6f2f67db8c82f364",
+      "output": "f71eb472b562d793"
+    },
+    "document.pageHistory.restored": {
+      "source": "b19195481a853dbb",
+      "output": "d371f759b04e8a18"
+    },
+    "document.pageHistory.showMembers": {
+      "source": "38efbbd3e8963ab7",
+      "output": "04f6a1e15a06eeae"
+    },
+    "document.pageHistory.span": {
+      "source": "066595cb67cce09b",
+      "output": "d5ba6d6019cb28a4"
+    },
+    "document.pageHistory.title": {
+      "source": "94425f37f5c47ff6",
+      "output": "17a7f24c23813893"
+    },
+    "document.pageHistory.unavailable": {
+      "source": "5db96a2a9332950f",
+      "output": "dae75cff3b98f53d"
+    },
+    "document.pageHistory.undoRestore": {
+      "source": "0a976cf72047a954",
+      "output": "46ad3916f6a09798"
+    },
+    "document.pageHistory.undone": {
+      "source": "a850f96605258f6b",
+      "output": "28379661b471b298"
+    },
+    "document.pageHistory.unknownAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "500ec2ee94ebab69"
+    },
+    "document.pageHistory.unknownName": {
+      "source": "276ffa1fb4f97010",
+      "output": "3b986a55bf84917c"
+    },
+    "document.pageHistory.viewLabel": {
+      "source": "a6d6105cf99c1b52",
+      "output": "b111a2a2185caed7"
+    },
+    "document.pageHistory.writeCount": {
+      "source": "d91693bd76fd2e74",
+      "output": "98e3f8b298f887f9"
     },
     "document.pdf.clickHint": {
       "source": "549c34a2659eb57c",
@@ -66763,6 +67459,30 @@
     "features.seitenkontext.where": {
       "source": "1196095f393aadcb",
       "output": "6162f4dfd4c90ed4"
+    },
+    "features.seitenverlauf.details.p1": {
+      "source": "6af03a356662ce7c",
+      "output": "d41b0039f7d8c5b9"
+    },
+    "features.seitenverlauf.details.p2": {
+      "source": "76ed19005aa827bb",
+      "output": "856df48f016c9602"
+    },
+    "features.seitenverlauf.details.p3": {
+      "source": "60891327d5d29f82",
+      "output": "67d7af70581860c0"
+    },
+    "features.seitenverlauf.summary": {
+      "source": "50bb7545401313ff",
+      "output": "6e78bdc496aeb7c5"
+    },
+    "features.seitenverlauf.title": {
+      "source": "8ceb17336983d155",
+      "output": "c17110e7dbf2f392"
+    },
+    "features.seitenverlauf.where": {
+      "source": "dc9935e3011f7f4c",
+      "output": "2716ce12ef7f850a"
     },
     "features.sprache-waehlen.details.p1": {
       "source": "81753afc7bb035de",
@@ -73600,6 +74320,10 @@
       "source": "3d36e0e2c60ec0eb",
       "output": "6f8fc5b5a845fc4b"
     },
+    "shell.documentTopBar.history": {
+      "source": "94425f37f5c47ff6",
+      "output": "17a7f24c23813893"
+    },
     "shell.documentTopBar.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "067743b82c12134b"
@@ -74439,6 +75163,14 @@
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
       "output": "658535bb99addd26"
+    },
+    "shell.paletteCommands.page.history": {
+      "source": "77cf5a6629625f9f",
+      "output": "1b49a47ea217f12e"
+    },
+    "shell.paletteCommands.page.historyKeywords": {
+      "source": "2754192b41f42788",
+      "output": "c43bf6da0d9fb253"
     },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
@@ -84978,6 +85710,10 @@
       "source": "e24b634d8d1403b4",
       "output": "5fe434df40cbd186"
     },
+    "dialogs.activity.openHistory": {
+      "source": "77cf5a6629625f9f",
+      "output": "92dd655e9dacc22e"
+    },
     "dialogs.activity.pageLoadError": {
       "source": "f387138f7a1f89d2",
       "output": "9ce81ebb2bc4e363"
@@ -85061,6 +85797,10 @@
     "dialogs.activity.unknownActor": {
       "source": "276ffa1fb4f97010",
       "output": "43d7b5eae9c8583b"
+    },
+    "dialogs.activity.viewInHistory": {
+      "source": "e483a2bcd431dfed",
+      "output": "52b2e40574ab57a1"
     },
     "dialogs.activity.yesterday": {
       "source": "caa9da780fd67a6e",
@@ -86289,6 +87029,206 @@
     "document.overview.stale": {
       "source": "ab2cbd984c9ffd81",
       "output": "f8118d006c820ad3"
+    },
+    "document.pageHistory.back": {
+      "source": "5121c610374f357a",
+      "output": "8d4877c8a0d99031"
+    },
+    "document.pageHistory.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "18c9d912a21072dd"
+    },
+    "document.pageHistory.changes": {
+      "source": "34538baeda2cc10d",
+      "output": "d87f589ae68c6da2"
+    },
+    "document.pageHistory.changesLead": {
+      "source": "f0fa36beaf45b3fc",
+      "output": "f27af9c4d2ab93da"
+    },
+    "document.pageHistory.close": {
+      "source": "b808f6e97075772f",
+      "output": "32d4079b315b720b"
+    },
+    "document.pageHistory.current": {
+      "source": "6ad691638eb66be8",
+      "output": "ac546d255f4ddef3"
+    },
+    "document.pageHistory.currentMeta": {
+      "source": "8036095fa35f1c43",
+      "output": "e540a3b3a9e6be61"
+    },
+    "document.pageHistory.description": {
+      "source": "160b7003352a0586",
+      "output": "e67040f8d71e3f3c"
+    },
+    "document.pageHistory.editCount": {
+      "source": "417996cf9ced3071",
+      "output": "43f9a148ab09d4d9"
+    },
+    "document.pageHistory.emptyDescription": {
+      "source": "38deb4e5d2950157",
+      "output": "d99bd4480b2d57fa"
+    },
+    "document.pageHistory.emptyTitle": {
+      "source": "759994696bc3fe7e",
+      "output": "a8977dddc0aeb6d1"
+    },
+    "document.pageHistory.groups.edit": {
+      "source": "5c1fa90dea4b2226",
+      "output": "ed2924eba3ca0bac"
+    },
+    "document.pageHistory.groups.import": {
+      "source": "b8e0a4e88ac50b2d",
+      "output": "a665b612127f456f"
+    },
+    "document.pageHistory.groups.manual": {
+      "source": "8eef1f619bb33385",
+      "output": "21a137feb285281a"
+    },
+    "document.pageHistory.groups.restore": {
+      "source": "2db6bf9368e99cf1",
+      "output": "dc2c9bd1abb448bb"
+    },
+    "document.pageHistory.groups.writeAgent": {
+      "source": "4758b0ad26f2d228",
+      "output": "c5353e1051aa085b"
+    },
+    "document.pageHistory.groups.writeAiRun": {
+      "source": "39274395d55ec910",
+      "output": "fae866aa45429f9d"
+    },
+    "document.pageHistory.groups.writePerson": {
+      "source": "be8d0d793bd4d79f",
+      "output": "62fa239dbf42feb6"
+    },
+    "document.pageHistory.hideMembers": {
+      "source": "c7c35834b9a2028f",
+      "output": "f3aacde43f7abaa1"
+    },
+    "document.pageHistory.listLabel": {
+      "source": "e0c652b618950426",
+      "output": "d72cd8437df5f06e"
+    },
+    "document.pageHistory.loadError": {
+      "source": "8703664713a291c2",
+      "output": "ed7cbf202bf43814"
+    },
+    "document.pageHistory.loadMore": {
+      "source": "06517a0df5f021c7",
+      "output": "6fe51d7aa6da28b9"
+    },
+    "document.pageHistory.loading": {
+      "source": "137d483c0dfe6fd7",
+      "output": "b5a70ccf07d0994a"
+    },
+    "document.pageHistory.memberLabel": {
+      "source": "4c5ce8b5cce43bef",
+      "output": "57551e49c3fb1ab9"
+    },
+    "document.pageHistory.noSelection": {
+      "source": "df103b6f4c5d6fab",
+      "output": "044e6a310e22ad94"
+    },
+    "document.pageHistory.onBehalfOf": {
+      "source": "f4791a3e4dacf76c",
+      "output": "00e8b16f7a57d712"
+    },
+    "document.pageHistory.otherCount": {
+      "source": "fe916c23aa74bdbc",
+      "output": "b051c36b69c9ec41"
+    },
+    "document.pageHistory.pickBlocks": {
+      "source": "e81d8af93b6a6876",
+      "output": "0622ed7417443f26"
+    },
+    "document.pageHistory.preview": {
+      "source": "69337f6de91475ad",
+      "output": "e9bcaec77820fd67"
+    },
+    "document.pageHistory.previewEmpty": {
+      "source": "9979ab235ede2f80",
+      "output": "118072bd232372f8"
+    },
+    "document.pageHistory.previewError": {
+      "source": "a5d942ae7ca8d04f",
+      "output": "3edb0d24d9e21930"
+    },
+    "document.pageHistory.previewLoading": {
+      "source": "80aa48bcf07849f0",
+      "output": "f6dc8a45026fb309"
+    },
+    "document.pageHistory.readOnlyHint": {
+      "source": "75925d1d5a1a23b2",
+      "output": "4efa4baec6b455fd"
+    },
+    "document.pageHistory.representsWrite": {
+      "source": "9fff51d997b83387",
+      "output": "f8cfa2f40684298b"
+    },
+    "document.pageHistory.restore": {
+      "source": "443eca65946e3427",
+      "output": "ff5ac9a52e8197d1"
+    },
+    "document.pageHistory.restoreConfirm": {
+      "source": "ab99a15c6bcda979",
+      "output": "cf1718087073466d"
+    },
+    "document.pageHistory.restoreDescription": {
+      "source": "5ba8996f7b642604",
+      "output": "3e7ef4c336057a49"
+    },
+    "document.pageHistory.restoreError": {
+      "source": "f7644a21d8c687e2",
+      "output": "374e383dec7ea964"
+    },
+    "document.pageHistory.restoreTitle": {
+      "source": "6f2f67db8c82f364",
+      "output": "2fb0004e368679de"
+    },
+    "document.pageHistory.restored": {
+      "source": "b19195481a853dbb",
+      "output": "ba81229fbe4703a2"
+    },
+    "document.pageHistory.showMembers": {
+      "source": "38efbbd3e8963ab7",
+      "output": "f9870eefd6edf560"
+    },
+    "document.pageHistory.span": {
+      "source": "066595cb67cce09b",
+      "output": "7402d7a0c454ae56"
+    },
+    "document.pageHistory.title": {
+      "source": "94425f37f5c47ff6",
+      "output": "b67beddb74f3a368"
+    },
+    "document.pageHistory.unavailable": {
+      "source": "5db96a2a9332950f",
+      "output": "ce1391381fc857b6"
+    },
+    "document.pageHistory.undoRestore": {
+      "source": "0a976cf72047a954",
+      "output": "18c9d912a21072dd"
+    },
+    "document.pageHistory.undone": {
+      "source": "a850f96605258f6b",
+      "output": "50e80a80c2e6ae68"
+    },
+    "document.pageHistory.unknownAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "830b3e396570a71b"
+    },
+    "document.pageHistory.unknownName": {
+      "source": "276ffa1fb4f97010",
+      "output": "43d7b5eae9c8583b"
+    },
+    "document.pageHistory.viewLabel": {
+      "source": "a6d6105cf99c1b52",
+      "output": "de8565caed549546"
+    },
+    "document.pageHistory.writeCount": {
+      "source": "d91693bd76fd2e74",
+      "output": "84729938516a2385"
     },
     "document.pdf.clickHint": {
       "source": "549c34a2659eb57c",
@@ -92729,6 +93669,30 @@
     "features.seitenkontext.where": {
       "source": "1196095f393aadcb",
       "output": "1338ca4263ec6474"
+    },
+    "features.seitenverlauf.details.p1": {
+      "source": "6af03a356662ce7c",
+      "output": "075abf28ab9b5546"
+    },
+    "features.seitenverlauf.details.p2": {
+      "source": "76ed19005aa827bb",
+      "output": "407fcea4749a6dc6"
+    },
+    "features.seitenverlauf.details.p3": {
+      "source": "60891327d5d29f82",
+      "output": "d929f22005ddc8ef"
+    },
+    "features.seitenverlauf.summary": {
+      "source": "50bb7545401313ff",
+      "output": "e38f5338ed9b38c8"
+    },
+    "features.seitenverlauf.title": {
+      "source": "8ceb17336983d155",
+      "output": "137208df18116977"
+    },
+    "features.seitenverlauf.where": {
+      "source": "dc9935e3011f7f4c",
+      "output": "8d5c8ae7a7d82d8d"
     },
     "features.sprache-waehlen.details.p1": {
       "source": "81753afc7bb035de",
@@ -99566,6 +100530,10 @@
       "source": "3d36e0e2c60ec0eb",
       "output": "bca298dc96ebc959"
     },
+    "shell.documentTopBar.history": {
+      "source": "94425f37f5c47ff6",
+      "output": "b67beddb74f3a368"
+    },
     "shell.documentTopBar.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "9030037489ab3b7a"
@@ -100405,6 +101373,14 @@
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
       "output": "301cf9b5f2c714a5"
+    },
+    "shell.paletteCommands.page.history": {
+      "source": "77cf5a6629625f9f",
+      "output": "92dd655e9dacc22e"
+    },
+    "shell.paletteCommands.page.historyKeywords": {
+      "source": "2754192b41f42788",
+      "output": "a6f93b5f3998d679"
     },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
@@ -110944,6 +111920,10 @@
       "source": "e24b634d8d1403b4",
       "output": "7f12bc15d28c49cb"
     },
+    "dialogs.activity.openHistory": {
+      "source": "77cf5a6629625f9f",
+      "output": "53432c64d518ed6a"
+    },
     "dialogs.activity.pageLoadError": {
       "source": "f387138f7a1f89d2",
       "output": "72f4c294ed0ee4c6"
@@ -111027,6 +112007,10 @@
     "dialogs.activity.unknownActor": {
       "source": "276ffa1fb4f97010",
       "output": "4d45c85918722632"
+    },
+    "dialogs.activity.viewInHistory": {
+      "source": "e483a2bcd431dfed",
+      "output": "d077586d33d2a0c7"
     },
     "dialogs.activity.yesterday": {
       "source": "caa9da780fd67a6e",
@@ -112255,6 +113239,206 @@
     "document.overview.stale": {
       "source": "ab2cbd984c9ffd81",
       "output": "1dc4eff3194e8af6"
+    },
+    "document.pageHistory.back": {
+      "source": "5121c610374f357a",
+      "output": "0d63df54fe5bf6e1"
+    },
+    "document.pageHistory.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "c6a8d25fe37a7cc5"
+    },
+    "document.pageHistory.changes": {
+      "source": "34538baeda2cc10d",
+      "output": "40201ffc6672c4f6"
+    },
+    "document.pageHistory.changesLead": {
+      "source": "f0fa36beaf45b3fc",
+      "output": "b6ab981e9330e2b5"
+    },
+    "document.pageHistory.close": {
+      "source": "b808f6e97075772f",
+      "output": "5a468430f8781796"
+    },
+    "document.pageHistory.current": {
+      "source": "6ad691638eb66be8",
+      "output": "77c2189643068b40"
+    },
+    "document.pageHistory.currentMeta": {
+      "source": "8036095fa35f1c43",
+      "output": "b5f82649ef7c90c4"
+    },
+    "document.pageHistory.description": {
+      "source": "160b7003352a0586",
+      "output": "d2047192de7a6087"
+    },
+    "document.pageHistory.editCount": {
+      "source": "417996cf9ced3071",
+      "output": "4ce39cb31443a049"
+    },
+    "document.pageHistory.emptyDescription": {
+      "source": "38deb4e5d2950157",
+      "output": "a628787d78ac88a0"
+    },
+    "document.pageHistory.emptyTitle": {
+      "source": "759994696bc3fe7e",
+      "output": "a6ed0f5094ad8da0"
+    },
+    "document.pageHistory.groups.edit": {
+      "source": "5c1fa90dea4b2226",
+      "output": "049514775f42eb53"
+    },
+    "document.pageHistory.groups.import": {
+      "source": "b8e0a4e88ac50b2d",
+      "output": "36c05552137beadf"
+    },
+    "document.pageHistory.groups.manual": {
+      "source": "8eef1f619bb33385",
+      "output": "37d20223dbf47315"
+    },
+    "document.pageHistory.groups.restore": {
+      "source": "2db6bf9368e99cf1",
+      "output": "fe70c097c2018efa"
+    },
+    "document.pageHistory.groups.writeAgent": {
+      "source": "4758b0ad26f2d228",
+      "output": "b90b370e29e07ab8"
+    },
+    "document.pageHistory.groups.writeAiRun": {
+      "source": "39274395d55ec910",
+      "output": "deb3f47b530f2eb5"
+    },
+    "document.pageHistory.groups.writePerson": {
+      "source": "be8d0d793bd4d79f",
+      "output": "9ccb9b1c83f415f0"
+    },
+    "document.pageHistory.hideMembers": {
+      "source": "c7c35834b9a2028f",
+      "output": "25c8b3e7fc55c91e"
+    },
+    "document.pageHistory.listLabel": {
+      "source": "e0c652b618950426",
+      "output": "a619e489080ebbb0"
+    },
+    "document.pageHistory.loadError": {
+      "source": "8703664713a291c2",
+      "output": "f9e5d53343d43a41"
+    },
+    "document.pageHistory.loadMore": {
+      "source": "06517a0df5f021c7",
+      "output": "a91a36366b73bc4d"
+    },
+    "document.pageHistory.loading": {
+      "source": "137d483c0dfe6fd7",
+      "output": "7cb520a4be22ec74"
+    },
+    "document.pageHistory.memberLabel": {
+      "source": "4c5ce8b5cce43bef",
+      "output": "8c37e4c461f12862"
+    },
+    "document.pageHistory.noSelection": {
+      "source": "df103b6f4c5d6fab",
+      "output": "bba049c8d52e381e"
+    },
+    "document.pageHistory.onBehalfOf": {
+      "source": "f4791a3e4dacf76c",
+      "output": "a9c9f376f24f9f0a"
+    },
+    "document.pageHistory.otherCount": {
+      "source": "fe916c23aa74bdbc",
+      "output": "07d9a1a447c1534f"
+    },
+    "document.pageHistory.pickBlocks": {
+      "source": "e81d8af93b6a6876",
+      "output": "125af0438b64b8b7"
+    },
+    "document.pageHistory.preview": {
+      "source": "69337f6de91475ad",
+      "output": "f83d89e063320081"
+    },
+    "document.pageHistory.previewEmpty": {
+      "source": "9979ab235ede2f80",
+      "output": "3c07e80a1de067dc"
+    },
+    "document.pageHistory.previewError": {
+      "source": "a5d942ae7ca8d04f",
+      "output": "6fb2dd2d993c97f9"
+    },
+    "document.pageHistory.previewLoading": {
+      "source": "80aa48bcf07849f0",
+      "output": "1f26ab906d133118"
+    },
+    "document.pageHistory.readOnlyHint": {
+      "source": "75925d1d5a1a23b2",
+      "output": "140e611632f7549b"
+    },
+    "document.pageHistory.representsWrite": {
+      "source": "9fff51d997b83387",
+      "output": "197cf7ec3a88eab7"
+    },
+    "document.pageHistory.restore": {
+      "source": "443eca65946e3427",
+      "output": "36afcfe66648bb97"
+    },
+    "document.pageHistory.restoreConfirm": {
+      "source": "ab99a15c6bcda979",
+      "output": "6f145b9f0f585f7a"
+    },
+    "document.pageHistory.restoreDescription": {
+      "source": "5ba8996f7b642604",
+      "output": "9bdaf89a2e0aa4da"
+    },
+    "document.pageHistory.restoreError": {
+      "source": "f7644a21d8c687e2",
+      "output": "5fc43d0c2604985f"
+    },
+    "document.pageHistory.restoreTitle": {
+      "source": "6f2f67db8c82f364",
+      "output": "a499262dfbfe4a47"
+    },
+    "document.pageHistory.restored": {
+      "source": "b19195481a853dbb",
+      "output": "798cc55c077b2805"
+    },
+    "document.pageHistory.showMembers": {
+      "source": "38efbbd3e8963ab7",
+      "output": "eac29ac25daf89f8"
+    },
+    "document.pageHistory.span": {
+      "source": "066595cb67cce09b",
+      "output": "2c3618f3a1eac7dd"
+    },
+    "document.pageHistory.title": {
+      "source": "94425f37f5c47ff6",
+      "output": "97c5a40ee27fb2b1"
+    },
+    "document.pageHistory.unavailable": {
+      "source": "5db96a2a9332950f",
+      "output": "ffbdc144b1349ebc"
+    },
+    "document.pageHistory.undoRestore": {
+      "source": "0a976cf72047a954",
+      "output": "7548a6bd52d43eae"
+    },
+    "document.pageHistory.undone": {
+      "source": "a850f96605258f6b",
+      "output": "c6c6b0334123e578"
+    },
+    "document.pageHistory.unknownAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "fd9788eb5f65a46f"
+    },
+    "document.pageHistory.unknownName": {
+      "source": "276ffa1fb4f97010",
+      "output": "4d45c85918722632"
+    },
+    "document.pageHistory.viewLabel": {
+      "source": "a6d6105cf99c1b52",
+      "output": "f91962419f4ebaae"
+    },
+    "document.pageHistory.writeCount": {
+      "source": "d91693bd76fd2e74",
+      "output": "81841469f3b21d46"
     },
     "document.pdf.clickHint": {
       "source": "549c34a2659eb57c",
@@ -118695,6 +119879,30 @@
     "features.seitenkontext.where": {
       "source": "1196095f393aadcb",
       "output": "e87f24cfd57f8b74"
+    },
+    "features.seitenverlauf.details.p1": {
+      "source": "6af03a356662ce7c",
+      "output": "490c5ebc04122d91"
+    },
+    "features.seitenverlauf.details.p2": {
+      "source": "76ed19005aa827bb",
+      "output": "9c90fac03c20b892"
+    },
+    "features.seitenverlauf.details.p3": {
+      "source": "60891327d5d29f82",
+      "output": "e31ac45d5f6e3aed"
+    },
+    "features.seitenverlauf.summary": {
+      "source": "50bb7545401313ff",
+      "output": "75ec74c733489d19"
+    },
+    "features.seitenverlauf.title": {
+      "source": "8ceb17336983d155",
+      "output": "88371157c339a4b0"
+    },
+    "features.seitenverlauf.where": {
+      "source": "dc9935e3011f7f4c",
+      "output": "b6f3b40379d86f56"
     },
     "features.sprache-waehlen.details.p1": {
       "source": "81753afc7bb035de",
@@ -125532,6 +126740,10 @@
       "source": "3d36e0e2c60ec0eb",
       "output": "6ed991d2341e2c05"
     },
+    "shell.documentTopBar.history": {
+      "source": "94425f37f5c47ff6",
+      "output": "97c5a40ee27fb2b1"
+    },
     "shell.documentTopBar.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "d2207532ef1b4086"
@@ -126371,6 +127583,14 @@
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
       "output": "658535bb99addd26"
+    },
+    "shell.paletteCommands.page.history": {
+      "source": "77cf5a6629625f9f",
+      "output": "53432c64d518ed6a"
+    },
+    "shell.paletteCommands.page.historyKeywords": {
+      "source": "2754192b41f42788",
+      "output": "3e68f22770901024"
     },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
@@ -136910,6 +138130,10 @@
       "source": "e24b634d8d1403b4",
       "output": "a4e5a16101512a1e"
     },
+    "dialogs.activity.openHistory": {
+      "source": "77cf5a6629625f9f",
+      "output": "09467a410138c1fd"
+    },
     "dialogs.activity.pageLoadError": {
       "source": "f387138f7a1f89d2",
       "output": "e4b5763b74ec79a4"
@@ -136993,6 +138217,10 @@
     "dialogs.activity.unknownActor": {
       "source": "276ffa1fb4f97010",
       "output": "6b2aab04db9ac607"
+    },
+    "dialogs.activity.viewInHistory": {
+      "source": "e483a2bcd431dfed",
+      "output": "d65277bb047a7833"
     },
     "dialogs.activity.yesterday": {
       "source": "caa9da780fd67a6e",
@@ -138221,6 +139449,206 @@
     "document.overview.stale": {
       "source": "ab2cbd984c9ffd81",
       "output": "2f8f04e03751c949"
+    },
+    "document.pageHistory.back": {
+      "source": "5121c610374f357a",
+      "output": "617288ce5c1ea093"
+    },
+    "document.pageHistory.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "49285f0029725b67"
+    },
+    "document.pageHistory.changes": {
+      "source": "34538baeda2cc10d",
+      "output": "abe6f774ffe8bc62"
+    },
+    "document.pageHistory.changesLead": {
+      "source": "f0fa36beaf45b3fc",
+      "output": "362adee6a484dbc9"
+    },
+    "document.pageHistory.close": {
+      "source": "b808f6e97075772f",
+      "output": "00b8d851752c5295"
+    },
+    "document.pageHistory.current": {
+      "source": "6ad691638eb66be8",
+      "output": "91ef89c4e9d37178"
+    },
+    "document.pageHistory.currentMeta": {
+      "source": "8036095fa35f1c43",
+      "output": "3a8cffc638d83dd3"
+    },
+    "document.pageHistory.description": {
+      "source": "160b7003352a0586",
+      "output": "7d0f9699cf737259"
+    },
+    "document.pageHistory.editCount": {
+      "source": "417996cf9ced3071",
+      "output": "87a1f3b97ee25e25"
+    },
+    "document.pageHistory.emptyDescription": {
+      "source": "38deb4e5d2950157",
+      "output": "9bc8d11acb7cd057"
+    },
+    "document.pageHistory.emptyTitle": {
+      "source": "759994696bc3fe7e",
+      "output": "b702ed08f2668126"
+    },
+    "document.pageHistory.groups.edit": {
+      "source": "5c1fa90dea4b2226",
+      "output": "e6b3e24767a3ff2d"
+    },
+    "document.pageHistory.groups.import": {
+      "source": "b8e0a4e88ac50b2d",
+      "output": "d5d1cdec594b64df"
+    },
+    "document.pageHistory.groups.manual": {
+      "source": "8eef1f619bb33385",
+      "output": "5dcef3ecaaca609f"
+    },
+    "document.pageHistory.groups.restore": {
+      "source": "2db6bf9368e99cf1",
+      "output": "719d09c0b10ff782"
+    },
+    "document.pageHistory.groups.writeAgent": {
+      "source": "4758b0ad26f2d228",
+      "output": "b11da73177c7d1df"
+    },
+    "document.pageHistory.groups.writeAiRun": {
+      "source": "39274395d55ec910",
+      "output": "91d8c0321158d2ff"
+    },
+    "document.pageHistory.groups.writePerson": {
+      "source": "be8d0d793bd4d79f",
+      "output": "48e223645ae0799d"
+    },
+    "document.pageHistory.hideMembers": {
+      "source": "c7c35834b9a2028f",
+      "output": "e37a04670d098b60"
+    },
+    "document.pageHistory.listLabel": {
+      "source": "e0c652b618950426",
+      "output": "e636841c83556530"
+    },
+    "document.pageHistory.loadError": {
+      "source": "8703664713a291c2",
+      "output": "52410994928858ba"
+    },
+    "document.pageHistory.loadMore": {
+      "source": "06517a0df5f021c7",
+      "output": "53a0e7f88f0d1963"
+    },
+    "document.pageHistory.loading": {
+      "source": "137d483c0dfe6fd7",
+      "output": "5b107d84de1b8734"
+    },
+    "document.pageHistory.memberLabel": {
+      "source": "4c5ce8b5cce43bef",
+      "output": "be1dafeae6e5db69"
+    },
+    "document.pageHistory.noSelection": {
+      "source": "df103b6f4c5d6fab",
+      "output": "5a7358c7b73b77a9"
+    },
+    "document.pageHistory.onBehalfOf": {
+      "source": "f4791a3e4dacf76c",
+      "output": "ea5988f9d00f702c"
+    },
+    "document.pageHistory.otherCount": {
+      "source": "fe916c23aa74bdbc",
+      "output": "4432ea5cfb1d15fd"
+    },
+    "document.pageHistory.pickBlocks": {
+      "source": "e81d8af93b6a6876",
+      "output": "5260a8220bd7ebfe"
+    },
+    "document.pageHistory.preview": {
+      "source": "69337f6de91475ad",
+      "output": "37c11a877180e842"
+    },
+    "document.pageHistory.previewEmpty": {
+      "source": "9979ab235ede2f80",
+      "output": "d3a9c039cf5bc3f2"
+    },
+    "document.pageHistory.previewError": {
+      "source": "a5d942ae7ca8d04f",
+      "output": "51ba2252e1c79373"
+    },
+    "document.pageHistory.previewLoading": {
+      "source": "80aa48bcf07849f0",
+      "output": "e4649cc228261b32"
+    },
+    "document.pageHistory.readOnlyHint": {
+      "source": "75925d1d5a1a23b2",
+      "output": "ba7c7e120c6ce933"
+    },
+    "document.pageHistory.representsWrite": {
+      "source": "9fff51d997b83387",
+      "output": "b431c5e3fa83e5cf"
+    },
+    "document.pageHistory.restore": {
+      "source": "443eca65946e3427",
+      "output": "7a49e55244ec4a7b"
+    },
+    "document.pageHistory.restoreConfirm": {
+      "source": "ab99a15c6bcda979",
+      "output": "e6fe315193121f89"
+    },
+    "document.pageHistory.restoreDescription": {
+      "source": "5ba8996f7b642604",
+      "output": "ac731f680efee0ec"
+    },
+    "document.pageHistory.restoreError": {
+      "source": "f7644a21d8c687e2",
+      "output": "115abd84dc900edd"
+    },
+    "document.pageHistory.restoreTitle": {
+      "source": "6f2f67db8c82f364",
+      "output": "caa924a4462ffb35"
+    },
+    "document.pageHistory.restored": {
+      "source": "b19195481a853dbb",
+      "output": "d9532dcbb7c322c8"
+    },
+    "document.pageHistory.showMembers": {
+      "source": "38efbbd3e8963ab7",
+      "output": "a423f44efa1ccba7"
+    },
+    "document.pageHistory.span": {
+      "source": "066595cb67cce09b",
+      "output": "5b794242ee8c7785"
+    },
+    "document.pageHistory.title": {
+      "source": "94425f37f5c47ff6",
+      "output": "a82146888f8cdd35"
+    },
+    "document.pageHistory.unavailable": {
+      "source": "5db96a2a9332950f",
+      "output": "0cde0dee0a64357d"
+    },
+    "document.pageHistory.undoRestore": {
+      "source": "0a976cf72047a954",
+      "output": "9234a0683653a982"
+    },
+    "document.pageHistory.undone": {
+      "source": "a850f96605258f6b",
+      "output": "b80e2ba9fd932f56"
+    },
+    "document.pageHistory.unknownAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "83a07974bf837c7c"
+    },
+    "document.pageHistory.unknownName": {
+      "source": "276ffa1fb4f97010",
+      "output": "27b2a8c258140d0d"
+    },
+    "document.pageHistory.viewLabel": {
+      "source": "a6d6105cf99c1b52",
+      "output": "3fbb2d88fb9a5dd1"
+    },
+    "document.pageHistory.writeCount": {
+      "source": "d91693bd76fd2e74",
+      "output": "cc724f449a8fe237"
     },
     "document.pdf.clickHint": {
       "source": "549c34a2659eb57c",
@@ -144661,6 +146089,30 @@
     "features.seitenkontext.where": {
       "source": "1196095f393aadcb",
       "output": "ccdbe41d093961b5"
+    },
+    "features.seitenverlauf.details.p1": {
+      "source": "6af03a356662ce7c",
+      "output": "f5210304b2c7846d"
+    },
+    "features.seitenverlauf.details.p2": {
+      "source": "76ed19005aa827bb",
+      "output": "2b96d8a75a847956"
+    },
+    "features.seitenverlauf.details.p3": {
+      "source": "60891327d5d29f82",
+      "output": "e78106b21d419198"
+    },
+    "features.seitenverlauf.summary": {
+      "source": "50bb7545401313ff",
+      "output": "0c9f55c1da63b235"
+    },
+    "features.seitenverlauf.title": {
+      "source": "8ceb17336983d155",
+      "output": "33534d38a8af7aee"
+    },
+    "features.seitenverlauf.where": {
+      "source": "dc9935e3011f7f4c",
+      "output": "489c7b194bba8446"
     },
     "features.sprache-waehlen.details.p1": {
       "source": "81753afc7bb035de",
@@ -151498,6 +152950,10 @@
       "source": "3d36e0e2c60ec0eb",
       "output": "e3e4d1ee98eb3f5e"
     },
+    "shell.documentTopBar.history": {
+      "source": "94425f37f5c47ff6",
+      "output": "a82146888f8cdd35"
+    },
     "shell.documentTopBar.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "a15e508455dca9e4"
@@ -152337,6 +153793,14 @@
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
       "output": "e546f8b10b30ba90"
+    },
+    "shell.paletteCommands.page.history": {
+      "source": "77cf5a6629625f9f",
+      "output": "09467a410138c1fd"
+    },
+    "shell.paletteCommands.page.historyKeywords": {
+      "source": "2754192b41f42788",
+      "output": "68c75ae2f136b71c"
     },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",
@@ -162876,6 +164340,10 @@
       "source": "e24b634d8d1403b4",
       "output": "7c3482e6da5c5a47"
     },
+    "dialogs.activity.openHistory": {
+      "source": "77cf5a6629625f9f",
+      "output": "9f6905c683f1de26"
+    },
     "dialogs.activity.pageLoadError": {
       "source": "f387138f7a1f89d2",
       "output": "5d89c3f793c7a326"
@@ -162959,6 +164427,10 @@
     "dialogs.activity.unknownActor": {
       "source": "276ffa1fb4f97010",
       "output": "f08f3414e973f2a6"
+    },
+    "dialogs.activity.viewInHistory": {
+      "source": "e483a2bcd431dfed",
+      "output": "00a8fb9e821ff116"
     },
     "dialogs.activity.yesterday": {
       "source": "caa9da780fd67a6e",
@@ -164187,6 +165659,206 @@
     "document.overview.stale": {
       "source": "ab2cbd984c9ffd81",
       "output": "8833170b977985f1"
+    },
+    "document.pageHistory.back": {
+      "source": "5121c610374f357a",
+      "output": "70691e30a4596cfb"
+    },
+    "document.pageHistory.cancel": {
+      "source": "f7ff1178af202f6f",
+      "output": "bb9dbb406dcbd524"
+    },
+    "document.pageHistory.changes": {
+      "source": "34538baeda2cc10d",
+      "output": "95c1a89d2b79ea85"
+    },
+    "document.pageHistory.changesLead": {
+      "source": "f0fa36beaf45b3fc",
+      "output": "9129e5aa1d6194d8"
+    },
+    "document.pageHistory.close": {
+      "source": "b808f6e97075772f",
+      "output": "0f2bd88ef0acbda9"
+    },
+    "document.pageHistory.current": {
+      "source": "6ad691638eb66be8",
+      "output": "1438144afa4dd586"
+    },
+    "document.pageHistory.currentMeta": {
+      "source": "8036095fa35f1c43",
+      "output": "fe5585fc2ace915b"
+    },
+    "document.pageHistory.description": {
+      "source": "160b7003352a0586",
+      "output": "ef6815872da4708e"
+    },
+    "document.pageHistory.editCount": {
+      "source": "417996cf9ced3071",
+      "output": "e8f67d19c70ab2be"
+    },
+    "document.pageHistory.emptyDescription": {
+      "source": "38deb4e5d2950157",
+      "output": "b7be185d3fe43459"
+    },
+    "document.pageHistory.emptyTitle": {
+      "source": "759994696bc3fe7e",
+      "output": "addb806ab147b91c"
+    },
+    "document.pageHistory.groups.edit": {
+      "source": "5c1fa90dea4b2226",
+      "output": "ec5bf3f3986ca363"
+    },
+    "document.pageHistory.groups.import": {
+      "source": "b8e0a4e88ac50b2d",
+      "output": "362c3d059ead4e91"
+    },
+    "document.pageHistory.groups.manual": {
+      "source": "8eef1f619bb33385",
+      "output": "aa7fc92df272f891"
+    },
+    "document.pageHistory.groups.restore": {
+      "source": "2db6bf9368e99cf1",
+      "output": "882125a27af71792"
+    },
+    "document.pageHistory.groups.writeAgent": {
+      "source": "4758b0ad26f2d228",
+      "output": "aad69ae029ac1748"
+    },
+    "document.pageHistory.groups.writeAiRun": {
+      "source": "39274395d55ec910",
+      "output": "8340de0365565505"
+    },
+    "document.pageHistory.groups.writePerson": {
+      "source": "be8d0d793bd4d79f",
+      "output": "8309616d46eb3b65"
+    },
+    "document.pageHistory.hideMembers": {
+      "source": "c7c35834b9a2028f",
+      "output": "7bf3461a5dd9bd0b"
+    },
+    "document.pageHistory.listLabel": {
+      "source": "e0c652b618950426",
+      "output": "157ae28c8195e461"
+    },
+    "document.pageHistory.loadError": {
+      "source": "8703664713a291c2",
+      "output": "5d55d83a1b941ff4"
+    },
+    "document.pageHistory.loadMore": {
+      "source": "06517a0df5f021c7",
+      "output": "56a0c0532ec3f064"
+    },
+    "document.pageHistory.loading": {
+      "source": "137d483c0dfe6fd7",
+      "output": "e26568ae50f09636"
+    },
+    "document.pageHistory.memberLabel": {
+      "source": "4c5ce8b5cce43bef",
+      "output": "1e224ae07d57889d"
+    },
+    "document.pageHistory.noSelection": {
+      "source": "df103b6f4c5d6fab",
+      "output": "9fb6f7ca069b8934"
+    },
+    "document.pageHistory.onBehalfOf": {
+      "source": "f4791a3e4dacf76c",
+      "output": "aaf5ab10143e1f99"
+    },
+    "document.pageHistory.otherCount": {
+      "source": "fe916c23aa74bdbc",
+      "output": "4ced700f390fd16f"
+    },
+    "document.pageHistory.pickBlocks": {
+      "source": "e81d8af93b6a6876",
+      "output": "5b1f85c00cbf0e69"
+    },
+    "document.pageHistory.preview": {
+      "source": "69337f6de91475ad",
+      "output": "7cf015b6b2cb7158"
+    },
+    "document.pageHistory.previewEmpty": {
+      "source": "9979ab235ede2f80",
+      "output": "3de8c8ced7232a0e"
+    },
+    "document.pageHistory.previewError": {
+      "source": "a5d942ae7ca8d04f",
+      "output": "aab9f61001d3aaef"
+    },
+    "document.pageHistory.previewLoading": {
+      "source": "80aa48bcf07849f0",
+      "output": "6edba366be4b5116"
+    },
+    "document.pageHistory.readOnlyHint": {
+      "source": "75925d1d5a1a23b2",
+      "output": "e8d404c80c9de186"
+    },
+    "document.pageHistory.representsWrite": {
+      "source": "9fff51d997b83387",
+      "output": "445c5a7329c50b7c"
+    },
+    "document.pageHistory.restore": {
+      "source": "443eca65946e3427",
+      "output": "08b3ee44ee0db2e8"
+    },
+    "document.pageHistory.restoreConfirm": {
+      "source": "ab99a15c6bcda979",
+      "output": "eda02893d340c1be"
+    },
+    "document.pageHistory.restoreDescription": {
+      "source": "5ba8996f7b642604",
+      "output": "1e496e9ca36eb7d7"
+    },
+    "document.pageHistory.restoreError": {
+      "source": "f7644a21d8c687e2",
+      "output": "414d1074d19aebe2"
+    },
+    "document.pageHistory.restoreTitle": {
+      "source": "6f2f67db8c82f364",
+      "output": "599517545fe86ff5"
+    },
+    "document.pageHistory.restored": {
+      "source": "b19195481a853dbb",
+      "output": "221cc2f7763a1339"
+    },
+    "document.pageHistory.showMembers": {
+      "source": "38efbbd3e8963ab7",
+      "output": "e5ed2d1959fe910f"
+    },
+    "document.pageHistory.span": {
+      "source": "066595cb67cce09b",
+      "output": "ac3eb0d9881c0ea5"
+    },
+    "document.pageHistory.title": {
+      "source": "94425f37f5c47ff6",
+      "output": "3cea977ec295ac88"
+    },
+    "document.pageHistory.unavailable": {
+      "source": "5db96a2a9332950f",
+      "output": "60cf6b61c55f4a3f"
+    },
+    "document.pageHistory.undoRestore": {
+      "source": "0a976cf72047a954",
+      "output": "786b4822284896ad"
+    },
+    "document.pageHistory.undone": {
+      "source": "a850f96605258f6b",
+      "output": "9991557902ea0cda"
+    },
+    "document.pageHistory.unknownAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "ab4433f0cfa7f2f3"
+    },
+    "document.pageHistory.unknownName": {
+      "source": "276ffa1fb4f97010",
+      "output": "f08f3414e973f2a6"
+    },
+    "document.pageHistory.viewLabel": {
+      "source": "a6d6105cf99c1b52",
+      "output": "a691db0557a4ae2b"
+    },
+    "document.pageHistory.writeCount": {
+      "source": "d91693bd76fd2e74",
+      "output": "a53870895b2a0780"
     },
     "document.pdf.clickHint": {
       "source": "549c34a2659eb57c",
@@ -170627,6 +172299,30 @@
     "features.seitenkontext.where": {
       "source": "1196095f393aadcb",
       "output": "02a5696ba603563b"
+    },
+    "features.seitenverlauf.details.p1": {
+      "source": "6af03a356662ce7c",
+      "output": "6851195edf58a469"
+    },
+    "features.seitenverlauf.details.p2": {
+      "source": "76ed19005aa827bb",
+      "output": "8de7dddddbdab452"
+    },
+    "features.seitenverlauf.details.p3": {
+      "source": "60891327d5d29f82",
+      "output": "d99f09cb9622ea85"
+    },
+    "features.seitenverlauf.summary": {
+      "source": "50bb7545401313ff",
+      "output": "f3a7ad8c0b394852"
+    },
+    "features.seitenverlauf.title": {
+      "source": "8ceb17336983d155",
+      "output": "2624dd19943cf868"
+    },
+    "features.seitenverlauf.where": {
+      "source": "dc9935e3011f7f4c",
+      "output": "7ffa9c702dae68af"
     },
     "features.sprache-waehlen.details.p1": {
       "source": "81753afc7bb035de",
@@ -177464,6 +179160,10 @@
       "source": "3d36e0e2c60ec0eb",
       "output": "9b387a2d51489b3d"
     },
+    "shell.documentTopBar.history": {
+      "source": "94425f37f5c47ff6",
+      "output": "3cea977ec295ac88"
+    },
     "shell.documentTopBar.importMarkdown": {
       "source": "c4037f1709ee6bf3",
       "output": "27841c5e60790d88"
@@ -178303,6 +180003,14 @@
     "shell.paletteCommands.page.headingLevel": {
       "source": "54d14ed4864e4bad",
       "output": "da65edc5a925cad3"
+    },
+    "shell.paletteCommands.page.history": {
+      "source": "77cf5a6629625f9f",
+      "output": "9f6905c683f1de26"
+    },
+    "shell.paletteCommands.page.historyKeywords": {
+      "source": "2754192b41f42788",
+      "output": "661597a414284065"
     },
     "shell.paletteCommands.page.importMarkdown": {
       "source": "c4037f1709ee6bf3",

@@ -1,12 +1,15 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   type DocumentActivityResponse,
   type DocumentDiffResponse,
+  type PageHistoryResponse,
   type RestoreSnapshotBlocksRequest,
   type RestoreSnapshotBlocksResponse,
+  type RestoreSnapshotResponse,
+  type SnapshotContentResponse,
 } from '@exocortex/contracts';
 
 import { apiRequest } from './client';
@@ -38,7 +41,7 @@ export function useRestoreSnapshot(documentId: string | undefined) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (snapshotId: string) =>
-      apiRequest<{ documentId: string; restoredFrom: string }>(
+      apiRequest<RestoreSnapshotResponse>(
         `/api/documents/${documentId ?? ''}/snapshots/${snapshotId}/restore`,
         { method: 'POST' },
       ),
@@ -46,6 +49,8 @@ export function useRestoreSnapshot(documentId: string | undefined) {
       if (documentId === undefined) return;
       void client.invalidateQueries({ queryKey: queryKeys.document(documentId) });
       void client.invalidateQueries({ queryKey: queryKeys.documentActivity(documentId) });
+      void client.invalidateQueries({ queryKey: queryKeys.documentHistory(documentId) });
+      void client.invalidateQueries({ queryKey: ['document', documentId, 'diff'] });
     },
   });
 }
@@ -90,7 +95,45 @@ export function useRestoreSnapshotBlocks(documentId: string | undefined) {
       if (documentId === undefined) return;
       void client.invalidateQueries({ queryKey: queryKeys.document(documentId) });
       void client.invalidateQueries({ queryKey: queryKeys.documentActivity(documentId) });
+      void client.invalidateQueries({ queryKey: queryKeys.documentHistory(documentId) });
       void client.invalidateQueries({ queryKey: ['document', documentId, 'diff'] });
     },
+  });
+}
+
+/**
+ * The page history (issue #235): every stored version, grouped, newest first,
+ * one server page at a time. The cursor is the oldest version's time, so a
+ * version saved while the dialog is open never shifts a page boundary.
+ */
+export function usePageHistory(documentId: string | undefined, enabled = true) {
+  return useInfiniteQuery({
+    queryKey: queryKeys.documentHistory(documentId ?? 'none'),
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams();
+      if (pageParam !== null) params.set('before', pageParam);
+      const query = params.size === 0 ? '' : `?${params.toString()}`;
+      return apiRequest<PageHistoryResponse>(`/api/documents/${documentId ?? ''}/history${query}`);
+    },
+    getNextPageParam: (lastPage) => lastPage.nextBefore,
+    enabled: documentId !== undefined && enabled,
+    staleTime: 10_000,
+  });
+}
+
+/**
+ * One version, rendered. A stored version never changes, so it is fetched once
+ * per dialog and kept while somebody steps back and forth through the list.
+ */
+export function useSnapshotContent(documentId: string | undefined, snapshotId: string | null) {
+  return useQuery({
+    queryKey: queryKeys.snapshotContent(documentId ?? 'none', snapshotId ?? 'none'),
+    queryFn: () =>
+      apiRequest<SnapshotContentResponse>(
+        `/api/documents/${documentId ?? ''}/snapshots/${snapshotId ?? ''}?content=true`,
+      ),
+    enabled: documentId !== undefined && snapshotId !== null,
+    staleTime: Number.POSITIVE_INFINITY,
   });
 }

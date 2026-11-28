@@ -159,6 +159,8 @@
     "restoreDescription": "The page content will be restored to the snapshot from {date}. The current snapshot will be saved automatically beforehand, but the restore itself cannot be undone. An open page will apply the change immediately.",
     "restoreUnknownError": "Unknown error",
     "cancel": "Cancel",
-    "restore": "Restore"
+    "restore": "Restore",
+    "openHistory": "Open page history",
+    "viewInHistory": "View in page history"
   }
 }

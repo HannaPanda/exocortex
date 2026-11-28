@@ -159,6 +159,8 @@
     "restoreDescription": "O conteúdo da página será restaurado para a versão de {date}. A versão atual será salva automaticamente antes disso, mas a restauração em si não pode ser desfeita. Uma página aberta refletirá a alteração imediatamente.",
     "restoreUnknownError": "Erro desconhecido",
     "cancel": "Cancelar",
-    "restore": "Restaurar"
+    "restore": "Restaurar",
+    "openHistory": "Abrir histórico da página",
+    "viewInHistory": "Ver no histórico da página"
   }
 }

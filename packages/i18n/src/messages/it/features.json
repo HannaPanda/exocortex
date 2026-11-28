@@ -437,6 +437,16 @@
     },
     "where": "La scheda «Attività» nell’area contestuale a destra: un clic su una versione esegue il confronto, il menu accanto include Confronta e Ripristina."
   },
+  "seitenverlauf": {
+    "title": "Cronologia delle versioni con anteprima",
+    "summary": "Una grande finestra mostra tutte le versioni precedenti di una pagina: quando, da parte di chi, che sia una persona, un agente o l’assistente IA. Con un clic vedi la versione com’era allora o cosa è cambiato da allora, e con un altro la ripristini.",
+    "details": {
+      "p1": "A destra trovi le versioni suddivise per giorni, a partire dalla più recente. Le azioni avvenute a breve distanza compaiono come una sola voce: una sessione di scrittura, una serie di modifiche di un agente. La freccia accanto espande le singole versioni, senza perderne nessuna. Una serie di modifiche rappresenta la pagina prima della serie, ossia la versione che di solito si desidera ripristinare.",
+      "p2": "A sinistra vedi l’anteprima della versione selezionata, esattamente come appariva la pagina allora, in sola lettura. Il selettore «Modifiche» mostra invece cosa è cambiato da allora, blocco per blocco; da lì puoi anche recuperare singoli blocchi.",
+      "p3": "«Ripristina questa versione» chiede conferma una volta e salva prima la versione attuale. Dopodiché in basso compare «Annulla», e chiunque abbia la pagina aperta vede subito la modifica. Gli agenti dispongono delle stesse funzioni tramite strumenti: leggere la cronologia, leggere una versione come Markdown, confrontare e ripristinare."
+    },
+    "where": "Nel menu in alto a destra su ogni pagina («Cronologia della pagina»), con Strg + K «Apri cronologia della pagina» e nella scheda «Attività»."
+  },
   "agenten-journal": {
     "title": "Cosa ha modificato un agente in una sessione",
     "summary": "Le operazioni di scrittura di un agente vengono raggruppate in una sessione e registrate nel giornale di bordo, ciascuna con l’istantanea precedente alla modifica. In questo modo è possibile verificare cosa è stato toccato da un’esecuzione e annullare le modifiche su singole pagine in modo mirato.",

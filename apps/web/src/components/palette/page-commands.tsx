@@ -7,6 +7,7 @@ import {
   FileTextIcon,
   FolderInputIcon,
   FolderTreeIcon,
+  HistoryIcon,
   ImageIcon,
   LayoutDashboardIcon,
   LayoutTemplateIcon,
@@ -222,6 +223,8 @@ export function pageBodyCommands(
 export interface PageMenuHandlers {
   openTemplate: () => void;
   openShare: () => void;
+  /** The page history (issue #235): open to readers too, it changes nothing. */
+  openHistory: () => void;
   file: () => void;
   moveTo: (target: { parentId: string | null; title: string }) => void;
   archive: () => void;
@@ -240,6 +243,13 @@ export function pageMenuCommands(
   tree?: readonly DocumentTreeNode[],
 ): PaletteCommand[] {
   const h = (): PageMenuHandlers => handlers.current;
+  const history = command(
+    'history',
+    t('history'),
+    t('historyKeywords'),
+    <HistoryIcon className={ICON} />,
+    () => h().openHistory(),
+  );
   if (archived) {
     return detail.access === 'write'
       ? [
@@ -250,11 +260,12 @@ export function pageMenuCommands(
             <RotateCcwIcon className={ICON} />,
             () => h().restore(),
           ),
+          history,
         ]
-      : [];
+      : [history];
   }
 
-  const commands: PaletteCommand[] = [];
+  const commands: PaletteCommand[] = [history];
   if (detail.canShare) {
     commands.push(
       command('share', t('share'), t('shareKeywords'), <Share2Icon className={ICON} />, () =>

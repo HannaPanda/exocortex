@@ -437,6 +437,16 @@
     },
     "where": "Het tabblad \"Activiteit\" in het contextpaneel rechts: een klik op een versie vergelijkt, het menu daarnaast bevat Vergelijken en Herstellen."
   },
+  "seitenverlauf": {
+    "title": "Paginageschiedenis met voorvertoning",
+    "summary": "Een groot venster toont alle eerdere versies van een pagina: wanneer, door wie, of het nu een persoon, een agent of de AI-assistent was. Eén klik toont de versie zoals de pagina er toen uitzag, of wat er sindsdien is veranderd, en met nog een klik herstel je deze.",
+    "details": {
+      "p1": "Rechts staan de versies per dag, de nieuwste eerst. Wat kort na elkaar is gebeurd, staat als één item vermeld: een typsessie, een reeks schrijfbewerkingen van een agent. De pijl ernaast vouwt de afzonderlijke versies uit, er gaat niets verloren. Een reeks schrijfbewerkingen staat voor de pagina vóór de reeks, oftewel de versie die je meestal terug wilt hebben.",
+      "p2": "Links zie je de geselecteerde versie als voorvertoning, zoals de pagina er toen uitzag, alleen-lezen. De schakelaar „Wijzigingen” toont in plaats daarvan wat er sindsdien is veranderd, blok voor blok; van daaruit haal je ook afzonderlijke blokken terug.",
+      "p3": "„Deze versie herstellen” vraagt om bevestiging en bewaart eerst de huidige versie. Daarna staat onderaan „Ongedaan maken”, en wie de pagina op dat moment open heeft, ziet de verandering meteen. Agenten hebben hiervoor dezelfde tools: de geschiedenis lezen, een versie als Markdown lezen, vergelijken en terugzetten."
+    },
+    "where": "In het menu rechtsboven op elke pagina („Paginageschiedenis”), met Strg + K „Paginageschiedenis openen” en op het tabblad „Activiteit”."
+  },
   "agenten-journal": {
     "title": "Wat een agent in een sessie heeft gewijzigd",
     "summary": "Schrijfacties van een agent worden gebundeld in een sessie en vastgelegd in het journaal, telkens met de momentopname van vóór de wijziging. Daarmee kun je nagaan wat er tijdens een sessie is aangepast en afzonderlijke pagina’s gericht terugdraaien.",

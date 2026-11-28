@@ -159,6 +159,8 @@
     "restoreDescription": "De inhoud van de pagina wordt teruggezet naar de versie van {date}. De huidige versie wordt eerst automatisch opgeslagen, maar het herstellen zelf kan niet ongedaan worden gemaakt. Een geopende pagina neemt de wijziging direct over.",
     "restoreUnknownError": "Onbekende fout",
     "cancel": "Annuleren",
-    "restore": "Herstellen"
+    "restore": "Herstellen",
+    "openHistory": "Paginageschiedenis openen",
+    "viewInHistory": "In paginageschiedenis bekijken"
   }
 }

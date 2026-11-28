@@ -159,6 +159,8 @@
     "restoreDescription": "Der Inhalt der Seite wird auf den Stand vom {date} zurückgesetzt. Der aktuelle Stand wird davor automatisch gesichert, die Wiederherstellung selbst lässt sich aber nicht rückgängig machen. Eine offen geöffnete Seite übernimmt die Änderung sofort.",
     "restoreUnknownError": "Unbekannter Fehler",
     "cancel": "Abbrechen",
-    "restore": "Wiederherstellen"
+    "restore": "Wiederherstellen",
+    "openHistory": "Seitenverlauf öffnen",
+    "viewInHistory": "Im Seitenverlauf ansehen"
   }
 }
