@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  DATABASE_TITLE_COLUMN_KEY,
   type DatabaseFilterGroup,
   type DatabaseSort,
   EMPTY_DATABASE_FILTER_GROUP,
@@ -206,6 +207,25 @@ describe('compileSorts', () => {
     const byCreator = compileSorts([{ propertyId: CREATED_BY.id, direction: 'asc' }], scope);
     expect(byCreator.sql).toContain('lower(u."name")');
     expect(byCreator.sql).toContain('document."createdById"');
+  });
+
+  it('orders by the row title under the reserved title key (issue #296)', () => {
+    const sql = compileSorts([{ propertyId: DATABASE_TITLE_COLUMN_KEY, direction: 'desc' }], scope);
+    expect(sql.sql).toContain('document.title DESC NULLS LAST');
+  });
+
+  it('keeps the rules in the order given: the first decides, the next breaks ties', () => {
+    const sql = compileSorts(
+      [
+        { propertyId: DATE.id, direction: 'desc' },
+        { propertyId: DATABASE_TITLE_COLUMN_KEY, direction: 'asc' },
+      ],
+      scope,
+    );
+    const byDate = sql.sql.indexOf('DESC NULLS LAST');
+    const byTitle = sql.sql.indexOf('document.title ASC NULLS LAST');
+    expect(byDate).toBeGreaterThan(-1);
+    expect(byTitle).toBeGreaterThan(byDate);
   });
 
   it('always appends orderKey as a deterministic tiebreaker', () => {

@@ -1,4 +1,5 @@
 import {
+  DATABASE_TITLE_COLUMN_KEY,
   type DatabaseFilterCondition,
   type DatabaseFilterGroup,
   databaseFilterGroupSchema,
@@ -140,9 +141,12 @@ function describeSorts(
 ): string | null {
   const parts = sorts
     .map((sort) => {
-      const property = properties.get(sort.propertyId);
-      if (property === undefined) return null;
-      return `${property.name} ${sort.direction === 'asc' ? 'aufsteigend' : 'absteigend'}`;
+      const name =
+        sort.propertyId === DATABASE_TITLE_COLUMN_KEY
+          ? 'Titel'
+          : properties.get(sort.propertyId)?.name;
+      if (name === undefined) return null;
+      return `${name} ${sort.direction === 'asc' ? 'aufsteigend' : 'absteigend'}`;
     })
     .filter((part): part is string => part !== null);
   return parts.length === 0 ? null : parts.join(', ');

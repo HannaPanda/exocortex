@@ -1,5 +1,6 @@
 import {
   ARRAY_VALUED_PROPERTY_TYPES,
+  DATABASE_TITLE_COLUMN_KEY,
   type DatabaseFilterCondition,
   type DatabaseFilterGroup,
   type DatabasePropertyType,
@@ -244,8 +245,12 @@ export function compileSorts(
   if (sorts.length === 0) return Prisma.sql`document."orderKey" ASC`;
 
   const parts = sorts.map((sort) => {
-    const property = resolveProperty(sort.propertyId, scope);
-    const valueRef = sortKeyFor(property, scope);
+    // The row's name has no property: it is the row document's own title
+    // (ADR-011), so it is the one key resolved without the property map.
+    const valueRef =
+      sort.propertyId === DATABASE_TITLE_COLUMN_KEY
+        ? Prisma.sql`document.title`
+        : sortKeyFor(resolveProperty(sort.propertyId, scope), scope);
     const direction = sort.direction === 'desc' ? Prisma.sql`DESC` : Prisma.sql`ASC`;
     return Prisma.sql`${valueRef} ${direction} NULLS LAST`;
   });

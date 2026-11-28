@@ -290,8 +290,22 @@ export const EMPTY_DATABASE_FILTER_GROUP: DatabaseFilterGroup = {
   conditions: [],
 };
 
+/**
+ * Key of the row-title column wherever a column is named without a property:
+ * its width in `columnWidths`, and a sort by the row's name. Not a property id:
+ * the title lives on the row `Document` itself (ADR-011), so it has none, and
+ * at five characters it can never collide with one (`idSchema` starts at eight).
+ */
+export const DATABASE_TITLE_COLUMN_KEY = 'title';
+
+/**
+ * One rule of a view's order. A view's `sorts` is a list in priority order:
+ * the first rule decides, the next one only breaks its ties, and so on.
+ * `propertyId` is a property of this database or `DATABASE_TITLE_COLUMN_KEY`
+ * for the row's name (issue #296).
+ */
 export const databaseSortSchema = z.object({
-  propertyId: idSchema,
+  propertyId: z.union([idSchema, z.literal(DATABASE_TITLE_COLUMN_KEY)]),
   direction: z.enum(['asc', 'desc']),
 });
 export type DatabaseSort = z.infer<typeof databaseSortSchema>;
@@ -325,12 +339,6 @@ export type DatabaseRowHeight = z.infer<typeof databaseRowHeightSchema>;
 export const DATABASE_COLUMN_MIN_WIDTH = 80;
 export const DATABASE_COLUMN_MAX_WIDTH = 720;
 export const DATABASE_COLUMN_DEFAULT_WIDTH = 180;
-/**
- * Width key of the row-title column in `columnWidths`. Not a property id: the
- * title lives on the row `Document` itself (ADR-011), so it has none.
- */
-export const DATABASE_TITLE_COLUMN_KEY = 'title';
-
 /**
  * CALENDAR only: which projection of the same rows the view draws.
  *
