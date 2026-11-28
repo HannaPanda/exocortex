@@ -219,6 +219,24 @@ export function compileFilterGroup(
   return Prisma.join(parts, combinator);
 }
 
+/**
+ * What a column is ordered by. Its value, except where the value is an
+ * account id: a PERSON column sorts by the name of the first person it names,
+ * and who created or changed a row by that account's name (issue #314), since
+ * an order by id means nothing to anybody reading the table. A deleted
+ * account has no name and sorts with the empty values, last.
+ */
+function sortKeyFor(property: DatabasePropertyRef, scope: DatabaseQueryScope): Prisma.Sql {
+  const valueRef = valueExpressionFor(property, scope);
+  if (property.type === 'PERSON') {
+    return Prisma.sql`(SELECT lower(u."name") FROM "user" AS u WHERE u.id = (${valueRef} ->> 0))`;
+  }
+  if (property.type === 'CREATED_BY' || property.type === 'UPDATED_BY') {
+    return Prisma.sql`(SELECT lower(u."name") FROM "user" AS u WHERE u.id = ${valueRef})`;
+  }
+  return valueRef;
+}
+
 export function compileSorts(
   sorts: readonly DatabaseSort[],
   scope: DatabaseQueryScope,
@@ -226,7 +244,8 @@ export function compileSorts(
   if (sorts.length === 0) return Prisma.sql`document."orderKey" ASC`;
 
   const parts = sorts.map((sort) => {
-    const valueRef = valueExpressionFor(resolveProperty(sort.propertyId, scope), scope);
+    const property = resolveProperty(sort.propertyId, scope);
+    const valueRef = sortKeyFor(property, scope);
     const direction = sort.direction === 'desc' ? Prisma.sql`DESC` : Prisma.sql`ASC`;
     return Prisma.sql`${valueRef} ${direction} NULLS LAST`;
   });

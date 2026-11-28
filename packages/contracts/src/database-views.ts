@@ -511,6 +511,21 @@ export const databaseRowFileSchema = z.object({
 export type DatabaseRowFile = z.infer<typeof databaseRowFileSchema>;
 
 /**
+ * Somebody a row names (issue #314): in a PERSON value, or as the account that
+ * created or last changed it. The name comes from the account itself, so a
+ * person who has since left the workspace stays readable (`member: false`);
+ * an id with no entry here is an account that was deleted. No address and no
+ * role: a reader learns the name a cell already shows them, nothing more.
+ */
+export const databaseRowPersonSchema = z.object({
+  id: idSchema,
+  name: z.string(),
+  /** Whether the account is still a member of the row's workspace. */
+  member: z.boolean(),
+});
+export type DatabaseRowPerson = z.infer<typeof databaseRowPersonSchema>;
+
+/**
  * What an AI fill has to say about one cell (issue #237): its value is a
  * model's (`filled`, until anybody else writes it), a batch is about to fill it
  * (`pending`), or the latest attempt failed or found nothing, and nobody wrote
@@ -535,6 +550,11 @@ export const databaseRowSchema = z.object({
    * them (issue #245). Absent where a row is answered without them.
    */
   files: z.array(databaseRowFileSchema).optional(),
+  /**
+   * The people the row's PERSON, CREATED_BY and UPDATED_BY values name, once
+   * each (issue #314). Absent where a database has no such column.
+   */
+  people: z.array(databaseRowPersonSchema).optional(),
   /** AI fill marks of this row's cells (issue #237). Absent when there are none. */
   aiCells: z.array(databaseRowAiCellSchema).optional(),
 });

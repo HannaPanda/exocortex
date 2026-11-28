@@ -30,6 +30,8 @@ import {
   workspaceMemberSchema,
   type WorkspaceOverviewResponse,
   workspaceOverviewResponseSchema,
+  type WorkspacePeopleResponse,
+  workspacePeopleResponseSchema,
   workspaceSchema,
   type WorkspaceSettingsResponse,
   workspaceSettingsResponseSchema,
@@ -202,6 +204,16 @@ export class WorkspacesController {
       request: body,
       correlationId: currentCorrelationId(),
     });
+  }
+
+  /** Who can be named here, by name only (issue #314). */
+  @Get(':workspaceId/members')
+  @ApiOkResponse({ schema: openApiResponseSchema(workspacePeopleResponseSchema) })
+  async people(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<WorkspacePeopleResponse> {
+    return this.workspaces.listPeople(workspaceId, session.userId);
   }
 
   @Patch(':workspaceId/members/:userId')

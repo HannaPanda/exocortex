@@ -417,3 +417,15 @@ describe('the personal order of workspaces', () => {
     ).rejects.toMatchObject({ status: 404 });
   });
 });
+
+describe('the members by name (issue #314)', () => {
+  it('answers a member with names and ids only, sorted by name', async () => {
+    const answer = await service.listPeople(workspaceId, memberId);
+    expect(answer.members.map((person) => person.name)).toEqual(['Admin', 'Member', 'Owner']);
+    expect(Object.keys(answer.members[0] ?? {}).sort()).toEqual(['name', 'userId']);
+  });
+
+  it('refuses somebody who is not a member', async () => {
+    await expect(service.listPeople(otherWorkspaceId, memberId)).rejects.toThrow();
+  });
+});

@@ -20,8 +20,10 @@ const DATE = { id: 'prop_date', type: 'DATE' as const };
 const CHECKBOX = { id: 'prop_checkbox', type: 'CHECKBOX' as const };
 const MULTI_SELECT = { id: 'prop_multi', type: 'MULTI_SELECT' as const };
 const CREATED_TIME = { id: 'prop_created', type: 'CREATED_TIME' as const };
+const PERSON = { id: 'prop_person', type: 'PERSON' as const };
+const CREATED_BY = { id: 'prop_created_by', type: 'CREATED_BY' as const };
 
-const ALL = [TEXT, NUMBER, DATE, CHECKBOX, MULTI_SELECT, CREATED_TIME];
+const ALL = [TEXT, NUMBER, DATE, CHECKBOX, MULTI_SELECT, CREATED_TIME, PERSON, CREATED_BY];
 const scope: DatabaseQueryScope = {
   properties: buildPropertyMap(ALL),
   schema: buildDerivedSchema(ALL),
@@ -195,6 +197,15 @@ describe('compileSorts', () => {
   it('rejects a sort on a propertyId outside the map', () => {
     const sorts: DatabaseSort[] = [{ propertyId: 'unknown', direction: 'asc' }];
     expect(() => compileSorts(sorts, scope)).toThrow(UnknownDatabasePropertyError);
+  });
+
+  it('orders people by name rather than by account id (issue #314)', () => {
+    const byPerson = compileSorts([{ propertyId: PERSON.id, direction: 'asc' }], scope);
+    expect(byPerson.sql).toContain('FROM "user" AS u');
+    expect(byPerson.sql).toContain('->> 0');
+    const byCreator = compileSorts([{ propertyId: CREATED_BY.id, direction: 'asc' }], scope);
+    expect(byCreator.sql).toContain('lower(u."name")');
+    expect(byCreator.sql).toContain('document."createdById"');
   });
 
   it('always appends orderKey as a deterministic tiebreaker', () => {

@@ -18,6 +18,7 @@ import {
   type Workspace,
   type WorkspaceDetail,
   type WorkspaceMember,
+  type WorkspacePeopleResponse,
   type WorkspaceRole,
   type WorkspaceSettingsResponse,
 } from '@exocortex/contracts';
@@ -142,6 +143,24 @@ export class WorkspacesService {
       role: 'OWNER',
       memberCount: 1,
       isMemory: workspace.isMemory,
+    };
+  }
+
+  /**
+   * The members of a workspace by name only (issue #314), for whoever is a
+   * member of it. A guest holding a share is not, and gets no list: the
+   * names they see are the ones already standing in the cells of a row.
+   */
+  async listPeople(workspaceId: string, userId: string): Promise<WorkspacePeopleResponse> {
+    await this.access.requireRole(workspaceId, userId);
+    const members = await this.prisma.workspaceMember.findMany({
+      where: { workspaceId },
+      select: { userId: true, user: { select: { name: true } } },
+    });
+    return {
+      members: members
+        .map((member) => ({ userId: member.userId, name: member.user.name }))
+        .sort((a, b) => a.name.localeCompare(b.name) || a.userId.localeCompare(b.userId)),
     };
   }
 

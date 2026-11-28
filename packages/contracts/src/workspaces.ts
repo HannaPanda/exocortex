@@ -67,6 +67,23 @@ export const workspaceMemberSchema = z.object({
 });
 export type WorkspaceMember = z.infer<typeof workspaceMemberSchema>;
 
+/**
+ * Who can be named in a workspace, and by what name (issue #314): what a
+ * Person picker offers and what an agent needs to write a PERSON value. Only
+ * the account id and its name, sorted by name -- no address and no role, so
+ * the list stays as small as the question it answers.
+ */
+export const workspacePersonSchema = z.object({
+  userId: idSchema,
+  name: z.string(),
+});
+export type WorkspacePerson = z.infer<typeof workspacePersonSchema>;
+
+export const workspacePeopleResponseSchema = z.object({
+  members: z.array(workspacePersonSchema),
+});
+export type WorkspacePeopleResponse = z.infer<typeof workspacePeopleResponseSchema>;
+
 export const workspaceDetailSchema = workspaceSchema.extend({
   members: z.array(workspaceMemberSchema),
 });

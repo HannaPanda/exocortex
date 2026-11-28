@@ -35,6 +35,12 @@ export const API_ERROR_CODES = [
    * the row's own files, uploaded into it (issue #245).
    */
   'database_files_foreign',
+  /**
+   * A PERSON value named somebody who is not a member of the workspace: a
+   * cell may keep a person who left, but only a member can be added (issue
+   * #314).
+   */
+  'database_person_not_member',
   'database_rows_not_found',
   /**
    * An AI instruction that cannot be stored on this column (issue #237):
@@ -361,6 +367,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   database_property_date_range_in_use: 409,
   database_files_target_invalid: 422,
   database_files_foreign: 422,
+  database_person_not_member: 422,
   database_rows_not_found: 404,
   database_property_ai_invalid: 422,
   ai_fill_not_configured: 409,

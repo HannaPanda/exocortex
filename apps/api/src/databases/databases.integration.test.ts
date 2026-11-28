@@ -1710,3 +1710,93 @@ describe('files in a FILES cell (issue #245)', () => {
     expect(fresh.map((file) => file.id)).not.toContain(removed.attachment.id);
   });
 });
+
+describe('people in a PERSON cell (issue #314)', () => {
+  async function setUp() {
+    const collectionId = await createCollection('Personen-Datenbank');
+    const personId = await createProperty(collectionId, 'PERSON', 'Zuständig');
+    const createdById = await createProperty(collectionId, 'CREATED_BY', 'Erstellt von');
+    const row = await rows.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { title: 'Zeile mit Person', values: [] },
+      correlationId,
+    });
+    return { collectionId, personId, createdById, rowId: row.document.id };
+  }
+
+  async function write(rowId: string, propertyId: string, value: string[] | null) {
+    return rows.updateValues({
+      rowId,
+      userId: ownerId,
+      request: { values: [{ propertyId, value }] },
+      correlationId,
+    });
+  }
+
+  it('names the people a row holds, and who created it', async () => {
+    const { personId, rowId } = await setUp();
+    const answer = await write(rowId, personId, [guestId, ownerId]);
+    expect(answer.people).toEqual([
+      { id: guestId, name: 'Guest', member: true },
+      { id: ownerId, name: 'Owner', member: true },
+    ]);
+  });
+
+  it('refuses somebody who is not a member, and keeps somebody who left', async () => {
+    const { personId, rowId } = await setUp();
+    const stranger = await prisma.user.create({
+      data: {
+        email: `db-stranger-${Date.now().toString(36)}@exocortex.test`,
+        name: 'Stranger',
+        emailVerified: true,
+      },
+    });
+    try {
+      await expect(write(rowId, personId, [stranger.id])).rejects.toMatchObject({
+        code: 'database_person_not_member',
+      });
+
+      await prisma.workspaceMember.create({
+        data: { workspaceId, userId: stranger.id, role: 'MEMBER' },
+      });
+      await write(rowId, personId, [stranger.id, ownerId]);
+      await prisma.workspaceMember.deleteMany({ where: { workspaceId, userId: stranger.id } });
+
+      // Removing somebody else never fails on the person who left.
+      const answer = await write(rowId, personId, [stranger.id]);
+      // The row's creator is named too, by the CREATED_BY column.
+      expect(answer.people).toEqual([
+        { id: stranger.id, name: 'Stranger', member: false },
+        { id: ownerId, name: 'Owner', member: true },
+      ]);
+
+      await prisma.user.delete({ where: { id: stranger.id } });
+      const read = await rows.describeDocumentRow(rowId, ownerId);
+      const value = read.row?.values.find((entry) => entry.propertyId === personId)?.value;
+      expect(value).toEqual([stranger.id]);
+      expect(read.row?.people?.some((person) => person.id === stranger.id)).toBe(false);
+    } finally {
+      await prisma.user.deleteMany({ where: { id: stranger.id } });
+    }
+  });
+
+  it('sorts by the name of the first person rather than by account id', async () => {
+    const { collectionId, personId, rowId } = await setUp();
+    const second = await rows.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { title: 'Zweite Zeile', values: [] },
+      correlationId,
+    });
+    await write(rowId, personId, [ownerId]);
+    await write(second.document.id, personId, [guestId]);
+    const sorted = await rows.query({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { sorts: [{ propertyId: personId, direction: 'asc' }], limit: 50 },
+    });
+    // "Guest" before "Owner".
+    expect(sorted.rows.map((row) => row.document.id)).toEqual([second.document.id, rowId]);
+  });
+});

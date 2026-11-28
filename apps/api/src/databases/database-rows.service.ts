@@ -15,6 +15,7 @@ import {
   databaseFilterGroupSchema,
   type DatabaseRow,
   type DatabaseRowFile,
+  type DatabaseRowPerson,
   type DatabaseRowPropertyValue,
   type DatabaseRowsResponse,
   type DatabaseSort,
@@ -60,6 +61,8 @@ import {
   derivedToResponseValue,
   encodeCursor,
   filesOfRow,
+  peopleOfRow,
+  personIdsOf,
   storedToResponseValue,
   type StoredValueRow,
   toColumnData,
@@ -133,19 +136,27 @@ export class DatabaseRowsService {
       this.filesNamedBy(values, scope),
       aiCellsOfRows(this.prisma, rowIds, values),
     ]);
-    const result: DatabaseRow[] = rows.map((row) => {
-      const rowValues = propertyList.map((property) =>
+    const valuesOfRows = rows.map((row) =>
+      propertyList.map((property) =>
         this.toValue(property, scope, {
           row,
           stored: valuesByRow.get(row.id)?.find((entry) => entry.propertyId === property.id),
           derived: derived.get(row.id)?.get(property.id),
         }),
-      );
+      ),
+    );
+    const people = await this.peopleNamed(
+      valuesOfRows.flatMap((rowValues) => personIdsOf(rowValues, scope)),
+      context.workspaceId,
+    );
+    const result: DatabaseRow[] = rows.map((row, index) => {
+      const rowValues = valuesOfRows[index] ?? [];
       const marks = aiCells.get(row.id);
       return {
         document: toSummary(row),
         values: rowValues,
         ...filesOfRow(rowValues, scope, files),
+        ...peopleOfRow(rowValues, scope, people),
         ...(marks === undefined ? {} : { aiCells: marks }),
       };
     });
@@ -462,7 +473,7 @@ export class DatabaseRowsService {
       input.rowIds.map(async (rowId) => ({
         rowId,
         columns: await Promise.all(
-          input.values.map((entry) => this.prepareWrite(scope, rowId, entry)),
+          input.values.map((entry) => this.prepareWrite(scope, rowId, entry, input.workspaceId)),
         ),
       })),
     );
@@ -523,6 +534,7 @@ export class DatabaseRowsService {
     scope: DatabaseQueryScope,
     rowId: string,
     entry: DatabaseRowPropertyValue,
+    workspaceId: string,
   ): Promise<{ propertyId: string; columns: ColumnData }> {
     const property = scope.properties.get(entry.propertyId);
     if (property === undefined) {
@@ -541,7 +553,14 @@ export class DatabaseRowsService {
         ? await normalizeRelationValue({ prisma: this.prisma, property, value: entry.value })
         : property.type === 'FILES' && Array.isArray(entry.value)
           ? await this.normalizeFilesValue({ rowId, propertyId: property.id, value: entry.value })
-          : entry.value;
+          : property.type === 'PERSON' && Array.isArray(entry.value)
+            ? await this.normalizePersonValue({
+                rowId,
+                propertyId: property.id,
+                value: entry.value,
+                workspaceId,
+              })
+            : entry.value;
     return { propertyId: entry.propertyId, columns: toColumnData(property, value) };
   }
 
@@ -566,12 +585,42 @@ export class DatabaseRowsService {
         derived: derived?.get(property.id),
       }),
     );
+    const people = await this.peopleNamed(personIdsOf(rowValues, scope), row.workspaceId);
     return {
       document: toSummary(row),
       values: rowValues,
       ...filesOfRow(rowValues, scope, files),
+      ...peopleOfRow(rowValues, scope, people),
       ...(marks === undefined ? {} : { aiCells: marks }),
     };
+  }
+
+  /**
+   * The name of every account `ids` names, and whether it is still a member
+   * of `workspaceId` (issue #314). Read from the account rather than from the
+   * membership, so somebody who left stays named; a deleted account is not in
+   * the map, which is how a cell learns that it is gone.
+   */
+  private async peopleNamed(
+    ids: readonly string[],
+    workspaceId: string,
+  ): Promise<Map<string, DatabaseRowPerson>> {
+    const unique = [...new Set(ids)];
+    if (unique.length === 0) return new Map();
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: unique } },
+      select: {
+        id: true,
+        name: true,
+        memberships: { where: { workspaceId }, select: { id: true } },
+      },
+    });
+    return new Map(
+      users.map((user) => [
+        user.id,
+        { id: user.id, name: user.name, member: user.memberships.length > 0 },
+      ]),
+    );
   }
 
   /**
@@ -638,6 +687,49 @@ export class DatabaseRowsService {
         'database_files_foreign',
         'A FILES value may only add files uploaded onto this row; upload with documentId set to the row and propertyId set to the column',
         { attachmentIds: foreign },
+      );
+    }
+    return ids;
+  }
+
+  /**
+   * A PERSON value as written, checked (issue #314): ids once each, and every
+   * id the cell does not already hold must be a member of the workspace.
+   * Somebody who has left may stay where they were named, so removing one of
+   * several people never fails on the others -- but nobody can be added who
+   * was never a member, which is also what keeps the names `people` answers
+   * with to the accounts a member could have picked anyway.
+   */
+  private async normalizePersonValue(input: {
+    rowId: string;
+    propertyId: string;
+    value: string[];
+    workspaceId: string;
+  }): Promise<string[] | null> {
+    const ids = [...new Set(input.value)];
+    if (ids.length === 0) return null;
+    const stored = await this.prisma.documentPropertyValue.findUnique({
+      where: { documentId_propertyId: { documentId: input.rowId, propertyId: input.propertyId } },
+      select: { jsonValue: true },
+    });
+    const held = new Set(
+      Array.isArray(stored?.jsonValue)
+        ? stored.jsonValue.filter((id): id is string => typeof id === 'string')
+        : [],
+    );
+    const added = ids.filter((id) => !held.has(id));
+    if (added.length === 0) return ids;
+    const members = await this.prisma.workspaceMember.findMany({
+      where: { workspaceId: input.workspaceId, userId: { in: added } },
+      select: { userId: true },
+    });
+    const memberIds = new Set(members.map((member) => member.userId));
+    const foreign = added.filter((id) => !memberIds.has(id));
+    if (foreign.length > 0) {
+      throw new AppError(
+        'database_person_not_member',
+        'A PERSON value may only add members of the workspace; the member list is GET /api/workspaces/:id',
+        { userIds: foreign },
       );
     }
     return ids;

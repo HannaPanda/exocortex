@@ -3,6 +3,7 @@ import {
   databaseDateRangeValueSchema,
   type DatabasePropertyType,
   type DatabaseRowFile,
+  type DatabaseRowPerson,
   type DatabaseRowPropertyValue,
   type FormulaValueType,
   instantFromIsoInput,
@@ -242,6 +243,53 @@ export function filesOfRow(
     }
   }
   return hasFilesColumn ? { files: named } : {};
+}
+
+/** The columns whose values are accounts: chosen people, and who made or changed the row. */
+const PERSON_VALUED_TYPES = new Set<DatabasePropertyType>(['PERSON', 'CREATED_BY', 'UPDATED_BY']);
+
+/** Every account id the person-valued cells among `values` name (issue #314). */
+export function personIdsOf(
+  values: readonly DatabaseRowPropertyValue[],
+  scope: DatabaseQueryScope,
+): string[] {
+  const ids: string[] = [];
+  for (const entry of values) {
+    const type = scope.properties.get(entry.propertyId)?.type;
+    if (type === undefined || !PERSON_VALUED_TYPES.has(type)) continue;
+    if (typeof entry.value === 'string') ids.push(entry.value);
+    else if (Array.isArray(entry.value)) {
+      for (const id of entry.value) if (typeof id === 'string') ids.push(id);
+    }
+  }
+  return ids;
+}
+
+/**
+ * The `people` of one row: every account its person-valued cells name that
+ * still exists, once, in the order the cells name them. Left out for a
+ * database without such a column, so those rows answer as before; an id
+ * without an entry is an account that was deleted.
+ */
+export function peopleOfRow(
+  values: readonly DatabaseRowPropertyValue[],
+  scope: DatabaseQueryScope,
+  people: ReadonlyMap<string, DatabaseRowPerson>,
+): { people?: DatabaseRowPerson[] } {
+  const hasPersonColumn = values.some((entry) => {
+    const type = scope.properties.get(entry.propertyId)?.type;
+    return type !== undefined && PERSON_VALUED_TYPES.has(type);
+  });
+  if (!hasPersonColumn) return {};
+  const named: DatabaseRowPerson[] = [];
+  const seen = new Set<string>();
+  for (const id of personIdsOf(values, scope)) {
+    const person = people.get(id);
+    if (person === undefined || seen.has(id)) continue;
+    seen.add(id);
+    named.push(person);
+  }
+  return { people: named };
 }
 
 export function encodeCursor(offset: number): string {
