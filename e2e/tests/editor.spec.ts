@@ -932,7 +932,7 @@ test.describe('editor', () => {
     expect(write.ok(), await write.text()).toBe(true);
     await page.reload();
     const surface = page.getByTestId('editor-surface');
-    await expect(surface.locator('li', { hasText: 'vier' })).toBeVisible({ timeout: 30_000 });
+    await expect(surface.getByText('vier', { exact: true })).toBeVisible({ timeout: 30_000 });
 
     /** The marker style of every list of one kind, outermost first. */
     const styles = (root: Locator, selector: string) =>
@@ -978,7 +978,7 @@ test.describe('editor', () => {
         .poll(
           async () => {
             await page.goto(`/freigabe/${share.token}`);
-            return reader.getByText('vier').count();
+            return reader.getByText('vier', { exact: true }).count();
           },
           { timeout: 60_000 },
         )
