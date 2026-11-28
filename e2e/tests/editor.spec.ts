@@ -1265,7 +1265,9 @@ test.describe('editor', () => {
     // The context panel keeps Strg+. ; the selection must not become superscript.
     const context = page.getByTestId('context-panel');
     const contextWasOpen = await context.isVisible();
-    await page.getByTestId('editor-surface').click();
+    // On the text itself: the middle of the surface lies below it on a page
+    // this short, and a click there opens the line after it (#303).
+    await page.locator('.exocortex-editor strong').click();
     await page.keyboard.press('Home');
     await page.keyboard.press('Shift+End');
     await expect(page.getByTestId('selection-toolbar')).toBeVisible();
