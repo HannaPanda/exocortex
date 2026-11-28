@@ -156,7 +156,8 @@ export interface DocumentTreeNode extends DocumentSummary {
   children: DocumentTreeNode[];
   /**
    * Set on a database whose rows were left out (`rows: 'count'`): how many
-   * active rows it holds. Absent everywhere else.
+   * active rows it holds, including the rows with sub-pages that are still
+   * listed as its children. Absent everywhere else.
    */
   rowCount?: number;
 }
@@ -188,9 +189,10 @@ export const documentTreeRequestSchema = z.object({
   /**
    * What happens to the rows of a database below the starting point.
    * `include` (the default) lists them as its children like any sub-page;
-   * `count` leaves them and everything under them out and sets `rowCount` on
-   * the database instead. A database with ten thousand rows is a table, not a
-   * branch of the hierarchy (issue #221). The rows of the database named as
+   * `count` leaves them out and sets `rowCount` on the database instead. A
+   * database with ten thousand rows is a table, not a branch of the hierarchy
+   * (issue #221). A row with sub-pages of its own stays, with them, so no
+   * sub-page drops out of the tree. The rows of the database named as
    * `parentId` are always listed: asking for that branch is asking for them.
    */
   rows: z.enum(['include', 'count']).optional(),

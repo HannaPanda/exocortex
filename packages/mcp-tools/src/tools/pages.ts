@@ -80,7 +80,8 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
     'Liest die Seitenhierarchie als Baum. Ohne parentId den ganzen Workspace (bei vielen Seiten ' +
     'gekürzt), mit parentId nur den Zweig unter dieser Seite. Ein gekürzter Baum ist keine ' +
     'vollständige Liste: um sicher zu wissen, was unter einer Seite hängt, ruf das Tool mit ' +
-    'deren parentId auf. Eine Datenbank steht mit ihrer Zeilenzahl statt mit ihren Zeilen da; ' +
+    'deren parentId auf. Eine Datenbank steht mit ihrer Zeilenzahl statt mit ihren Zeilen da, ' +
+    'nur eine Zeile mit eigenen Unterseiten steht samt diesen darunter; ' +
     'die Zeilen liest exo_database_query, oder dieses Tool mit der Datenbank als parentId ' +
     '(rows: "include" listet sie überall mit). Ein Nichtmitglied sieht nur, was mit ihm geteilt ' +
     'ist (exo_shared_with_me), mit Unterseiten ab der geteilten Seite, nie darüber oder daneben.',

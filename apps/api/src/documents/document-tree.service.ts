@@ -13,6 +13,7 @@ import {
   collectAncestors,
   collectDescendantIds,
   type PrismaClient,
+  type TreeNode,
 } from '@exocortex/database';
 
 import { AppError } from '../common/app-error';
@@ -63,11 +64,26 @@ export class DocumentTreeService {
     // because its parent is not in the list.
     const scoped = await this.access.requireScopedReach(workspaceId, userId);
 
-    const all = await this.prisma.document.findMany({
-      where: { workspaceId },
-      select: DOCUMENT_SELECT,
-      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
-    });
+    // Only a database *below* the starting point loses its rows: the roots of
+    // a branch asked for by a database's own id are its rows, and they never
+    // pass through this check as a database.
+    const countRows = request.rows === 'count';
+    // The sidebar's question, asked on every page load and after every change
+    // somebody else makes: the whole workspace, for a member, without rows.
+    // It does not load the rows it would only count (issue #221). A branch or
+    // a recipient of grants takes the general path below, which needs every
+    // document to know what sits under what.
+    const { documents: all, rowCounts } =
+      countRows && request.parentId === undefined && scoped.documentIds === null
+        ? await this.loadWithoutRows(workspaceId)
+        : {
+            documents: await this.prisma.document.findMany({
+              where: { workspaceId },
+              select: DOCUMENT_SELECT,
+              orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
+            }),
+            rowCounts: null,
+          };
     // A confined credential is told about its branches and nothing else, not
     // even that the rest exists (issue #83, ADR-044). Filtering the flat list
     // before the tree is built is what makes the pages above a scope root
@@ -93,53 +109,44 @@ export class DocumentTreeService {
             return rows.filter((row) => descendants.has(row.id));
           })();
 
+    const typeOf = new Map(rows.map((row) => [row.id, row.type]));
+    const isCountedRow = (row: DocumentRow): boolean =>
+      countRows &&
+      row.parentId !== null &&
+      row.parentId !== parentId &&
+      typeOf.get(row.parentId) === 'COLLECTION';
+
     const active = scope.filter((row) => row.archivedAt === null);
     // The trash belongs to the workspace, not to the pages somebody was handed.
+    // A counted database's archived rows stay out of it like its active ones.
     const archived =
-      scoped.throughGrants === true ? [] : scope.filter((row) => row.archivedAt !== null);
+      scoped.throughGrants === true
+        ? []
+        : scope.filter((row) => row.archivedAt !== null && !isCountedRow(row));
 
-    // Only a database *below* the starting point loses its rows: the roots of
-    // a branch asked for by a database's own id are its rows, and they never
-    // pass through this check as a database.
-    const countRows = request.rows === 'count';
-
-    const toNode = (
-      entry: {
-        node: DocumentRow;
-        children: { node: DocumentRow; children: unknown[] }[];
-      },
-      remainingDepth: number,
-    ): DocumentTreeNode =>
-      countRows && entry.node.type === 'COLLECTION'
-        ? { ...toSummary(entry.node), children: [], rowCount: entry.children.length }
-        : {
-            ...toSummary(entry.node),
-            children:
-              remainingDepth <= 1
-                ? []
-                : entry.children.map((child) =>
-                    toNode(
-                      child as {
-                        node: DocumentRow;
-                        children: { node: DocumentRow; children: unknown[] }[];
-                      },
-                      remainingDepth - 1,
-                    ),
-                  ),
-          };
+    const toNode = (entry: TreeNode<DocumentRow>, remainingDepth: number): DocumentTreeNode => {
+      const isCountedDatabase = countRows && entry.node.type === 'COLLECTION';
+      // A row that has pages of its own stays, with them: it is a branch of
+      // the hierarchy as well as a line of the table, and leaving it out would
+      // leave its sub-pages nowhere in the tree. The rows that are only lines
+      // are counted instead (issue #221).
+      const children = isCountedDatabase
+        ? entry.children.filter((child) => child.children.length > 0)
+        : entry.children;
+      return {
+        ...toSummary(entry.node),
+        children:
+          remainingDepth <= 1 ? [] : children.map((child) => toNode(child, remainingDepth - 1)),
+        ...(isCountedDatabase
+          ? { rowCount: rowCounts?.get(entry.node.id) ?? entry.children.length }
+          : {}),
+      };
+    };
 
     const depth = request.depth ?? Number.POSITIVE_INFINITY;
 
     return {
-      nodes: buildTree(active).map((entry) =>
-        toNode(
-          entry as unknown as {
-            node: DocumentRow;
-            children: { node: DocumentRow; children: unknown[] }[];
-          },
-          depth,
-        ),
-      ),
+      nodes: buildTree(active).map((entry) => toNode(entry, depth)),
       archived: archived.map(toSummary),
       path:
         parentId === undefined
@@ -147,7 +154,64 @@ export class DocumentTreeService {
           : [...collectAncestors(rows, parentId), rows.find((row) => row.id === parentId)]
               .filter((row): row is DocumentRow => row !== undefined)
               .map((row) => ({ id: row.id, title: row.title })),
-      totalCount: active.length,
+      // Rows count as documents of the scope whether or not they were loaded.
+      totalCount:
+        rowCounts === null
+          ? active.length
+          : active.filter((row) => !isCountedRow(row)).length +
+            [...rowCounts.values()].reduce((sum, count) => sum + count, 0),
+    };
+  }
+
+  /**
+   * Every document of the workspace except the rows of its databases, plus
+   * how many active rows each database has.
+   *
+   * A row that has sub-pages is loaded after all, because its sub-pages are
+   * (their parent is a row, not a database) and they need it to hang from.
+   * Two queries for the hierarchy and one aggregate, instead of every row of
+   * every table to be counted in memory.
+   */
+  private async loadWithoutRows(
+    workspaceId: string,
+  ): Promise<{ documents: DocumentRow[]; rowCounts: Map<string, number> }> {
+    const [pages, counts] = await Promise.all([
+      this.prisma.document.findMany({
+        where: {
+          workspaceId,
+          OR: [{ parentId: null }, { parent: { type: { not: 'COLLECTION' } } }],
+        },
+        select: DOCUMENT_SELECT,
+        orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
+      }),
+      this.prisma.document.groupBy({
+        by: ['parentId'],
+        where: { workspaceId, archivedAt: null, parent: { type: 'COLLECTION' } },
+        _count: { _all: true },
+      }),
+    ]);
+    const loaded = new Set(pages.map((page) => page.id));
+    const rowsWithPages = [
+      ...new Set(
+        pages
+          .map((page) => page.parentId)
+          .filter((id): id is string => id !== null && !loaded.has(id)),
+      ),
+    ];
+    const rows =
+      rowsWithPages.length === 0
+        ? []
+        : await this.prisma.document.findMany({
+            where: { workspaceId, id: { in: rowsWithPages } },
+            select: DOCUMENT_SELECT,
+          });
+    return {
+      documents: [...pages, ...rows],
+      rowCounts: new Map(
+        counts
+          .filter((entry): entry is typeof entry & { parentId: string } => entry.parentId !== null)
+          .map((entry) => [entry.parentId, entry._count._all]),
+      ),
     };
   }
 

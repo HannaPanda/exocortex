@@ -1061,6 +1061,27 @@ describe('document tree', () => {
       expect(node?.rowCount).toBe(2);
       expect(find(tree.nodes, rows[0]?.id ?? '')).toBeUndefined();
       expect(find(tree.nodes, section)?.children.map((child) => child.id)).toEqual([collection.id]);
+      // Its archived row is left out of the archived list as well, and every
+      // row still counts towards the size of the workspace.
+      expect(tree.archived.some((entry) => entry.title === 'Archivierte Zeile')).toBe(false);
+      const full = await treeService.getTree(workspaceId, ownerId);
+      expect(tree.totalCount).toBe(full.totalCount);
+    });
+
+    it('keeps a row that has sub-pages of its own, with them, under rows: count', async () => {
+      const section = await createPage('Bereich mit Zeile samt Unterseite');
+      const { collection, rows } = await createDatabaseWithRows(
+        'Datenbank mit Unterseite',
+        section,
+      );
+      const subPage = await createPage('Unterseite einer Zeile', rows[1]?.id ?? null);
+
+      const tree = await treeService.getTree(workspaceId, ownerId, { rows: 'count' });
+      const node = find(tree.nodes, collection.id);
+      expect(node?.rowCount).toBe(2);
+      expect(node?.children.map((child) => child.id)).toEqual([rows[1]?.id]);
+      expect(node?.children[0]?.children.map((child) => child.id)).toEqual([subPage]);
+      expect(find(tree.nodes, rows[0]?.id ?? '')).toBeUndefined();
     });
 
     it('still lists the rows of the database asked for by parentId', async () => {
