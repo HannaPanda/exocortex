@@ -29,7 +29,37 @@
       "connections": {
         "label": "Connexions",
         "intro": "Ici sont reliés tes agents à eXocortex : les applications qui se connectent en ton nom, les jetons pour tout le reste et les commandes prêtes à l’emploi pour la configuration. Pour savoir quand eXocortex te contacte de lui-même, consulte les <link>Notifications</link>."
+      },
+      "workspace": {
+        "label": "Général",
+        "intro": "Le nom et le slug de cet espace de travail, et si les agents y stockent leur mémoire. En dessous, les sections qui possèdent leurs propres pages."
+      },
+      "members": {
+        "label": "Membres",
+        "intro": "Les adhésions sont toujours explicites : toute personne invitée rejoint précisément cet espace de travail."
+      },
+      "ai": {
+        "label": "IA",
+        "intro": "Les conditions dans lesquelles l’IA fonctionne dans cet espace de travail : avec quelle clé et selon quelles règles."
+      },
+      "tools": {
+        "label": "Outils externes",
+        "intro": "Connecte ici des serveurs MCP tiers, comme l’application Santé. Chaque outil d’un serveur est d’abord bloqué. L’IA ne peut l’utiliser qu’une fois que tu l’as examiné et approuvé. Si le serveur modifie un outil par la suite, celui-ci est de nouveau bloqué."
+      },
+      "overrides": {
+        "label": "Configuration",
+        "intro": "Sans valeur définie ici, la configuration globale de l’installation s’applique. Ce que tu définis ici ne s’applique qu’à cet espace de travail."
+      },
+      "admin": {
+        "label": "Aperçu",
+        "intro": "Ce qui s’applique à l’ensemble de l’installation. Chaque section de l’administration est une page dédiée, car elle comporte des tableaux et des listes qui ne tiendraient pas au-dessus d’une page ouverte."
       }
+    },
+    "workspacePicker": "Choisir un espace de travail",
+    "loading": "Chargement…",
+    "admin": {
+      "pages": "Pages d’administration",
+      "groups": "Paramètres de l’installation par section"
     }
   },
   "language": {
@@ -712,7 +742,6 @@
     "ignoredDescription": "La base de données contient une valeur non autorisée pour {count, plural, one {ce paramètre} many {ces paramètres} other {ces paramètres}} : {labels}. L’installation s’exécute avec la valeur par défaut à la place. Un enregistrement remplacera la ligne erronée."
   },
   "workspaceForm": {
-    "intro": "Sans valeur définie ici, les réglages de l’ensemble de l’installation s’appliquent. Ce que tu définis ici ne s’applique qu’à cet espace de travail.",
     "invalid": "Une valeur saisie n’est pas valide, rien n’a été enregistré.",
     "ownValue": "Valeur personnalisée",
     "reset": "Rétablir la valeur de l’installation",
@@ -740,16 +769,7 @@
     "footnote": "La clé est stockée de manière chiffrée et ne sera plus jamais affichée. Elle règle les exécutions de l’IA pour cet espace de travail. La recherche continue d’utiliser la clé de l’installation, car tous les plongements doivent se trouver dans le même espace vectoriel."
   },
   "workspace": {
-    "title": "Paramètres de l’espace de travail",
     "loading": "Chargement de l’espace de travail…",
-    "summary": "{name} · {count, plural, one {# membre} many {# membres} other {# membres}}",
-    "tabs": {
-      "general": "Général",
-      "members": "Membres",
-      "ai": "IA",
-      "settings": "Paramètres",
-      "tools": "Outils externes"
-    },
     "readOnly": "Seules les personnes propriétaires et administratrices de cet espace de travail peuvent le renommer ou en modifier le slug.",
     "nameLabel": "Nom",
     "save": "Enregistrer",
@@ -763,16 +783,15 @@
       "title": "Règles de l’IA",
       "description": "Pages que l’IA traite comme des instructions. Cela se définit dans les propriétés de chaque page."
     },
-    "config": {
-      "title": "Configuration de cet espace de travail",
-      "description": "Ces valeurs ne s’appliquent qu’ici. Tout le reste provient de l’installation."
-    },
     "more": {
       "title": "Autres rubriques",
-      "automations": "Ouvrir les automatisations",
-      "templates": "Ouvrir les modèles de PDF",
-      "shares": "Ouvrir les partages",
-      "description": "Des règles qui réagissent aux modifications apportées aux pages, avec le journal de ce qu’elles ont fait. De quoi publier les pages de cet espace de travail en PDF. Et ce qui est partagé vers l’extérieur depuis cet espace de travail, auprès de comptes et sous forme de lien public."
+      "automations": "Automatisations",
+      "templates": "Modèles pour PDF",
+      "shares": "Partages",
+      "description": "Ces sections font partie de l’espace de travail, mais possèdent des listes, des journaux ou leur propre éditeur et constituent donc des pages distinctes.",
+      "workflows": "Workflows",
+      "agentProfiles": "Profils d’agents",
+      "evals": "Evals"
     },
     "slug": {
       "label": "Slug",
@@ -785,8 +804,6 @@
       "description": "Les agents enregistrent leurs notes de session dans cet espace de travail et les retrouvent au démarrage suivant. Ici, les notes expirent après le délai configuré. Ce n’est pas adapté pour un espace que tu gères toi-même."
     },
     "members": {
-      "title": "Membres",
-      "description": "L’accès comme membre est toujours explicite : toute personne invitée rejoint précisément cet espace de travail.",
       "invite": "Inviter",
       "caption": "Membres de cet espace de travail",
       "name": "Nom",
@@ -806,10 +823,6 @@
       "ADMIN": "Administrateur",
       "MEMBER": "Membre",
       "GUEST": "Invité"
-    },
-    "externalMcp": {
-      "title": "Serveurs MCP externes",
-      "description": "Connecte ici des serveurs MCP tiers, comme une application Santé. Chaque outil d’un serveur est d’abord bloqué. L’IA ne peut l’utiliser que lorsque tu l’as examiné et approuvé. Si le serveur modifie un outil par la suite, celui-ci est de nouveau bloqué."
     }
   },
   "externalMcp": {

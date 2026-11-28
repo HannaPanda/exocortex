@@ -29,7 +29,37 @@
       "connections": {
         "label": "Connessioni",
         "intro": "Qui i tuoi agenti si collegano a eXocortex: applicazioni che accedono a tuo nome, token per tutto il resto e i comandi pronti per la configurazione. Per scegliere quando eXocortex può contattarti di sua iniziativa, vedi <link>Notifiche</link>."
+      },
+      "workspace": {
+        "label": "Generale",
+        "intro": "Nome e slug di quest’area di lavoro e se gli agenti possono salvare qui la loro memoria. Sotto trovi le sezioni con pagine dedicate."
+      },
+      "members": {
+        "label": "Membri",
+        "intro": "L’iscrizione è sempre esplicita: le persone invitate accedono esattamente a quest’area di lavoro."
+      },
+      "ai": {
+        "label": "IA",
+        "intro": "Le condizioni d’uso dell’IA in quest’area di lavoro: con quale chiave e secondo quali regole."
+      },
+      "tools": {
+        "label": "Strumenti esterni",
+        "intro": "Qui colleghi server MCP esterni, per esempio l’app Salute. Ogni strumento di un server è inizialmente bloccato. L’IA può usarlo solo dopo che lo hai esaminato e approvato. Se il server modifica uno strumento in seguito, questo verrà di nuovo bloccato."
+      },
+      "overrides": {
+        "label": "Configurazione",
+        "intro": "Senza un valore personalizzato si applica l’impostazione globale dell’installazione. I valori impostati qui valgono solo per quest’area di lavoro."
+      },
+      "admin": {
+        "label": "Panoramica",
+        "intro": "Cosa si applica all’intera installazione. Ogni sezione dell’amministrazione ha una pagina dedicata, poiché contiene tabelle ed elenchi che non possono essere sovrapposti a una pagina aperta."
       }
+    },
+    "workspacePicker": "Scegli un’area di lavoro",
+    "loading": "Caricamento in corso…",
+    "admin": {
+      "pages": "Pagine di amministrazione",
+      "groups": "Impostazioni dell’installazione per sezione"
     }
   },
   "language": {
@@ -712,7 +742,6 @@
     "ignoredDescription": "Nel database è presente un valore non valido per {count, plural, one {questa impostazione} many {questa impostazione} other {queste impostazioni}}: {labels}. L’installazione utilizzerà invece il valore predefinito. Salvare una volta sostituirà la riga errata."
   },
   "workspaceForm": {
-    "intro": "Senza un valore personalizzato, qui vale ciò che è impostato per l’intera installazione. I valori impostati qui si applicano solo a questa area di lavoro.",
     "invalid": "Un valore inserito non è valido, non è stato salvato nulla.",
     "ownValue": "Valore personalizzato",
     "reset": "Ripristina il valore dell’installazione",
@@ -740,16 +769,7 @@
     "footnote": "La chiave viene memorizzata cifrata e non verrà mai più mostrata. Copre i costi delle esecuzioni dell’IA per quest’area di lavoro. La ricerca continua a usare la chiave dell’installazione, poiché tutti gli embedding devono risiedere nello stesso spazio vettoriale."
   },
   "workspace": {
-    "title": "Impostazioni dell’area di lavoro",
     "loading": "Caricamento dell’area di lavoro in corso…",
-    "summary": "{name} · {count, plural, one {# membro} many {# membri} other {# membri}}",
-    "tabs": {
-      "general": "Generale",
-      "members": "Membri",
-      "ai": "IA",
-      "settings": "Impostazioni",
-      "tools": "Strumenti esterni"
-    },
     "readOnly": "Solo chi possiede o amministra quest’area di lavoro può rinominarla o modificarne lo slug.",
     "nameLabel": "Nome",
     "save": "Salva",
@@ -763,16 +783,15 @@
       "title": "Regole dell’IA",
       "description": "Pagine trattate dall’IA come istruzioni. L’opzione si imposta nelle proprietà della pagina corrispondente."
     },
-    "config": {
-      "title": "Configurazione di quest’area di lavoro",
-      "description": "Questi valori si applicano solo qui. Tutto il resto proviene dall’installazione."
-    },
     "more": {
       "title": "Altre sezioni",
-      "automations": "Apri automazioni",
-      "templates": "Apri modelli per PDF",
-      "shares": "Apri condivisioni",
-      "description": "Regole che reagiscono alle modifiche alle pagine, con il registro delle loro attività. Gli strumenti per pubblicare le pagine di questa area di lavoro in PDF. E ciò che da questa area di lavoro è condiviso all’esterno, con altri account o tramite link pubblico."
+      "automations": "Automazioni",
+      "templates": "Modelli per PDF",
+      "shares": "Condivisioni",
+      "description": "Queste sezioni fanno parte dell’area di lavoro, ma contengono elenchi, log o un proprio editor e hanno quindi pagine dedicate.",
+      "workflows": "Workflow",
+      "agentProfiles": "Profili agente",
+      "evals": "Valutazioni"
     },
     "slug": {
       "label": "Slug",
@@ -785,8 +804,6 @@
       "description": "Gli agenti salvano le loro note di sessione in questa area di lavoro e le ritrovano all’avvio successivo. Qui le note scadono dopo il termine impostato. Non è una funzione adatta a un’area che gestisci tu."
     },
     "members": {
-      "title": "Membri",
-      "description": "L’iscrizione è sempre esplicita: le persone invitate accedono esattamente a questa area di lavoro.",
       "invite": "Invita",
       "caption": "Membri di questa area di lavoro",
       "name": "Nome",
@@ -806,10 +823,6 @@
       "ADMIN": "Amministratore",
       "MEMBER": "Membro",
       "GUEST": "Ospite"
-    },
-    "externalMcp": {
-      "title": "Server MCP esterni",
-      "description": "Qui colleghi server MCP esterni, per esempio l’app Salute. Ogni strumento di un server è inizialmente bloccato. L’IA può usarlo solo dopo che lo hai esaminato e approvato. Se il server modifica uno strumento in un secondo momento, questo viene nuovamente bloccato."
     }
   },
   "externalMcp": {

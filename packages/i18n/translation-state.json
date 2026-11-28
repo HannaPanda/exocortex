@@ -18636,6 +18636,14 @@
       "source": "aeeae94b85c9a18e",
       "output": "59a6f150348ce22c"
     },
+    "settings.dialog.admin.groups": {
+      "source": "0f40520de644e83b",
+      "output": "bf37413160288d0f"
+    },
+    "settings.dialog.admin.pages": {
+      "source": "0c832e17bd75905b",
+      "output": "04d34dcbe26cfa9f"
+    },
     "settings.dialog.areas.account": {
       "source": "df8525011f618f54",
       "output": "7e1b0d5641f2640c"
@@ -18656,9 +18664,29 @@
       "source": "0746da7c8e3b6c46",
       "output": "f9fb6f4394f3971b"
     },
+    "settings.dialog.loading": {
+      "source": "2d03f8f3dfe1ed62",
+      "output": "ba3bbbe10d8bef66"
+    },
     "settings.dialog.navigation": {
       "source": "e85705add045d307",
       "output": "e26d51d36781ba17"
+    },
+    "settings.dialog.sections.admin.intro": {
+      "source": "36c4d3405219faff",
+      "output": "15a7730a2efd891f"
+    },
+    "settings.dialog.sections.admin.label": {
+      "source": "4d2bb368f919df81",
+      "output": "d4b1ea5708dd5329"
+    },
+    "settings.dialog.sections.ai.intro": {
+      "source": "2efb9fb15ebd27c4",
+      "output": "56509e127d6fdb71"
+    },
+    "settings.dialog.sections.ai.label": {
+      "source": "fd184691f9867a82",
+      "output": "11fb682be0a0233d"
     },
     "settings.dialog.sections.chat.intro": {
       "source": "1dd6704bdd317be7",
@@ -18692,6 +18720,14 @@
       "source": "fc718156fac294de",
       "output": "59123709ae7a762d"
     },
+    "settings.dialog.sections.members.intro": {
+      "source": "5e63b6b99d71d09e",
+      "output": "19adc9aad1e4f390"
+    },
+    "settings.dialog.sections.members.label": {
+      "source": "bc1679e6cfa31226",
+      "output": "1044a4c056d0d685"
+    },
     "settings.dialog.sections.notifications.intro": {
       "source": "57c1bbb525280ab0",
       "output": "59549fe293d2034a"
@@ -18700,9 +18736,37 @@
       "source": "f7205df4f1e2d6bc",
       "output": "788011833a5a0f22"
     },
+    "settings.dialog.sections.overrides.intro": {
+      "source": "e88fe9d690606a59",
+      "output": "f4772b2536453cc4"
+    },
+    "settings.dialog.sections.overrides.label": {
+      "source": "8df29d8eb5d7843b",
+      "output": "b332c3492d5eb10a"
+    },
+    "settings.dialog.sections.tools.intro": {
+      "source": "2c87954ec35125b3",
+      "output": "3573b7ca7180c76b"
+    },
+    "settings.dialog.sections.tools.label": {
+      "source": "79d1e97ab6a9c30e",
+      "output": "c8aecf0ad446886a"
+    },
+    "settings.dialog.sections.workspace.intro": {
+      "source": "a02a25b4e76599f0",
+      "output": "6cfa20bb74e55b04"
+    },
+    "settings.dialog.sections.workspace.label": {
+      "source": "24eddd710b885b7a",
+      "output": "c910d474dcd724bf"
+    },
     "settings.dialog.title": {
       "source": "f5750a5d7231e1f7",
       "output": "74a883a037bc227f"
+    },
+    "settings.dialog.workspacePicker": {
+      "source": "430d4f88b043670d",
+      "output": "94b211b56e22d4d9"
     },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
@@ -20760,22 +20824,6 @@
       "source": "fb1c89824cf78384",
       "output": "61e6df33acc31642"
     },
-    "settings.workspace.config.description": {
-      "source": "b5585106d6a9387b",
-      "output": "6f972b5f3ca95c04"
-    },
-    "settings.workspace.config.title": {
-      "source": "5887a572ccc20720",
-      "output": "faf54a155d3d4479"
-    },
-    "settings.workspace.externalMcp.description": {
-      "source": "2c87954ec35125b3",
-      "output": "10633be7447793d9"
-    },
-    "settings.workspace.externalMcp.title": {
-      "source": "eb8b69c130d17d59",
-      "output": "6ebd33a47713c880"
-    },
     "settings.workspace.loading": {
       "source": "fb1a2c281de388e8",
       "output": "23bec6bcfd17ad26"
@@ -20791,10 +20839,6 @@
     "settings.workspace.members.caption": {
       "source": "9dfdedfac276eb8c",
       "output": "38134a2e5bad925c"
-    },
-    "settings.workspace.members.description": {
-      "source": "5e63b6b99d71d09e",
-      "output": "51817d9d829027f3"
     },
     "settings.workspace.members.email": {
       "source": "2fae6fb30b0d0077",
@@ -20832,10 +20876,6 @@
       "source": "4478fe0697ade6b5",
       "output": "f0aa045fa4c53305"
     },
-    "settings.workspace.members.title": {
-      "source": "bc1679e6cfa31226",
-      "output": "1044a4c056d0d685"
-    },
     "settings.workspace.members.you": {
       "source": "0b6722a8adfb9354",
       "output": "08b041935798fbf6"
@@ -20848,25 +20888,37 @@
       "source": "e535931aadf889b3",
       "output": "f3cd4df65124832d"
     },
+    "settings.workspace.more.agentProfiles": {
+      "source": "0aeda5316238db58",
+      "output": "406e963715b6c9de"
+    },
     "settings.workspace.more.automations": {
-      "source": "627774b9b690c440",
-      "output": "8c752bc853307b05"
+      "source": "1a221929d4c59222",
+      "output": "ad1fb9ec0cb3c7a4"
     },
     "settings.workspace.more.description": {
-      "source": "4309105ab3e034aa",
-      "output": "b906142781002183"
+      "source": "58f7eb28573f00c2",
+      "output": "90e36cec9953e6f3"
+    },
+    "settings.workspace.more.evals": {
+      "source": "fff553f218c706a6",
+      "output": "fff553f218c706a6"
     },
     "settings.workspace.more.shares": {
-      "source": "5762bdaba2a4b426",
-      "output": "c1773248e873d350"
+      "source": "e3365406964cf54e",
+      "output": "d4ea333d8b1f432c"
     },
     "settings.workspace.more.templates": {
-      "source": "8d12580762cff2a3",
-      "output": "e7114c9be0ea54ea"
+      "source": "0fe081fff1b87574",
+      "output": "ea2cc3808c9e637c"
     },
     "settings.workspace.more.title": {
       "source": "c6c1ff8662eb66f5",
       "output": "a8e35e36777214cf"
+    },
+    "settings.workspace.more.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
     },
     "settings.workspace.nameLabel": {
       "source": "dcd1d5223f73b3a9",
@@ -20920,41 +20972,9 @@
       "source": "8ca3d603be7acb47",
       "output": "dd829dceb95a581e"
     },
-    "settings.workspace.summary": {
-      "source": "c49f301e6fe0479d",
-      "output": "d6656ad313056157"
-    },
-    "settings.workspace.tabs.ai": {
-      "source": "fd184691f9867a82",
-      "output": "11fb682be0a0233d"
-    },
-    "settings.workspace.tabs.general": {
-      "source": "24eddd710b885b7a",
-      "output": "c910d474dcd724bf"
-    },
-    "settings.workspace.tabs.members": {
-      "source": "bc1679e6cfa31226",
-      "output": "1044a4c056d0d685"
-    },
-    "settings.workspace.tabs.settings": {
-      "source": "f5750a5d7231e1f7",
-      "output": "74a883a037bc227f"
-    },
-    "settings.workspace.tabs.tools": {
-      "source": "79d1e97ab6a9c30e",
-      "output": "c8aecf0ad446886a"
-    },
-    "settings.workspace.title": {
-      "source": "d06a263d076350da",
-      "output": "5ebc59145b59b496"
-    },
     "settings.workspaceForm.inherited": {
       "source": "7d3a4273f9ae4fb0",
       "output": "3ab000a0b4915da0"
-    },
-    "settings.workspaceForm.intro": {
-      "source": "e88fe9d690606a59",
-      "output": "d96eb3d39e11cc24"
     },
     "settings.workspaceForm.invalid": {
       "source": "efb04df9294f90c1",
@@ -22252,14 +22272,6 @@
       "source": "502ccca92bb2e772",
       "output": "f35ba4d6c5bee2fa"
     },
-    "shell.paletteCommands.navigation.workspaceSettings.keywords": {
-      "source": "8f195fc8bcabf9e6",
-      "output": "4d1b8c83976793b0"
-    },
-    "shell.paletteCommands.navigation.workspaceSettings.label": {
-      "source": "9a2ef43583063528",
-      "output": "5ebc59145b59b496"
-    },
     "shell.paletteCommands.navigation.workspaceShares.keywords": {
       "source": "f84d5d642b65387e",
       "output": "4e795c6defc83571"
@@ -22736,37 +22748,21 @@
       "source": "6a85b5763fef3b14",
       "output": "87bb59ba2f92f2a5"
     },
-    "shell.paletteCommands.settings.workspaceAi": {
+    "shell.paletteCommands.settingsSections.admin.keywords": {
+      "source": "16fda30274f2eff1",
+      "output": "1c3d85039527403d"
+    },
+    "shell.paletteCommands.settingsSections.admin.label": {
+      "source": "ba153b047cd41922",
+      "output": "b174b9279fc8d564"
+    },
+    "shell.paletteCommands.settingsSections.ai.keywords": {
+      "source": "06ffec4d50e80118",
+      "output": "50d32acb3e319440"
+    },
+    "shell.paletteCommands.settingsSections.ai.label": {
       "source": "8bcea40eef8b74d2",
       "output": "592fa572a4edc20d"
-    },
-    "shell.paletteCommands.settings.workspaceAiKeywords": {
-      "source": "92261ace608f3e1d",
-      "output": "ab0b3dc1adf0604a"
-    },
-    "shell.paletteCommands.settings.workspaceMembers": {
-      "source": "86b1e1341b307b0b",
-      "output": "7ce24d6867042bc3"
-    },
-    "shell.paletteCommands.settings.workspaceMembersKeywords": {
-      "source": "38f5efa871e4ae2c",
-      "output": "2a07394ebe25c701"
-    },
-    "shell.paletteCommands.settings.workspaceOverrides": {
-      "source": "2554339da993e0f8",
-      "output": "942bb91674ca4daf"
-    },
-    "shell.paletteCommands.settings.workspaceOverridesKeywords": {
-      "source": "d7bb64894a32589d",
-      "output": "f456d01aab440c0e"
-    },
-    "shell.paletteCommands.settings.workspaceTools": {
-      "source": "fb9675861432b7e6",
-      "output": "35ab5de23e94c385"
-    },
-    "shell.paletteCommands.settings.workspaceToolsKeywords": {
-      "source": "0006d62d1d8bea82",
-      "output": "2d8d224909f9d6c5"
     },
     "shell.paletteCommands.settingsSections.chat.keywords": {
       "source": "e75df1ce33b153ac",
@@ -22800,6 +22796,14 @@
       "source": "1ac4335fe6140d14",
       "output": "0e4e5fc3229c58d4"
     },
+    "shell.paletteCommands.settingsSections.members.keywords": {
+      "source": "38f5efa871e4ae2c",
+      "output": "2a07394ebe25c701"
+    },
+    "shell.paletteCommands.settingsSections.members.label": {
+      "source": "86b1e1341b307b0b",
+      "output": "7ce24d6867042bc3"
+    },
     "shell.paletteCommands.settingsSections.notifications.keywords": {
       "source": "de36e9e8911e7c53",
       "output": "d15e994cee34575c"
@@ -22807,6 +22811,30 @@
     "shell.paletteCommands.settingsSections.notifications.label": {
       "source": "7a0d5403f1575530",
       "output": "4396ad2533a14a00"
+    },
+    "shell.paletteCommands.settingsSections.overrides.keywords": {
+      "source": "78e5d1180dcae209",
+      "output": "0e7f593b9aca5446"
+    },
+    "shell.paletteCommands.settingsSections.overrides.label": {
+      "source": "2554339da993e0f8",
+      "output": "3d412fcf6e15c160"
+    },
+    "shell.paletteCommands.settingsSections.tools.keywords": {
+      "source": "0006d62d1d8bea82",
+      "output": "f0ead0d10738ed18"
+    },
+    "shell.paletteCommands.settingsSections.tools.label": {
+      "source": "fb9675861432b7e6",
+      "output": "f51a7a8780984d03"
+    },
+    "shell.paletteCommands.settingsSections.workspace.keywords": {
+      "source": "bf7ac8d86e624bdb",
+      "output": "b0b1435ecacc0d17"
+    },
+    "shell.paletteCommands.settingsSections.workspace.label": {
+      "source": "9a2ef43583063528",
+      "output": "5ebc59145b59b496"
     },
     "shell.paletteCommands.showContext": {
       "source": "c5082f8b0dbc7821",
@@ -44478,6 +44506,14 @@
       "source": "aeeae94b85c9a18e",
       "output": "937ae0bdb191aa32"
     },
+    "settings.dialog.admin.groups": {
+      "source": "0f40520de644e83b",
+      "output": "1ba636fa2d954a93"
+    },
+    "settings.dialog.admin.pages": {
+      "source": "0c832e17bd75905b",
+      "output": "4bb63e9605687fc3"
+    },
     "settings.dialog.areas.account": {
       "source": "df8525011f618f54",
       "output": "e436ddcd06e85cd0"
@@ -44498,9 +44534,29 @@
       "source": "0746da7c8e3b6c46",
       "output": "f4b6c649a6e2a6b7"
     },
+    "settings.dialog.loading": {
+      "source": "2d03f8f3dfe1ed62",
+      "output": "205443ee88568e8c"
+    },
     "settings.dialog.navigation": {
       "source": "e85705add045d307",
       "output": "c503baa712db906a"
+    },
+    "settings.dialog.sections.admin.intro": {
+      "source": "36c4d3405219faff",
+      "output": "b0c5356b05a59a6b"
+    },
+    "settings.dialog.sections.admin.label": {
+      "source": "4d2bb368f919df81",
+      "output": "ed7bdc67c84b3ed6"
+    },
+    "settings.dialog.sections.ai.intro": {
+      "source": "2efb9fb15ebd27c4",
+      "output": "90bb076f14acc72b"
+    },
+    "settings.dialog.sections.ai.label": {
+      "source": "fd184691f9867a82",
+      "output": "a75d067fa44bca81"
     },
     "settings.dialog.sections.chat.intro": {
       "source": "1dd6704bdd317be7",
@@ -44534,6 +44590,14 @@
       "source": "fc718156fac294de",
       "output": "bbe5c79680dcf0aa"
     },
+    "settings.dialog.sections.members.intro": {
+      "source": "5e63b6b99d71d09e",
+      "output": "86195ebba1570a6c"
+    },
+    "settings.dialog.sections.members.label": {
+      "source": "bc1679e6cfa31226",
+      "output": "0d00d93befb1818e"
+    },
     "settings.dialog.sections.notifications.intro": {
       "source": "57c1bbb525280ab0",
       "output": "70a869df8715f8d7"
@@ -44542,9 +44606,37 @@
       "source": "f7205df4f1e2d6bc",
       "output": "80dade6fab6f9387"
     },
+    "settings.dialog.sections.overrides.intro": {
+      "source": "e88fe9d690606a59",
+      "output": "7e8b8eb911568408"
+    },
+    "settings.dialog.sections.overrides.label": {
+      "source": "8df29d8eb5d7843b",
+      "output": "bb507137e3631379"
+    },
+    "settings.dialog.sections.tools.intro": {
+      "source": "2c87954ec35125b3",
+      "output": "89935d6561241cd6"
+    },
+    "settings.dialog.sections.tools.label": {
+      "source": "79d1e97ab6a9c30e",
+      "output": "965feeefce78fd96"
+    },
+    "settings.dialog.sections.workspace.intro": {
+      "source": "a02a25b4e76599f0",
+      "output": "73f9f70da3f2ba50"
+    },
+    "settings.dialog.sections.workspace.label": {
+      "source": "24eddd710b885b7a",
+      "output": "c910d474dcd724bf"
+    },
     "settings.dialog.title": {
       "source": "f5750a5d7231e1f7",
       "output": "4f2debbbf4fab6c9"
+    },
+    "settings.dialog.workspacePicker": {
+      "source": "430d4f88b043670d",
+      "output": "6cf14a8a7ac60fe1"
     },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
@@ -46602,22 +46694,6 @@
       "source": "fb1c89824cf78384",
       "output": "bdb7a239eb587ac5"
     },
-    "settings.workspace.config.description": {
-      "source": "b5585106d6a9387b",
-      "output": "cd527792b5d58cf3"
-    },
-    "settings.workspace.config.title": {
-      "source": "5887a572ccc20720",
-      "output": "734a0f99e6a5d5db"
-    },
-    "settings.workspace.externalMcp.description": {
-      "source": "2c87954ec35125b3",
-      "output": "742b4506f194b619"
-    },
-    "settings.workspace.externalMcp.title": {
-      "source": "eb8b69c130d17d59",
-      "output": "f0910953428bb89e"
-    },
     "settings.workspace.loading": {
       "source": "fb1a2c281de388e8",
       "output": "0247917eebd2a9fc"
@@ -46633,10 +46709,6 @@
     "settings.workspace.members.caption": {
       "source": "9dfdedfac276eb8c",
       "output": "f6145d3f1c1c3c00"
-    },
-    "settings.workspace.members.description": {
-      "source": "5e63b6b99d71d09e",
-      "output": "5f12f1df249e7875"
     },
     "settings.workspace.members.email": {
       "source": "2fae6fb30b0d0077",
@@ -46674,10 +46746,6 @@
       "source": "4478fe0697ade6b5",
       "output": "339f6c7bcb5bff2b"
     },
-    "settings.workspace.members.title": {
-      "source": "bc1679e6cfa31226",
-      "output": "0d00d93befb1818e"
-    },
     "settings.workspace.members.you": {
       "source": "0b6722a8adfb9354",
       "output": "b02c02324c13fb41"
@@ -46690,25 +46758,37 @@
       "source": "e535931aadf889b3",
       "output": "9a2bd4b51e7c25f9"
     },
+    "settings.workspace.more.agentProfiles": {
+      "source": "0aeda5316238db58",
+      "output": "e1af279f61c5a39e"
+    },
     "settings.workspace.more.automations": {
-      "source": "627774b9b690c440",
-      "output": "1313af8fff6d9e8f"
+      "source": "1a221929d4c59222",
+      "output": "49320c9accf83065"
     },
     "settings.workspace.more.description": {
-      "source": "4309105ab3e034aa",
-      "output": "143820944fadc701"
+      "source": "58f7eb28573f00c2",
+      "output": "53f761a362d612c1"
+    },
+    "settings.workspace.more.evals": {
+      "source": "fff553f218c706a6",
+      "output": "fff553f218c706a6"
     },
     "settings.workspace.more.shares": {
-      "source": "5762bdaba2a4b426",
-      "output": "e8947f4470baf261"
+      "source": "e3365406964cf54e",
+      "output": "4da45b20005c555c"
     },
     "settings.workspace.more.templates": {
-      "source": "8d12580762cff2a3",
-      "output": "9515b76c834e111f"
+      "source": "0fe081fff1b87574",
+      "output": "a7eb77e66ef0d4db"
     },
     "settings.workspace.more.title": {
       "source": "c6c1ff8662eb66f5",
       "output": "aa5952a63bf156f6"
+    },
+    "settings.workspace.more.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "810271920a9c3acd"
     },
     "settings.workspace.nameLabel": {
       "source": "dcd1d5223f73b3a9",
@@ -46762,41 +46842,9 @@
       "source": "8ca3d603be7acb47",
       "output": "53a55fd506db9835"
     },
-    "settings.workspace.summary": {
-      "source": "c49f301e6fe0479d",
-      "output": "fb8ec6e1c14c67ef"
-    },
-    "settings.workspace.tabs.ai": {
-      "source": "fd184691f9867a82",
-      "output": "a75d067fa44bca81"
-    },
-    "settings.workspace.tabs.general": {
-      "source": "24eddd710b885b7a",
-      "output": "c910d474dcd724bf"
-    },
-    "settings.workspace.tabs.members": {
-      "source": "bc1679e6cfa31226",
-      "output": "0d00d93befb1818e"
-    },
-    "settings.workspace.tabs.settings": {
-      "source": "f5750a5d7231e1f7",
-      "output": "4f2debbbf4fab6c9"
-    },
-    "settings.workspace.tabs.tools": {
-      "source": "79d1e97ab6a9c30e",
-      "output": "965feeefce78fd96"
-    },
-    "settings.workspace.title": {
-      "source": "d06a263d076350da",
-      "output": "95fbba600b9552d7"
-    },
     "settings.workspaceForm.inherited": {
       "source": "7d3a4273f9ae4fb0",
       "output": "fe639b4668868786"
-    },
-    "settings.workspaceForm.intro": {
-      "source": "e88fe9d690606a59",
-      "output": "e4b12907a3e7564c"
     },
     "settings.workspaceForm.invalid": {
       "source": "efb04df9294f90c1",
@@ -48094,14 +48142,6 @@
       "source": "502ccca92bb2e772",
       "output": "deb857e0d5fdda4a"
     },
-    "shell.paletteCommands.navigation.workspaceSettings.keywords": {
-      "source": "8f195fc8bcabf9e6",
-      "output": "0299147c634f4152"
-    },
-    "shell.paletteCommands.navigation.workspaceSettings.label": {
-      "source": "9a2ef43583063528",
-      "output": "95fbba600b9552d7"
-    },
     "shell.paletteCommands.navigation.workspaceShares.keywords": {
       "source": "f84d5d642b65387e",
       "output": "6b06be402a25a6ec"
@@ -48578,37 +48618,21 @@
       "source": "6a85b5763fef3b14",
       "output": "b326fc96874e1a06"
     },
-    "shell.paletteCommands.settings.workspaceAi": {
+    "shell.paletteCommands.settingsSections.admin.keywords": {
+      "source": "16fda30274f2eff1",
+      "output": "9c7d2fe93276cd41"
+    },
+    "shell.paletteCommands.settingsSections.admin.label": {
+      "source": "ba153b047cd41922",
+      "output": "0efbc45879577555"
+    },
+    "shell.paletteCommands.settingsSections.ai.keywords": {
+      "source": "06ffec4d50e80118",
+      "output": "40ce424b6d4fb4f3"
+    },
+    "shell.paletteCommands.settingsSections.ai.label": {
       "source": "8bcea40eef8b74d2",
       "output": "e70f16b9741043a9"
-    },
-    "shell.paletteCommands.settings.workspaceAiKeywords": {
-      "source": "92261ace608f3e1d",
-      "output": "65962c3d83aef28d"
-    },
-    "shell.paletteCommands.settings.workspaceMembers": {
-      "source": "86b1e1341b307b0b",
-      "output": "623b6cb35a843c2a"
-    },
-    "shell.paletteCommands.settings.workspaceMembersKeywords": {
-      "source": "38f5efa871e4ae2c",
-      "output": "86ef010703955dac"
-    },
-    "shell.paletteCommands.settings.workspaceOverrides": {
-      "source": "2554339da993e0f8",
-      "output": "052dd5b5df4292b4"
-    },
-    "shell.paletteCommands.settings.workspaceOverridesKeywords": {
-      "source": "d7bb64894a32589d",
-      "output": "b8f51a817311858b"
-    },
-    "shell.paletteCommands.settings.workspaceTools": {
-      "source": "fb9675861432b7e6",
-      "output": "3e3ca522cc31c4c3"
-    },
-    "shell.paletteCommands.settings.workspaceToolsKeywords": {
-      "source": "0006d62d1d8bea82",
-      "output": "fa9667da794d9fd4"
     },
     "shell.paletteCommands.settingsSections.chat.keywords": {
       "source": "e75df1ce33b153ac",
@@ -48642,6 +48666,14 @@
       "source": "1ac4335fe6140d14",
       "output": "da087adf8c74e5d1"
     },
+    "shell.paletteCommands.settingsSections.members.keywords": {
+      "source": "38f5efa871e4ae2c",
+      "output": "86ef010703955dac"
+    },
+    "shell.paletteCommands.settingsSections.members.label": {
+      "source": "86b1e1341b307b0b",
+      "output": "623b6cb35a843c2a"
+    },
     "shell.paletteCommands.settingsSections.notifications.keywords": {
       "source": "de36e9e8911e7c53",
       "output": "c22f281ea8e2a5eb"
@@ -48649,6 +48681,30 @@
     "shell.paletteCommands.settingsSections.notifications.label": {
       "source": "7a0d5403f1575530",
       "output": "5f0dd0f7babad506"
+    },
+    "shell.paletteCommands.settingsSections.overrides.keywords": {
+      "source": "78e5d1180dcae209",
+      "output": "6df6ab8c3251e6e6"
+    },
+    "shell.paletteCommands.settingsSections.overrides.label": {
+      "source": "2554339da993e0f8",
+      "output": "052dd5b5df4292b4"
+    },
+    "shell.paletteCommands.settingsSections.tools.keywords": {
+      "source": "0006d62d1d8bea82",
+      "output": "0e3bebdd3238bca6"
+    },
+    "shell.paletteCommands.settingsSections.tools.label": {
+      "source": "fb9675861432b7e6",
+      "output": "3e3ca522cc31c4c3"
+    },
+    "shell.paletteCommands.settingsSections.workspace.keywords": {
+      "source": "bf7ac8d86e624bdb",
+      "output": "0425c99aca297a04"
+    },
+    "shell.paletteCommands.settingsSections.workspace.label": {
+      "source": "9a2ef43583063528",
+      "output": "95fbba600b9552d7"
     },
     "shell.paletteCommands.showContext": {
       "source": "c5082f8b0dbc7821",
@@ -70320,6 +70376,14 @@
       "source": "aeeae94b85c9a18e",
       "output": "eb69a185efe315b1"
     },
+    "settings.dialog.admin.groups": {
+      "source": "0f40520de644e83b",
+      "output": "02c3d2bd99c8b59f"
+    },
+    "settings.dialog.admin.pages": {
+      "source": "0c832e17bd75905b",
+      "output": "67c574740c6a1b76"
+    },
     "settings.dialog.areas.account": {
       "source": "df8525011f618f54",
       "output": "dacd47619a726cd9"
@@ -70340,9 +70404,29 @@
       "source": "0746da7c8e3b6c46",
       "output": "b77f62dddb3f6904"
     },
+    "settings.dialog.loading": {
+      "source": "2d03f8f3dfe1ed62",
+      "output": "66474911d95325c8"
+    },
     "settings.dialog.navigation": {
       "source": "e85705add045d307",
       "output": "f748798b9353050c"
+    },
+    "settings.dialog.sections.admin.intro": {
+      "source": "36c4d3405219faff",
+      "output": "a59498a039c775ca"
+    },
+    "settings.dialog.sections.admin.label": {
+      "source": "4d2bb368f919df81",
+      "output": "bb28a9f4a4e34fac"
+    },
+    "settings.dialog.sections.ai.intro": {
+      "source": "2efb9fb15ebd27c4",
+      "output": "877b1b8452dd6008"
+    },
+    "settings.dialog.sections.ai.label": {
+      "source": "fd184691f9867a82",
+      "output": "a75d067fa44bca81"
     },
     "settings.dialog.sections.chat.intro": {
       "source": "1dd6704bdd317be7",
@@ -70376,6 +70460,14 @@
       "source": "fc718156fac294de",
       "output": "b561056f86c8fffb"
     },
+    "settings.dialog.sections.members.intro": {
+      "source": "5e63b6b99d71d09e",
+      "output": "aba44db812542fa9"
+    },
+    "settings.dialog.sections.members.label": {
+      "source": "bc1679e6cfa31226",
+      "output": "aa52b1f704b746a8"
+    },
     "settings.dialog.sections.notifications.intro": {
       "source": "57c1bbb525280ab0",
       "output": "19cce400becefeec"
@@ -70384,9 +70476,37 @@
       "source": "f7205df4f1e2d6bc",
       "output": "788011833a5a0f22"
     },
+    "settings.dialog.sections.overrides.intro": {
+      "source": "e88fe9d690606a59",
+      "output": "6f544ed9e465b3b6"
+    },
+    "settings.dialog.sections.overrides.label": {
+      "source": "8df29d8eb5d7843b",
+      "output": "b332c3492d5eb10a"
+    },
+    "settings.dialog.sections.tools.intro": {
+      "source": "2c87954ec35125b3",
+      "output": "e0fbf996066d06db"
+    },
+    "settings.dialog.sections.tools.label": {
+      "source": "79d1e97ab6a9c30e",
+      "output": "e13b83e2496337a5"
+    },
+    "settings.dialog.sections.workspace.intro": {
+      "source": "a02a25b4e76599f0",
+      "output": "6d565097ac2d5cf4"
+    },
+    "settings.dialog.sections.workspace.label": {
+      "source": "24eddd710b885b7a",
+      "output": "22d51e852503cd3e"
+    },
     "settings.dialog.title": {
       "source": "f5750a5d7231e1f7",
       "output": "01923df7a446c42f"
+    },
+    "settings.dialog.workspacePicker": {
+      "source": "430d4f88b043670d",
+      "output": "c20428536e1fa110"
     },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
@@ -72444,22 +72564,6 @@
       "source": "fb1c89824cf78384",
       "output": "9e4b2e686a8dc6b8"
     },
-    "settings.workspace.config.description": {
-      "source": "b5585106d6a9387b",
-      "output": "585ad7f4f414fe93"
-    },
-    "settings.workspace.config.title": {
-      "source": "5887a572ccc20720",
-      "output": "8a0b202f272bd382"
-    },
-    "settings.workspace.externalMcp.description": {
-      "source": "2c87954ec35125b3",
-      "output": "446bce367874a77c"
-    },
-    "settings.workspace.externalMcp.title": {
-      "source": "eb8b69c130d17d59",
-      "output": "8ba915a33e3243ea"
-    },
     "settings.workspace.loading": {
       "source": "fb1a2c281de388e8",
       "output": "f1bad13c6407393c"
@@ -72475,10 +72579,6 @@
     "settings.workspace.members.caption": {
       "source": "9dfdedfac276eb8c",
       "output": "3100173b21c6b0c4"
-    },
-    "settings.workspace.members.description": {
-      "source": "5e63b6b99d71d09e",
-      "output": "6aa7f238a42a0c95"
     },
     "settings.workspace.members.email": {
       "source": "2fae6fb30b0d0077",
@@ -72516,10 +72616,6 @@
       "source": "4478fe0697ade6b5",
       "output": "fb5c661501d477c9"
     },
-    "settings.workspace.members.title": {
-      "source": "bc1679e6cfa31226",
-      "output": "aa52b1f704b746a8"
-    },
     "settings.workspace.members.you": {
       "source": "0b6722a8adfb9354",
       "output": "946f503d47417b5b"
@@ -72532,25 +72628,37 @@
       "source": "e535931aadf889b3",
       "output": "9341a5ee0c02a06f"
     },
+    "settings.workspace.more.agentProfiles": {
+      "source": "0aeda5316238db58",
+      "output": "6773248b2a0bff64"
+    },
     "settings.workspace.more.automations": {
-      "source": "627774b9b690c440",
-      "output": "4badd3a00cdf56f9"
+      "source": "1a221929d4c59222",
+      "output": "2c5ec11246b50896"
     },
     "settings.workspace.more.description": {
-      "source": "4309105ab3e034aa",
-      "output": "17f7fa47140f5c37"
+      "source": "58f7eb28573f00c2",
+      "output": "6101c445a203e226"
+    },
+    "settings.workspace.more.evals": {
+      "source": "fff553f218c706a6",
+      "output": "fff553f218c706a6"
     },
     "settings.workspace.more.shares": {
-      "source": "5762bdaba2a4b426",
-      "output": "94da5fcb49b79afd"
+      "source": "e3365406964cf54e",
+      "output": "eb8399ef9e73e354"
     },
     "settings.workspace.more.templates": {
-      "source": "8d12580762cff2a3",
-      "output": "d20fc8d4637ca6cf"
+      "source": "0fe081fff1b87574",
+      "output": "f0f4413649298278"
     },
     "settings.workspace.more.title": {
       "source": "c6c1ff8662eb66f5",
       "output": "50f77fe62ca35350"
+    },
+    "settings.workspace.more.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
     },
     "settings.workspace.nameLabel": {
       "source": "dcd1d5223f73b3a9",
@@ -72604,41 +72712,9 @@
       "source": "8ca3d603be7acb47",
       "output": "692786f6d1f6d8b5"
     },
-    "settings.workspace.summary": {
-      "source": "c49f301e6fe0479d",
-      "output": "f0b62bb641b11bca"
-    },
-    "settings.workspace.tabs.ai": {
-      "source": "fd184691f9867a82",
-      "output": "a75d067fa44bca81"
-    },
-    "settings.workspace.tabs.general": {
-      "source": "24eddd710b885b7a",
-      "output": "22d51e852503cd3e"
-    },
-    "settings.workspace.tabs.members": {
-      "source": "bc1679e6cfa31226",
-      "output": "aa52b1f704b746a8"
-    },
-    "settings.workspace.tabs.settings": {
-      "source": "f5750a5d7231e1f7",
-      "output": "01923df7a446c42f"
-    },
-    "settings.workspace.tabs.tools": {
-      "source": "79d1e97ab6a9c30e",
-      "output": "e13b83e2496337a5"
-    },
-    "settings.workspace.title": {
-      "source": "d06a263d076350da",
-      "output": "c377dc36301095e8"
-    },
     "settings.workspaceForm.inherited": {
       "source": "7d3a4273f9ae4fb0",
       "output": "d5165c13e0c23af9"
-    },
-    "settings.workspaceForm.intro": {
-      "source": "e88fe9d690606a59",
-      "output": "5a025b40cbc692e6"
     },
     "settings.workspaceForm.invalid": {
       "source": "efb04df9294f90c1",
@@ -73936,14 +74012,6 @@
       "source": "502ccca92bb2e772",
       "output": "7644ad6d5f9a9566"
     },
-    "shell.paletteCommands.navigation.workspaceSettings.keywords": {
-      "source": "8f195fc8bcabf9e6",
-      "output": "8988014ca7276bb4"
-    },
-    "shell.paletteCommands.navigation.workspaceSettings.label": {
-      "source": "9a2ef43583063528",
-      "output": "c377dc36301095e8"
-    },
     "shell.paletteCommands.navigation.workspaceShares.keywords": {
       "source": "f84d5d642b65387e",
       "output": "f72df640319f3b96"
@@ -74420,37 +74488,21 @@
       "source": "6a85b5763fef3b14",
       "output": "3f680c5fc8ca2079"
     },
-    "shell.paletteCommands.settings.workspaceAi": {
+    "shell.paletteCommands.settingsSections.admin.keywords": {
+      "source": "16fda30274f2eff1",
+      "output": "0fedf7cb73211adc"
+    },
+    "shell.paletteCommands.settingsSections.admin.label": {
+      "source": "ba153b047cd41922",
+      "output": "e2fa9e7d10d3d1bb"
+    },
+    "shell.paletteCommands.settingsSections.ai.keywords": {
+      "source": "06ffec4d50e80118",
+      "output": "36599b08cf00daf5"
+    },
+    "shell.paletteCommands.settingsSections.ai.label": {
       "source": "8bcea40eef8b74d2",
-      "output": "81c8136acbee874e"
-    },
-    "shell.paletteCommands.settings.workspaceAiKeywords": {
-      "source": "92261ace608f3e1d",
-      "output": "6a7242c8e27284ff"
-    },
-    "shell.paletteCommands.settings.workspaceMembers": {
-      "source": "86b1e1341b307b0b",
-      "output": "339359c892a595e6"
-    },
-    "shell.paletteCommands.settings.workspaceMembersKeywords": {
-      "source": "38f5efa871e4ae2c",
-      "output": "410e7ac22502acce"
-    },
-    "shell.paletteCommands.settings.workspaceOverrides": {
-      "source": "2554339da993e0f8",
-      "output": "57b40f39efe4f9ed"
-    },
-    "shell.paletteCommands.settings.workspaceOverridesKeywords": {
-      "source": "d7bb64894a32589d",
-      "output": "6ff7c310168b4af4"
-    },
-    "shell.paletteCommands.settings.workspaceTools": {
-      "source": "fb9675861432b7e6",
-      "output": "7acd8bdc4605e205"
-    },
-    "shell.paletteCommands.settings.workspaceToolsKeywords": {
-      "source": "0006d62d1d8bea82",
-      "output": "9fb2d526b4002257"
+      "output": "2434dc8fd4ae53e7"
     },
     "shell.paletteCommands.settingsSections.chat.keywords": {
       "source": "e75df1ce33b153ac",
@@ -74484,6 +74536,14 @@
       "source": "1ac4335fe6140d14",
       "output": "ef0a3601b709ab3c"
     },
+    "shell.paletteCommands.settingsSections.members.keywords": {
+      "source": "38f5efa871e4ae2c",
+      "output": "410e7ac22502acce"
+    },
+    "shell.paletteCommands.settingsSections.members.label": {
+      "source": "86b1e1341b307b0b",
+      "output": "339359c892a595e6"
+    },
     "shell.paletteCommands.settingsSections.notifications.keywords": {
       "source": "de36e9e8911e7c53",
       "output": "e6a7eedd3db53e22"
@@ -74491,6 +74551,30 @@
     "shell.paletteCommands.settingsSections.notifications.label": {
       "source": "7a0d5403f1575530",
       "output": "634548cd34009238"
+    },
+    "shell.paletteCommands.settingsSections.overrides.keywords": {
+      "source": "78e5d1180dcae209",
+      "output": "160fbf88c43c6e8a"
+    },
+    "shell.paletteCommands.settingsSections.overrides.label": {
+      "source": "2554339da993e0f8",
+      "output": "81a1e8e08f86cff4"
+    },
+    "shell.paletteCommands.settingsSections.tools.keywords": {
+      "source": "0006d62d1d8bea82",
+      "output": "064dccf2abe4d4a1"
+    },
+    "shell.paletteCommands.settingsSections.tools.label": {
+      "source": "fb9675861432b7e6",
+      "output": "7acd8bdc4605e205"
+    },
+    "shell.paletteCommands.settingsSections.workspace.keywords": {
+      "source": "bf7ac8d86e624bdb",
+      "output": "39c7e2202fd72ebf"
+    },
+    "shell.paletteCommands.settingsSections.workspace.label": {
+      "source": "9a2ef43583063528",
+      "output": "c377dc36301095e8"
     },
     "shell.paletteCommands.showContext": {
       "source": "c5082f8b0dbc7821",
@@ -96162,6 +96246,14 @@
       "source": "aeeae94b85c9a18e",
       "output": "b10e7a7976e5092e"
     },
+    "settings.dialog.admin.groups": {
+      "source": "0f40520de644e83b",
+      "output": "5cc6f611cd81c977"
+    },
+    "settings.dialog.admin.pages": {
+      "source": "0c832e17bd75905b",
+      "output": "24eeb577d8181d4f"
+    },
     "settings.dialog.areas.account": {
       "source": "df8525011f618f54",
       "output": "7e1b0d5641f2640c"
@@ -96182,9 +96274,29 @@
       "source": "0746da7c8e3b6c46",
       "output": "d31ef400abe14006"
     },
+    "settings.dialog.loading": {
+      "source": "2d03f8f3dfe1ed62",
+      "output": "b6e679a133825442"
+    },
     "settings.dialog.navigation": {
       "source": "e85705add045d307",
       "output": "431353a417d0c06b"
+    },
+    "settings.dialog.sections.admin.intro": {
+      "source": "36c4d3405219faff",
+      "output": "c7623b984488e275"
+    },
+    "settings.dialog.sections.admin.label": {
+      "source": "4d2bb368f919df81",
+      "output": "5253304749945524"
+    },
+    "settings.dialog.sections.ai.intro": {
+      "source": "2efb9fb15ebd27c4",
+      "output": "d0a3679ee910477b"
+    },
+    "settings.dialog.sections.ai.label": {
+      "source": "fd184691f9867a82",
+      "output": "a75d067fa44bca81"
     },
     "settings.dialog.sections.chat.intro": {
       "source": "1dd6704bdd317be7",
@@ -96218,6 +96330,14 @@
       "source": "fc718156fac294de",
       "output": "be6302c5247bf929"
     },
+    "settings.dialog.sections.members.intro": {
+      "source": "5e63b6b99d71d09e",
+      "output": "60a96fd1aa8a7e1f"
+    },
+    "settings.dialog.sections.members.label": {
+      "source": "bc1679e6cfa31226",
+      "output": "5c5d29d2390a12bb"
+    },
     "settings.dialog.sections.notifications.intro": {
       "source": "57c1bbb525280ab0",
       "output": "ecb1ce15311ddffc"
@@ -96226,9 +96346,37 @@
       "source": "f7205df4f1e2d6bc",
       "output": "b49faefbb7aa6700"
     },
+    "settings.dialog.sections.overrides.intro": {
+      "source": "e88fe9d690606a59",
+      "output": "6f1d71e11fe60bbe"
+    },
+    "settings.dialog.sections.overrides.label": {
+      "source": "8df29d8eb5d7843b",
+      "output": "7c585e06d4ec6429"
+    },
+    "settings.dialog.sections.tools.intro": {
+      "source": "2c87954ec35125b3",
+      "output": "9cfd470366e85427"
+    },
+    "settings.dialog.sections.tools.label": {
+      "source": "79d1e97ab6a9c30e",
+      "output": "18c7b020db0028aa"
+    },
+    "settings.dialog.sections.workspace.intro": {
+      "source": "a02a25b4e76599f0",
+      "output": "3734e0e350457251"
+    },
+    "settings.dialog.sections.workspace.label": {
+      "source": "24eddd710b885b7a",
+      "output": "0e1bb76be12b39ee"
+    },
     "settings.dialog.title": {
       "source": "f5750a5d7231e1f7",
       "output": "7b855ce7525ebc18"
+    },
+    "settings.dialog.workspacePicker": {
+      "source": "430d4f88b043670d",
+      "output": "de7889200788a6a3"
     },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
@@ -98286,22 +98434,6 @@
       "source": "fb1c89824cf78384",
       "output": "2b8afaa0a8278651"
     },
-    "settings.workspace.config.description": {
-      "source": "b5585106d6a9387b",
-      "output": "ccae2d6dff038e3c"
-    },
-    "settings.workspace.config.title": {
-      "source": "5887a572ccc20720",
-      "output": "9190134e974bf013"
-    },
-    "settings.workspace.externalMcp.description": {
-      "source": "2c87954ec35125b3",
-      "output": "fe002a8474ba4af3"
-    },
-    "settings.workspace.externalMcp.title": {
-      "source": "eb8b69c130d17d59",
-      "output": "d9f4a72af4ccee45"
-    },
     "settings.workspace.loading": {
       "source": "fb1a2c281de388e8",
       "output": "9caaee23050157a0"
@@ -98317,10 +98449,6 @@
     "settings.workspace.members.caption": {
       "source": "9dfdedfac276eb8c",
       "output": "39b619242d818dc9"
-    },
-    "settings.workspace.members.description": {
-      "source": "5e63b6b99d71d09e",
-      "output": "7ced692e58420de7"
     },
     "settings.workspace.members.email": {
       "source": "2fae6fb30b0d0077",
@@ -98358,10 +98486,6 @@
       "source": "4478fe0697ade6b5",
       "output": "d7c129c53ff3d4e0"
     },
-    "settings.workspace.members.title": {
-      "source": "bc1679e6cfa31226",
-      "output": "5c5d29d2390a12bb"
-    },
     "settings.workspace.members.you": {
       "source": "0b6722a8adfb9354",
       "output": "62afcc74654de6ab"
@@ -98374,25 +98498,37 @@
       "source": "e535931aadf889b3",
       "output": "1cd3f5c6ceaaf830"
     },
+    "settings.workspace.more.agentProfiles": {
+      "source": "0aeda5316238db58",
+      "output": "b338b4c9727ad1cd"
+    },
     "settings.workspace.more.automations": {
-      "source": "627774b9b690c440",
-      "output": "fb3fafe386e6eb0a"
+      "source": "1a221929d4c59222",
+      "output": "a85c1bf7fb61a6ec"
     },
     "settings.workspace.more.description": {
-      "source": "4309105ab3e034aa",
-      "output": "0549eff38bf41dbc"
+      "source": "58f7eb28573f00c2",
+      "output": "e0c735b89f0f7bb2"
+    },
+    "settings.workspace.more.evals": {
+      "source": "fff553f218c706a6",
+      "output": "f7778a51f74055ef"
     },
     "settings.workspace.more.shares": {
-      "source": "5762bdaba2a4b426",
-      "output": "5ab2125fd9246a91"
+      "source": "e3365406964cf54e",
+      "output": "ca454b144d941bed"
     },
     "settings.workspace.more.templates": {
-      "source": "8d12580762cff2a3",
-      "output": "0ea8ee99c969fef6"
+      "source": "0fe081fff1b87574",
+      "output": "bbe295f1896c21da"
     },
     "settings.workspace.more.title": {
       "source": "c6c1ff8662eb66f5",
       "output": "51d0691d792eac54"
+    },
+    "settings.workspace.more.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "2e2d5c5649b718b5"
     },
     "settings.workspace.nameLabel": {
       "source": "dcd1d5223f73b3a9",
@@ -98446,41 +98582,9 @@
       "source": "8ca3d603be7acb47",
       "output": "320cff99633a89aa"
     },
-    "settings.workspace.summary": {
-      "source": "c49f301e6fe0479d",
-      "output": "63c5fe97ee91fe3e"
-    },
-    "settings.workspace.tabs.ai": {
-      "source": "fd184691f9867a82",
-      "output": "a75d067fa44bca81"
-    },
-    "settings.workspace.tabs.general": {
-      "source": "24eddd710b885b7a",
-      "output": "0e1bb76be12b39ee"
-    },
-    "settings.workspace.tabs.members": {
-      "source": "bc1679e6cfa31226",
-      "output": "5c5d29d2390a12bb"
-    },
-    "settings.workspace.tabs.settings": {
-      "source": "f5750a5d7231e1f7",
-      "output": "7b855ce7525ebc18"
-    },
-    "settings.workspace.tabs.tools": {
-      "source": "79d1e97ab6a9c30e",
-      "output": "18c7b020db0028aa"
-    },
-    "settings.workspace.title": {
-      "source": "d06a263d076350da",
-      "output": "025f23687cb7e179"
-    },
     "settings.workspaceForm.inherited": {
       "source": "7d3a4273f9ae4fb0",
       "output": "7d4fc6b2ce95b130"
-    },
-    "settings.workspaceForm.intro": {
-      "source": "e88fe9d690606a59",
-      "output": "48af75974d7e084e"
     },
     "settings.workspaceForm.invalid": {
       "source": "efb04df9294f90c1",
@@ -99778,14 +99882,6 @@
       "source": "502ccca92bb2e772",
       "output": "95e6425060b73dfb"
     },
-    "shell.paletteCommands.navigation.workspaceSettings.keywords": {
-      "source": "8f195fc8bcabf9e6",
-      "output": "21a5f40f3d5bd9ee"
-    },
-    "shell.paletteCommands.navigation.workspaceSettings.label": {
-      "source": "9a2ef43583063528",
-      "output": "025f23687cb7e179"
-    },
     "shell.paletteCommands.navigation.workspaceShares.keywords": {
       "source": "f84d5d642b65387e",
       "output": "8fb10c3c5d6d5e6c"
@@ -100262,37 +100358,21 @@
       "source": "6a85b5763fef3b14",
       "output": "026d43ca59eae536"
     },
-    "shell.paletteCommands.settings.workspaceAi": {
+    "shell.paletteCommands.settingsSections.admin.keywords": {
+      "source": "16fda30274f2eff1",
+      "output": "cb7a6b728a4b191f"
+    },
+    "shell.paletteCommands.settingsSections.admin.label": {
+      "source": "ba153b047cd41922",
+      "output": "59ee045c81953f9b"
+    },
+    "shell.paletteCommands.settingsSections.ai.keywords": {
+      "source": "06ffec4d50e80118",
+      "output": "90a1adfa26bd5d32"
+    },
+    "shell.paletteCommands.settingsSections.ai.label": {
       "source": "8bcea40eef8b74d2",
       "output": "5091e364318e5e1c"
-    },
-    "shell.paletteCommands.settings.workspaceAiKeywords": {
-      "source": "92261ace608f3e1d",
-      "output": "e9b3874135c03ecd"
-    },
-    "shell.paletteCommands.settings.workspaceMembers": {
-      "source": "86b1e1341b307b0b",
-      "output": "965948a0f2c1df72"
-    },
-    "shell.paletteCommands.settings.workspaceMembersKeywords": {
-      "source": "38f5efa871e4ae2c",
-      "output": "205a40753bb55952"
-    },
-    "shell.paletteCommands.settings.workspaceOverrides": {
-      "source": "2554339da993e0f8",
-      "output": "c2f6c3a7e2c59f82"
-    },
-    "shell.paletteCommands.settings.workspaceOverridesKeywords": {
-      "source": "d7bb64894a32589d",
-      "output": "06cc7c6dadb4aec0"
-    },
-    "shell.paletteCommands.settings.workspaceTools": {
-      "source": "fb9675861432b7e6",
-      "output": "f8f5444dafbdea63"
-    },
-    "shell.paletteCommands.settings.workspaceToolsKeywords": {
-      "source": "0006d62d1d8bea82",
-      "output": "d8f01c9f9600dee7"
     },
     "shell.paletteCommands.settingsSections.chat.keywords": {
       "source": "e75df1ce33b153ac",
@@ -100326,6 +100406,14 @@
       "source": "1ac4335fe6140d14",
       "output": "df38bce145c569d4"
     },
+    "shell.paletteCommands.settingsSections.members.keywords": {
+      "source": "38f5efa871e4ae2c",
+      "output": "205a40753bb55952"
+    },
+    "shell.paletteCommands.settingsSections.members.label": {
+      "source": "86b1e1341b307b0b",
+      "output": "965948a0f2c1df72"
+    },
     "shell.paletteCommands.settingsSections.notifications.keywords": {
       "source": "de36e9e8911e7c53",
       "output": "5741b083cb8cda45"
@@ -100333,6 +100421,30 @@
     "shell.paletteCommands.settingsSections.notifications.label": {
       "source": "7a0d5403f1575530",
       "output": "00cf80ad3527723c"
+    },
+    "shell.paletteCommands.settingsSections.overrides.keywords": {
+      "source": "78e5d1180dcae209",
+      "output": "1b8016830ae3d7b2"
+    },
+    "shell.paletteCommands.settingsSections.overrides.label": {
+      "source": "2554339da993e0f8",
+      "output": "c2f6c3a7e2c59f82"
+    },
+    "shell.paletteCommands.settingsSections.tools.keywords": {
+      "source": "0006d62d1d8bea82",
+      "output": "2974871929426ecf"
+    },
+    "shell.paletteCommands.settingsSections.tools.label": {
+      "source": "fb9675861432b7e6",
+      "output": "7480c8672235d786"
+    },
+    "shell.paletteCommands.settingsSections.workspace.keywords": {
+      "source": "bf7ac8d86e624bdb",
+      "output": "c5ba81e820c82a9d"
+    },
+    "shell.paletteCommands.settingsSections.workspace.label": {
+      "source": "9a2ef43583063528",
+      "output": "025f23687cb7e179"
     },
     "shell.paletteCommands.showContext": {
       "source": "c5082f8b0dbc7821",
@@ -122004,6 +122116,14 @@
       "source": "aeeae94b85c9a18e",
       "output": "9540c62bdb88c0f1"
     },
+    "settings.dialog.admin.groups": {
+      "source": "0f40520de644e83b",
+      "output": "f80b1b1fc92caa68"
+    },
+    "settings.dialog.admin.pages": {
+      "source": "0c832e17bd75905b",
+      "output": "1e6d0db9282cbda6"
+    },
     "settings.dialog.areas.account": {
       "source": "df8525011f618f54",
       "output": "7e1b0d5641f2640c"
@@ -122024,9 +122144,29 @@
       "source": "0746da7c8e3b6c46",
       "output": "335c842d93759ebd"
     },
+    "settings.dialog.loading": {
+      "source": "2d03f8f3dfe1ed62",
+      "output": "be0aaeec93368f81"
+    },
     "settings.dialog.navigation": {
       "source": "e85705add045d307",
       "output": "554bba5f4b8fc218"
+    },
+    "settings.dialog.sections.admin.intro": {
+      "source": "36c4d3405219faff",
+      "output": "36df64b9b6ef9fc0"
+    },
+    "settings.dialog.sections.admin.label": {
+      "source": "4d2bb368f919df81",
+      "output": "6c20ea442bdde6a2"
+    },
+    "settings.dialog.sections.ai.intro": {
+      "source": "2efb9fb15ebd27c4",
+      "output": "0962894ade967ac4"
+    },
+    "settings.dialog.sections.ai.label": {
+      "source": "fd184691f9867a82",
+      "output": "11fb682be0a0233d"
     },
     "settings.dialog.sections.chat.intro": {
       "source": "1dd6704bdd317be7",
@@ -122060,6 +122200,14 @@
       "source": "fc718156fac294de",
       "output": "84e952b57a69bc49"
     },
+    "settings.dialog.sections.members.intro": {
+      "source": "5e63b6b99d71d09e",
+      "output": "0a6b6555b0f3520d"
+    },
+    "settings.dialog.sections.members.label": {
+      "source": "bc1679e6cfa31226",
+      "output": "b79aab4dc026f732"
+    },
     "settings.dialog.sections.notifications.intro": {
       "source": "57c1bbb525280ab0",
       "output": "ec8036658e864ed1"
@@ -122068,9 +122216,37 @@
       "source": "f7205df4f1e2d6bc",
       "output": "a761d4ca3766cfd7"
     },
+    "settings.dialog.sections.overrides.intro": {
+      "source": "e88fe9d690606a59",
+      "output": "edd8faeebac1591d"
+    },
+    "settings.dialog.sections.overrides.label": {
+      "source": "8df29d8eb5d7843b",
+      "output": "337a4b488ff96944"
+    },
+    "settings.dialog.sections.tools.intro": {
+      "source": "2c87954ec35125b3",
+      "output": "b11a02f9725dd068"
+    },
+    "settings.dialog.sections.tools.label": {
+      "source": "79d1e97ab6a9c30e",
+      "output": "d9e6e6c8c716073e"
+    },
+    "settings.dialog.sections.workspace.intro": {
+      "source": "a02a25b4e76599f0",
+      "output": "244e07930b088b28"
+    },
+    "settings.dialog.sections.workspace.label": {
+      "source": "24eddd710b885b7a",
+      "output": "5e9fae7793462d8e"
+    },
     "settings.dialog.title": {
       "source": "f5750a5d7231e1f7",
       "output": "2701873dad7cb276"
+    },
+    "settings.dialog.workspacePicker": {
+      "source": "430d4f88b043670d",
+      "output": "ca1341ec094ebfa7"
     },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
@@ -124128,22 +124304,6 @@
       "source": "fb1c89824cf78384",
       "output": "b2834847163560ce"
     },
-    "settings.workspace.config.description": {
-      "source": "b5585106d6a9387b",
-      "output": "fb5f2d7aaf66c984"
-    },
-    "settings.workspace.config.title": {
-      "source": "5887a572ccc20720",
-      "output": "59130ec9ecbc9b80"
-    },
-    "settings.workspace.externalMcp.description": {
-      "source": "2c87954ec35125b3",
-      "output": "66438deacf6979e3"
-    },
-    "settings.workspace.externalMcp.title": {
-      "source": "eb8b69c130d17d59",
-      "output": "fa00d78ed87544ea"
-    },
     "settings.workspace.loading": {
       "source": "fb1a2c281de388e8",
       "output": "f0f3f4383226998d"
@@ -124159,10 +124319,6 @@
     "settings.workspace.members.caption": {
       "source": "9dfdedfac276eb8c",
       "output": "ebe1fa1e15279442"
-    },
-    "settings.workspace.members.description": {
-      "source": "5e63b6b99d71d09e",
-      "output": "914e766a9aa41af1"
     },
     "settings.workspace.members.email": {
       "source": "2fae6fb30b0d0077",
@@ -124200,10 +124356,6 @@
       "source": "4478fe0697ade6b5",
       "output": "6c2f066b77c46a8e"
     },
-    "settings.workspace.members.title": {
-      "source": "bc1679e6cfa31226",
-      "output": "b79aab4dc026f732"
-    },
     "settings.workspace.members.you": {
       "source": "0b6722a8adfb9354",
       "output": "9582eb5f0edb5559"
@@ -124216,25 +124368,37 @@
       "source": "e535931aadf889b3",
       "output": "00008b28a0b3dbcf"
     },
+    "settings.workspace.more.agentProfiles": {
+      "source": "0aeda5316238db58",
+      "output": "8c85e549c8e8ab68"
+    },
     "settings.workspace.more.automations": {
-      "source": "627774b9b690c440",
-      "output": "3240b9505458f6e5"
+      "source": "1a221929d4c59222",
+      "output": "851452b625fd2bb4"
     },
     "settings.workspace.more.description": {
-      "source": "4309105ab3e034aa",
-      "output": "f2f14b1b0f0aba3f"
+      "source": "58f7eb28573f00c2",
+      "output": "a745f777f9ec9c21"
+    },
+    "settings.workspace.more.evals": {
+      "source": "fff553f218c706a6",
+      "output": "fff553f218c706a6"
     },
     "settings.workspace.more.shares": {
-      "source": "5762bdaba2a4b426",
-      "output": "5500a2c08615665a"
+      "source": "e3365406964cf54e",
+      "output": "6c2db927145d2741"
     },
     "settings.workspace.more.templates": {
-      "source": "8d12580762cff2a3",
-      "output": "7e1667ee8a0fdb1a"
+      "source": "0fe081fff1b87574",
+      "output": "29d11b65faa7bb88"
     },
     "settings.workspace.more.title": {
       "source": "c6c1ff8662eb66f5",
       "output": "83762c5824186e64"
+    },
+    "settings.workspace.more.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
     },
     "settings.workspace.nameLabel": {
       "source": "dcd1d5223f73b3a9",
@@ -124288,41 +124452,9 @@
       "source": "8ca3d603be7acb47",
       "output": "65dc37f397b0669e"
     },
-    "settings.workspace.summary": {
-      "source": "c49f301e6fe0479d",
-      "output": "4ec97c071f018623"
-    },
-    "settings.workspace.tabs.ai": {
-      "source": "fd184691f9867a82",
-      "output": "11fb682be0a0233d"
-    },
-    "settings.workspace.tabs.general": {
-      "source": "24eddd710b885b7a",
-      "output": "5e9fae7793462d8e"
-    },
-    "settings.workspace.tabs.members": {
-      "source": "bc1679e6cfa31226",
-      "output": "b79aab4dc026f732"
-    },
-    "settings.workspace.tabs.settings": {
-      "source": "f5750a5d7231e1f7",
-      "output": "2701873dad7cb276"
-    },
-    "settings.workspace.tabs.tools": {
-      "source": "79d1e97ab6a9c30e",
-      "output": "d9e6e6c8c716073e"
-    },
-    "settings.workspace.title": {
-      "source": "d06a263d076350da",
-      "output": "16d4bc76b3fe5bc6"
-    },
     "settings.workspaceForm.inherited": {
       "source": "7d3a4273f9ae4fb0",
       "output": "113a8865955841a5"
-    },
-    "settings.workspaceForm.intro": {
-      "source": "e88fe9d690606a59",
-      "output": "edd8faeebac1591d"
     },
     "settings.workspaceForm.invalid": {
       "source": "efb04df9294f90c1",
@@ -125620,14 +125752,6 @@
       "source": "502ccca92bb2e772",
       "output": "f6f5a824002af84b"
     },
-    "shell.paletteCommands.navigation.workspaceSettings.keywords": {
-      "source": "8f195fc8bcabf9e6",
-      "output": "8bf941631ce21dd8"
-    },
-    "shell.paletteCommands.navigation.workspaceSettings.label": {
-      "source": "9a2ef43583063528",
-      "output": "bcf29bdda07f906c"
-    },
     "shell.paletteCommands.navigation.workspaceShares.keywords": {
       "source": "f84d5d642b65387e",
       "output": "95813d815e68a0ae"
@@ -126104,37 +126228,21 @@
       "source": "6a85b5763fef3b14",
       "output": "86545a62dcbb4a9e"
     },
-    "shell.paletteCommands.settings.workspaceAi": {
+    "shell.paletteCommands.settingsSections.admin.keywords": {
+      "source": "16fda30274f2eff1",
+      "output": "cbc63e882b5fcaee"
+    },
+    "shell.paletteCommands.settingsSections.admin.label": {
+      "source": "ba153b047cd41922",
+      "output": "e2296c74febd1fbc"
+    },
+    "shell.paletteCommands.settingsSections.ai.keywords": {
+      "source": "06ffec4d50e80118",
+      "output": "20b3f03151e16a39"
+    },
+    "shell.paletteCommands.settingsSections.ai.label": {
       "source": "8bcea40eef8b74d2",
-      "output": "e82bca3340a7c8c8"
-    },
-    "shell.paletteCommands.settings.workspaceAiKeywords": {
-      "source": "92261ace608f3e1d",
-      "output": "e98f1ba83045a0cb"
-    },
-    "shell.paletteCommands.settings.workspaceMembers": {
-      "source": "86b1e1341b307b0b",
-      "output": "eab1d2ab4107017d"
-    },
-    "shell.paletteCommands.settings.workspaceMembersKeywords": {
-      "source": "38f5efa871e4ae2c",
-      "output": "3f86c63ed53f36c0"
-    },
-    "shell.paletteCommands.settings.workspaceOverrides": {
-      "source": "2554339da993e0f8",
-      "output": "8ff317bfc14854ce"
-    },
-    "shell.paletteCommands.settings.workspaceOverridesKeywords": {
-      "source": "d7bb64894a32589d",
-      "output": "f7451abccaed8e94"
-    },
-    "shell.paletteCommands.settings.workspaceTools": {
-      "source": "fb9675861432b7e6",
-      "output": "68a90d15fedd801a"
-    },
-    "shell.paletteCommands.settings.workspaceToolsKeywords": {
-      "source": "0006d62d1d8bea82",
-      "output": "611b2c51e5e5ed7f"
+      "output": "a14505d655d3da55"
     },
     "shell.paletteCommands.settingsSections.chat.keywords": {
       "source": "e75df1ce33b153ac",
@@ -126168,6 +126276,14 @@
       "source": "1ac4335fe6140d14",
       "output": "b03f66dc249d5f1c"
     },
+    "shell.paletteCommands.settingsSections.members.keywords": {
+      "source": "38f5efa871e4ae2c",
+      "output": "3f86c63ed53f36c0"
+    },
+    "shell.paletteCommands.settingsSections.members.label": {
+      "source": "86b1e1341b307b0b",
+      "output": "eab1d2ab4107017d"
+    },
     "shell.paletteCommands.settingsSections.notifications.keywords": {
       "source": "de36e9e8911e7c53",
       "output": "4739ce07a9ea2abd"
@@ -126175,6 +126291,30 @@
     "shell.paletteCommands.settingsSections.notifications.label": {
       "source": "7a0d5403f1575530",
       "output": "bc48bf6e63c5796c"
+    },
+    "shell.paletteCommands.settingsSections.overrides.keywords": {
+      "source": "78e5d1180dcae209",
+      "output": "97ec62cc2f29d5a2"
+    },
+    "shell.paletteCommands.settingsSections.overrides.label": {
+      "source": "2554339da993e0f8",
+      "output": "1907f192841a5be3"
+    },
+    "shell.paletteCommands.settingsSections.tools.keywords": {
+      "source": "0006d62d1d8bea82",
+      "output": "31be7c3aac0ae3a5"
+    },
+    "shell.paletteCommands.settingsSections.tools.label": {
+      "source": "fb9675861432b7e6",
+      "output": "68a90d15fedd801a"
+    },
+    "shell.paletteCommands.settingsSections.workspace.keywords": {
+      "source": "bf7ac8d86e624bdb",
+      "output": "e62da938b7f2e84e"
+    },
+    "shell.paletteCommands.settingsSections.workspace.label": {
+      "source": "9a2ef43583063528",
+      "output": "bcf29bdda07f906c"
     },
     "shell.paletteCommands.showContext": {
       "source": "c5082f8b0dbc7821",
@@ -147846,6 +147986,14 @@
       "source": "aeeae94b85c9a18e",
       "output": "da340171bde5e7d1"
     },
+    "settings.dialog.admin.groups": {
+      "source": "0f40520de644e83b",
+      "output": "9dc567085898249f"
+    },
+    "settings.dialog.admin.pages": {
+      "source": "0c832e17bd75905b",
+      "output": "f34f6f1515a36a44"
+    },
     "settings.dialog.areas.account": {
       "source": "df8525011f618f54",
       "output": "df8525011f618f54"
@@ -147866,9 +148014,29 @@
       "source": "0746da7c8e3b6c46",
       "output": "91aec7edb87b8a1b"
     },
+    "settings.dialog.loading": {
+      "source": "2d03f8f3dfe1ed62",
+      "output": "30a7a5482e84e3a4"
+    },
     "settings.dialog.navigation": {
       "source": "e85705add045d307",
       "output": "d3356992a8431b8f"
+    },
+    "settings.dialog.sections.admin.intro": {
+      "source": "36c4d3405219faff",
+      "output": "739a164097b0d716"
+    },
+    "settings.dialog.sections.admin.label": {
+      "source": "4d2bb368f919df81",
+      "output": "0cbdb06a0d19b253"
+    },
+    "settings.dialog.sections.ai.intro": {
+      "source": "2efb9fb15ebd27c4",
+      "output": "a6806637f20c05e1"
+    },
+    "settings.dialog.sections.ai.label": {
+      "source": "fd184691f9867a82",
+      "output": "1b127c358de26517"
     },
     "settings.dialog.sections.chat.intro": {
       "source": "1dd6704bdd317be7",
@@ -147902,6 +148070,14 @@
       "source": "fc718156fac294de",
       "output": "f3ac9b158783ad4f"
     },
+    "settings.dialog.sections.members.intro": {
+      "source": "5e63b6b99d71d09e",
+      "output": "042e97002246c195"
+    },
+    "settings.dialog.sections.members.label": {
+      "source": "bc1679e6cfa31226",
+      "output": "4d411956bd040859"
+    },
     "settings.dialog.sections.notifications.intro": {
       "source": "57c1bbb525280ab0",
       "output": "777e19d37b15949e"
@@ -147910,9 +148086,37 @@
       "source": "f7205df4f1e2d6bc",
       "output": "43f19da742d75613"
     },
+    "settings.dialog.sections.overrides.intro": {
+      "source": "e88fe9d690606a59",
+      "output": "b9d12c929e67ed99"
+    },
+    "settings.dialog.sections.overrides.label": {
+      "source": "8df29d8eb5d7843b",
+      "output": "29384aae157d3c39"
+    },
+    "settings.dialog.sections.tools.intro": {
+      "source": "2c87954ec35125b3",
+      "output": "582465d2efefe8ac"
+    },
+    "settings.dialog.sections.tools.label": {
+      "source": "79d1e97ab6a9c30e",
+      "output": "9cd430f1c487d200"
+    },
+    "settings.dialog.sections.workspace.intro": {
+      "source": "a02a25b4e76599f0",
+      "output": "94ebd4ffac1af0b9"
+    },
+    "settings.dialog.sections.workspace.label": {
+      "source": "24eddd710b885b7a",
+      "output": "af6a1c7e68b71d4f"
+    },
     "settings.dialog.title": {
       "source": "f5750a5d7231e1f7",
       "output": "cbe8870c0411fa6c"
+    },
+    "settings.dialog.workspacePicker": {
+      "source": "430d4f88b043670d",
+      "output": "279737515c94e1d6"
     },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
@@ -149970,22 +150174,6 @@
       "source": "fb1c89824cf78384",
       "output": "6d81dacd30aec000"
     },
-    "settings.workspace.config.description": {
-      "source": "b5585106d6a9387b",
-      "output": "913bf4cc862ec441"
-    },
-    "settings.workspace.config.title": {
-      "source": "5887a572ccc20720",
-      "output": "3f7f080341eb1b89"
-    },
-    "settings.workspace.externalMcp.description": {
-      "source": "2c87954ec35125b3",
-      "output": "be924ca570a4f124"
-    },
-    "settings.workspace.externalMcp.title": {
-      "source": "eb8b69c130d17d59",
-      "output": "65d8615a536e483d"
-    },
     "settings.workspace.loading": {
       "source": "fb1a2c281de388e8",
       "output": "23e90bcdd96be4b2"
@@ -150001,10 +150189,6 @@
     "settings.workspace.members.caption": {
       "source": "9dfdedfac276eb8c",
       "output": "b89382766c65d65c"
-    },
-    "settings.workspace.members.description": {
-      "source": "5e63b6b99d71d09e",
-      "output": "ad966995c6b9e656"
     },
     "settings.workspace.members.email": {
       "source": "2fae6fb30b0d0077",
@@ -150042,10 +150226,6 @@
       "source": "4478fe0697ade6b5",
       "output": "ef187c732ff57309"
     },
-    "settings.workspace.members.title": {
-      "source": "bc1679e6cfa31226",
-      "output": "4d411956bd040859"
-    },
     "settings.workspace.members.you": {
       "source": "0b6722a8adfb9354",
       "output": "4f9db7f8e5068a3e"
@@ -150058,25 +150238,37 @@
       "source": "e535931aadf889b3",
       "output": "8ab9604d28191528"
     },
+    "settings.workspace.more.agentProfiles": {
+      "source": "0aeda5316238db58",
+      "output": "758018366c90b12e"
+    },
     "settings.workspace.more.automations": {
-      "source": "627774b9b690c440",
-      "output": "43cc45e7d8f99a99"
+      "source": "1a221929d4c59222",
+      "output": "b84e088c3c4781e4"
     },
     "settings.workspace.more.description": {
-      "source": "4309105ab3e034aa",
-      "output": "4fd1d7b22e71100e"
+      "source": "58f7eb28573f00c2",
+      "output": "72b4d37eca5fe835"
+    },
+    "settings.workspace.more.evals": {
+      "source": "fff553f218c706a6",
+      "output": "ac009ca1d09138a1"
     },
     "settings.workspace.more.shares": {
-      "source": "5762bdaba2a4b426",
-      "output": "0dab7f79e3faff6b"
+      "source": "e3365406964cf54e",
+      "output": "968b452f8e3d0460"
     },
     "settings.workspace.more.templates": {
-      "source": "8d12580762cff2a3",
-      "output": "d5d4ddbb360c1034"
+      "source": "0fe081fff1b87574",
+      "output": "3017a50b5ac7408f"
     },
     "settings.workspace.more.title": {
       "source": "c6c1ff8662eb66f5",
       "output": "ce59b5134d8c8b84"
+    },
+    "settings.workspace.more.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "e2073645cb0dbbdd"
     },
     "settings.workspace.nameLabel": {
       "source": "dcd1d5223f73b3a9",
@@ -150130,41 +150322,9 @@
       "source": "8ca3d603be7acb47",
       "output": "da3ca5c927d1bcdb"
     },
-    "settings.workspace.summary": {
-      "source": "c49f301e6fe0479d",
-      "output": "8c2b59c42a5127db"
-    },
-    "settings.workspace.tabs.ai": {
-      "source": "fd184691f9867a82",
-      "output": "11fb682be0a0233d"
-    },
-    "settings.workspace.tabs.general": {
-      "source": "24eddd710b885b7a",
-      "output": "af6a1c7e68b71d4f"
-    },
-    "settings.workspace.tabs.members": {
-      "source": "bc1679e6cfa31226",
-      "output": "4d411956bd040859"
-    },
-    "settings.workspace.tabs.settings": {
-      "source": "f5750a5d7231e1f7",
-      "output": "cbe8870c0411fa6c"
-    },
-    "settings.workspace.tabs.tools": {
-      "source": "79d1e97ab6a9c30e",
-      "output": "9cd430f1c487d200"
-    },
-    "settings.workspace.title": {
-      "source": "d06a263d076350da",
-      "output": "fc70f20501d5c927"
-    },
     "settings.workspaceForm.inherited": {
       "source": "7d3a4273f9ae4fb0",
       "output": "f73126349bd082b4"
-    },
-    "settings.workspaceForm.intro": {
-      "source": "e88fe9d690606a59",
-      "output": "1e1cfbc412afe17b"
     },
     "settings.workspaceForm.invalid": {
       "source": "efb04df9294f90c1",
@@ -151462,14 +151622,6 @@
       "source": "502ccca92bb2e772",
       "output": "a35b9f5bc57cd54e"
     },
-    "shell.paletteCommands.navigation.workspaceSettings.keywords": {
-      "source": "8f195fc8bcabf9e6",
-      "output": "7311712e3575f6f9"
-    },
-    "shell.paletteCommands.navigation.workspaceSettings.label": {
-      "source": "9a2ef43583063528",
-      "output": "fc70f20501d5c927"
-    },
     "shell.paletteCommands.navigation.workspaceShares.keywords": {
       "source": "f84d5d642b65387e",
       "output": "e70bf4310fa0ed9c"
@@ -151946,37 +152098,21 @@
       "source": "6a85b5763fef3b14",
       "output": "6b7b555739c94f2c"
     },
-    "shell.paletteCommands.settings.workspaceAi": {
+    "shell.paletteCommands.settingsSections.admin.keywords": {
+      "source": "16fda30274f2eff1",
+      "output": "fcb77509731e820a"
+    },
+    "shell.paletteCommands.settingsSections.admin.label": {
+      "source": "ba153b047cd41922",
+      "output": "e1e129ec4ca5ec76"
+    },
+    "shell.paletteCommands.settingsSections.ai.keywords": {
+      "source": "06ffec4d50e80118",
+      "output": "a2ccf29f23dc0d55"
+    },
+    "shell.paletteCommands.settingsSections.ai.label": {
       "source": "8bcea40eef8b74d2",
       "output": "3dd7b88e5200cfbc"
-    },
-    "shell.paletteCommands.settings.workspaceAiKeywords": {
-      "source": "92261ace608f3e1d",
-      "output": "25a480954752e806"
-    },
-    "shell.paletteCommands.settings.workspaceMembers": {
-      "source": "86b1e1341b307b0b",
-      "output": "a58421b4d9b24269"
-    },
-    "shell.paletteCommands.settings.workspaceMembersKeywords": {
-      "source": "38f5efa871e4ae2c",
-      "output": "682ed82a03349e61"
-    },
-    "shell.paletteCommands.settings.workspaceOverrides": {
-      "source": "2554339da993e0f8",
-      "output": "e6974bb8a9811f6d"
-    },
-    "shell.paletteCommands.settings.workspaceOverridesKeywords": {
-      "source": "d7bb64894a32589d",
-      "output": "904ce47cb845fc48"
-    },
-    "shell.paletteCommands.settings.workspaceTools": {
-      "source": "fb9675861432b7e6",
-      "output": "e9bb6fff0ffdd865"
-    },
-    "shell.paletteCommands.settings.workspaceToolsKeywords": {
-      "source": "0006d62d1d8bea82",
-      "output": "cbbab0111c38b4ae"
     },
     "shell.paletteCommands.settingsSections.chat.keywords": {
       "source": "e75df1ce33b153ac",
@@ -152010,6 +152146,14 @@
       "source": "1ac4335fe6140d14",
       "output": "bb6dfe1dfe56c492"
     },
+    "shell.paletteCommands.settingsSections.members.keywords": {
+      "source": "38f5efa871e4ae2c",
+      "output": "682ed82a03349e61"
+    },
+    "shell.paletteCommands.settingsSections.members.label": {
+      "source": "86b1e1341b307b0b",
+      "output": "a58421b4d9b24269"
+    },
     "shell.paletteCommands.settingsSections.notifications.keywords": {
       "source": "de36e9e8911e7c53",
       "output": "db4f66c96c107af5"
@@ -152017,6 +152161,30 @@
     "shell.paletteCommands.settingsSections.notifications.label": {
       "source": "7a0d5403f1575530",
       "output": "d092ee8073914df0"
+    },
+    "shell.paletteCommands.settingsSections.overrides.keywords": {
+      "source": "78e5d1180dcae209",
+      "output": "c52bea023aaa7cca"
+    },
+    "shell.paletteCommands.settingsSections.overrides.label": {
+      "source": "2554339da993e0f8",
+      "output": "e6974bb8a9811f6d"
+    },
+    "shell.paletteCommands.settingsSections.tools.keywords": {
+      "source": "0006d62d1d8bea82",
+      "output": "aea63354b30cb6cd"
+    },
+    "shell.paletteCommands.settingsSections.tools.label": {
+      "source": "fb9675861432b7e6",
+      "output": "e9bb6fff0ffdd865"
+    },
+    "shell.paletteCommands.settingsSections.workspace.keywords": {
+      "source": "bf7ac8d86e624bdb",
+      "output": "d9b8c6f7498e9e1e"
+    },
+    "shell.paletteCommands.settingsSections.workspace.label": {
+      "source": "9a2ef43583063528",
+      "output": "fc70f20501d5c927"
     },
     "shell.paletteCommands.showContext": {
       "source": "c5082f8b0dbc7821",
@@ -173688,6 +173856,14 @@
       "source": "aeeae94b85c9a18e",
       "output": "ad8879bd0470c2a9"
     },
+    "settings.dialog.admin.groups": {
+      "source": "0f40520de644e83b",
+      "output": "d84b3c1d514733cb"
+    },
+    "settings.dialog.admin.pages": {
+      "source": "0c832e17bd75905b",
+      "output": "639b6dece19789e1"
+    },
     "settings.dialog.areas.account": {
       "source": "df8525011f618f54",
       "output": "5a4cc65d866b2781"
@@ -173708,9 +173884,29 @@
       "source": "0746da7c8e3b6c46",
       "output": "69217c7f509d3d94"
     },
+    "settings.dialog.loading": {
+      "source": "2d03f8f3dfe1ed62",
+      "output": "6cc1bbba0f84d197"
+    },
     "settings.dialog.navigation": {
       "source": "e85705add045d307",
       "output": "64e1842b12eacc56"
+    },
+    "settings.dialog.sections.admin.intro": {
+      "source": "36c4d3405219faff",
+      "output": "7280907629d2ef7f"
+    },
+    "settings.dialog.sections.admin.label": {
+      "source": "4d2bb368f919df81",
+      "output": "36664e8242af267c"
+    },
+    "settings.dialog.sections.ai.intro": {
+      "source": "2efb9fb15ebd27c4",
+      "output": "aeb666fb70f8468d"
+    },
+    "settings.dialog.sections.ai.label": {
+      "source": "fd184691f9867a82",
+      "output": "a75d067fa44bca81"
     },
     "settings.dialog.sections.chat.intro": {
       "source": "1dd6704bdd317be7",
@@ -173744,6 +173940,14 @@
       "source": "fc718156fac294de",
       "output": "1ecdb85fdf80a76f"
     },
+    "settings.dialog.sections.members.intro": {
+      "source": "5e63b6b99d71d09e",
+      "output": "8bdd806ab16e8995"
+    },
+    "settings.dialog.sections.members.label": {
+      "source": "bc1679e6cfa31226",
+      "output": "d5fe735083409d04"
+    },
     "settings.dialog.sections.notifications.intro": {
       "source": "57c1bbb525280ab0",
       "output": "809228d22d97a695"
@@ -173752,9 +173956,37 @@
       "source": "f7205df4f1e2d6bc",
       "output": "6b8e9ecbc2ba3ad6"
     },
+    "settings.dialog.sections.overrides.intro": {
+      "source": "e88fe9d690606a59",
+      "output": "79ef401d625b53fb"
+    },
+    "settings.dialog.sections.overrides.label": {
+      "source": "8df29d8eb5d7843b",
+      "output": "8d60e1df88057e9f"
+    },
+    "settings.dialog.sections.tools.intro": {
+      "source": "2c87954ec35125b3",
+      "output": "0b81b2026c6e8c7c"
+    },
+    "settings.dialog.sections.tools.label": {
+      "source": "79d1e97ab6a9c30e",
+      "output": "78927913de0117df"
+    },
+    "settings.dialog.sections.workspace.intro": {
+      "source": "a02a25b4e76599f0",
+      "output": "48f8f0a9e67ef95f"
+    },
+    "settings.dialog.sections.workspace.label": {
+      "source": "24eddd710b885b7a",
+      "output": "2130a3b5e09e419f"
+    },
     "settings.dialog.title": {
       "source": "f5750a5d7231e1f7",
       "output": "76b0fb6ad18939ac"
+    },
+    "settings.dialog.workspacePicker": {
+      "source": "430d4f88b043670d",
+      "output": "0cd1163e3357aacc"
     },
     "settings.editor.dodgeColumnHint": {
       "source": "1cda1bf03af4544e",
@@ -175812,22 +176044,6 @@
       "source": "fb1c89824cf78384",
       "output": "a6dedf3913fa03a9"
     },
-    "settings.workspace.config.description": {
-      "source": "b5585106d6a9387b",
-      "output": "bad33abe54dba2ef"
-    },
-    "settings.workspace.config.title": {
-      "source": "5887a572ccc20720",
-      "output": "476e5c5705dde275"
-    },
-    "settings.workspace.externalMcp.description": {
-      "source": "2c87954ec35125b3",
-      "output": "16d1b78a196a64c6"
-    },
-    "settings.workspace.externalMcp.title": {
-      "source": "eb8b69c130d17d59",
-      "output": "f0910953428bb89e"
-    },
     "settings.workspace.loading": {
       "source": "fb1a2c281de388e8",
       "output": "4a485f6529e661c4"
@@ -175843,10 +176059,6 @@
     "settings.workspace.members.caption": {
       "source": "9dfdedfac276eb8c",
       "output": "177680d3c29ecc3f"
-    },
-    "settings.workspace.members.description": {
-      "source": "5e63b6b99d71d09e",
-      "output": "43d959c063cdebf9"
     },
     "settings.workspace.members.email": {
       "source": "2fae6fb30b0d0077",
@@ -175884,10 +176096,6 @@
       "source": "4478fe0697ade6b5",
       "output": "06ee617ea5ea38a6"
     },
-    "settings.workspace.members.title": {
-      "source": "bc1679e6cfa31226",
-      "output": "d5fe735083409d04"
-    },
     "settings.workspace.members.you": {
       "source": "0b6722a8adfb9354",
       "output": "b21e91730d180b17"
@@ -175900,25 +176108,37 @@
       "source": "e535931aadf889b3",
       "output": "4430954574f6bd73"
     },
+    "settings.workspace.more.agentProfiles": {
+      "source": "0aeda5316238db58",
+      "output": "9080a1559f14c808"
+    },
     "settings.workspace.more.automations": {
-      "source": "627774b9b690c440",
-      "output": "0e60675358dfcd29"
+      "source": "1a221929d4c59222",
+      "output": "5fd67a087fa59a5c"
     },
     "settings.workspace.more.description": {
-      "source": "4309105ab3e034aa",
-      "output": "a37969373160a827"
+      "source": "58f7eb28573f00c2",
+      "output": "0af877eddbacb4d7"
+    },
+    "settings.workspace.more.evals": {
+      "source": "fff553f218c706a6",
+      "output": "fff553f218c706a6"
     },
     "settings.workspace.more.shares": {
-      "source": "5762bdaba2a4b426",
-      "output": "bc9991f051e44bd2"
+      "source": "e3365406964cf54e",
+      "output": "6571ffc785dfd6e4"
     },
     "settings.workspace.more.templates": {
-      "source": "8d12580762cff2a3",
-      "output": "dca0586c9eddfc57"
+      "source": "0fe081fff1b87574",
+      "output": "683f2a429cbce729"
     },
     "settings.workspace.more.title": {
       "source": "c6c1ff8662eb66f5",
       "output": "e2684d1aa6b4e5a5"
+    },
+    "settings.workspace.more.workflows": {
+      "source": "e2073645cb0dbbdd",
+      "output": "92ddb9c592298a40"
     },
     "settings.workspace.nameLabel": {
       "source": "dcd1d5223f73b3a9",
@@ -175972,41 +176192,9 @@
       "source": "8ca3d603be7acb47",
       "output": "892523cc7ef9ce29"
     },
-    "settings.workspace.summary": {
-      "source": "c49f301e6fe0479d",
-      "output": "2145d32421dbf03f"
-    },
-    "settings.workspace.tabs.ai": {
-      "source": "fd184691f9867a82",
-      "output": "a75d067fa44bca81"
-    },
-    "settings.workspace.tabs.general": {
-      "source": "24eddd710b885b7a",
-      "output": "2130a3b5e09e419f"
-    },
-    "settings.workspace.tabs.members": {
-      "source": "bc1679e6cfa31226",
-      "output": "d5fe735083409d04"
-    },
-    "settings.workspace.tabs.settings": {
-      "source": "f5750a5d7231e1f7",
-      "output": "76b0fb6ad18939ac"
-    },
-    "settings.workspace.tabs.tools": {
-      "source": "79d1e97ab6a9c30e",
-      "output": "78927913de0117df"
-    },
-    "settings.workspace.title": {
-      "source": "d06a263d076350da",
-      "output": "92b0145ad93bc15f"
-    },
     "settings.workspaceForm.inherited": {
       "source": "7d3a4273f9ae4fb0",
       "output": "19a0c2ee4162f33e"
-    },
-    "settings.workspaceForm.intro": {
-      "source": "e88fe9d690606a59",
-      "output": "7c72c8f12fdf908e"
     },
     "settings.workspaceForm.invalid": {
       "source": "efb04df9294f90c1",
@@ -177304,14 +177492,6 @@
       "source": "502ccca92bb2e772",
       "output": "7241ac3f4ce54b47"
     },
-    "shell.paletteCommands.navigation.workspaceSettings.keywords": {
-      "source": "8f195fc8bcabf9e6",
-      "output": "99dd837ad0d699b2"
-    },
-    "shell.paletteCommands.navigation.workspaceSettings.label": {
-      "source": "9a2ef43583063528",
-      "output": "92b0145ad93bc15f"
-    },
     "shell.paletteCommands.navigation.workspaceShares.keywords": {
       "source": "f84d5d642b65387e",
       "output": "af9faa2b99120c48"
@@ -177788,37 +177968,21 @@
       "source": "6a85b5763fef3b14",
       "output": "eafcdf825d56b016"
     },
-    "shell.paletteCommands.settings.workspaceAi": {
+    "shell.paletteCommands.settingsSections.admin.keywords": {
+      "source": "16fda30274f2eff1",
+      "output": "97d5dfbbcf5b4958"
+    },
+    "shell.paletteCommands.settingsSections.admin.label": {
+      "source": "ba153b047cd41922",
+      "output": "f9a04ddf7d47cf00"
+    },
+    "shell.paletteCommands.settingsSections.ai.keywords": {
+      "source": "06ffec4d50e80118",
+      "output": "e2e19c4843a4a627"
+    },
+    "shell.paletteCommands.settingsSections.ai.label": {
       "source": "8bcea40eef8b74d2",
       "output": "0a8a9ff9b9a20ecd"
-    },
-    "shell.paletteCommands.settings.workspaceAiKeywords": {
-      "source": "92261ace608f3e1d",
-      "output": "ebef525e4df080fd"
-    },
-    "shell.paletteCommands.settings.workspaceMembers": {
-      "source": "86b1e1341b307b0b",
-      "output": "9be3ba7d73efc6c2"
-    },
-    "shell.paletteCommands.settings.workspaceMembersKeywords": {
-      "source": "38f5efa871e4ae2c",
-      "output": "1bbda7ee75715998"
-    },
-    "shell.paletteCommands.settings.workspaceOverrides": {
-      "source": "2554339da993e0f8",
-      "output": "3b2765a6c6954ea0"
-    },
-    "shell.paletteCommands.settings.workspaceOverridesKeywords": {
-      "source": "d7bb64894a32589d",
-      "output": "4402eb8801e04359"
-    },
-    "shell.paletteCommands.settings.workspaceTools": {
-      "source": "fb9675861432b7e6",
-      "output": "bf4b41a993e1c924"
-    },
-    "shell.paletteCommands.settings.workspaceToolsKeywords": {
-      "source": "0006d62d1d8bea82",
-      "output": "02159ebc72e3bb3e"
     },
     "shell.paletteCommands.settingsSections.chat.keywords": {
       "source": "e75df1ce33b153ac",
@@ -177852,6 +178016,14 @@
       "source": "1ac4335fe6140d14",
       "output": "5aaf43a9a04c4568"
     },
+    "shell.paletteCommands.settingsSections.members.keywords": {
+      "source": "38f5efa871e4ae2c",
+      "output": "1bbda7ee75715998"
+    },
+    "shell.paletteCommands.settingsSections.members.label": {
+      "source": "86b1e1341b307b0b",
+      "output": "9be3ba7d73efc6c2"
+    },
     "shell.paletteCommands.settingsSections.notifications.keywords": {
       "source": "de36e9e8911e7c53",
       "output": "748cf59a8077b59f"
@@ -177859,6 +178031,30 @@
     "shell.paletteCommands.settingsSections.notifications.label": {
       "source": "7a0d5403f1575530",
       "output": "e7bad856465ccebe"
+    },
+    "shell.paletteCommands.settingsSections.overrides.keywords": {
+      "source": "78e5d1180dcae209",
+      "output": "a7e690e66ae8c9f8"
+    },
+    "shell.paletteCommands.settingsSections.overrides.label": {
+      "source": "2554339da993e0f8",
+      "output": "e247492700777089"
+    },
+    "shell.paletteCommands.settingsSections.tools.keywords": {
+      "source": "0006d62d1d8bea82",
+      "output": "9341b247812de669"
+    },
+    "shell.paletteCommands.settingsSections.tools.label": {
+      "source": "fb9675861432b7e6",
+      "output": "c0161be867702fb0"
+    },
+    "shell.paletteCommands.settingsSections.workspace.keywords": {
+      "source": "bf7ac8d86e624bdb",
+      "output": "63cc71bdb73f2090"
+    },
+    "shell.paletteCommands.settingsSections.workspace.label": {
+      "source": "9a2ef43583063528",
+      "output": "92b0145ad93bc15f"
     },
     "shell.paletteCommands.showContext": {
       "source": "c5082f8b0dbc7821",

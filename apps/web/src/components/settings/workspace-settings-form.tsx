@@ -185,15 +185,17 @@ export function WorkspaceSettingsForm({
 
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-sm text-muted-foreground">{t('intro')}</p>
-
+      {/* The groups above the rows rather than beside them: the form lives in
+          the settings dialog (issue #279), whose own navigation already takes
+          the left edge, and a second column there leaves the rows too narrow
+          for a label and a field side by side. */}
       <Tabs
         value={activeGroup}
         onValueChange={(next) => setGroup(typeof next === 'string' ? next : null)}
-        orientation="vertical"
-        className="flex flex-col gap-6 md:flex-row md:gap-8"
+        className="flex flex-col gap-6"
       >
         <SettingGroupNav
+          layout="above"
           groups={groupNames}
           pending={pending}
           invalid={NO_INVALID_GROUPS}

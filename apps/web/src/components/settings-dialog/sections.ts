@@ -45,6 +45,15 @@ export const SETTINGS_SECTIONS = [
   { id: 'chat', area: 'account', audience: 'everyone' },
   { id: 'notifications', area: 'account', audience: 'everyone' },
   { id: 'connections', area: 'account', audience: 'everyone' },
+  // The bars the workspace settings' tabs had, and the API has behind them:
+  // the member list and the invitations take an administrator, the foreign
+  // MCP servers the owner (ADR-086); the rest is readable by every member.
+  { id: 'workspace', area: 'workspace', audience: 'workspaceMember' },
+  { id: 'members', area: 'workspace', audience: 'workspaceAdmin' },
+  { id: 'ai', area: 'workspace', audience: 'workspaceMember' },
+  { id: 'tools', area: 'workspace', audience: 'workspaceOwner' },
+  { id: 'overrides', area: 'workspace', audience: 'workspaceMember' },
+  { id: 'admin', area: 'admin', audience: 'admin' },
 ] as const satisfies readonly SettingsSection[];
 
 export type SettingsSectionId = (typeof SETTINGS_SECTIONS)[number]['id'];
@@ -53,6 +62,32 @@ export const SETTINGS_AREAS: readonly SettingsArea[] = ['account', 'workspace', 
 
 export function isSettingsSectionId(value: string): value is SettingsSectionId {
   return SETTINGS_SECTIONS.some((section) => section.id === value);
+}
+
+/** What decides which groups somebody sees. */
+export interface SettingsReader {
+  /** Whether the account administers the deployment. */
+  admin: boolean;
+  /** The reader's role in the workspace the dialog shows, `null` for none. */
+  workspaceRole: string | null;
+}
+
+const WORKSPACE_ADMIN_ROLES: ReadonlySet<string> = new Set(['OWNER', 'ADMIN']);
+
+/** Whether `reader` may see a group meant for `audience`. */
+export function sectionReaches(audience: SettingsAudience, reader: SettingsReader): boolean {
+  switch (audience) {
+    case 'everyone':
+      return true;
+    case 'admin':
+      return reader.admin;
+    case 'workspaceMember':
+      return reader.workspaceRole !== null;
+    case 'workspaceAdmin':
+      return reader.workspaceRole !== null && WORKSPACE_ADMIN_ROLES.has(reader.workspaceRole);
+    case 'workspaceOwner':
+      return reader.workspaceRole === 'OWNER';
+  }
 }
 
 /**
@@ -92,4 +127,27 @@ export function settingsAddress(
  */
 export function accountSettingsRedirect(section: SettingsSectionId): string {
   return `/arbeitsbereich?${SETTINGS_PARAM}=${section}`;
+}
+
+/**
+ * The groups the five tabs of the old workspace settings page became, by the
+ * tab's `?tab=` value. Only "general" was renamed: it is "workspace" now,
+ * because "general" means nothing in a list that also holds the account.
+ */
+const WORKSPACE_TAB_SECTIONS: Readonly<Record<string, SettingsSectionId>> = {
+  general: 'workspace',
+  members: 'members',
+  ai: 'ai',
+  tools: 'tools',
+  overrides: 'overrides',
+};
+
+/**
+ * Where `/arbeitsbereich/:x/einstellungen` sends a browser that still knows
+ * it: the workspace's own start page with the dialog open at the group the
+ * tab became, or at "Allgemein" for no tab or one that never existed.
+ */
+export function workspaceSettingsRedirect(workspaceId: string, tab: string | null): string {
+  const section = (tab === null ? undefined : WORKSPACE_TAB_SECTIONS[tab]) ?? 'workspace';
+  return `/arbeitsbereich/${encodeURIComponent(workspaceId)}?${SETTINGS_PARAM}=${section}`;
 }

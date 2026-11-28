@@ -29,7 +29,37 @@
       "connections": {
         "label": "Conexões",
         "intro": "Aqui é onde seus agentes se conectam ao eXocortex: aplicativos que iniciam sessão em seu nome, tokens para todo o restante e os comandos prontos para a configuração. Quando o eXocortex entra em contato com você fica em <link>Notificações</link>."
+      },
+      "workspace": {
+        "label": "Geral",
+        "intro": "Nome e slug deste espaço de trabalho e se os agentes armazenam a sua memória aqui. Abaixo estão as áreas que têm páginas próprias."
+      },
+      "members": {
+        "label": "Membros",
+        "intro": "As associações são sempre explícitas: quem for convidado entra exatamente neste espaço de trabalho."
+      },
+      "ai": {
+        "label": "IA",
+        "intro": "Sob quais condições a IA opera neste espaço de trabalho: com qual chave e sob quais regras."
+      },
+      "tools": {
+        "label": "Ferramentas externas",
+        "intro": "Aqui você conecta servidores MCP externos, como o app Saúde. Cada ferramenta de um servidor fica bloqueada no início. A IA só pode usá-la depois que você a avaliar e aprovar. Se o servidor alterar uma ferramenta mais tarde, ela será bloqueada novamente."
+      },
+      "overrides": {
+        "label": "Configuração",
+        "intro": "Sem um valor próprio, aplica-se o que estiver configurado para toda a instalação. O que você definir aqui vale apenas para este espaço de trabalho."
+      },
+      "admin": {
+        "label": "Visão geral",
+        "intro": "O que vale para toda a instalação. Cada área da administração é uma página separada, pois contém tabelas e listas que não caberiam sobre uma página aberta."
       }
+    },
+    "workspacePicker": "Escolher espaço de trabalho",
+    "loading": "Carregando…",
+    "admin": {
+      "pages": "Páginas da administração",
+      "groups": "Configurações da instalação por área"
     }
   },
   "language": {
@@ -712,7 +742,6 @@
     "ignoredDescription": "No banco de dados, {count, plural, one {esta configuração tem} many {estas configurações têm} other {estas configurações têm}} um valor inválido: {labels}. Em vez disso, a instalação está sendo executada com o valor padrão. Salvar uma vez substitui a linha com erro."
   },
   "workspaceForm": {
-    "intro": "Sem um valor próprio, vale o que estiver configurado para toda a instalação. O que você definir aqui se aplica apenas a este espaço de trabalho.",
     "invalid": "Uma entrada não é válida; nada foi salvo.",
     "ownValue": "Valor próprio",
     "reset": "Redefinir para o valor da instalação",
@@ -740,16 +769,7 @@
     "footnote": "A chave é armazenada de forma criptografada e nunca mais será exibida. Ela paga pelas execuções de IA deste espaço de trabalho. A busca continuará usando a chave da instalação, pois todas as incorporações precisam estar no mesmo espaço vetorial."
   },
   "workspace": {
-    "title": "Configurações do espaço de trabalho",
     "loading": "Carregando espaço de trabalho…",
-    "summary": "{name} · {count, plural, one {# membro} many {# membros} other {# membros}}",
-    "tabs": {
-      "general": "Geral",
-      "members": "Membros",
-      "ai": "IA",
-      "settings": "Configurações",
-      "tools": "Ferramentas externas"
-    },
     "readOnly": "Apenas pessoas proprietárias e administradoras deste espaço de trabalho podem renomeá-lo ou alterar o slug.",
     "nameLabel": "Nome",
     "save": "Salvar",
@@ -763,16 +783,15 @@
       "title": "Regras de IA",
       "description": "Páginas que a IA trata como instrução. Isso é definido nas propriedades de cada página."
     },
-    "config": {
-      "title": "Configuração deste espaço de trabalho",
-      "description": "Estes valores se aplicam apenas aqui. Todo o restante vem da instalação."
-    },
     "more": {
       "title": "Outras seções",
-      "automations": "Abrir automações",
-      "templates": "Abrir modelos para PDF",
-      "shares": "Abrir compartilhamentos",
-      "description": "Regras que reagem a alterações em páginas, com o registro do que fizeram. Recursos para publicar páginas deste espaço de trabalho como PDF. E o que foi compartilhado externamente deste espaço de trabalho, com contas ou por link público."
+      "automations": "Automações",
+      "templates": "Modelos para PDF",
+      "shares": "Compartilhamentos",
+      "description": "Estas áreas pertencem ao espaço de trabalho, mas possuem listas, registros ou um editor próprio e, por isso, são páginas separadas.",
+      "workflows": "Fluxos de trabalho",
+      "agentProfiles": "Perfis de agente",
+      "evals": "Evals"
     },
     "slug": {
       "label": "Slug",
@@ -785,8 +804,6 @@
       "description": "Os agentes salvam suas notas de sessão neste espaço de trabalho e as encontram novamente na próxima inicialização. As notas expiram aqui após o prazo definido. Para um espaço mantido por você, isso não é adequado."
     },
     "members": {
-      "title": "Membros",
-      "description": "As participações são sempre explícitas: quem recebe um convite entra exatamente neste espaço de trabalho.",
       "invite": "Convidar",
       "caption": "Membros deste espaço de trabalho",
       "name": "Nome",
@@ -806,10 +823,6 @@
       "ADMIN": "Administrador",
       "MEMBER": "Membro",
       "GUEST": "Convidado"
-    },
-    "externalMcp": {
-      "title": "Servidores MCP externos",
-      "description": "Aqui você conecta servidores MCP externos, por exemplo, o app de saúde. Cada ferramenta de um servidor fica bloqueada no início. A IA só pode usá-la depois que você a avaliar e aprovar. Se o servidor alterar uma ferramenta mais tarde, ela será bloqueada novamente."
     }
   },
   "externalMcp": {

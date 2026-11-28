@@ -29,7 +29,37 @@
       "connections": {
         "label": "Connections",
         "intro": "This is where your agents connect to eXocortex: applications that sign in on your behalf, tokens for everything else, and ready-to-use setup commands. When eXocortex reaches out to you is configured under <link>Notifications</link>."
+      },
+      "workspace": {
+        "label": "General",
+        "intro": "Name and slug of this workspace, and whether agents store their memory here. Below are the areas that have their own pages."
+      },
+      "members": {
+        "label": "Members",
+        "intro": "Memberships are always explicit: anyone who is invited ends up in exactly this workspace."
+      },
+      "ai": {
+        "label": "AI",
+        "intro": "Under what conditions AI runs in this workspace: with which key and according to which rules."
+      },
+      "tools": {
+        "label": "External tools",
+        "intro": "Connect external MCP servers here, such as the Health app. Every tool from a server is initially locked. Only once you have reviewed and approved it can the AI use it. If the server changes a tool later, it is locked again."
+      },
+      "overrides": {
+        "label": "Configuration",
+        "intro": "Without a custom value, the setting for the entire installation applies here. Whatever you set here applies only to this workspace."
+      },
+      "admin": {
+        "label": "Overview",
+        "intro": "What applies to the entire installation. Each administration section is its own page because it brings tables and lists that do not fit on top of an open page."
       }
+    },
+    "workspacePicker": "Choose workspace",
+    "loading": "Loading…",
+    "admin": {
+      "pages": "Administration pages",
+      "groups": "Installation settings by section"
     }
   },
   "language": {
@@ -712,7 +742,6 @@
     "ignoredDescription": "The database contains an invalid value for {count, plural, one {this setting} other {these settings}}: {labels}. The installation uses the default instead. Saving once replaces the faulty row."
   },
   "workspaceForm": {
-    "intro": "Without a custom value, whatever is set for the whole installation applies here. What you set here applies only to this workspace.",
     "invalid": "One input is invalid; nothing was saved.",
     "ownValue": "Custom value",
     "reset": "Reset to deployment value",
@@ -740,16 +769,7 @@
     "footnote": "The key is stored encrypted and will never be shown again. It pays for this workspace’s AI runs. Search still uses the deployment key, because all embeddings must stay in the same vector space."
   },
   "workspace": {
-    "title": "Workspace settings",
     "loading": "Loading workspace …",
-    "summary": "{name} · {count, plural, one {# member} other {# members}}",
-    "tabs": {
-      "general": "General",
-      "members": "Members",
-      "ai": "AI",
-      "settings": "Settings",
-      "tools": "External tools"
-    },
     "readOnly": "Only owners and administrators of this workspace can rename it or change its slug.",
     "nameLabel": "Name",
     "save": "Save",
@@ -763,16 +783,15 @@
       "title": "AI rules",
       "description": "Pages that the AI treats as instructions. This is set in the properties of each page."
     },
-    "config": {
-      "title": "Configuration for this workspace",
-      "description": "These values apply only here. Everything else is inherited from the deployment."
-    },
     "more": {
       "title": "More sections",
-      "automations": "Open automations",
-      "templates": "Open PDF templates",
-      "shares": "Open shares",
-      "description": "Rules that react to changes to pages, with a log of what they did. What can be used to publish pages from this workspace as PDF. And what has been shared externally from this workspace, with accounts or as a public link."
+      "automations": "Automations",
+      "templates": "Templates for PDF",
+      "shares": "Shares",
+      "description": "These sections belong to the workspace, but have lists, logs, or their own editor and are therefore separate pages.",
+      "workflows": "Workflows",
+      "agentProfiles": "Agent profiles",
+      "evals": "Evals"
     },
     "slug": {
       "label": "Slug",
@@ -785,8 +804,6 @@
       "description": "Agents store their session notes in this workspace and find them again on their next launch. Notes here expire after the set time limit. This is not meant for a workspace you maintain yourself."
     },
     "members": {
-      "title": "Members",
-      "description": "Memberships are always explicit: anyone who is invited lands in this exact workspace.",
       "invite": "Invite",
       "caption": "Members of this workspace",
       "name": "Name",
@@ -806,10 +823,6 @@
       "ADMIN": "Administrator",
       "MEMBER": "Member",
       "GUEST": "Guest"
-    },
-    "externalMcp": {
-      "title": "External MCP servers",
-      "description": "Connect external MCP servers here, like your health app. Each server tool is blocked by default. Only once you have reviewed and approved it can the AI use it. If the server changes a tool later, it is blocked again."
     }
   },
   "externalMcp": {

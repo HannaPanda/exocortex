@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { TabsList, TabsTrigger } from '@exocortex/ui';
+import { cn, TabsList, TabsTrigger } from '@exocortex/ui';
 
 import { useSettingGroupLabel } from '@/components/settings/setting-copy';
 
@@ -29,7 +29,14 @@ export function SettingGroupNav({
   pending,
   invalid,
   testIdPrefix,
+  layout = 'beside',
 }: {
+  /**
+   * `beside`: a column left of the rows from `md` up, a wrapping row below.
+   * `above`: always a wrapping row, for a form that sits in a narrow column
+   * of its own, such as a group of the settings dialog.
+   */
+  layout?: 'beside' | 'above';
   groups: readonly string[];
   /** Groups holding an unsaved edit. */
   pending: ReadonlySet<string>;
@@ -40,7 +47,12 @@ export function SettingGroupNav({
   const t = useTranslations('settings.groupNav');
   const groupLabel = useSettingGroupLabel();
   return (
-    <TabsList className="h-auto w-full flex-row flex-wrap items-stretch gap-0.5 overflow-visible bg-transparent p-0 md:w-52 md:shrink-0 md:flex-col">
+    <TabsList
+      className={cn(
+        'h-auto w-full flex-row flex-wrap items-stretch gap-0.5 overflow-visible bg-transparent p-0',
+        layout === 'beside' && 'md:w-52 md:shrink-0 md:flex-col',
+      )}
+    >
       {groups.map((group) => (
         <TabsTrigger
           key={group}

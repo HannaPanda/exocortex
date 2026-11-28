@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
+  LoadingState,
   SectionRule,
   useIsMobile,
 } from '@exocortex/ui';
@@ -21,11 +22,13 @@ import {
   UnsavedChangesDialog,
   UnsavedDraftReport,
 } from '@/components/settings/unsaved-changes-guard';
+import { useSessionQuery } from '@/lib/api/session-queries';
 import { isPlainClick } from '@/lib/plain-click';
 
 import { settingsAddress, settingsRequestOf, type SettingsSectionId } from './sections';
 import { SettingsDialogContext } from './settings-dialog-context';
 import { type SettingsEntry, useSettingsEntries } from './settings-entries';
+import { SettingsWorkspacePicker, useSettingsWorkspace } from './use-settings-workspace';
 
 /** The page's address without the dialog, the part Back returns to. */
 function plainAddress(location: Location): string {
@@ -127,13 +130,21 @@ function SettingsDialog({
   const t = useTranslations('settings.dialog');
   const tUnsaved = useTranslations('settings.unsaved');
   const isMobile = useIsMobile();
-  const entries = useSettingsEntries();
+  const session = useSessionQuery();
+  const chosen = useSettingsWorkspace();
+  const entries = useSettingsEntries({
+    admin: session.data?.user?.role === 'admin',
+    workspace: chosen.workspace,
+  });
 
   // A group the reader may not see (a workspace role that changed, a pasted
   // address) is answered with the first one they may, never with a group they
-  // would only be refused in.
+  // would only be refused in. Until the workspace and the account's role have
+  // arrived, a group that may still turn out to be theirs is waited for
+  // instead, so a link to "Mitglieder" does not flash "Sprache" first.
   const active = entries.find((entry) => entry.id === section) ?? null;
-  const shown = active ?? (isMobile ? null : (entries[0] ?? null));
+  const waiting = active === null && section !== null && (chosen.pending || session.isPending);
+  const shown = waiting ? null : (active ?? (isMobile ? null : (entries[0] ?? null)));
 
   // How much of an open form is unsaved, so closing or switching can ask.
   const [unsaved, setUnsaved] = React.useState(0);
@@ -175,7 +186,7 @@ function SettingsDialog({
           className={cn(
             'flex w-64 shrink-0 flex-col border-r border-border bg-surface',
             'max-md:w-full max-md:border-r-0',
-            isMobile && shown !== null && 'hidden',
+            isMobile && (shown !== null || waiting) && 'hidden',
           )}
         >
           <div className="flex flex-col gap-1 px-4 pt-4 pb-3">
@@ -188,6 +199,13 @@ function SettingsDialog({
                 <SectionRule as="h3" className="px-2 pb-1">
                   {t(`areas.${area}`)}
                 </SectionRule>
+                {area === 'workspace' ? (
+                  <SettingsWorkspacePicker
+                    workspaces={chosen.workspaces}
+                    workspaceId={chosen.workspaceId}
+                    onPick={(id) => guarded(() => chosen.pick(id))}
+                  />
+                ) : null}
                 <ul className="flex flex-col gap-0.5">
                   {items.map((entry) => (
                     <li key={entry.id}>
@@ -205,8 +223,17 @@ function SettingsDialog({
           </div>
         </nav>
 
+        {waiting ? (
+          <div className="flex min-w-0 flex-1 items-center justify-center">
+            <LoadingState label={t('loading')} />
+          </div>
+        ) : null}
+
         {shown === null ? null : (
           <section
+            // A group of another workspace starts from that workspace's
+            // values, not from the drafts of the one before.
+            key={`${shown.area === 'workspace' ? (chosen.workspaceId ?? '') : ''}:${shown.id}`}
             aria-labelledby="settings-section-title"
             data-testid={`settings-section-${shown.id}`}
             className="relative min-w-0 flex-1 overflow-y-auto px-6 pt-6 pb-8"

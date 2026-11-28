@@ -280,10 +280,6 @@
         "label": "Otwórz szablony",
         "keywords": "szablon template wzorzec"
       },
-      "workspaceSettings": {
-        "label": "Ustawienia obszaru roboczego",
-        "keywords": "obszar roboczy workspace ustawienia zmień nazwę nazwa settings"
-      },
       "admin": {
         "label": "Otwórz administrację",
         "keywords": "administracja admin instalacja przegląd"
@@ -333,14 +329,6 @@
         "projects": "projekt latex build kompilacja",
         "agents": "agenci sesja skrzynka"
       },
-      "workspaceMembers": "Zarządzaj członkami",
-      "workspaceMembersKeywords": "członkowie zaproś osoby role dostęp obszar roboczy workspace",
-      "workspaceTools": "Zewnętrzne serwery MCP i ich narzędzia",
-      "workspaceToolsKeywords": "mcp serwer serwery zewnętrzne narzędzia tools udostępnianie health podłączanie połączenie integracja",
-      "workspaceAi": "Ustawienia AI obszaru roboczego",
-      "workspaceAiKeywords": "ai klucz api key własny byok openrouter obszar roboczy workspace",
-      "workspaceOverrides": "Niestandardowe ustawienia obszaru roboczego",
-      "workspaceOverridesKeywords": "ustawienia nadpisz settings obszar roboczy workspace",
       "menu": "Ustawienia",
       "menuKeywords": "ustawienia settings opcje konfiguracja",
       "menuPlaceholder": "Które ustawienia?",
@@ -368,6 +356,30 @@
       "connections": {
         "label": "Otwórz połączenia",
         "keywords": "połączenie konektor wtyczka integracja mcp token api klucz claude chatgpt token dostępu oauth aplikacja rozłącz hermes codex skonfiguruj"
+      },
+      "workspace": {
+        "label": "Ustawienia obszaru roboczego",
+        "keywords": "obszar roboczy workspace ustawienia zmień nazwę nazwa settings slug pamięć memory automatyzacje szablony udostępnienia"
+      },
+      "members": {
+        "label": "Zarządzaj członkami",
+        "keywords": "członkowie zaproś osoby role dostęp obszar roboczy workspace"
+      },
+      "ai": {
+        "label": "Ustawienia AI obszaru roboczego",
+        "keywords": "ai sztuczna inteligencja klucz api key własny byok openrouter obszar roboczy workspace reguły reguła"
+      },
+      "tools": {
+        "label": "Zewnętrzne serwery MCP i ich narzędzia",
+        "keywords": "mcp serwer zewnętrzny narzędzia tools zatwierdź health połącz połączenie integracja"
+      },
+      "overrides": {
+        "label": "Niestandardowe ustawienia obszaru roboczego",
+        "keywords": "ustawienia nadpisz settings obszar roboczy workspace konfiguracja"
+      },
+      "admin": {
+        "label": "Administracja w ustawieniach",
+        "keywords": "administracja admin administration instalacja wdrożenie deployment"
       }
     },
     "create": {

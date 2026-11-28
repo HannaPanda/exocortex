@@ -280,10 +280,6 @@
         "label": "Abrir plantillas",
         "keywords": "plantilla template modelo"
       },
-      "workspaceSettings": {
-        "label": "Ajustes del espacio de trabajo",
-        "keywords": "espacio de trabajo workspace ajustes renombrar nombre settings configuración"
-      },
       "admin": {
         "label": "Abrir administración",
         "keywords": "administración admin instalador instalación resumen"
@@ -333,14 +329,6 @@
         "projects": "proyecto latex build compilar",
         "agents": "agente sesión buzón"
       },
-      "workspaceMembers": "Gestionar miembros",
-      "workspaceMembersKeywords": "miembros invitar personas roles acceso espacio de trabajo workspace",
-      "workspaceTools": "Servidores MCP externos y sus herramientas",
-      "workspaceToolsKeywords": "mcp servidor externo herramientas tools compartir health conectar conexión integración",
-      "workspaceAi": "Ajustes de IA del espacio de trabajo",
-      "workspaceAiKeywords": "ia clave api key propia byok openrouter espacio de trabajo workspace",
-      "workspaceOverrides": "Ajustes específicos del espacio de trabajo",
-      "workspaceOverridesKeywords": "ajustes sobrescribir opciones espacio de trabajo workspace",
       "menu": "Ajustes",
       "menuKeywords": "ajustes configuración opciones preferencias",
       "menuPlaceholder": "¿Qué ajustes?",
@@ -368,6 +356,30 @@
       "connections": {
         "label": "Abrir conexiones",
         "keywords": "conexión conector plugin integración mcp token api clave claude chatgpt token de acceso oauth aplicación desconectar hermes codex configurar"
+      },
+      "workspace": {
+        "label": "Ajustes del espacio de trabajo",
+        "keywords": "espacio de trabajo workspace ajustes renombrar nombre settings slug memoria automatizaciones plantillas usos compartidos aprobaciones"
+      },
+      "members": {
+        "label": "Gestionar miembros",
+        "keywords": "miembros invitar personas roles acceso espacio de trabajo workspace"
+      },
+      "ai": {
+        "label": "Ajustes de IA del espacio de trabajo",
+        "keywords": "ia clave api key propia byok openrouter espacio de trabajo workspace reglas regla"
+      },
+      "tools": {
+        "label": "Servidores MCP externos y sus herramientas",
+        "keywords": "mcp servidor externo herramientas tools aprobar estado conectar conexión integración"
+      },
+      "overrides": {
+        "label": "Ajustes específicos del espacio de trabajo",
+        "keywords": "ajustes anular settings espacio de trabajo workspace configuración sobrescribir"
+      },
+      "admin": {
+        "label": "Administración en los ajustes",
+        "keywords": "administración admin gestión instalación despliegue deployment"
       }
     },
     "create": {

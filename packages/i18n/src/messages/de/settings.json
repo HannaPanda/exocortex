@@ -29,7 +29,37 @@
       "connections": {
         "label": "Verbindungen",
         "intro": "Hier hängen deine Agenten an eXocortex: Anwendungen, die sich in deinem Namen anmelden, Token für alles andere, und die fertigen Befehle zum Einrichten. Wann eXocortex dich von sich aus erreicht, steht unter <link>Benachrichtigungen</link>."
+      },
+      "workspace": {
+        "label": "Allgemein",
+        "intro": "Name und Slug dieses Arbeitsbereichs und ob Agenten hier ihr Gedächtnis ablegen. Darunter die Bereiche, die eigene Seiten haben."
+      },
+      "members": {
+        "label": "Mitglieder",
+        "intro": "Mitgliedschaften gelten immer ausdrücklich: wer eingeladen wird, landet genau in diesem Arbeitsbereich."
+      },
+      "ai": {
+        "label": "KI",
+        "intro": "Unter welchen Bedingungen die KI in diesem Arbeitsbereich läuft: mit welchem Schlüssel und nach welchen Regeln."
+      },
+      "tools": {
+        "label": "Externe Werkzeuge",
+        "intro": "Hier bindest du fremde MCP-Server an, zum Beispiel die Health-App. Jedes Werkzeug eines Servers ist zuerst gesperrt. Erst wenn du es dir angesehen und freigegeben hast, darf die KI es benutzen. Ändert der Server ein Werkzeug später, ist es wieder gesperrt."
+      },
+      "overrides": {
+        "label": "Konfiguration",
+        "intro": "Ohne eigenen Wert gilt hier, was für die ganze Installation eingestellt ist. Was du hier setzt, gilt nur in diesem Arbeitsbereich."
+      },
+      "admin": {
+        "label": "Übersicht",
+        "intro": "Was für die ganze Installation gilt. Jeder Bereich der Verwaltung ist eine eigene Seite, weil er Tabellen und Listen mitbringt, für die über einer geöffneten Seite kein Platz ist."
       }
+    },
+    "workspacePicker": "Arbeitsbereich wählen",
+    "loading": "Wird geladen …",
+    "admin": {
+      "pages": "Seiten der Verwaltung",
+      "groups": "Einstellungen der Installation nach Bereich"
     }
   },
   "language": {
@@ -712,7 +742,6 @@
     "ignoredDescription": "In der Datenbank steht für {count, plural, one {diese Einstellung} other {diese Einstellungen}} ein unzulässiger Wert: {labels}. Die Installation läuft stattdessen mit der Vorgabe. Einmal speichern ersetzt die fehlerhafte Zeile."
   },
   "workspaceForm": {
-    "intro": "Ohne eigenen Wert gilt hier, was für die ganze Installation eingestellt ist. Was du hier setzt, gilt nur in diesem Arbeitsbereich.",
     "invalid": "Eine Eingabe ist nicht zulässig, es wurde nichts gespeichert.",
     "ownValue": "Eigener Wert",
     "reset": "Auf Installationswert zurücksetzen",
@@ -740,16 +769,7 @@
     "footnote": "Der Schlüssel wird verschlüsselt abgelegt und nie wieder angezeigt. Er bezahlt die KI-Läufe dieses Arbeitsbereichs. Die Suche bleibt beim Schlüssel der Installation, weil alle Einbettungen im selben Vektorraum liegen müssen."
   },
   "workspace": {
-    "title": "Arbeitsbereich-Einstellungen",
     "loading": "Arbeitsbereich wird geladen …",
-    "summary": "{name} · {count, plural, one {# Mitglied} other {# Mitglieder}}",
-    "tabs": {
-      "general": "Allgemein",
-      "members": "Mitglieder",
-      "ai": "KI",
-      "settings": "Einstellungen",
-      "tools": "Externe Werkzeuge"
-    },
     "readOnly": "Nur Besitzer und Administratoren dieses Arbeitsbereichs können ihn umbenennen oder den Slug ändern.",
     "nameLabel": "Name",
     "save": "Speichern",
@@ -763,16 +783,15 @@
       "title": "KI-Regeln",
       "description": "Seiten, die die KI als Anweisung behandelt. Gesetzt wird das in den Eigenschaften der jeweiligen Seite."
     },
-    "config": {
-      "title": "Konfiguration dieses Arbeitsbereichs",
-      "description": "Diese Werte gelten nur hier. Alles andere kommt aus der Installation."
-    },
     "more": {
       "title": "Weitere Bereiche",
-      "automations": "Automationen öffnen",
-      "templates": "Vorlagen für PDF öffnen",
-      "shares": "Freigaben öffnen",
-      "description": "Regeln, die auf Änderungen an Seiten reagieren, mit dem Protokoll dessen, was sie getan haben. Womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen. Und was aus diesem Arbeitsbereich nach außen gegeben ist, an Konten und als öffentlicher Link."
+      "automations": "Automationen",
+      "templates": "Vorlagen für PDF",
+      "shares": "Freigaben",
+      "description": "Diese Bereiche gehören zum Arbeitsbereich, haben aber Listen, Protokolle oder einen eigenen Editor und sind deshalb eigene Seiten.",
+      "workflows": "Workflows",
+      "agentProfiles": "Agentenprofile",
+      "evals": "Evals"
     },
     "slug": {
       "label": "Slug",
@@ -785,8 +804,6 @@
       "description": "Agenten legen ihre Sitzungsnotizen in diesem Arbeitsbereich ab und finden sie beim nächsten Start wieder. Notizen verfallen hier nach der eingestellten Frist. Für einen Bereich, den du selbst pflegst, ist das nichts."
     },
     "members": {
-      "title": "Mitglieder",
-      "description": "Mitgliedschaften gelten immer ausdrücklich: wer eingeladen wird, landet genau in diesem Arbeitsbereich.",
       "invite": "Einladen",
       "caption": "Mitglieder dieses Arbeitsbereichs",
       "name": "Name",
@@ -806,10 +823,6 @@
       "ADMIN": "Administrator",
       "MEMBER": "Mitglied",
       "GUEST": "Gast"
-    },
-    "externalMcp": {
-      "title": "Externe MCP-Server",
-      "description": "Hier bindest du fremde MCP-Server an, zum Beispiel die Health-App. Jedes Werkzeug eines Servers ist zuerst gesperrt. Erst wenn du es dir angesehen und freigegeben hast, darf die KI es benutzen. Ändert der Server ein Werkzeug später, ist es wieder gesperrt."
     }
   },
   "externalMcp": {

@@ -23,7 +23,7 @@ import {
  * download is not a navigation, and a link to the page we are already on
  * (including a bare fragment) loses nothing.
  */
-function navigationTargetOf(event: MouseEvent): string | null {
+function navigationTargetOf(event: MouseEvent, pageIsAsked: boolean): string | null {
   if (event.defaultPrevented || event.button !== 0) return null;
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return null;
   const { target } = event;
@@ -34,6 +34,10 @@ function navigationTargetOf(event: MouseEvent): string | null {
 
   const destination = new URL(anchor.href, window.location.href);
   if (destination.origin !== window.location.origin) return null;
+  // Inside the settings dialog a link to the same page with another query
+  // switches its group, and the dialog asks about that itself; a second
+  // question from here would stand on top of its own.
+  if (pageIsAsked && destination.pathname === window.location.pathname) return null;
   if (
     destination.pathname === window.location.pathname &&
     destination.search === window.location.search
@@ -108,7 +112,7 @@ export function useUnsavedChangesGuard(
   React.useEffect(() => {
     if (!dirty) return;
     const intercept = (event: MouseEvent): void => {
-      const href = navigationTargetOf(event);
+      const href = navigationTargetOf(event, report !== null);
       if (href === null) return;
       // `preventDefault` and nothing more. `next/link` checks
       // `defaultPrevented` before it navigates, so that is enough to hold the
@@ -122,7 +126,7 @@ export function useUnsavedChangesGuard(
     // that bubbles would arrive after the navigation had already started.
     document.addEventListener('click', intercept, true);
     return () => document.removeEventListener('click', intercept, true);
-  }, [dirty]);
+  }, [dirty, report]);
 
   return (
     <UnsavedChangesDialog

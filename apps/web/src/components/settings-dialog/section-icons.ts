@@ -3,8 +3,14 @@ import {
   KeyIcon,
   LanguagesIcon,
   type LucideIcon,
+  MessageSquareTextIcon,
   PenLineIcon,
+  PlugIcon,
+  Settings2Icon,
+  ShieldIcon,
+  SlidersHorizontalIcon,
   SparklesIcon,
+  UsersIcon,
 } from 'lucide-react';
 
 import { type SettingsSectionId } from './sections';
@@ -13,7 +19,13 @@ import { type SettingsSectionId } from './sections';
 export const SETTINGS_SECTION_ICONS: Record<SettingsSectionId, LucideIcon> = {
   language: LanguagesIcon,
   editor: PenLineIcon,
-  chat: SparklesIcon,
+  chat: MessageSquareTextIcon,
   notifications: BellIcon,
   connections: KeyIcon,
+  workspace: Settings2Icon,
+  members: UsersIcon,
+  ai: SparklesIcon,
+  tools: PlugIcon,
+  overrides: SlidersHorizontalIcon,
+  admin: ShieldIcon,
 };

@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import {
   accountSettingsRedirect,
+  sectionReaches,
   SETTINGS_SECTIONS,
   settingsAddress,
   settingsRequestOf,
+  workspaceSettingsRedirect,
 } from './sections';
 
 describe('settingsRequestOf', () => {
@@ -60,5 +62,37 @@ describe('SETTINGS_SECTIONS', () => {
 
   it('sends an old account page to a workspace with the group open', () => {
     expect(accountSettingsRedirect('language')).toBe('/arbeitsbereich?einstellungen=language');
+  });
+
+  it('sends an old workspace tab to the group it became', () => {
+    expect(workspaceSettingsRedirect('ws1', 'general')).toBe(
+      '/arbeitsbereich/ws1?einstellungen=workspace',
+    );
+    expect(workspaceSettingsRedirect('ws1', 'tools')).toBe(
+      '/arbeitsbereich/ws1?einstellungen=tools',
+    );
+    expect(workspaceSettingsRedirect('ws1', null)).toBe(
+      '/arbeitsbereich/ws1?einstellungen=workspace',
+    );
+    expect(workspaceSettingsRedirect('ws1', 'nonsense')).toBe(
+      '/arbeitsbereich/ws1?einstellungen=workspace',
+    );
+  });
+});
+
+describe('sectionReaches', () => {
+  const member = { admin: false, workspaceRole: 'MEMBER' };
+  it('holds the workspace groups to the bars the API has', () => {
+    expect(sectionReaches('workspaceMember', member)).toBe(true);
+    expect(sectionReaches('workspaceAdmin', member)).toBe(false);
+    expect(sectionReaches('workspaceAdmin', { ...member, workspaceRole: 'ADMIN' })).toBe(true);
+    expect(sectionReaches('workspaceOwner', { ...member, workspaceRole: 'ADMIN' })).toBe(false);
+    expect(sectionReaches('workspaceOwner', { ...member, workspaceRole: 'OWNER' })).toBe(true);
+  });
+
+  it('shows no workspace group without a workspace and the Verwaltung to an admin only', () => {
+    expect(sectionReaches('workspaceMember', { admin: true, workspaceRole: null })).toBe(false);
+    expect(sectionReaches('admin', member)).toBe(false);
+    expect(sectionReaches('admin', { ...member, admin: true })).toBe(true);
   });
 });

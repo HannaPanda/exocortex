@@ -29,7 +29,37 @@
       "connections": {
         "label": "Verbindingen",
         "intro": "Hier zijn je agenten aan eXocortex gekoppeld: toepassingen die namens jou inloggen, tokens voor al het overige en kant-en-klare opdrachten voor de configuratie. Wanneer eXocortex uit zichzelf contact met je opneemt, vind je onder <link>Meldingen</link>."
+      },
+      "workspace": {
+        "label": "Algemeen",
+        "intro": "Naam en slug van deze werkruimte en of agenten hier hun geheugen opslaan. Daaronder de onderdelen die een eigen pagina hebben."
+      },
+      "members": {
+        "label": "Leden",
+        "intro": "Lidmaatschappen gelden altijd expliciet: wie wordt uitgenodigd, belandt precies in deze werkruimte."
+      },
+      "ai": {
+        "label": "AI",
+        "intro": "Onder welke voorwaarden de AI in deze werkruimte draait: met welke sleutel en volgens welke regels."
+      },
+      "tools": {
+        "label": "Externe tools",
+        "intro": "Hier koppel je externe MCP-servers, zoals de Gezondheid-app. Elke tool van een server is eerst geblokkeerd. Pas wanneer je deze hebt bekeken en goedgekeurd, mag de AI hem gebruiken. Wijzigt de server later een tool, dan wordt deze weer geblokkeerd."
+      },
+      "overrides": {
+        "label": "Configuratie",
+        "intro": "Zonder eigen waarde geldt hier wat voor de hele installatie is ingesteld. Wat je hier instelt, geldt alleen in deze werkruimte."
+      },
+      "admin": {
+        "label": "Overzicht",
+        "intro": "Wat voor de hele installatie geldt. Elk onderdeel van het beheer is een eigen pagina, omdat het tabellen en lijsten bevat waarvoor over een geopende pagina geen plek is."
       }
+    },
+    "workspacePicker": "Werkruimte kiezen",
+    "loading": "Laden …",
+    "admin": {
+      "pages": "Beheerpagina’s",
+      "groups": "Instellingen van de installatie per categorie"
     }
   },
   "language": {
@@ -712,7 +742,6 @@
     "ignoredDescription": "In de database staat voor {count, plural, one {deze instelling} other {deze instellingen}} een ongeldige waarde: {labels}. De installatie draait in plaats daarvan met de standaardwaarde. Eenmaal opslaan vervangt de foutieve regel."
   },
   "workspaceForm": {
-    "intro": "Zonder eigen waarde geldt hier wat voor de hele installatie is ingesteld. Wat je hier instelt, geldt alleen in deze werkruimte.",
     "invalid": "Een invoer is niet geldig, er is niets opgeslagen.",
     "ownValue": "Eigen waarde",
     "reset": "Herstellen naar installatiewaarde",
@@ -740,16 +769,7 @@
     "footnote": "De sleutel wordt versleuteld opgeslagen en nooit meer weergegeven. Hiermee worden de AI-runs van deze werkruimte betaald. De zoekfunctie blijft de sleutel van de installatie gebruiken, omdat alle embeddings in dezelfde vectorruimte moeten liggen."
   },
   "workspace": {
-    "title": "Werkruimte-instellingen",
     "loading": "Werkruimte wordt geladen …",
-    "summary": "{name} · {count, plural, one {# lid} other {# leden}}",
-    "tabs": {
-      "general": "Algemeen",
-      "members": "Leden",
-      "ai": "AI",
-      "settings": "Instellingen",
-      "tools": "Externe tools"
-    },
     "readOnly": "Alleen eigenaars en beheerders van deze werkruimte kunnen deze hernoemen of de slug wijzigen.",
     "nameLabel": "Naam",
     "save": "Opslaan",
@@ -763,16 +783,15 @@
       "title": "AI-regels",
       "description": "Pagina’s die de AI als instructie behandelt. Dit wordt ingesteld in de eigenschappen van de betreffende pagina."
     },
-    "config": {
-      "title": "Configuratie van deze werkruimte",
-      "description": "Deze waarden gelden alleen hier. Al het andere komt uit de installatie."
-    },
     "more": {
       "title": "Meer onderdelen",
-      "automations": "Automatiseringen openen",
-      "templates": "Sjablonen voor pdf openen",
-      "shares": "Delingen openen",
-      "description": "Regels die reageren op wijzigingen aan pagina’s, inclusief een logboek van wat ze hebben gedaan. Waarmee pagina’s uit deze werkruimte als pdf kunnen worden gepubliceerd. En wat er vanuit deze werkruimte extern is gedeeld, met accounts of via een openbare link."
+      "automations": "Automatiseringen",
+      "templates": "Sjablonen voor pdf",
+      "shares": "Delingen",
+      "description": "Deze onderdelen horen bij de werkruimte, maar hebben lijsten, logboeken of een eigen editor en zijn daarom eigen pagina’s.",
+      "workflows": "Workflows",
+      "agentProfiles": "Agentprofielen",
+      "evals": "Evals"
     },
     "slug": {
       "label": "Slug",
@@ -785,8 +804,6 @@
       "description": "Agenten slaan hun sessienotities op in deze werkruimte en vinden ze bij de volgende start weer terug. Notities vervallen hier na de ingestelde termijn. Dit is niet bedoeld voor een werkruimte die je zelf bijhoudt."
     },
     "members": {
-      "title": "Leden",
-      "description": "Lidmaatschappen gelden altijd specifiek: wie wordt uitgenodigd, krijgt toegang tot precies deze werkruimte.",
       "invite": "Uitnodigen",
       "caption": "Leden van deze werkruimte",
       "name": "Naam",
@@ -806,10 +823,6 @@
       "ADMIN": "Beheerder",
       "MEMBER": "Lid",
       "GUEST": "Gast"
-    },
-    "externalMcp": {
-      "title": "Externe MCP-servers",
-      "description": "Hier koppel je externe MCP-servers, bijvoorbeeld de Health-app. Elk tool van een server is eerst geblokkeerd. Pas wanneer je het hebt bekeken en goedgekeurd, mag de AI het gebruiken. Wijzigt de server een tool later, dan is het weer geblokkeerd."
     }
   },
   "externalMcp": {

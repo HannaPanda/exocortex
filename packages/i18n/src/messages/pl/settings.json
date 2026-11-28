@@ -29,7 +29,37 @@
       "connections": {
         "label": "Połączenia",
         "intro": "Tutaj twoi agenci łączą się z eXocortex: aplikacje logujące się w twoim imieniu, tokeny do wszystkiego innego oraz gotowe polecenia konfiguracyjne. To, kiedy eXocortex kontaktuje się z tobą z własnej inicjatywy, znajdziesz w sekcji <link>Powiadomienia</link>."
+      },
+      "workspace": {
+        "label": "Ogólne",
+        "intro": "Nazwa i slug tego obszaru roboczego oraz to, czy agenci zapisują tu swoją pamięć. Poniżej znajdują się sekcje mające własne strony."
+      },
+      "members": {
+        "label": "Członkowie",
+        "intro": "Członkostwo zawsze działa jednoznacznie: zaproszona osoba trafia dokładnie do tego obszaru roboczego."
+      },
+      "ai": {
+        "label": "SI",
+        "intro": "Na jakich warunkach działa SI w tym obszarze roboczym: z jakim kluczem i według jakich reguł."
+      },
+      "tools": {
+        "label": "Narzędzia zewnętrzne",
+        "intro": "Tutaj podłączasz zewnętrzne serwery MCP, na przykład aplikację Zdrowie. Każde narzędzie serwera jest początkowo zablokowane. Dopiero po jego przejrzeniu i zatwierdzeniu SI może z niego korzystać. Jeśli serwer zmieni później narzędzie, zostanie ono ponownie zablokowane."
+      },
+      "overrides": {
+        "label": "Konfiguracja",
+        "intro": "Bez własnej wartości obowiązują tu ustawienia całej instalacji. To, co ustawisz tutaj, obowiązuje tylko w tym obszarze roboczym."
+      },
+      "admin": {
+        "label": "Przegląd",
+        "intro": "To, co obowiązuje dla całej instalacji. Każda sekcja administracji to osobna strona, ponieważ zawiera tabele i listy, na które nie ma miejsca nad otwartą stroną."
       }
+    },
+    "workspacePicker": "Wybierz obszar roboczy",
+    "loading": "Ładowanie…",
+    "admin": {
+      "pages": "Strony administracji",
+      "groups": "Ustawienia instalacji według sekcji"
     }
   },
   "language": {
@@ -712,7 +742,6 @@
     "ignoredDescription": "W bazie danych znajduje się niedopuszczalna wartość dla {count, plural, one {tego ustawienia} few {tych ustawień} many {tych ustawień} other {tych ustawień}}: {labels}. Zamiast tego instalacja działa z wartościami domyślnymi. Jednokrotne zapisanie zastąpi błędny wiersz."
   },
   "workspaceForm": {
-    "intro": "Bez podania własnej wartości obowiązuje to, co ustawiono dla całej instalacji. To, co ustawisz tutaj, obowiązuje tylko w tym obszarze roboczym.",
     "invalid": "Jedna z wprowadzonych wartości jest niedopuszczalna, nic nie zostało zapisane.",
     "ownValue": "Własna wartość",
     "reset": "Przywróć wartość instalacji",
@@ -740,16 +769,7 @@
     "footnote": "Klucz jest przechowywany w postaci zaszyfrowanej i nigdy więcej nie zostanie wyświetlony. Pokrywa on koszty zadań AI tego obszaru roboczego. Wyszukiwanie nadal korzysta z klucza instalacji, ponieważ wszystkie osadzenia muszą znajdować się w tej samej przestrzeni wektorowej."
   },
   "workspace": {
-    "title": "Ustawienia obszaru roboczego",
     "loading": "Ładowanie obszaru roboczego…",
-    "summary": "{name} · {count, plural, one {# członek} few {# członkowie} many {# członków} other {# członka}}",
-    "tabs": {
-      "general": "Ogólne",
-      "members": "Członkowie",
-      "ai": "AI",
-      "settings": "Ustawienia",
-      "tools": "Narzędzia zewnętrzne"
-    },
     "readOnly": "Tylko właściciele i administratorzy tego obszaru roboczego mogą zmienić jego nazwę lub slug.",
     "nameLabel": "Nazwa",
     "save": "Zapisz",
@@ -763,16 +783,15 @@
       "title": "Reguły AI",
       "description": "Strony, które AI traktuje jako instrukcje. Ustawia się to we właściwościach danej strony."
     },
-    "config": {
-      "title": "Konfiguracja tego obszaru roboczego",
-      "description": "Te wartości obowiązują tylko tutaj. Cała reszta pochodzi z instalacji."
-    },
     "more": {
       "title": "Pozostałe sekcje",
-      "automations": "Otwórz automatyzacje",
-      "templates": "Otwórz szablony PDF",
-      "shares": "Otwórz udostępnienia",
-      "description": "Reguły reagujące na zmiany stron wraz z rejestrem ich działań. Narzędzia do publikowania stron tego obszaru roboczego jako PDF. Oraz elementy tego obszaru roboczego udostępnione na zewnątrz – kontom i w postaci publicznego linku."
+      "automations": "Automatyzacje",
+      "templates": "Szablony PDF",
+      "shares": "Udostępnienia",
+      "description": "Te sekcje należą do obszaru roboczego, ale mają listy, dzienniki lub własny edytor i dlatego stanowią osobne strony.",
+      "workflows": "Workflows",
+      "agentProfiles": "Profile agentów",
+      "evals": "Ewaluacje"
     },
     "slug": {
       "label": "Slug",
@@ -785,8 +804,6 @@
       "description": "Agenci zapisują notatki z sesji w tym obszarze roboczym i odnajdują je przy kolejnym uruchomieniu. Notatki wygasają po upływie ustawionego czasu. Ta opcja nie jest przeznaczona dla obszaru, który prowadzisz samodzielnie."
     },
     "members": {
-      "title": "Członkowie",
-      "description": "Członkostwo zawsze obowiązuje bezpośrednio: zaproszona osoba trafia dokładnie do tego obszaru roboczego.",
       "invite": "Zaproś",
       "caption": "Członkowie tego obszaru roboczego",
       "name": "Imię i nazwisko",
@@ -806,10 +823,6 @@
       "ADMIN": "Administrator",
       "MEMBER": "Członek",
       "GUEST": "Gość"
-    },
-    "externalMcp": {
-      "title": "Zewnętrzne serwery MCP",
-      "description": "Tutaj podłączasz zewnętrzne serwery MCP, na przykład aplikację Zdrowie. Każde narzędzie serwera jest początkowo zablokowane. Dopiero po jego sprawdzeniu i zatwierdzeniu SI może z niego korzystać. Jeśli serwer zmieni narzędzie później, zostanie ono ponownie zablokowane."
     }
   },
   "externalMcp": {

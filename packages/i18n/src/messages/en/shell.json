@@ -280,10 +280,6 @@
         "label": "Open templates",
         "keywords": "template pattern"
       },
-      "workspaceSettings": {
-        "label": "Workspace settings",
-        "keywords": "workspace settings rename name"
-      },
       "admin": {
         "label": "Open administration",
         "keywords": "administration admin installation overview"
@@ -333,14 +329,6 @@
         "projects": "project latex build compile",
         "agents": "agents session inbox"
       },
-      "workspaceMembers": "Manage members",
-      "workspaceMembersKeywords": "members invite people roles access workspace",
-      "workspaceTools": "External MCP servers and their tools",
-      "workspaceToolsKeywords": "mcp server external tools share health connect connection integration",
-      "workspaceAi": "Workspace AI settings",
-      "workspaceAiKeywords": "ai key api key custom byok openrouter workspace",
-      "workspaceOverrides": "Workspace overrides",
-      "workspaceOverridesKeywords": "settings override workspace",
       "menu": "Settings",
       "menuKeywords": "settings options configuration preferences",
       "menuPlaceholder": "Which settings?",
@@ -368,6 +356,30 @@
       "connections": {
         "label": "Open connections",
         "keywords": "connection connector plugin integration mcp token api key claude chatgpt access token oauth app disconnect hermes codex set up"
+      },
+      "workspace": {
+        "label": "Workspace settings",
+        "keywords": "workspace settings rename name slug memory automations templates shares"
+      },
+      "members": {
+        "label": "Manage members",
+        "keywords": "members invite people roles access workspace"
+      },
+      "ai": {
+        "label": "Workspace AI settings",
+        "keywords": "ai key api key own byok openrouter workspace rules rule"
+      },
+      "tools": {
+        "label": "External MCP servers and tools",
+        "keywords": "mcp server external tools approve share health connect connection integration"
+      },
+      "overrides": {
+        "label": "Workspace setting overrides",
+        "keywords": "settings override workspace configuration"
+      },
+      "admin": {
+        "label": "Administration in settings",
+        "keywords": "administration admin installation deployment"
       }
     },
     "create": {
