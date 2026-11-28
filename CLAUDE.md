@@ -233,13 +233,18 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
 
-`build.sh` is the one to reach for: it runs the fourteen hard gates that have no
+`build.sh` is the one to reach for: it runs the fifteen hard gates that have no
 bypass (package boundaries, `.env.example` sync, brand spelling, semantic
 colours, MCP catalogue completeness, capability parity, feature registry
 coverage, command palette coverage, documentation currency, the unit/integration test split, typecheck
-coverage, migration reproducibility, message catalogue parity, the inline
-text ratchet) as well as the checks below, in the right order and without
-racing the live units for memory. `deploy/README.md` explains what each step does.
+coverage, migration reproducibility, message catalogue parity, the message
+keys the code uses, the inline text ratchet) as well as the checks below, in
+the right order and without racing the live units for memory. Every heavy step
+runs inside a memory limit of its own (`scripts/memory-scope.sh`, issue #325):
+`EXOCORTEX_BUILD_MEMORY_MAX` (default 5G) for builds, linters and tests,
+`EXOCORTEX_TYPECHECK_MEMORY_MAX` (default 4G) for the typecheck, `off` for
+none, and no limit where there is no systemd user session (the CI runner).
+`deploy/README.md` explains what each step does.
 
 The same script is the whole of `.github/workflows/build.yml`: the CI installs
 Node, pnpm and nothing else, then runs `bash scripts/build.sh`. A check that has
@@ -257,7 +262,8 @@ pnpm lint              # dependency boundaries, then oxlint, then ESLint --
                        # eslint.config.mjs holds only what oxlint cannot say.
 pnpm lint:fix          # the mechanical half of both
 pnpm format            # Prettier over the tree; format:check is what build.sh runs
-pnpm typecheck
+pnpm typecheck         # key gate first, then turbo at concurrency 4, inside
+                       # EXOCORTEX_TYPECHECK_MEMORY_MAX (scripts/typecheck.sh)
 pnpm test:unit         # every test that needs no infrastructure, in every
                        # workspace -- this is what build.sh and CI run, on
                        # half the cores (scripts/run-tests.mjs, issue #313;
@@ -275,13 +281,22 @@ pnpm test:styleguide   # screenshot baselines, axe and keyboard checks on
                        # test:styleguide:update rewrites the baselines
 ```
 
-Typecheck through turbo, never with a bare `tsc` inside a workspace:
-`pnpm typecheck` for everything, `pnpm turbo run typecheck --filter=@exocortex/web`
-for one workspace. Turbo builds the packages a workspace depends on first
-(`dependsOn: ["^build"]`); a bare `tsc` checks against whatever `dist/` happens
-to be lying around. A stale `dist/` of `@exocortex/i18n` once made a new message
-namespace a type error in `apps/web`, and `tsc` spent more than 6 GB trying to
-explain it, which starved the live units on this host.
+Typecheck through `pnpm typecheck`, never with a bare `tsc` inside a workspace:
+`pnpm typecheck` for everything, `pnpm typecheck --filter=@exocortex/web` for
+one workspace (any turbo argument passes through). Turbo builds the packages a
+workspace depends on first (`dependsOn: ["^build"]`); a bare `tsc` checks
+against whatever `dist/` happens to be lying around. A namespace the German
+catalogue lacks makes tsc explain every `t()` against the whole catalogue: a
+stale `dist/` of `@exocortex/i18n` took it past 6 GB in October, a missing
+`database.aiFill` past 5 GB on 2026-11-27, and both times the live units on
+this host starved. So `pnpm typecheck` first runs `scripts/check-i18n-keys.mjs`
+(three seconds, file and line of every missing namespace or literal key), then
+turbo at a concurrency of four (2.7 GB instead of 4.1 GB, same time) inside
+`EXOCORTEX_TYPECHECK_MEMORY_MAX`, which ends a runaway tsc with a message
+instead of letting it take the host. `pnpm turbo run typecheck` directly gets
+neither; do not use it on this host. Add new keys to the German catalogue
+before the component that reads them, and build `@exocortex/i18n` before
+type-checking (`docs/i18n.md`).
 
 A test belongs to one half or the other by its file name, and the test-split
 gate enforces it: `*.integration.test.ts` may open a database, Redis or storage

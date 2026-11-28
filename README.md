@@ -400,23 +400,23 @@ Details, ports and troubleshooting: [`docs/local-development.md`](docs/local-dev
 
 ## Commands
 
-| Command                                    | Purpose                                                |
-| ------------------------------------------ | ------------------------------------------------------ |
-| `pnpm install`                             | install all workspace dependencies                     |
-| `pnpm infra:up` / `pnpm infra:down`        | start/stop the Docker infrastructure                   |
-| `pnpm dev`                                 | run web, api, collaboration and worker in watch mode   |
-| `pnpm build`                               | build every package and application                    |
-| `pnpm lint`                                | dependency boundaries, then oxlint, then ESLint        |
-| `pnpm typecheck`                           | strict TypeScript: sources, operator scripts, tooling  |
-| `pnpm test:unit`                           | every test that needs no infrastructure                |
-| `pnpm test:integration`                    | `*.integration.test.ts` on a throwaway stack           |
-| `pnpm test`                                | both halves at once                                    |
-| `pnpm test:gates`                          | proves each hard gate can still go red                 |
-| `pnpm test:e2e`                            | Playwright suite against a running deployment          |
-| `pnpm test:styleguide`                     | screenshots, axe and keyboard checks on the styleguide |
-| `pnpm db:migrate` / `db:seed` / `db:reset` | database lifecycle                                     |
-| `pnpm format`                              | Prettier                                               |
-| `pnpm i18n:translate --all`                | translate new or changed German messages               |
+| Command                                    | Purpose                                                                                                 |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `pnpm install`                             | install all workspace dependencies                                                                      |
+| `pnpm infra:up` / `pnpm infra:down`        | start/stop the Docker infrastructure                                                                    |
+| `pnpm dev`                                 | run web, api, collaboration and worker in watch mode                                                    |
+| `pnpm build`                               | build every package and application                                                                     |
+| `pnpm lint`                                | dependency boundaries, then oxlint, then ESLint                                                         |
+| `pnpm typecheck`                           | catalogue keys first, then strict TypeScript: sources, operator scripts, tooling, inside a memory limit |
+| `pnpm test:unit`                           | every test that needs no infrastructure                                                                 |
+| `pnpm test:integration`                    | `*.integration.test.ts` on a throwaway stack                                                            |
+| `pnpm test`                                | both halves at once                                                                                     |
+| `pnpm test:gates`                          | proves each hard gate can still go red                                                                  |
+| `pnpm test:e2e`                            | Playwright suite against a running deployment                                                           |
+| `pnpm test:styleguide`                     | screenshots, axe and keyboard checks on the styleguide                                                  |
+| `pnpm db:migrate` / `db:seed` / `db:reset` | database lifecycle                                                                                      |
+| `pnpm format`                              | Prettier                                                                                                |
+| `pnpm i18n:translate --all`                | translate new or changed German messages                                                                |
 
 Before handing work over there is one entry point rather than ten:
 `bash scripts/build.sh` runs the hard gates, the sequential build and the

@@ -335,11 +335,12 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
 1. **Headroom.** Under 1 GB available is a refusal, under 2 GB a warning. This
    host has 16 GB shared with everything else on it, the four units keep serving
    throughout, and the Next.js build alone can summon the OOM killer — which does
-   not pick its victim carefully and may take a live unit instead.
+   not pick its victim carefully and may take a live unit instead. The step
+   also prints which memory limits apply (see "Memory limits" below).
 2. **`pnpm install --frozen-lockfile`.** A build installs exactly what the commit
    records. If the lockfile is behind, run `pnpm install` by hand and commit it.
 3. **Prisma client**, before anything type-checks against it.
-4. **The hard gates.** Always on, no bypass, roughly six seconds together:
+4. **The hard gates.** Always on, no bypass, about fifteen seconds together (half of it the migration gate's container):
 
    | Gate                               | Catches                                                                                                                                          |
    | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -356,6 +357,7 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    | `check-typecheck-coverage.mjs`     | a TypeScript file outside every tsconfig, tests included, and a project file nothing runs (issue #95, issue #99)                                 |
    | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                                                                              |
    | `check-i18n.mjs`                   | a locale missing a key German has, a translation whose ICU arguments or plural categories drifted, a stale machine translation (ADR-062)         |
+   | `check-i18n-keys.mjs`              | a namespace or literal key the code asks a translator for that the German catalogue lacks, with file and line, before tsc sees it (issue #325)   |
    | `check-i18n-literals.mjs`          | a file that gained inline German interface text, and a baseline left looser than the code it describes (issue #98)                               |
 
    Each one prints its findings and one sentence on how to fix them. The
@@ -548,9 +550,46 @@ last check and the worker restart. Neither is a deploy failure, but the second
 one cost somebody an answer, so look at which it was:
 `SELECT id, status, "createdAt", "heartbeatAt", "errorCode" FROM ai_run WHERE "errorCode" = 'ai_run_abandoned' ORDER BY "createdAt" DESC LIMIT 5;`.
 
+### Memory limits
+
+Every heavy step of `build.sh` runs in a systemd scope of its own with a hard
+memory limit (`scripts/memory-scope.sh`, issue #325): each package's build,
+oxlint, ESLint, the typecheck, the gate tests and the test suites. The scope
+is a cgroup, so reaching the limit ends the largest process inside it and
+nothing else: no live unit, no other session. `MemorySwapMax=0`, because a
+step pushed into swap thrashes the whole host instead of failing, and
+`OOMPolicy=continue`, so the script inside the scope survives to say what
+happened.
+
+| Variable                         | Default | Applies to                                             | Measured peak (2026-11-28)                                 |
+| -------------------------------- | ------- | ------------------------------------------------------ | ---------------------------------------------------------- |
+| `EXOCORTEX_TYPECHECK_MEMORY_MAX` | `4G`    | `pnpm typecheck` (by hand too: `scripts/typecheck.sh`) | 2.7 GB uncached, turbo at a concurrency of four            |
+| `EXOCORTEX_BUILD_MEMORY_MAX`     | `5G`    | builds, linters, gate tests, test suites               | oxlint 3.0 GB, cold `next build` 2.8 GB, gate tests 2.7 GB |
+
+Both take a size systemd understands (`6G`, `3500M`) or `off`, in front of the
+command: `EXOCORTEX_TYPECHECK_MEMORY_MAX=6G bash scripts/deploy.sh`. The limits
+cover the steps, not the scripts: `pnpm install`, the gates and everything
+`deploy.sh` does after the build (sudo, systemctl, migrations) run as before.
+Where `systemd-run --user` cannot open a scope (the CI runner, a container) the
+steps run without a limit; step 1 says which applies.
+
+Why the typecheck has its own, tighter limit: a namespace the German catalogue
+lacks makes tsc explain every `t()` against the whole catalogue, and on
+2026-11-27 that took the web typecheck past 5 GB and held this host for most
+of an hour. `check-i18n-keys.mjs` now catches the literal cases in seconds
+before anything type-checks; the limit is for what it cannot see. Turbo runs
+the typecheck at a concurrency of four, measured at the same 30 seconds as its
+default of ten and a third less memory (4.1 GB at ten).
+
+A step ended at its limit exits 137 and prints which step, which limit and
+which variable, and the most common cause.
+
 ### When a build is killed rather than failing
 
-That is the OOM killer, not a bug in the code. Check `dmesg | tail`, free memory,
+If the lines above it name a memory limit, it was that step's own scope (see
+"Memory limits"): nothing else was touched, and the usual cause is a missing
+catalogue key or a stale `dist/` of `@exocortex/i18n`. Otherwise it is the
+host's OOM killer, not a bug in the code. Check `dmesg | tail`, free memory,
 and do not retry in a loop.
 
 ### Tracing, when a question needs a timeline
