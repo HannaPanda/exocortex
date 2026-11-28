@@ -933,6 +933,16 @@
     },
     "where": "The input field on the home page of each workspace, and the button with the two arrows at the top of the AI pane."
   },
+  "chat-breiter-ziehen": {
+    "title": "Resizing the AI chat wider",
+    "summary": "The context panel on the right, which holds the AI chat, can be dragged wider at its left edge—well beyond the former limit on a wide screen. This browser remembers the width.",
+    "details": {
+      "p1": "Grab the left edge of the context panel with the mouse and drag it to the left. With the keyboard, select the edge using the Tab key and use the arrow keys (with Shift for larger steps); Home and End jump to the limits. Double-clicking the edge resets the width, which also applies to the navigation on the left.",
+      "p2": "How wide it can get depends on the window: the page next to it always keeps a width that leaves its text readable. If the window gets smaller, the panel moves along with it, and your width returns as soon as there is space again. The chat itself expands up to a comfortable line length and is then centered, just like in full-screen chat; comments, references, and history use the full width.",
+      "p3": "On mobile, the context panel still opens over the page and cannot be dragged. If you need the chat even larger, the button with the two arrows at the top of the AI panel gives it the full space."
+    },
+    "where": "The left edge of the context panel, to the right of the page."
+  },
   "chat-je-tab": {
     "title": "Working in multiple tabs with different chats",
     "summary": "Each browser tab has its own chat, and each page in it remembers which chat was last open beside it. Switching chats in one tab leaves the other tabs untouched.",

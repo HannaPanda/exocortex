@@ -933,6 +933,16 @@
     },
     "where": "Het invoerveld op de startpagina van elke werkruimte, en de knop met de twee pijlen bovenin het AI-gedeelte."
   },
+  "chat-breiter-ziehen": {
+    "title": "De AI-chat breder maken",
+    "summary": "Het contextgebied aan de rechterkant, waarin de AI-chat staat, kan aan de linkerrand breder worden gesleept, op een breed scherm ver voorbij de vroegere limiet. Deze browser onthoudt de breedte.",
+    "details": {
+      "p1": "Pak de linkerrand van het contextgebied met de muis en sleep deze naar links. Met het toetsenbord selecteer je de rand met de Tab-toets en gebruik je de pijltjestoetsen (met Shift in grotere stappen); Home en End springen naar de uitersten. Een dubbelklik op de rand herstelt de breedte, net zoals bij de navigatie aan de linkerkant.",
+      "p2": "Hoe breed het kan, hangt af van het venster: de pagina ernaast behoudt altijd een breedte waarop de tekst nog goed leesbaar is. Wordt het venster kleiner, dan schuift het gebied mee, en je breedte komt terug zodra er weer ruimte is. De chat zelf groeit mee tot een comfortabele regellengte en staat dan gecentreerd, net als in de schermvullende chat; opmerkingen, verwijzingen en geschiedenis benutten de volledige breedte.",
+      "p3": "Op een mobiele telefoon opent het contextgebied zich over de pagina heen en kan niet worden versleept. Heb je de chat nog groter nodig, dan geeft de knop met de twee pijlen bovenaan in het AI-gebied de volledige ruimte."
+    },
+    "where": "De linkerrand van het contextgebied, rechts naast de pagina."
+  },
   "chat-je-tab": {
     "title": "In meerdere tabbladen met verschillende chats werken",
     "summary": "Elk browsertabblad heeft zijn eigen chat, en elke pagina onthoudt daarin welke chat er het laatst naast openstond. Wissel je in het ene tabblad van chat, dan blijven de andere tabbladen zoals ze zijn.",

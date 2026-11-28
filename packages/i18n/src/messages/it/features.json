@@ -933,6 +933,16 @@
     },
     "where": "Il campo di inserimento nella pagina iniziale di ogni area di lavoro e il pulsante con le due frecce in alto nell’area IA."
   },
+  "chat-breiter-ziehen": {
+    "title": "Allargare la chat dell’IA",
+    "summary": "Il pannello contestuale a destra, in cui si trova la chat dell’IA, può essere allargato trascinandone il bordo sinistro, su schermi ampi ben oltre il limite precedente. Questo browser ne memorizza la larghezza.",
+    "details": {
+      "p1": "Afferra il bordo sinistro del pannello contestuale con il mouse e trascinalo verso sinistra. Con la tastiera, seleziona il bordo con il tasto Tab e usa i tasti freccia (con Maiusc per spostamenti più ampi); Inizio e Fine saltano direttamente ai limiti. Un doppio clic sul bordo ripristina la larghezza originale, esattamente come per la barra di navigazione a sinistra.",
+      "p2": "La larghezza massima dipende dalle dimensioni della finestra: la pagina a fianco mantiene sempre una larghezza sufficiente per leggerne il testo. Se la finestra si rimpicciolisce, il pannello si adatta di conseguenza e recupera la larghezza impostata non appena torna disponibile dello spazio. La chat stessa si allarga fino a una lunghezza comoda delle righe e resta quindi centrata, proprio come nella visualizzazione a schermo intero; commenti, riferimenti e cronologia sfruttano invece l’intera larghezza.",
+      "p3": "Sullo smartphone, il pannello contestuale si apre sopra la pagina e non può essere ridimensionato. Se hai bisogno di una chat ancora più grande, il pulsante con le due frecce in alto nell’area dell’IA le riserva l’intero spazio disponibile."
+    },
+    "where": "Il bordo sinistro del pannello contestuale, a destra della pagina."
+  },
   "chat-je-tab": {
     "title": "Lavorare con chat diverse in più schede",
     "summary": "Ogni scheda del browser ha la propria chat e ogni pagina ricorda quale chat era aperta per ultima accanto ad essa. Se cambi chat in una scheda, le altre schede rimangono invariate.",

@@ -40,6 +40,13 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     ui: {},
   }),
   defineFeature({
+    id: 'chat-breiter-ziehen',
+    area: 'ki',
+    since: '2026-11-28',
+    references: ['#246', '#288'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'markierung-an-ki',
     area: 'ki',
     since: '2026-11-26',

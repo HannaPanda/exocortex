@@ -933,6 +933,16 @@
     },
     "where": "Le champ de saisie sur la page d’accueil de chaque espace de travail, et le bouton avec deux flèches en haut du volet IA."
   },
+  "chat-breiter-ziehen": {
+    "title": "Élargir le chat IA",
+    "summary": "Le panneau contextuel à droite, où se trouve le chat IA, peut être élargi depuis son bord gauche, bien au-delà de l’ancienne limite sur un écran large. Ce navigateur mémorise la largeur.",
+    "details": {
+      "p1": "Saisis le bord gauche du panneau contextuel avec la souris et glisse-le vers la gauche. Au clavier, sélectionne la bordure avec la touche Tab puis utilise les touches fléchées (avec Maj pour de plus grands pas) ; Début et Fin permettent d’atteindre directement les limites. Un double-clic sur le bord réinitialise la largeur, tout comme pour le menu de navigation à gauche.",
+      "p2": "La largeur maximale dépend de la fenêtre : la page à côté conserve toujours une largeur suffisante pour que son texte reste lisible. Si la fenêtre rétrécit, le panneau s’adapte, et ta largeur revient dès qu’il y a de nouveau de la place. Le chat lui-même s’élargit jusqu’à une longueur de ligne confortable puis reste centré, comme dans le chat plein écran ; les commentaires, références et l’historique exploitent toute la largeur.",
+      "p3": "Sur mobile, le panneau contextuel s’ouvre par-dessus la page et ne peut pas être redimensionné. Si tu as besoin d’un chat encore plus grand, le bouton avec les deux flèches en haut du panneau IA lui accorde tout l’espace."
+    },
+    "where": "Le bord gauche du panneau contextuel, à droite de la page."
+  },
   "chat-je-tab": {
     "title": "Travailler dans plusieurs onglets avec différents chats",
     "summary": "Chaque onglet du navigateur a son propre chat, et chaque page s’y souvient du dernier chat ouvert à côté d’elle. Si tu changes de chat dans un onglet, les autres onglets ne sont pas modifiés.",

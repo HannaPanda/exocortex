@@ -933,6 +933,16 @@
     },
     "where": "Das Eingabefeld auf der Startseite jedes Arbeitsbereichs, und der Knopf mit den zwei Pfeilen oben im KI-Bereich."
   },
+  "chat-breiter-ziehen": {
+    "title": "Den KI-Chat breiter ziehen",
+    "summary": "Der Kontextbereich rechts, in dem der KI-Chat steht, lässt sich am linken Rand breiter ziehen, auf einem breiten Bildschirm weit über die frühere Grenze hinaus. Dieser Browser merkt sich die Breite.",
+    "details": {
+      "p1": "Fass den linken Rand des Kontextbereichs mit der Maus und zieh ihn nach links. Mit der Tastatur wählst du den Rand mit der Tabulatortaste und nimmst die Pfeiltasten (mit Umschalt in größeren Schritten), Pos1 und Ende springen an die Grenzen. Ein Doppelklick auf den Rand setzt die Breite zurück, das gilt genauso für die Navigation links.",
+      "p2": "Wie breit es geht, hängt vom Fenster ab: die Seite daneben behält immer eine Breite, in der sich ihr Text noch lesen lässt. Wird das Fenster kleiner, rückt der Bereich mit, und deine Breite kommt zurück, sobald wieder Platz ist. Der Chat selbst wächst bis zu einer bequemen Zeilenlänge mit und steht dann in der Mitte, wie im bildschirmfüllenden Chat; Kommentare, Verweise und Verlauf nutzen die ganze Breite.",
+      "p3": "Auf dem Handy öffnet sich der Kontextbereich weiter über der Seite und lässt sich nicht ziehen. Brauchst du den Chat noch größer, gibt ihm der Knopf mit den zwei Pfeilen oben im KI-Bereich den ganzen Platz."
+    },
+    "where": "Der linke Rand des Kontextbereichs, rechts neben der Seite."
+  },
   "chat-je-tab": {
     "title": "In mehreren Tabs mit verschiedenen Chats arbeiten",
     "summary": "Jeder Browser-Tab hat seinen eigenen Chat, und jede Seite merkt sich darin, welcher Chat zuletzt neben ihr stand. Wechselst du in einem Tab den Chat, bleiben die anderen Tabs, wie sie sind.",

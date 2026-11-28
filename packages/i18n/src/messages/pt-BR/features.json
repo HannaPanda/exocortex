@@ -933,6 +933,16 @@
     },
     "where": "O campo de entrada na página inicial de cada espaço de trabalho e o botão com as duas setas no topo da área de IA."
   },
+  "chat-breiter-ziehen": {
+    "title": "Alargar o chat com IA",
+    "summary": "O painel de contexto à direita, onde fica o chat com IA, pode ser alargado pela borda esquerda – em telas largas, bem além do limite anterior. Este navegador lembra a largura definida.",
+    "details": {
+      "p1": "Segure a borda esquerda do painel de contexto com o mouse e arraste-a para a esquerda. Pelo teclado, selecione a borda usando a tecla Tab e utilize as setas direcionais (com Shift para passos maiores); as teclas Home e End vão direto aos limites. Um clique duplo na borda redefine a largura, o que também vale para a navegação à esquerda.",
+      "p2": "A largura máxima depende da janela: a página ao lado sempre mantém uma largura confortável para leitura do texto. Se a janela diminuir, o painel se ajusta junto, e a largura escolhida volta assim que houver espaço novamente. O chat em si cresce até uma extensão de linha confortável e então fica centralizado, como no modo de tela cheia; comentários, referências e histórico aproveitam a largura total.",
+      "p3": "No celular, o painel de contexto continua abrindo sobre a página e não pode ser arrastado. Se precisar do chat ainda maior, o botão com duas setas na parte superior do painel de IA expande a exibição para ocupar todo o espaço."
+    },
+    "where": "A borda esquerda do painel de contexto, à direita da página."
+  },
   "chat-je-tab": {
     "title": "Trabalhar em várias abas com chats diferentes",
     "summary": "Cada aba do navegador tem seu próprio chat, e cada página se lembra de qual chat esteve ao lado dela por último. Se você trocar de chat em uma aba, as outras abas continuam como estão.",

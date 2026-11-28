@@ -13676,6 +13676,30 @@
       "source": "b548b30f12ad6d1e",
       "output": "e266b0211ed6fa0d"
     },
+    "features.chat-breiter-ziehen.details.p1": {
+      "source": "6d9793526e43120a",
+      "output": "22f84b1f3e8ed14e"
+    },
+    "features.chat-breiter-ziehen.details.p2": {
+      "source": "1e72b906b29e6ead",
+      "output": "5f9d0b6b6102834a"
+    },
+    "features.chat-breiter-ziehen.details.p3": {
+      "source": "b1aa85ac952f1f6c",
+      "output": "0b1d54ea68ddfba7"
+    },
+    "features.chat-breiter-ziehen.summary": {
+      "source": "04e90ba51b3738a4",
+      "output": "a05c06439b47f419"
+    },
+    "features.chat-breiter-ziehen.title": {
+      "source": "07223171f33c3173",
+      "output": "dacaab294685ce17"
+    },
+    "features.chat-breiter-ziehen.where": {
+      "source": "e9979fba75280664",
+      "output": "befef9826d7ed916"
+    },
     "features.chat-je-tab.details.p1": {
       "source": "b104c341b44c453d",
       "output": "4a8029e94e966751"
@@ -22271,6 +22295,10 @@
     "shell.appShell.pageNavigation": {
       "source": "436fa1b34f8aa46d",
       "output": "024148d6099b7d63"
+    },
+    "shell.appShell.resizeHint": {
+      "source": "4f6b1214ba5357b9",
+      "output": "7e17c73e34d1188c"
     },
     "shell.connectionStatus.connected": {
       "source": "0338189c985eee9c",
@@ -40502,6 +40530,30 @@
       "source": "b548b30f12ad6d1e",
       "output": "8fbe91ebf9087854"
     },
+    "features.chat-breiter-ziehen.details.p1": {
+      "source": "6d9793526e43120a",
+      "output": "17794e04dd37ecdc"
+    },
+    "features.chat-breiter-ziehen.details.p2": {
+      "source": "1e72b906b29e6ead",
+      "output": "b98ea3de39b0ac09"
+    },
+    "features.chat-breiter-ziehen.details.p3": {
+      "source": "b1aa85ac952f1f6c",
+      "output": "580f4f777be610c6"
+    },
+    "features.chat-breiter-ziehen.summary": {
+      "source": "04e90ba51b3738a4",
+      "output": "e1cee5557825fe68"
+    },
+    "features.chat-breiter-ziehen.title": {
+      "source": "07223171f33c3173",
+      "output": "deaae36398a1b02e"
+    },
+    "features.chat-breiter-ziehen.where": {
+      "source": "e9979fba75280664",
+      "output": "ff3f30763a6647a4"
+    },
     "features.chat-je-tab.details.p1": {
       "source": "b104c341b44c453d",
       "output": "5ba9f619f88315f3"
@@ -49097,6 +49149,10 @@
     "shell.appShell.pageNavigation": {
       "source": "436fa1b34f8aa46d",
       "output": "5935e29992445803"
+    },
+    "shell.appShell.resizeHint": {
+      "source": "4f6b1214ba5357b9",
+      "output": "cf2197f90c4ee954"
     },
     "shell.connectionStatus.connected": {
       "source": "0338189c985eee9c",
@@ -67328,6 +67384,30 @@
       "source": "b548b30f12ad6d1e",
       "output": "350d7d6ff4b91f58"
     },
+    "features.chat-breiter-ziehen.details.p1": {
+      "source": "6d9793526e43120a",
+      "output": "83ad2c3a48391f02"
+    },
+    "features.chat-breiter-ziehen.details.p2": {
+      "source": "1e72b906b29e6ead",
+      "output": "a8866e1883f5011b"
+    },
+    "features.chat-breiter-ziehen.details.p3": {
+      "source": "b1aa85ac952f1f6c",
+      "output": "5619e02b321faacc"
+    },
+    "features.chat-breiter-ziehen.summary": {
+      "source": "04e90ba51b3738a4",
+      "output": "937c630735174adc"
+    },
+    "features.chat-breiter-ziehen.title": {
+      "source": "07223171f33c3173",
+      "output": "4807dc928f7e3c44"
+    },
+    "features.chat-breiter-ziehen.where": {
+      "source": "e9979fba75280664",
+      "output": "68961f6c9aec369f"
+    },
     "features.chat-je-tab.details.p1": {
       "source": "b104c341b44c453d",
       "output": "07e9d30736acb34f"
@@ -75923,6 +76003,10 @@
     "shell.appShell.pageNavigation": {
       "source": "436fa1b34f8aa46d",
       "output": "461303a293e3ae08"
+    },
+    "shell.appShell.resizeHint": {
+      "source": "4f6b1214ba5357b9",
+      "output": "217046121add106d"
     },
     "shell.connectionStatus.connected": {
       "source": "0338189c985eee9c",
@@ -94154,6 +94238,30 @@
       "source": "b548b30f12ad6d1e",
       "output": "a446b7838e60a9a1"
     },
+    "features.chat-breiter-ziehen.details.p1": {
+      "source": "6d9793526e43120a",
+      "output": "3f74f180db2cf2c3"
+    },
+    "features.chat-breiter-ziehen.details.p2": {
+      "source": "1e72b906b29e6ead",
+      "output": "3cc83e18e7d1557d"
+    },
+    "features.chat-breiter-ziehen.details.p3": {
+      "source": "b1aa85ac952f1f6c",
+      "output": "e60c9153bf748869"
+    },
+    "features.chat-breiter-ziehen.summary": {
+      "source": "04e90ba51b3738a4",
+      "output": "84b2f3a34ff94f4f"
+    },
+    "features.chat-breiter-ziehen.title": {
+      "source": "07223171f33c3173",
+      "output": "e3286516541b2435"
+    },
+    "features.chat-breiter-ziehen.where": {
+      "source": "e9979fba75280664",
+      "output": "9872901f9565b699"
+    },
     "features.chat-je-tab.details.p1": {
       "source": "b104c341b44c453d",
       "output": "dbbe0e205b7cd82c"
@@ -102749,6 +102857,10 @@
     "shell.appShell.pageNavigation": {
       "source": "436fa1b34f8aa46d",
       "output": "4e28fc9e23ea9e64"
+    },
+    "shell.appShell.resizeHint": {
+      "source": "4f6b1214ba5357b9",
+      "output": "08ce240bd286dcbf"
     },
     "shell.connectionStatus.connected": {
       "source": "0338189c985eee9c",
@@ -120980,6 +121092,30 @@
       "source": "b548b30f12ad6d1e",
       "output": "043825be7ba6df9b"
     },
+    "features.chat-breiter-ziehen.details.p1": {
+      "source": "6d9793526e43120a",
+      "output": "22cf02eaae78b4ca"
+    },
+    "features.chat-breiter-ziehen.details.p2": {
+      "source": "1e72b906b29e6ead",
+      "output": "6cf1c4ed0b616146"
+    },
+    "features.chat-breiter-ziehen.details.p3": {
+      "source": "b1aa85ac952f1f6c",
+      "output": "0e9a7e83d8fc7ef9"
+    },
+    "features.chat-breiter-ziehen.summary": {
+      "source": "04e90ba51b3738a4",
+      "output": "c517a1bf602883c8"
+    },
+    "features.chat-breiter-ziehen.title": {
+      "source": "07223171f33c3173",
+      "output": "eef68bd9eb920478"
+    },
+    "features.chat-breiter-ziehen.where": {
+      "source": "e9979fba75280664",
+      "output": "20c5b0197eea1c09"
+    },
     "features.chat-je-tab.details.p1": {
       "source": "b104c341b44c453d",
       "output": "5127a874dd5bd8e8"
@@ -129575,6 +129711,10 @@
     "shell.appShell.pageNavigation": {
       "source": "436fa1b34f8aa46d",
       "output": "13250404d8ae7197"
+    },
+    "shell.appShell.resizeHint": {
+      "source": "4f6b1214ba5357b9",
+      "output": "f2ca03132265452d"
     },
     "shell.connectionStatus.connected": {
       "source": "0338189c985eee9c",
@@ -147806,6 +147946,30 @@
       "source": "b548b30f12ad6d1e",
       "output": "164052d2ffa1eddd"
     },
+    "features.chat-breiter-ziehen.details.p1": {
+      "source": "6d9793526e43120a",
+      "output": "d284503ac676b0c9"
+    },
+    "features.chat-breiter-ziehen.details.p2": {
+      "source": "1e72b906b29e6ead",
+      "output": "274322f420d7e093"
+    },
+    "features.chat-breiter-ziehen.details.p3": {
+      "source": "b1aa85ac952f1f6c",
+      "output": "005e858db99f7fe2"
+    },
+    "features.chat-breiter-ziehen.summary": {
+      "source": "04e90ba51b3738a4",
+      "output": "e1a2f39c427925a5"
+    },
+    "features.chat-breiter-ziehen.title": {
+      "source": "07223171f33c3173",
+      "output": "4e73b4737a223422"
+    },
+    "features.chat-breiter-ziehen.where": {
+      "source": "e9979fba75280664",
+      "output": "b6124d8a579fe745"
+    },
     "features.chat-je-tab.details.p1": {
       "source": "b104c341b44c453d",
       "output": "96aa7689f3c588ec"
@@ -156401,6 +156565,10 @@
     "shell.appShell.pageNavigation": {
       "source": "436fa1b34f8aa46d",
       "output": "07f5694ef53be74f"
+    },
+    "shell.appShell.resizeHint": {
+      "source": "4f6b1214ba5357b9",
+      "output": "207ab19ed1a39e56"
     },
     "shell.connectionStatus.connected": {
       "source": "0338189c985eee9c",
@@ -174632,6 +174800,30 @@
       "source": "b548b30f12ad6d1e",
       "output": "88a37a01ff349361"
     },
+    "features.chat-breiter-ziehen.details.p1": {
+      "source": "6d9793526e43120a",
+      "output": "e23d2df24681a52e"
+    },
+    "features.chat-breiter-ziehen.details.p2": {
+      "source": "1e72b906b29e6ead",
+      "output": "484854f34ba49b4b"
+    },
+    "features.chat-breiter-ziehen.details.p3": {
+      "source": "b1aa85ac952f1f6c",
+      "output": "c708cf64580369fe"
+    },
+    "features.chat-breiter-ziehen.summary": {
+      "source": "04e90ba51b3738a4",
+      "output": "9b910c61d70cd9f7"
+    },
+    "features.chat-breiter-ziehen.title": {
+      "source": "07223171f33c3173",
+      "output": "1321d4ec172c4414"
+    },
+    "features.chat-breiter-ziehen.where": {
+      "source": "e9979fba75280664",
+      "output": "245f12ffb82c0171"
+    },
     "features.chat-je-tab.details.p1": {
       "source": "b104c341b44c453d",
       "output": "39d304025d50a394"
@@ -183227,6 +183419,10 @@
     "shell.appShell.pageNavigation": {
       "source": "436fa1b34f8aa46d",
       "output": "fb1a9eab462ba0f0"
+    },
+    "shell.appShell.resizeHint": {
+      "source": "4f6b1214ba5357b9",
+      "output": "97ff37b3068904aa"
     },
     "shell.connectionStatus.connected": {
       "source": "0338189c985eee9c",

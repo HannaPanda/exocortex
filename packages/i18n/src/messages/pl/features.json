@@ -933,6 +933,16 @@
     },
     "where": "Pole wprowadzania na stronie startowej każdego obszaru roboczego oraz przycisk z dwiema strzałkami na górze panelu AI."
   },
+  "chat-breiter-ziehen": {
+    "title": "Rozszerzanie czatu SI",
+    "summary": "Panel boczny po prawej stronie, w którym znajduje się czat SI, można rozszerzyć, przeciągając jego lewą krawędź – na szerokim ekranie znacznie poza wcześniejszy limit. Ta przeglądarka zapamiętuje ustawioną szerokość.",
+    "details": {
+      "p1": "Chwyć myszą lewą krawędź panelu bocznego i przeciągnij ją w lewo. Za pomocą klawiatury wybierz krawędź klawiszem Tab i użyj strzałek (z klawiszem Shift w większych krokach); Home i End przesuwają do wartości skrajnych. Dwukrotne kliknięcie krawędzi resetuje szerokość – działa to tak samo w przypadku lewego panelu nawigacji.",
+      "p2": "Maksymalna szerokość zależy od okna: strona obok zawsze zachowuje czytelną szerokość tekstu. Gdy okno się zmniejsza, panel dopasowuje się do niego, a wybrana szerokość wraca, gdy tylko zwolni się miejsce. Sam czat rośnie do wygodnej długości linii i pozostaje wyśrodkowany, tak jak w czacie pełnoekranowym; komentarze, odnośniki i historia wykorzystują pełną szerokość.",
+      "p3": "Na telefonie panel boczny nadal otwiera się nad stroną i nie można go przeciągać. Jeśli potrzebujesz jeszcze większego czatu, przycisk z dwiema strzałkami u góry panelu SI rozszerza go na całą dostępną przestrzeń."
+    },
+    "where": "Lewa krawędź panelu bocznego, na prawo od strony."
+  },
   "chat-je-tab": {
     "title": "Praca w wielu kartach z różnymi czatami",
     "summary": "Każda karta przeglądarki ma swój własny czat, a każda strona zapamiętuje w niej, który czat był ostatnio otwarty obok niej. Jeśli zmienisz czat w jednej karcie, pozostałe karty pozostaną bez zmian.",

@@ -933,6 +933,16 @@
     },
     "where": "El campo de entrada en la página de inicio de cada espacio de trabajo y el botón con las dos flechas en la parte superior del panel de la IA."
   },
+  "chat-breiter-ziehen": {
+    "title": "Ampliar el chat con IA",
+    "summary": "El panel de contexto de la derecha, donde se encuentra el chat con IA, se puede ensanchar arrastrando su borde izquierdo, llegando mucho más allá del límite anterior en pantallas anchas. Este navegador recuerda el ancho elegido.",
+    "details": {
+      "p1": "Agarra el borde izquierdo del panel de contexto con el ratón y arrástralo hacia la izquierda. Con el teclado, selecciona el borde con la tecla Tabulador y usa las teclas de flecha (con Mayús para pasos más grandes); Inicio y Fin saltan a los límites. Hacer doble clic en el borde restablece el ancho, lo que también se aplica a la barra de navegación de la izquierda.",
+      "p2": "El ancho máximo depende de la ventana: la página que tiene al lado siempre conserva un ancho suficiente para que su texto siga siendo legible. Si la ventana se reduce, el panel se adapta y recupera tu ancho en cuanto vuelve a haber espacio. El chat en sí crece hasta alcanzar una longitud de línea cómoda y luego se mantiene centrado, como en el chat a pantalla completa; los comentarios, las referencias y el historial aprovechan todo el ancho.",
+      "p3": "En el móvil, el panel de contexto se sigue abriendo superpuesto a la página y no se puede arrastrar. Si necesitas el chat aún más grande, el botón con las dos flechas situado en la parte superior del panel de IA le asigna todo el espacio."
+    },
+    "where": "El borde izquierdo del panel de contexto, a la derecha de la página."
+  },
   "chat-je-tab": {
     "title": "Trabajar en varias pestañas con distintos chats",
     "summary": "Cada pestaña del navegador tiene su propio chat y cada página recuerda en ella qué chat tuvo al lado por última vez. Si cambias de chat en una pestaña, las demás se quedan como están.",
