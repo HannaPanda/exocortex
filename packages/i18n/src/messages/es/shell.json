@@ -143,7 +143,13 @@
     "loadError": "No se pudieron cargar los elementos compartidos.",
     "workspacesTitle": "Tus espacios de trabajo",
     "workspacesLabel": "Tus propios espacios de trabajo",
-    "workspacesEmpty": "Aún no tienes ningún espacio de trabajo propio."
+    "workspacesEmpty": "Aún no tienes ningún espacio de trabajo propio.",
+    "expand": "Desplegar subpáginas de «{title}»",
+    "collapse": "Plegar subpáginas de «{title}»",
+    "branchLabel": "Subpáginas de «{title}»",
+    "branchLoading": "Cargando subpáginas…",
+    "branchError": "No se han podido cargar las subpáginas.",
+    "branchEmpty": "No hay subpáginas"
   },
   "connectionStatus": {
     "offlineShort": "sin conexión",

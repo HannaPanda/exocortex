@@ -143,7 +143,13 @@
     "loadError": "Could not load shares.",
     "workspacesTitle": "Your workspaces",
     "workspacesLabel": "Your own workspaces",
-    "workspacesEmpty": "You don’t have your own workspace yet."
+    "workspacesEmpty": "You don’t have your own workspace yet.",
+    "expand": "Expand subpages of “{title}”",
+    "collapse": "Collapse subpages of “{title}”",
+    "branchLabel": "Subpages of “{title}”",
+    "branchLoading": "Loading subpages …",
+    "branchError": "Could not load subpages.",
+    "branchEmpty": "No subpages"
   },
   "connectionStatus": {
     "offlineShort": "offline",

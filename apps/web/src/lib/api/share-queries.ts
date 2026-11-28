@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 
 import {
   type CreateShareRequest,
+  type DocumentTreeResponse,
   type IncomingShareListResponse,
   type MyShareListResponse,
   type OutgoingShareListResponse,
@@ -37,6 +38,9 @@ export const shareKeys = {
   workspace: (workspaceId: string) => ['workspace', workspaceId, 'shares'] as const,
   incoming: () => ['me', 'shares'] as const,
   mine: () => ['me', 'outgoing-shares'] as const,
+  /** Every branch below a shared page, for invalidating them all at once. */
+  branches: () => ['shared-tree'] as const,
+  branch: (workspaceId: string, rootId: string) => ['shared-tree', workspaceId, rootId] as const,
 };
 
 export function useDocumentShares(
@@ -191,5 +195,31 @@ export function useRevokeShare(documentId: string) {
       void client.invalidateQueries({ queryKey: ['workspace'] });
       void client.invalidateQueries({ queryKey: shareKeys.mine() });
     },
+  });
+}
+
+/**
+ * The pages below a page shared with this account as `SUBTREE` (issue #327).
+ *
+ * The ordinary tree route, asked for the branch under the shared page: for a
+ * recipient it answers with what their grants reach and nothing else, so
+ * nothing above the shared page and no sibling of it ever arrives here.
+ * Database rows are counted rather than listed, as in the workspace tree.
+ * Asked only while the branch is unfolded.
+ */
+export function useSharedBranch(
+  workspaceId: string,
+  rootId: string,
+  options: { enabled: boolean },
+): UseQueryResult<DocumentTreeResponse> {
+  return useQuery({
+    queryKey: shareKeys.branch(workspaceId, rootId),
+    queryFn: () =>
+      apiRequest<DocumentTreeResponse>(
+        `/api/workspaces/${workspaceId}/documents/tree?parentId=${rootId}&rows=count`,
+      ),
+    enabled: options.enabled,
+    staleTime: 30_000,
+    refetchOnWindowFocus: true,
   });
 }

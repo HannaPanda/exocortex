@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import * as React from 'react';
 
 import { useRowPeekCommands } from '@/components/palette/row-peek-commands';
-import { documentHref } from '@/lib/document-href';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { opensWithNewHistoryStep, peekAddress, peekIdOf } from './row-peek-address';
 
@@ -93,6 +93,7 @@ export function RowPeekProvider({
   /** Where the focus was when the panel opened, to hand it back on close. */
   const returnFocus = React.useRef<HTMLElement | null>(null);
   const [selectTitleFor, setSelectTitleFor] = React.useState<string | null>(null);
+  const hrefs = useDocumentHrefs();
 
   const open = React.useCallback((rowId: string, options?: { selectTitle?: boolean }): void => {
     const before = current.current;
@@ -162,7 +163,7 @@ export function RowPeekProvider({
 
   useRowPeekCommands({
     open: peekId !== null,
-    pageHref: peekId === null ? null : documentHref(workspaceId, peekId, 'PAGE'),
+    pageHref: peekId === null ? null : hrefs.href(workspaceId, peekId, 'PAGE'),
     close,
   });
 
@@ -197,9 +198,10 @@ export function RowPeekLink({
   testId?: string;
 }) {
   const peek = useRowPeek();
+  const hrefs = useDocumentHrefs();
   return (
     <Link
-      href={documentHref(workspaceId, rowId, 'PAGE')}
+      href={hrefs.href(workspaceId, rowId, 'PAGE')}
       className={className}
       title={title}
       data-testid={testId}

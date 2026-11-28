@@ -15,6 +15,7 @@ import { Badge, EmptyState, ErrorState, LoadingState, SectionRule } from '@exoco
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useDocumentLinks, useRelatedDocuments } from '@/lib/api/page-link-queries';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 import { useFormatter } from '@/lib/formatter';
 
 export interface BacklinksPanelProps {
@@ -88,9 +89,10 @@ function LinkRow({
 
 function IncomingRow({ link, workspaceId }: { link: IncomingDocumentLink; workspaceId: string }) {
   const t = useTranslations('document.backlinks');
+  const hrefs = useDocumentHrefs();
   return (
     <LinkRow
-      href={`/arbeitsbereich/${workspaceId}/seite/${link.source.id}`}
+      href={hrefs.href(workspaceId, link.source.id, link.source.type)}
       icon={
         <DocumentIcon
           icon={link.source.icon}
@@ -110,6 +112,7 @@ function IncomingRow({ link, workspaceId }: { link: IncomingDocumentLink; worksp
 
 function OutgoingRow({ link, workspaceId }: { link: OutgoingDocumentLink; workspaceId: string }) {
   const t = useTranslations('document.backlinks');
+  const hrefs = useDocumentHrefs();
   if (link.target === null) {
     return (
       <LinkRow
@@ -124,7 +127,7 @@ function OutgoingRow({ link, workspaceId }: { link: OutgoingDocumentLink; worksp
   }
   return (
     <LinkRow
-      href={`/arbeitsbereich/${workspaceId}/seite/${link.target.id}`}
+      href={hrefs.href(workspaceId, link.target.id, link.target.type)}
       icon={
         <DocumentIcon
           icon={link.target.icon}
@@ -154,10 +157,11 @@ function RelatedRow({ entry, workspaceId }: { entry: RelatedDocument; workspaceI
   const t = useTranslations('document.backlinks');
   const format = useFormatter();
   const location = entry.path.map((step) => step.title).join(' / ');
+  const hrefs = useDocumentHrefs();
 
   return (
     <Link
-      href={`/arbeitsbereich/${workspaceId}/seite/${entry.document.id}`}
+      href={hrefs.href(workspaceId, entry.document.id, entry.document.type)}
       className="flex w-full flex-col gap-1 rounded-md px-2 py-1.5 text-left hover:bg-accent"
     >
       <span className="flex items-center gap-2">

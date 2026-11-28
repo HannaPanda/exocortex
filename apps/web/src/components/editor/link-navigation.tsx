@@ -24,6 +24,7 @@ import { useCreateDocument } from '@/lib/api/document-queries';
 import { pageLinkQueryOptions } from '@/lib/api/page-link-queries';
 import { queryKeys } from '@/lib/api/query-keys';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { type FollowLink, type FollowLinkOptions } from './follow-link-context';
 
@@ -63,6 +64,8 @@ export function useLinkNavigation({
   const [pending, setPending] = React.useState<PendingDialog | null>(null);
   const [creating, setCreating] = React.useState(false);
   const [createError, setCreateError] = React.useState<string | null>(null);
+  // In the shared view a link to another page stays there (issue #327).
+  const hrefs = useDocumentHrefs();
 
   // `editable` alone is not enough: an archived page is read-only, but the
   // member who opened it may still create a page from a dead link on it.
@@ -72,10 +75,11 @@ export function useLinkNavigation({
   /** `router.push` or a second tab, whichever the click asked for. */
   const goTo = React.useCallback(
     (path: string, newTab: boolean): void => {
-      if (newTab) window.open(path, '_blank', 'noopener');
-      else router.push(path);
+      const target = hrefs.rewrite(path);
+      if (newTab) window.open(target, '_blank', 'noopener');
+      else router.push(target);
     },
-    [router],
+    [hrefs, router],
   );
 
   const followWiki = React.useCallback(
@@ -94,7 +98,7 @@ export function useLinkNavigation({
         return;
       }
       if (response.matches.length === 1) {
-        goTo(`/arbeitsbereich/${workspaceId}/seite/${response.matches[0]?.id}`, newTab);
+        goTo(hrefs.href(workspaceId, response.matches[0]?.id ?? ''), newTab);
         return;
       }
       if (response.matches.length === 0) {
@@ -103,7 +107,7 @@ export function useLinkNavigation({
       }
       setPending({ mode: 'ambiguous', title: response.title, matches: response.matches });
     },
-    [goTo, queryClient, t, workspaceId],
+    [goTo, hrefs, queryClient, t, workspaceId],
   );
 
   const follow = React.useCallback<FollowLink>(
@@ -175,7 +179,7 @@ export function useLinkNavigation({
       // entry also carries an identity, so the whole namespace goes.
       void queryClient.invalidateQueries({ queryKey: queryKeys.pageLinks(workspaceId) });
       setPending(null);
-      router.push(`/arbeitsbereich/${workspaceId}/seite/${created.id}`);
+      router.push(hrefs.href(workspaceId, created.id));
     } catch (error) {
       setCreateError(error instanceof ApiError ? error.message : t('createFailed'));
     } finally {
@@ -203,7 +207,7 @@ export function useLinkNavigation({
                       className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm hover:bg-accent"
                       onClick={() => {
                         closeDialog();
-                        router.push(`/arbeitsbereich/${workspaceId}/seite/${match.id}`);
+                        router.push(hrefs.href(workspaceId, match.id, match.type));
                       }}
                     >
                       <DocumentIcon

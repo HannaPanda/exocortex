@@ -14,6 +14,7 @@ import { PageIconAddButton, PageIconButton } from '@/components/document/page-ic
 import { PageOverview } from '@/components/document/page-overview';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
 import { useUpdateDocument } from '@/lib/api/document-queries';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { DocumentTitleInput } from './document-title-input';
 
@@ -135,6 +136,7 @@ export function PageSurface({
   const t = useTranslations('document.view');
   const rowCollectionId = rowCollectionIdOf(detail);
   const hasCover = detail.coverAttachmentId !== null;
+  const hrefs = useDocumentHrefs();
 
   return (
     // The document area: the scroll container, and beside it the room the
@@ -191,7 +193,7 @@ export function PageSurface({
               breadcrumb={detail.breadcrumb.map((entry) => ({
                 id: entry.id,
                 title: entry.title,
-                href: `/arbeitsbereich/${workspaceId}/seite/${entry.id}`,
+                href: hrefs.href(workspaceId, entry.id),
               }))}
             />
           )}

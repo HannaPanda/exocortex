@@ -1,11 +1,16 @@
 'use client';
 
-import { LayoutGridIcon } from 'lucide-react';
+import { ChevronRightIcon, LayoutGridIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import * as React from 'react';
 
-import { type IncomingShare } from '@exocortex/contracts';
+import {
+  type DocumentSummary,
+  type DocumentTreeNode,
+  type IncomingShare,
+} from '@exocortex/contracts';
 import {
   cn,
   ErrorState,
@@ -16,8 +21,12 @@ import {
 } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { useIncomingShares } from '@/lib/api/share-queries';
+import { useDocument } from '@/lib/api/document-queries';
+import { useIncomingShares, useSharedBranch } from '@/lib/api/share-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
+import { usePersistentState } from '@/lib/use-persistent-state';
+
+import { EMPTY_EXPANDED, type ExpandedState, parseExpanded } from './page-tree-state';
 
 /** How many grants the navigation names before it points at the full list. */
 const MAX_ENTRIES = 15;
@@ -48,7 +57,9 @@ export const SHARED_WITH_ME_HREF = '/geteilt?ansicht=mit-mir';
 export function SharedWithMeSection({ standalone = false }: { standalone?: boolean }) {
   const t = useTranslations('shell.sharedWithMe');
   const params = useParams<{ documentId?: string }>();
+  const activeId = params.documentId ?? null;
   const shares = useIncomingShares();
+  const { expanded, toggle } = useSharedExpansion(activeId);
 
   if (shares.isPending) {
     return standalone ? <LoadingState variant="skeleton" rows={3} label={t('loading')} /> : null;
@@ -98,7 +109,9 @@ export function SharedWithMeSection({ standalone = false }: { standalone?: boole
             <SharedWithMeEntry
               key={share.id}
               share={share}
-              active={share.document.id === params.documentId}
+              activeId={activeId}
+              expanded={expanded}
+              toggle={toggle}
             />
           ))}
         </ul>
@@ -117,45 +130,305 @@ export function SharedWithMeSection({ standalone = false }: { standalone?: boole
 }
 
 /**
+ * Which shared branches are unfolded, remembered across reloads like the page
+ * tree's, plus the one rule the page tree has too: arriving at a page unfolds
+ * the way to it and the page itself. The way is the open page's breadcrumb,
+ * which for a recipient
+ * starts at the shared page (the API cuts it at the grant), so unfolding it
+ * opens nothing the reader could not open by hand. Once per arrival, so a
+ * branch folded by hand stays folded while the page stays open.
+ */
+function useSharedExpansion(activeId: string | null): {
+  expanded: ExpandedState;
+  toggle: (documentId: string) => void;
+} {
+  const [expanded, setExpanded] = usePersistentState<ExpandedState>(
+    'exocortex.shared.expanded',
+    EMPTY_EXPANDED,
+    parseExpanded,
+  );
+  const toggle = React.useCallback(
+    (documentId: string) =>
+      setExpanded({ ...expanded, [documentId]: expanded[documentId] !== true }),
+    [expanded, setExpanded],
+  );
+
+  const open = useDocument(activeId ?? undefined);
+  const unfoldedFor = React.useRef<string | null>(null);
+  // The page itself belongs to the way too: opening a shared branch shows
+  // what is in it. A string, so the effect sees a change of way rather than
+  // a new array on every render.
+  const way =
+    open.data?.viaShare === true
+      ? [...open.data.breadcrumb.map((entry) => entry.id), open.data.id].join(' ')
+      : '';
+  React.useEffect(() => {
+    if (activeId === null || way === '' || unfoldedFor.current === activeId) return;
+    unfoldedFor.current = activeId;
+    const ids = way.split(' ');
+    if (ids.every((id) => expanded[id] === true)) return;
+    const next: Record<string, boolean> = { ...expanded };
+    for (const id of ids) next[id] = true;
+    setExpanded(next);
+  }, [activeId, expanded, setExpanded, way]);
+
+  return { expanded, toggle };
+}
+
+/**
  * One shared page: its symbol and title on the row, its origin underneath.
  *
  * Drawn like a row of the page tree (same surface, weight and amber symbol
- * for "you are here", DESIGN.md "Navigation"), with the chevron's slot kept
- * free so the titles line up with the tree above them.
+ * for "you are here", DESIGN.md "Navigation"). A `SUBTREE` grant carries the
+ * tree's chevron and unfolds into the pages below it (issue #327); a
+ * `PAGE_ONLY` grant keeps the chevron's slot empty, so the titles still line
+ * up, and has nothing to unfold.
  */
-function SharedWithMeEntry({ share, active }: { share: IncomingShare; active: boolean }) {
+function SharedWithMeEntry({
+  share,
+  activeId,
+  expanded,
+  toggle,
+}: {
+  share: IncomingShare;
+  activeId: string | null;
+  expanded: ExpandedState;
+  toggle: (documentId: string) => void;
+}) {
   const t = useTranslations('shell.sharedWithMe');
   const origin = t('origin', { name: share.sharedByName, workspace: share.workspaceName });
+  const document = share.document;
+  const branch = share.scope === 'SUBTREE';
+  const open = branch && expanded[document.id] === true;
   return (
-    <li data-testid={`shared-with-me-${share.document.id}`}>
-      <Link
-        href={`/geteilt/${share.document.id}`}
-        aria-current={active ? 'page' : undefined}
-        className={cn(
-          'flex items-start gap-1 rounded-md py-1 pr-1 pl-1 text-sm transition-colors',
-          active
-            ? 'bg-accent-strong font-medium text-foreground'
-            : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+    <li data-testid={`shared-with-me-${document.id}`}>
+      <NavRow active={document.id === activeId} depth={0}>
+        {branch ? (
+          <Chevron title={document.title} open={open} onToggle={() => toggle(document.id)} />
+        ) : (
+          <span aria-hidden className="size-5 shrink-0" />
         )}
-      >
-        <span aria-hidden className="size-5 shrink-0" />
-        <span className="grid size-5 shrink-0 place-items-center">
-          <DocumentIcon
-            icon={share.document.icon}
-            iconColor={share.document.iconColor}
-            type={share.document.type}
-            className={cn(
-              'size-3.5 text-xs',
-              active ? 'text-primary-text' : 'text-muted-foreground',
-            )}
-          />
-        </span>
-        <span className="flex min-w-0 flex-1 flex-col">
-          <TruncatedText text={share.document.title} side="right" />
-          <span className="truncate text-xs font-normal text-muted-foreground">{origin}</span>
-        </span>
-      </Link>
+        <NavLink
+          documentId={document.id}
+          active={document.id === activeId}
+          icon={document.icon}
+          iconColor={document.iconColor}
+          type={document.type}
+          title={document.title}
+          subtitle={origin}
+        />
+      </NavRow>
+      {open ? (
+        <SharedBranch
+          workspaceId={share.workspaceId}
+          root={document}
+          activeId={activeId}
+          expanded={expanded}
+          toggle={toggle}
+        />
+      ) : null}
     </li>
+  );
+}
+
+/**
+ * The pages below a shared page, read as the reader and only while unfolded.
+ *
+ * The answer starts below the shared page and never above it: the server cuts
+ * the tree at the grant, so this component has nothing to hide.
+ */
+function SharedBranch({
+  workspaceId,
+  root,
+  activeId,
+  expanded,
+  toggle,
+}: {
+  workspaceId: string;
+  root: DocumentSummary;
+  activeId: string | null;
+  expanded: ExpandedState;
+  toggle: (documentId: string) => void;
+}) {
+  const t = useTranslations('shell.sharedWithMe');
+  const branch = useSharedBranch(workspaceId, root.id, { enabled: true });
+  const note = 'py-1 pr-1 text-xs text-muted-foreground';
+  const indent = { paddingLeft: `${0.75 + 1.5}rem` };
+
+  if (branch.isPending) {
+    return (
+      <p className={note} style={indent}>
+        {t('branchLoading')}
+      </p>
+    );
+  }
+  if (branch.isError) {
+    return (
+      <p className={note} style={indent} role="alert">
+        {t('branchError')}
+      </p>
+    );
+  }
+  if (branch.data.nodes.length === 0) {
+    return (
+      <p className={note} style={indent} data-testid={`shared-branch-empty-${root.id}`}>
+        {t('branchEmpty')}
+      </p>
+    );
+  }
+  return (
+    <ul aria-label={t('branchLabel', { title: root.title })} className="flex flex-col">
+      {branch.data.nodes.map((node) => (
+        <SharedBranchRow
+          key={node.id}
+          node={node}
+          depth={1}
+          activeId={activeId}
+          expanded={expanded}
+          toggle={toggle}
+        />
+      ))}
+    </ul>
+  );
+}
+
+function SharedBranchRow({
+  node,
+  depth,
+  activeId,
+  expanded,
+  toggle,
+}: {
+  node: DocumentTreeNode;
+  depth: number;
+  activeId: string | null;
+  expanded: ExpandedState;
+  toggle: (documentId: string) => void;
+}) {
+  const t = useTranslations('shell.sharedWithMe');
+  const hasChildren = node.children.length > 0;
+  const open = hasChildren && expanded[node.id] === true;
+  return (
+    <li data-testid={`shared-branch-${node.id}`}>
+      <NavRow active={node.id === activeId} depth={depth}>
+        {hasChildren ? (
+          <Chevron title={node.title} open={open} onToggle={() => toggle(node.id)} />
+        ) : (
+          <span aria-hidden className="size-5 shrink-0" />
+        )}
+        <NavLink
+          documentId={node.id}
+          active={node.id === activeId}
+          icon={node.icon}
+          iconColor={node.iconColor}
+          type={node.type}
+          title={node.title}
+        />
+      </NavRow>
+      {open ? (
+        <ul aria-label={t('branchLabel', { title: node.title })} className="flex flex-col">
+          {node.children.map((child) => (
+            <SharedBranchRow
+              key={child.id}
+              node={child}
+              depth={depth + 1}
+              activeId={activeId}
+              expanded={expanded}
+              toggle={toggle}
+            />
+          ))}
+        </ul>
+      ) : null}
+    </li>
+  );
+}
+
+/** The row's surface: hover, "you are here", and the indent of its level. */
+function NavRow({
+  active,
+  depth,
+  children,
+}: {
+  active: boolean;
+  depth: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        'flex items-start gap-1 rounded-md py-1 pr-1 text-sm transition-colors',
+        active
+          ? 'bg-accent-strong font-medium text-foreground'
+          : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+      )}
+      style={{ paddingLeft: `${depth * 0.75 + 0.25}rem` }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Chevron({
+  title,
+  open,
+  onToggle,
+}: {
+  title: string;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  const t = useTranslations('shell.sharedWithMe');
+  return (
+    <button
+      type="button"
+      aria-label={open ? t('collapse', { title }) : t('expand', { title })}
+      aria-expanded={open}
+      onClick={onToggle}
+      data-testid="shared-with-me-toggle"
+      className={cn(
+        'flex size-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-transform hover:text-foreground',
+        open && 'rotate-90',
+      )}
+    >
+      <ChevronRightIcon className="size-3.5" />
+    </button>
+  );
+}
+
+function NavLink({
+  documentId,
+  active,
+  icon,
+  iconColor,
+  type,
+  title,
+  subtitle,
+}: Pick<DocumentSummary, 'icon' | 'iconColor' | 'type' | 'title'> & {
+  documentId: string;
+  active: boolean;
+  subtitle?: string;
+}) {
+  return (
+    <Link
+      href={`/geteilt/${documentId}`}
+      aria-current={active ? 'page' : undefined}
+      className="flex min-w-0 flex-1 items-start gap-1 rounded-sm"
+    >
+      <span className="grid size-5 shrink-0 place-items-center">
+        <DocumentIcon
+          icon={icon}
+          iconColor={iconColor}
+          type={type}
+          className={cn('size-3.5 text-xs', active ? 'text-primary-text' : 'text-muted-foreground')}
+        />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col">
+        <TruncatedText text={title} side="right" />
+        {subtitle === undefined ? null : (
+          <span className="truncate text-xs font-normal text-muted-foreground">{subtitle}</span>
+        )}
+      </span>
+    </Link>
   );
 }
 

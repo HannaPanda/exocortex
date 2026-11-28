@@ -13,7 +13,7 @@ import {
   useTrashDatabaseRows,
   useUpdateDatabaseRows,
 } from '@/lib/api/database-queries';
-import { documentHref } from '@/lib/document-href';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { aiColumns, type AiFillControls } from './ai-fill';
 import { type CellValue } from './cells';
@@ -83,6 +83,7 @@ export function useRowActions({
 }) {
   const t = useTranslations('database.selection');
   const router = useRouter();
+  const hrefs = useDocumentHrefs();
   const updateRows = useUpdateDatabaseRows(documentId);
   const duplicateRows = useDuplicateDatabaseRows(documentId);
   const trashRows = useTrashDatabaseRows(documentId);
@@ -156,7 +157,7 @@ export function useRowActions({
   );
 
   const actionsFor = (row: DatabaseRow): RowHandleActions => {
-    const href = documentHref(workspaceId, row.document.id, row.document.type);
+    const href = hrefs.href(workspaceId, row.document.id, row.document.type);
     return {
       openPeek: () => onOpenPeek(row.document.id),
       openPage: () => router.push(href),

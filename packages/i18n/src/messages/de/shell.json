@@ -143,7 +143,13 @@
     "loadError": "Die Freigaben konnten nicht geladen werden.",
     "workspacesTitle": "Deine Arbeitsbereiche",
     "workspacesLabel": "Deine eigenen Arbeitsbereiche",
-    "workspacesEmpty": "Du hast noch keinen eigenen Arbeitsbereich."
+    "workspacesEmpty": "Du hast noch keinen eigenen Arbeitsbereich.",
+    "expand": "Unterseiten von „{title}“ ausklappen",
+    "collapse": "Unterseiten von „{title}“ einklappen",
+    "branchLabel": "Unterseiten von „{title}“",
+    "branchLoading": "Unterseiten werden geladen …",
+    "branchError": "Die Unterseiten konnten nicht geladen werden.",
+    "branchEmpty": "Keine Unterseiten"
   },
   "connectionStatus": {
     "offlineShort": "offline",

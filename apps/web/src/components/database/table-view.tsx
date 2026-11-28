@@ -34,6 +34,7 @@ import {
   useUpdateDatabaseRowValues,
   useUpdateDatabaseView,
 } from '@/lib/api/database-queries';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { AddPropertyButton } from './add-property-button';
 import { AiCellMark, useAiFillControls } from './ai-fill';
@@ -123,15 +124,16 @@ export function TableView({
   const updateView = useUpdateDatabaseView(documentId);
 
   const router = useRouter();
+  const hrefs = useDocumentHrefs();
   // A row opens beside the table, as its page (issue #239); outside a
   // document view there is no panel, and it opens as the whole page instead.
   const peek = useRowPeek();
   const openRow = React.useCallback(
     (rowId: string, options?: { selectTitle?: boolean }): void => {
       if (peek !== null) peek.open(rowId, options);
-      else router.push(`/arbeitsbereich/${workspaceId}/seite/${rowId}`);
+      else router.push(hrefs.href(workspaceId, rowId));
     },
-    [peek, router, workspaceId],
+    [hrefs, peek, router, workspaceId],
   );
   /**
    * Width being dragged right now. Kept here rather than in the handle so the
@@ -306,7 +308,7 @@ export function TableView({
                       actions={rowActions.actionsFor(row)}
                     />
                     <Link
-                      href={`/arbeitsbereich/${workspaceId}/seite/${row.document.id}`}
+                      href={hrefs.href(workspaceId, row.document.id, row.document.type)}
                       title={row.document.title}
                       // `whitespace-normal` undoes the `nowrap` the TableCell
                       // primitive sets: white-space inherits, so without it a

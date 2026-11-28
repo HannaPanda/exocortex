@@ -16,7 +16,7 @@ import { PageRenderDialog } from '@/components/render/page-render-dialog';
 import { useCreateDocument, useDocument, useUpdateDocument } from '@/lib/api/document-queries';
 import { useExportMarkdown } from '@/lib/api/markdown-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
-import { documentHref } from '@/lib/document-href';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { replacesPageOnError } from './document-load-failure';
 import { useDocumentSession } from './document-session';
@@ -43,6 +43,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
   const createDocument = useCreateDocument(workspaceId);
   const exportMarkdown = useExportMarkdown();
   const askPalette = useAskPalette();
+  const hrefs = useDocumentHrefs();
 
   const [importOpen, setImportOpen] = React.useState(false);
   const [propertiesOpen, setPropertiesOpen] = React.useState(false);
@@ -77,12 +78,12 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
           type,
           parentId: documentId,
         })
-        .then((child) => router.push(documentHref(workspaceId, child.id, type)));
+        .then((child) => router.push(hrefs.href(workspaceId, child.id, type)));
     },
     copyLink: () => {
       const type = document.data?.type ?? 'PAGE';
       void window.navigator.clipboard.writeText(
-        `${window.location.origin}${documentHref(workspaceId, documentId, type)}`,
+        `${window.location.origin}${hrefs.href(workspaceId, documentId, type)}`,
       );
     },
     exportMarkdown: () => void downloadMarkdown(),

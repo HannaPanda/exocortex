@@ -19,6 +19,7 @@ import { Badge, Button, LoadingState } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { usePageLinkResolution } from '@/lib/api/page-link-queries';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { FollowLinkContext } from './follow-link-context';
 import { PageLinkPromptContext } from './page-link-context';
@@ -65,6 +66,7 @@ export function PageLinkNodeView({
   const title = pageLinkTitle(node.attrs);
   const documentId = pageLinkDocumentId(node.attrs);
   const router = useRouter();
+  const hrefs = useDocumentHrefs();
   const followLinkRef = React.useContext(FollowLinkContext);
   const askPageLink = React.useContext(PageLinkPromptContext);
   const resolution = usePageLinkResolution(workspaceId, { documentId, title });
@@ -92,7 +94,7 @@ export function PageLinkNodeView({
    */
   const href =
     target.state === 'resolved' && !target.ambiguous
-      ? `/arbeitsbereich/${workspaceId}/seite/${target.target.id}`
+      ? hrefs.href(workspaceId, target.target.id)
       : null;
 
   const activate = (): void => {

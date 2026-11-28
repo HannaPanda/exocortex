@@ -143,7 +143,13 @@
     "loadError": "Impossible de charger les partages.",
     "workspacesTitle": "Tes espaces de travail",
     "workspacesLabel": "Tes propres espaces de travail",
-    "workspacesEmpty": "Tu n’as pas encore d’espace de travail."
+    "workspacesEmpty": "Tu n’as pas encore d’espace de travail.",
+    "expand": "Développer les sous-pages de « {title} »",
+    "collapse": "Réduire les sous-pages de « {title} »",
+    "branchLabel": "Sous-pages de « {title} »",
+    "branchLoading": "Chargement des sous-pages…",
+    "branchError": "Impossible de charger les sous-pages.",
+    "branchEmpty": "Aucune sous-page"
   },
   "connectionStatus": {
     "offlineShort": "hors ligne",

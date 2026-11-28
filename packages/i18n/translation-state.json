@@ -14633,8 +14633,8 @@
       "output": "3f3882d7eec135e3"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.details.p3": {
-      "source": "1d6d69473c1b9094",
-      "output": "41c6d1939477c7c2"
+      "source": "cd81e50ff3da722e",
+      "output": "2dbe8b4c93def97e"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.summary": {
       "source": "1d1e2e326717e6c4",
@@ -15319,6 +15319,30 @@
     "features.uhrzeit-24-oder-12-stunden.where": {
       "source": "bc7190ade1b187af",
       "output": "7ac6dd342c77fcdc"
+    },
+    "features.unterseiten-einer-freigabe.details.p1": {
+      "source": "017c67e57a8bc62e",
+      "output": "2be6de3c6b05ffa2"
+    },
+    "features.unterseiten-einer-freigabe.details.p2": {
+      "source": "99216c4813178000",
+      "output": "81b33ec6c59ecdd4"
+    },
+    "features.unterseiten-einer-freigabe.details.p3": {
+      "source": "9080c86505a9d230",
+      "output": "e3fc02e04be9d035"
+    },
+    "features.unterseiten-einer-freigabe.summary": {
+      "source": "a4d6dcf3469c01f0",
+      "output": "2a0e9a20452d03b7"
+    },
+    "features.unterseiten-einer-freigabe.title": {
+      "source": "a55e20d2f9463307",
+      "output": "28e7c60e5ea899a0"
+    },
+    "features.unterseiten-einer-freigabe.where": {
+      "source": "ef67586a3bcaf09d",
+      "output": "19c616845c5048fb"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -23312,9 +23336,33 @@
       "source": "fbae9016860cb593",
       "output": "f2150fbf07fab45f"
     },
+    "shell.sharedWithMe.branchEmpty": {
+      "source": "f75f2bd2533f224e",
+      "output": "73bab5b788a385db"
+    },
+    "shell.sharedWithMe.branchError": {
+      "source": "43b0de88637a82a4",
+      "output": "0ebc7ebebe4a5dc2"
+    },
+    "shell.sharedWithMe.branchLabel": {
+      "source": "eb30658c459dd642",
+      "output": "ddc13f85f67dc0cd"
+    },
+    "shell.sharedWithMe.branchLoading": {
+      "source": "9940ef1fd752c41f",
+      "output": "6ec2dd6cedb353ae"
+    },
+    "shell.sharedWithMe.collapse": {
+      "source": "b6e163ae0f795e7a",
+      "output": "beb86e48759e85e8"
+    },
     "shell.sharedWithMe.empty": {
       "source": "274ebb6179e96a1c",
       "output": "41090d4cd1386db5"
+    },
+    "shell.sharedWithMe.expand": {
+      "source": "cde5637e8a4404e5",
+      "output": "ad75e876aaa6c801"
     },
     "shell.sharedWithMe.listLabel": {
       "source": "724d4e9de10b9324",
@@ -40939,8 +40987,8 @@
       "output": "528d147a5dfabbdf"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.details.p3": {
-      "source": "1d6d69473c1b9094",
-      "output": "858c3a23efe95477"
+      "source": "cd81e50ff3da722e",
+      "output": "75f1bee1c245d09a"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.summary": {
       "source": "1d1e2e326717e6c4",
@@ -41625,6 +41673,30 @@
     "features.uhrzeit-24-oder-12-stunden.where": {
       "source": "bc7190ade1b187af",
       "output": "1ce8f2479a0f9236"
+    },
+    "features.unterseiten-einer-freigabe.details.p1": {
+      "source": "017c67e57a8bc62e",
+      "output": "cae0b200dce71c0d"
+    },
+    "features.unterseiten-einer-freigabe.details.p2": {
+      "source": "99216c4813178000",
+      "output": "44a29fca3a368309"
+    },
+    "features.unterseiten-einer-freigabe.details.p3": {
+      "source": "9080c86505a9d230",
+      "output": "afac034c5281b02a"
+    },
+    "features.unterseiten-einer-freigabe.summary": {
+      "source": "a4d6dcf3469c01f0",
+      "output": "7dc3aca02a75f107"
+    },
+    "features.unterseiten-einer-freigabe.title": {
+      "source": "a55e20d2f9463307",
+      "output": "d869d55e523ed3ea"
+    },
+    "features.unterseiten-einer-freigabe.where": {
+      "source": "ef67586a3bcaf09d",
+      "output": "ca087e48723c4036"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -49618,9 +49690,33 @@
       "source": "fbae9016860cb593",
       "output": "b1b01d186367bf54"
     },
+    "shell.sharedWithMe.branchEmpty": {
+      "source": "f75f2bd2533f224e",
+      "output": "8a48f20b27002b4f"
+    },
+    "shell.sharedWithMe.branchError": {
+      "source": "43b0de88637a82a4",
+      "output": "73551bc2a0252234"
+    },
+    "shell.sharedWithMe.branchLabel": {
+      "source": "eb30658c459dd642",
+      "output": "1173a550eff0dc85"
+    },
+    "shell.sharedWithMe.branchLoading": {
+      "source": "9940ef1fd752c41f",
+      "output": "d15d1496d80300a8"
+    },
+    "shell.sharedWithMe.collapse": {
+      "source": "b6e163ae0f795e7a",
+      "output": "2ae771d29965a337"
+    },
     "shell.sharedWithMe.empty": {
       "source": "274ebb6179e96a1c",
       "output": "121840196aca920d"
+    },
+    "shell.sharedWithMe.expand": {
+      "source": "cde5637e8a4404e5",
+      "output": "82253491db81bce3"
     },
     "shell.sharedWithMe.listLabel": {
       "source": "724d4e9de10b9324",
@@ -67245,8 +67341,8 @@
       "output": "4d498e0867b82d15"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.details.p3": {
-      "source": "1d6d69473c1b9094",
-      "output": "7192b7d7b3dae608"
+      "source": "cd81e50ff3da722e",
+      "output": "89809baab9981544"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.summary": {
       "source": "1d1e2e326717e6c4",
@@ -67931,6 +68027,30 @@
     "features.uhrzeit-24-oder-12-stunden.where": {
       "source": "bc7190ade1b187af",
       "output": "a2c8ba093bf276ec"
+    },
+    "features.unterseiten-einer-freigabe.details.p1": {
+      "source": "017c67e57a8bc62e",
+      "output": "6002221b55685808"
+    },
+    "features.unterseiten-einer-freigabe.details.p2": {
+      "source": "99216c4813178000",
+      "output": "3c17a2f7388cf491"
+    },
+    "features.unterseiten-einer-freigabe.details.p3": {
+      "source": "9080c86505a9d230",
+      "output": "a58231c4406ecc03"
+    },
+    "features.unterseiten-einer-freigabe.summary": {
+      "source": "a4d6dcf3469c01f0",
+      "output": "b4b4df3b3b58c3e4"
+    },
+    "features.unterseiten-einer-freigabe.title": {
+      "source": "a55e20d2f9463307",
+      "output": "48d6590d756d0b06"
+    },
+    "features.unterseiten-einer-freigabe.where": {
+      "source": "ef67586a3bcaf09d",
+      "output": "ff5a120cf7b9f4a0"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -75924,9 +76044,33 @@
       "source": "fbae9016860cb593",
       "output": "1fa883eaf46bc045"
     },
+    "shell.sharedWithMe.branchEmpty": {
+      "source": "f75f2bd2533f224e",
+      "output": "b2b988c1ce866045"
+    },
+    "shell.sharedWithMe.branchError": {
+      "source": "43b0de88637a82a4",
+      "output": "aa116058e654929d"
+    },
+    "shell.sharedWithMe.branchLabel": {
+      "source": "eb30658c459dd642",
+      "output": "910fd0996708f8c5"
+    },
+    "shell.sharedWithMe.branchLoading": {
+      "source": "9940ef1fd752c41f",
+      "output": "4fb3c7e04e17e5dc"
+    },
+    "shell.sharedWithMe.collapse": {
+      "source": "b6e163ae0f795e7a",
+      "output": "5b339978c98372d3"
+    },
     "shell.sharedWithMe.empty": {
       "source": "274ebb6179e96a1c",
       "output": "ebed5a2d57363104"
+    },
+    "shell.sharedWithMe.expand": {
+      "source": "cde5637e8a4404e5",
+      "output": "f0bb2a6f9de81766"
     },
     "shell.sharedWithMe.listLabel": {
       "source": "724d4e9de10b9324",
@@ -93551,8 +93695,8 @@
       "output": "0c0642cbccc1fd3f"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.details.p3": {
-      "source": "1d6d69473c1b9094",
-      "output": "fff2fd09897b42ba"
+      "source": "cd81e50ff3da722e",
+      "output": "03516dd6d5035fd5"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.summary": {
       "source": "1d1e2e326717e6c4",
@@ -94237,6 +94381,30 @@
     "features.uhrzeit-24-oder-12-stunden.where": {
       "source": "bc7190ade1b187af",
       "output": "0ed2980489924c35"
+    },
+    "features.unterseiten-einer-freigabe.details.p1": {
+      "source": "017c67e57a8bc62e",
+      "output": "434c23d73f790d4d"
+    },
+    "features.unterseiten-einer-freigabe.details.p2": {
+      "source": "99216c4813178000",
+      "output": "e184b1cd3ef41b62"
+    },
+    "features.unterseiten-einer-freigabe.details.p3": {
+      "source": "9080c86505a9d230",
+      "output": "2b4c91514c95fc2b"
+    },
+    "features.unterseiten-einer-freigabe.summary": {
+      "source": "a4d6dcf3469c01f0",
+      "output": "f5f8b8f9d0d22e6e"
+    },
+    "features.unterseiten-einer-freigabe.title": {
+      "source": "a55e20d2f9463307",
+      "output": "aef8e73c41119659"
+    },
+    "features.unterseiten-einer-freigabe.where": {
+      "source": "ef67586a3bcaf09d",
+      "output": "36727c333f28a83b"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -102230,9 +102398,33 @@
       "source": "fbae9016860cb593",
       "output": "299d8cfadf38e0ce"
     },
+    "shell.sharedWithMe.branchEmpty": {
+      "source": "f75f2bd2533f224e",
+      "output": "6d36446cc3f66090"
+    },
+    "shell.sharedWithMe.branchError": {
+      "source": "43b0de88637a82a4",
+      "output": "8e36725103800ab4"
+    },
+    "shell.sharedWithMe.branchLabel": {
+      "source": "eb30658c459dd642",
+      "output": "3a88421189baf0b8"
+    },
+    "shell.sharedWithMe.branchLoading": {
+      "source": "9940ef1fd752c41f",
+      "output": "0459f75fbc3e4068"
+    },
+    "shell.sharedWithMe.collapse": {
+      "source": "b6e163ae0f795e7a",
+      "output": "9315c7eba6c7f2a5"
+    },
     "shell.sharedWithMe.empty": {
       "source": "274ebb6179e96a1c",
       "output": "dd260c5267ab5c1b"
+    },
+    "shell.sharedWithMe.expand": {
+      "source": "cde5637e8a4404e5",
+      "output": "7977e7d66b9577ce"
     },
     "shell.sharedWithMe.listLabel": {
       "source": "724d4e9de10b9324",
@@ -119857,8 +120049,8 @@
       "output": "6c07fb72c0d809e0"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.details.p3": {
-      "source": "1d6d69473c1b9094",
-      "output": "58aa9deed964c135"
+      "source": "cd81e50ff3da722e",
+      "output": "02fb3e0a0cbefba9"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.summary": {
       "source": "1d1e2e326717e6c4",
@@ -120543,6 +120735,30 @@
     "features.uhrzeit-24-oder-12-stunden.where": {
       "source": "bc7190ade1b187af",
       "output": "1b21ee621f8cbf14"
+    },
+    "features.unterseiten-einer-freigabe.details.p1": {
+      "source": "017c67e57a8bc62e",
+      "output": "5b6caf4b043c1227"
+    },
+    "features.unterseiten-einer-freigabe.details.p2": {
+      "source": "99216c4813178000",
+      "output": "a695031ca8db2e7c"
+    },
+    "features.unterseiten-einer-freigabe.details.p3": {
+      "source": "9080c86505a9d230",
+      "output": "80a235ba9f86cda0"
+    },
+    "features.unterseiten-einer-freigabe.summary": {
+      "source": "a4d6dcf3469c01f0",
+      "output": "5774b306775cb012"
+    },
+    "features.unterseiten-einer-freigabe.title": {
+      "source": "a55e20d2f9463307",
+      "output": "f49e1be0af3c992f"
+    },
+    "features.unterseiten-einer-freigabe.where": {
+      "source": "ef67586a3bcaf09d",
+      "output": "3ebabd576c4a64e4"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -128536,9 +128752,33 @@
       "source": "fbae9016860cb593",
       "output": "25b8ba89c39e7a24"
     },
+    "shell.sharedWithMe.branchEmpty": {
+      "source": "f75f2bd2533f224e",
+      "output": "def9bfc2d1f25bc8"
+    },
+    "shell.sharedWithMe.branchError": {
+      "source": "43b0de88637a82a4",
+      "output": "4cb883517d1db846"
+    },
+    "shell.sharedWithMe.branchLabel": {
+      "source": "eb30658c459dd642",
+      "output": "0d7e90390eb6097e"
+    },
+    "shell.sharedWithMe.branchLoading": {
+      "source": "9940ef1fd752c41f",
+      "output": "3a9acc9b00709e66"
+    },
+    "shell.sharedWithMe.collapse": {
+      "source": "b6e163ae0f795e7a",
+      "output": "a8616de8d6455a5b"
+    },
     "shell.sharedWithMe.empty": {
       "source": "274ebb6179e96a1c",
       "output": "142fbaf066e91bc8"
+    },
+    "shell.sharedWithMe.expand": {
+      "source": "cde5637e8a4404e5",
+      "output": "b5c3a1785b4879d8"
     },
     "shell.sharedWithMe.listLabel": {
       "source": "724d4e9de10b9324",
@@ -146163,8 +146403,8 @@
       "output": "6f2d1e59ed910e5b"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.details.p3": {
-      "source": "1d6d69473c1b9094",
-      "output": "941c4134de8015fa"
+      "source": "cd81e50ff3da722e",
+      "output": "193652e194f93be9"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.summary": {
       "source": "1d1e2e326717e6c4",
@@ -146849,6 +147089,30 @@
     "features.uhrzeit-24-oder-12-stunden.where": {
       "source": "bc7190ade1b187af",
       "output": "1ca9448795f4487c"
+    },
+    "features.unterseiten-einer-freigabe.details.p1": {
+      "source": "017c67e57a8bc62e",
+      "output": "2bdaab5847f7baae"
+    },
+    "features.unterseiten-einer-freigabe.details.p2": {
+      "source": "99216c4813178000",
+      "output": "18fa41a49f60ff3b"
+    },
+    "features.unterseiten-einer-freigabe.details.p3": {
+      "source": "9080c86505a9d230",
+      "output": "9af3f6ca9c61884b"
+    },
+    "features.unterseiten-einer-freigabe.summary": {
+      "source": "a4d6dcf3469c01f0",
+      "output": "417505cdeecc2db4"
+    },
+    "features.unterseiten-einer-freigabe.title": {
+      "source": "a55e20d2f9463307",
+      "output": "f36ae6e73817da4e"
+    },
+    "features.unterseiten-einer-freigabe.where": {
+      "source": "ef67586a3bcaf09d",
+      "output": "587fa725666e4b18"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -154842,9 +155106,33 @@
       "source": "fbae9016860cb593",
       "output": "f9f782b63d199e2f"
     },
+    "shell.sharedWithMe.branchEmpty": {
+      "source": "f75f2bd2533f224e",
+      "output": "4bb18926d9fbac18"
+    },
+    "shell.sharedWithMe.branchError": {
+      "source": "43b0de88637a82a4",
+      "output": "9aec80429d11e442"
+    },
+    "shell.sharedWithMe.branchLabel": {
+      "source": "eb30658c459dd642",
+      "output": "7937702f53a115e7"
+    },
+    "shell.sharedWithMe.branchLoading": {
+      "source": "9940ef1fd752c41f",
+      "output": "1158e58c2d5aaff7"
+    },
+    "shell.sharedWithMe.collapse": {
+      "source": "b6e163ae0f795e7a",
+      "output": "3480ef4f3d668482"
+    },
     "shell.sharedWithMe.empty": {
       "source": "274ebb6179e96a1c",
       "output": "2b6be93d74aa5ed6"
+    },
+    "shell.sharedWithMe.expand": {
+      "source": "cde5637e8a4404e5",
+      "output": "5748f79afbc65937"
     },
     "shell.sharedWithMe.listLabel": {
       "source": "724d4e9de10b9324",
@@ -172469,8 +172757,8 @@
       "output": "e982794b317cb0ca"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.details.p3": {
-      "source": "1d6d69473c1b9094",
-      "output": "4fa95096a2a9f97c"
+      "source": "cd81e50ff3da722e",
+      "output": "06fd0126e4842975"
     },
     "features.mit-mir-geteilt-in-der-seitenleiste.summary": {
       "source": "1d1e2e326717e6c4",
@@ -173155,6 +173443,30 @@
     "features.uhrzeit-24-oder-12-stunden.where": {
       "source": "bc7190ade1b187af",
       "output": "1ff95ef927aae0e0"
+    },
+    "features.unterseiten-einer-freigabe.details.p1": {
+      "source": "017c67e57a8bc62e",
+      "output": "0177999157d63c75"
+    },
+    "features.unterseiten-einer-freigabe.details.p2": {
+      "source": "99216c4813178000",
+      "output": "bb2b156252491785"
+    },
+    "features.unterseiten-einer-freigabe.details.p3": {
+      "source": "9080c86505a9d230",
+      "output": "09fac4ec1ba4746d"
+    },
+    "features.unterseiten-einer-freigabe.summary": {
+      "source": "a4d6dcf3469c01f0",
+      "output": "be8bfdc1fbd0e621"
+    },
+    "features.unterseiten-einer-freigabe.title": {
+      "source": "a55e20d2f9463307",
+      "output": "57848d2a71dbc98e"
+    },
+    "features.unterseiten-einer-freigabe.where": {
+      "source": "ef67586a3bcaf09d",
+      "output": "4a90755cdf76ebef"
     },
     "features.verbindungen.details.p1": {
       "source": "a6ab6e33f21d4941",
@@ -181148,9 +181460,33 @@
       "source": "fbae9016860cb593",
       "output": "305e412364f12206"
     },
+    "shell.sharedWithMe.branchEmpty": {
+      "source": "f75f2bd2533f224e",
+      "output": "5b98aa02183e0e21"
+    },
+    "shell.sharedWithMe.branchError": {
+      "source": "43b0de88637a82a4",
+      "output": "27c2838a67d6872d"
+    },
+    "shell.sharedWithMe.branchLabel": {
+      "source": "eb30658c459dd642",
+      "output": "c14da36b03c50433"
+    },
+    "shell.sharedWithMe.branchLoading": {
+      "source": "9940ef1fd752c41f",
+      "output": "2944b610e7361487"
+    },
+    "shell.sharedWithMe.collapse": {
+      "source": "b6e163ae0f795e7a",
+      "output": "cebbd6c6ace0c6b0"
+    },
     "shell.sharedWithMe.empty": {
       "source": "274ebb6179e96a1c",
       "output": "2d90851880cb07ef"
+    },
+    "shell.sharedWithMe.expand": {
+      "source": "cde5637e8a4404e5",
+      "output": "16e126d47e8a1d36"
     },
     "shell.sharedWithMe.listLabel": {
       "source": "724d4e9de10b9324",

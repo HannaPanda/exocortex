@@ -25,6 +25,7 @@ import {
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useDocumentFragment } from '@/lib/api/transclusion-queries';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { PageLinkPromptContext } from './page-link-context';
 import { ReadOnlyDocument } from './read-only-document';
@@ -67,6 +68,7 @@ export function TransclusionNodeView({
   const label = transclusionLabel(node.attrs);
   const askPageLink = React.useContext(PageLinkPromptContext);
   const editable = editor.isEditable;
+  const hrefs = useDocumentHrefs();
 
   // A page may not embed itself: the block would show the page it sits on,
   // with itself inside it. Refused here rather than resolved, because the
@@ -101,7 +103,7 @@ export function TransclusionNodeView({
         <div className="embed-actions">
           {target === null || self ? null : (
             <Link
-              href={`/arbeitsbereich/${workspaceId}/seite/${target}`}
+              href={hrefs.href(workspaceId, target)}
               className="embed-action"
               data-testid="transclusion-open-source"
             >

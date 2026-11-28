@@ -143,7 +143,13 @@
     "loadError": "Não foi possível carregar os compartilhamentos.",
     "workspacesTitle": "Seus espaços de trabalho",
     "workspacesLabel": "Seus próprios espaços de trabalho",
-    "workspacesEmpty": "Você ainda não tem nenhum espaço de trabalho próprio."
+    "workspacesEmpty": "Você ainda não tem nenhum espaço de trabalho próprio.",
+    "expand": "Expandir subpáginas de “{title}”",
+    "collapse": "Recolher subpáginas de “{title}”",
+    "branchLabel": "Subpáginas de “{title}”",
+    "branchLoading": "Carregando subpáginas…",
+    "branchError": "Não foi possível carregar as subpáginas.",
+    "branchEmpty": "Nenhuma subpágina"
   },
   "connectionStatus": {
     "offlineShort": "offline",

@@ -143,7 +143,13 @@
     "loadError": "Impossibile caricare le condivisioni.",
     "workspacesTitle": "Le tue aree di lavoro",
     "workspacesLabel": "Le tue aree di lavoro personali",
-    "workspacesEmpty": "Non hai ancora un’area di lavoro personale."
+    "workspacesEmpty": "Non hai ancora un’area di lavoro personale.",
+    "expand": "Espandi le sottopagine di „{title}“",
+    "collapse": "Comprimi le sottopagine di „{title}“",
+    "branchLabel": "Sottopagine di „{title}“",
+    "branchLoading": "Caricamento delle sottopagine…",
+    "branchError": "Impossibile caricare le sottopagine.",
+    "branchEmpty": "Nessuna sottopagina"
   },
   "connectionStatus": {
     "offlineShort": "offline",

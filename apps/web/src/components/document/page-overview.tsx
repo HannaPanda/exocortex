@@ -10,6 +10,7 @@ import { Badge, Button, cn } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useDocumentOverview, useRefreshDocumentOverview } from '@/lib/api/overview-queries';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 import { useFormatter } from '@/lib/formatter';
 import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 
@@ -119,10 +120,11 @@ function OverviewIntro({ data, pending }: { data: DocumentOverviewResponse; pend
 /** One child: icon, title, its own digest, and how much is underneath it. */
 function OverviewRow({ workspaceId, entry }: { workspaceId: string; entry: OverviewEntry }) {
   const t = useTranslations('document.overview');
+  const hrefs = useDocumentHrefs();
   return (
     <li>
       <Link
-        href={`/arbeitsbereich/${workspaceId}/seite/${entry.documentId}`}
+        href={hrefs.href(workspaceId, entry.documentId, entry.type)}
         className="group flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/60"
       >
         <DocumentIcon

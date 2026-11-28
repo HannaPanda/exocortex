@@ -35,6 +35,7 @@ import { queryKeys } from '@/lib/api/query-keys';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import { shareKeys } from '@/lib/api/share-queries';
 import { signOut } from '@/lib/auth/client';
+import { SharedDocumentHrefs } from '@/lib/document-href-context';
 import { isTypingTarget } from '@/lib/keyboard';
 import { useGrantsChanged, useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 import { usePersistentState } from '@/lib/use-persistent-state';
@@ -86,7 +87,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <PaletteContributionsProvider>
                 <SettingsDialogProvider>
                   <GrantsRefresh />
-                  <AppShellInner>{children}</AppShellInner>
+                  <ShellDocumentHrefs>
+                    <AppShellInner>{children}</AppShellInner>
+                  </ShellDocumentHrefs>
                 </SettingsDialogProvider>
               </PaletteContributionsProvider>
             </PaletteRequestsProvider>
@@ -630,6 +633,19 @@ export function isSharedPath(pathname: string | null): boolean {
 }
 
 /**
+ * On the shared screens every page link stays in the shared view (issue #327):
+ * the editor's links and mentions, the breadcrumb, the overview and the
+ * context panel all build `/geteilt/<id>` there instead of the workspace
+ * address the reader is refused at. Around the whole shell rather than the
+ * page, because the context panel sits beside the page, not inside it.
+ */
+function ShellDocumentHrefs({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (!isSharedPath(pathname)) return <>{children}</>;
+  return <SharedDocumentHrefs>{children}</SharedDocumentHrefs>;
+}
+
+/**
  * Reads what was shared with this account again whenever a grant of theirs
  * changed (issue #232, ADR-029). A grantee is in no workspace room, so this
  * notice is the only thing that reaches them: the list in the navigation, the
@@ -641,6 +657,7 @@ function GrantsRefresh(): null {
   const documentId = useParams<{ documentId?: string }>().documentId ?? null;
   useGrantsChanged(() => {
     void queryClient.invalidateQueries({ queryKey: shareKeys.incoming() });
+    void queryClient.invalidateQueries({ queryKey: shareKeys.branches() });
     if (documentId !== null) {
       void queryClient.invalidateQueries({ queryKey: queryKeys.document(documentId) });
     }

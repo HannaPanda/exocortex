@@ -143,7 +143,13 @@
     "loadError": "Nie udało się wczytać udostępnień.",
     "workspacesTitle": "Twoje obszary robocze",
     "workspacesLabel": "Twoje własne obszary robocze",
-    "workspacesEmpty": "Nie masz jeszcze własnego obszaru roboczego."
+    "workspacesEmpty": "Nie masz jeszcze własnego obszaru roboczego.",
+    "expand": "Rozwiń podstrony „{title}”",
+    "collapse": "Zwiń podstrony „{title}”",
+    "branchLabel": "Podstrony „{title}”",
+    "branchLoading": "Ładowanie podstron…",
+    "branchError": "Nie udało się załadować podstron.",
+    "branchEmpty": "Brak podstron"
   },
   "connectionStatus": {
     "offlineShort": "offline",

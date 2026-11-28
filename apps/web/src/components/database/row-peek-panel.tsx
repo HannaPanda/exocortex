@@ -14,7 +14,7 @@ import { PageSurface } from '@/components/shell/page-surface';
 import { SaveIndicator } from '@/components/shell/save-indicator';
 import { useDocument } from '@/lib/api/document-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
-import { documentHref } from '@/lib/document-href';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { ROW_PEEK_ATTRIBUTE, type RowPeek, useRowPeek } from './row-peek';
 
@@ -46,7 +46,8 @@ export function RowPeekPanel() {
 function PeekFrame({ peek, rowId }: { peek: RowPeek; rowId: string }) {
   const t = useTranslations('database.peek');
   const panel = React.useRef<HTMLElement>(null);
-  const href = documentHref(peek.workspaceId, rowId, 'PAGE');
+  const hrefs = useDocumentHrefs();
+  const href = hrefs.href(peek.workspaceId, rowId, 'PAGE');
   const selectTitle = peek.selectTitleFor === rowId;
 
   // The focus moves into the panel with every row it shows, so the keyboard

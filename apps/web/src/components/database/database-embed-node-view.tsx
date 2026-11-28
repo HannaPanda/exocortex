@@ -11,6 +11,7 @@ import { Button, EmptyState, LoadingState } from '@exocortex/ui';
 
 import { DatabaseEmbedPromptContext } from '@/components/editor/database-embed-context';
 import { useDocument } from '@/lib/api/document-queries';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { DatabaseShell } from './database-shell';
 
@@ -40,6 +41,7 @@ export function DatabaseEmbedNodeView({
   const doc = useDocument(documentId.length > 0 ? documentId : undefined);
   const askDatabase = React.useContext(DatabaseEmbedPromptContext);
   const editable = editor.isEditable;
+  const hrefs = useDocumentHrefs();
 
   const pickDatabase = async (): Promise<void> => {
     const picked = await askDatabase?.current?.();
@@ -56,10 +58,7 @@ export function DatabaseEmbedNodeView({
         <span className="embed-title">{title}</span>
         <div className="embed-actions">
           {missing ? null : (
-            <Link
-              href={`/arbeitsbereich/${workspaceId}/seite/${documentId}`}
-              className="embed-action"
-            >
+            <Link href={hrefs.href(workspaceId, documentId)} className="embed-action">
               <ExternalLinkIcon aria-hidden />
               {t('openOwnPage')}
             </Link>

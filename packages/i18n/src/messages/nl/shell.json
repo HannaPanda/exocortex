@@ -143,7 +143,13 @@
     "loadError": "De delingen konden niet worden geladen.",
     "workspacesTitle": "Je werkruimtes",
     "workspacesLabel": "Je eigen werkruimtes",
-    "workspacesEmpty": "Je hebt nog geen eigen werkruimte."
+    "workspacesEmpty": "Je hebt nog geen eigen werkruimte.",
+    "expand": "Subpagina’s van „{title}” uitvouwen",
+    "collapse": "Subpagina’s van „{title}” invouwen",
+    "branchLabel": "Subpagina’s van „{title}”",
+    "branchLoading": "Subpagina’s worden geladen …",
+    "branchError": "De subpagina’s konden niet worden geladen.",
+    "branchEmpty": "Geen subpagina’s"
   },
   "connectionStatus": {
     "offlineShort": "offline",

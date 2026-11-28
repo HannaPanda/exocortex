@@ -7,6 +7,7 @@ import { type DocumentDetail } from '@exocortex/contracts';
 import { TruncatedText } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 /**
  * Where the page sits, as a line of links.
@@ -28,6 +29,7 @@ export function PageBreadcrumb({
   workspaceName: string | undefined;
   detail: DocumentDetail;
 }) {
+  const hrefs = useDocumentHrefs();
   return (
     <nav
       aria-label="Pfad"
@@ -51,7 +53,7 @@ export function PageBreadcrumb({
       {detail.breadcrumb.map((entry) => (
         <React.Fragment key={entry.id}>
           <Link
-            href={`/arbeitsbereich/${workspaceId}/seite/${entry.id}`}
+            href={hrefs.href(workspaceId, entry.id)}
             className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
           >
             {/* Only a chosen symbol, never the default one: a path is a line

@@ -39,6 +39,7 @@ import {
   useUpdateDatabaseRowValues,
   useUpdateDatabaseView,
 } from '@/lib/api/database-queries';
+import { useDocumentHrefs } from '@/lib/document-href-context';
 
 import { PropertyValueDisplay } from './cells';
 import { OPTION_COLOR_BG_CLASS, OPTION_COLOR_TEXT_CLASS } from './property-types';
@@ -145,9 +146,10 @@ function BoardColumns({
   const tRow = useTranslations('database.rowActions');
   const duplicateRows = useDuplicateDatabaseRows(documentId);
   const trashRows = useTrashDatabaseRows(documentId);
+  const hrefs = useDocumentHrefs();
   const copyLink = (row: DatabaseRow): void => {
     void window.navigator.clipboard.writeText(
-      `${window.location.origin}/arbeitsbereich/${workspaceId}/seite/${row.document.id}`,
+      `${window.location.origin}${hrefs.href(workspaceId, row.document.id, row.document.type)}`,
     );
   };
 
