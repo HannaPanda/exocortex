@@ -192,7 +192,28 @@
   "addProperty": {
     "trigger": "Eigenschap toevoegen",
     "namePlaceholder": "Naam van eigenschap",
-    "submit": "Toevoegen"
+    "submit": "Toevoegen",
+    "defaultNames": {
+      "TEXT": "Tekst",
+      "NUMBER": "Getal",
+      "SELECT": "Status",
+      "MULTI_SELECT": "Labels",
+      "DATE": "Datum",
+      "CHECKBOX": "Voltooid",
+      "URL": "Link",
+      "EMAIL": "E-mail",
+      "PHONE": "Telefoon",
+      "PERSON": "Persoon",
+      "FILES": "Bestanden",
+      "CREATED_TIME": "Aangemaakt op",
+      "UPDATED_TIME": "Laatst bewerkt op",
+      "CREATED_BY": "Aangemaakt door",
+      "UPDATED_BY": "Laatst bewerkt door",
+      "RELATION": "Relatie",
+      "ROLLUP": "Rollup",
+      "FORMULA": "Formule"
+    },
+    "numberedName": "{name} {number}"
   },
   "propertyMenu": {
     "rename": "Naam wijzigen",

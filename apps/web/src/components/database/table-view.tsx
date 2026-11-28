@@ -166,6 +166,10 @@ export function TableView({
 
   const rowHeight = rowHeightOf(view);
   const columns = visibleTableProperties(view, properties);
+  const propertyNames = React.useMemo(
+    () => properties.map((property) => property.name),
+    [properties],
+  );
 
   const widthOf = (key: string): number =>
     draggedWidth !== null && draggedWidth.key === key
@@ -314,7 +318,11 @@ export function TableView({
               ))}
               <TableHead className="sticky top-0 z-20 border-b border-border bg-background">
                 {readOnly ? null : (
-                  <AddPropertyButton documentId={documentId} workspaceId={workspaceId} />
+                  <AddPropertyButton
+                    documentId={documentId}
+                    workspaceId={workspaceId}
+                    existingNames={propertyNames}
+                  />
                 )}
               </TableHead>
             </TableRow>

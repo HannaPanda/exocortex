@@ -5292,9 +5292,85 @@
       "source": "16c6622cd37c51d3",
       "output": "56214e40d0099c81"
     },
+    "database.addProperty.defaultNames.CHECKBOX": {
+      "source": "467e01ba533e1a45",
+      "output": "11a6767d5674c7e4"
+    },
+    "database.addProperty.defaultNames.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "374cd9d220fbeb7a"
+    },
+    "database.addProperty.defaultNames.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "adc31b5573d3f87e"
+    },
+    "database.addProperty.defaultNames.DATE": {
+      "source": "9135882d323cd839",
+      "output": "99c40ab405926cb5"
+    },
+    "database.addProperty.defaultNames.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "969ccbd3cf6300ec"
+    },
+    "database.addProperty.defaultNames.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "abc7e9892806b047"
+    },
+    "database.addProperty.defaultNames.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "d00bd4ec32e4e1cc"
+    },
+    "database.addProperty.defaultNames.MULTI_SELECT": {
+      "source": "f446aa67edb8d37a",
+      "output": "1331275bc537b4c2"
+    },
+    "database.addProperty.defaultNames.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "bd82cf16699be29e"
+    },
+    "database.addProperty.defaultNames.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "6007db63e18e532c"
+    },
+    "database.addProperty.defaultNames.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "63dceb8800b2dd4a"
+    },
+    "database.addProperty.defaultNames.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "1367485dc3c39a2a"
+    },
+    "database.addProperty.defaultNames.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.addProperty.defaultNames.SELECT": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "database.addProperty.defaultNames.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "71988c4d8e0803ba"
+    },
+    "database.addProperty.defaultNames.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "435a7cbf5ad4247e"
+    },
+    "database.addProperty.defaultNames.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "60d4afd426a1045a"
+    },
+    "database.addProperty.defaultNames.URL": {
+      "source": "a6a32dbc5618ea39",
+      "output": "a6a32dbc5618ea39"
+    },
     "database.addProperty.namePlaceholder": {
       "source": "11a1bcaa2dfa5db2",
       "output": "366e5ff4c24ba3b9"
+    },
+    "database.addProperty.numberedName": {
+      "source": "ae4fed06a11d3aa8",
+      "output": "ae4fed06a11d3aa8"
     },
     "database.addProperty.submit": {
       "source": "cbb95cf02b7d0216",
@@ -13605,8 +13681,8 @@
       "output": "2772841064fdece4"
     },
     "features.datenbank-eigenschaften.details.p1": {
-      "source": "2e5376112b7e920b",
-      "output": "aef3862179c9bf5c"
+      "source": "a5b43bd68dd41cb3",
+      "output": "2d2690f60c7b4614"
     },
     "features.datenbank-eigenschaften.details.p2": {
       "source": "c68fb200cf6dcf2b",
@@ -31798,9 +31874,85 @@
       "source": "16c6622cd37c51d3",
       "output": "9dffcd289d2c55bd"
     },
+    "database.addProperty.defaultNames.CHECKBOX": {
+      "source": "467e01ba533e1a45",
+      "output": "13f79180a02ea4af"
+    },
+    "database.addProperty.defaultNames.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "36adeaf8666874ee"
+    },
+    "database.addProperty.defaultNames.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "1c0169f446d90359"
+    },
+    "database.addProperty.defaultNames.DATE": {
+      "source": "9135882d323cd839",
+      "output": "93b2a9ef782cacd6"
+    },
+    "database.addProperty.defaultNames.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "ec64dc30a483cdcf"
+    },
+    "database.addProperty.defaultNames.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "f7b3eac1cf97193d"
+    },
+    "database.addProperty.defaultNames.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "d3eaf1ded611a9bf"
+    },
+    "database.addProperty.defaultNames.MULTI_SELECT": {
+      "source": "f446aa67edb8d37a",
+      "output": "137cb944c5267302"
+    },
+    "database.addProperty.defaultNames.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "67e494d69c2d20d0"
+    },
+    "database.addProperty.defaultNames.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "31bdeef94e7d9a9c"
+    },
+    "database.addProperty.defaultNames.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "f1186abd0b8bec58"
+    },
+    "database.addProperty.defaultNames.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "6638cd89f477b374"
+    },
+    "database.addProperty.defaultNames.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.addProperty.defaultNames.SELECT": {
+      "source": "920e413c7d411b61",
+      "output": "98e5acddb6c46a24"
+    },
+    "database.addProperty.defaultNames.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "6df3d6661c095ce7"
+    },
+    "database.addProperty.defaultNames.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "49b60ac77291a643"
+    },
+    "database.addProperty.defaultNames.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "a9b4855ea08c82c4"
+    },
+    "database.addProperty.defaultNames.URL": {
+      "source": "a6a32dbc5618ea39",
+      "output": "08dab6446d0e6fae"
+    },
     "database.addProperty.namePlaceholder": {
       "source": "11a1bcaa2dfa5db2",
       "output": "afa8a11d18f038e1"
+    },
+    "database.addProperty.numberedName": {
+      "source": "ae4fed06a11d3aa8",
+      "output": "ae4fed06a11d3aa8"
     },
     "database.addProperty.submit": {
       "source": "cbb95cf02b7d0216",
@@ -40111,8 +40263,8 @@
       "output": "2a90952069a1247f"
     },
     "features.datenbank-eigenschaften.details.p1": {
-      "source": "2e5376112b7e920b",
-      "output": "77a30b48dd9ec8ac"
+      "source": "a5b43bd68dd41cb3",
+      "output": "0876bbd9da4759f1"
     },
     "features.datenbank-eigenschaften.details.p2": {
       "source": "c68fb200cf6dcf2b",
@@ -58304,9 +58456,85 @@
       "source": "16c6622cd37c51d3",
       "output": "fd97c9ea16d8bb22"
     },
+    "database.addProperty.defaultNames.CHECKBOX": {
+      "source": "467e01ba533e1a45",
+      "output": "e7fa1c6db8054b5b"
+    },
+    "database.addProperty.defaultNames.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "dc8805602c345b87"
+    },
+    "database.addProperty.defaultNames.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "3e403102f64caee3"
+    },
+    "database.addProperty.defaultNames.DATE": {
+      "source": "9135882d323cd839",
+      "output": "99c40ab405926cb5"
+    },
+    "database.addProperty.defaultNames.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "2550d962e536e7c0"
+    },
+    "database.addProperty.defaultNames.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "c7c15a8a6469a3b8"
+    },
+    "database.addProperty.defaultNames.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "e7c95542e4496957"
+    },
+    "database.addProperty.defaultNames.MULTI_SELECT": {
+      "source": "f446aa67edb8d37a",
+      "output": "b0bba38f59470b06"
+    },
+    "database.addProperty.defaultNames.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "562bb15757a8b593"
+    },
+    "database.addProperty.defaultNames.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "040db0d289e7fa3b"
+    },
+    "database.addProperty.defaultNames.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "cc4c424b571fc354"
+    },
+    "database.addProperty.defaultNames.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "1367485dc3c39a2a"
+    },
+    "database.addProperty.defaultNames.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.addProperty.defaultNames.SELECT": {
+      "source": "920e413c7d411b61",
+      "output": "dee377cfd8cddfb8"
+    },
+    "database.addProperty.defaultNames.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "bbb0bd5ff551e76b"
+    },
+    "database.addProperty.defaultNames.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "78173f75ab057cca"
+    },
+    "database.addProperty.defaultNames.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "de568062ff89805b"
+    },
+    "database.addProperty.defaultNames.URL": {
+      "source": "a6a32dbc5618ea39",
+      "output": "58ac5bd8e15c56f0"
+    },
     "database.addProperty.namePlaceholder": {
       "source": "11a1bcaa2dfa5db2",
       "output": "73cfdb6ceadb2432"
+    },
+    "database.addProperty.numberedName": {
+      "source": "ae4fed06a11d3aa8",
+      "output": "ae4fed06a11d3aa8"
     },
     "database.addProperty.submit": {
       "source": "cbb95cf02b7d0216",
@@ -66617,8 +66845,8 @@
       "output": "c9e22124a62bfb63"
     },
     "features.datenbank-eigenschaften.details.p1": {
-      "source": "2e5376112b7e920b",
-      "output": "b564f11507044ed2"
+      "source": "a5b43bd68dd41cb3",
+      "output": "6f5655bee41683c3"
     },
     "features.datenbank-eigenschaften.details.p2": {
       "source": "c68fb200cf6dcf2b",
@@ -84810,9 +85038,85 @@
       "source": "16c6622cd37c51d3",
       "output": "fe101b631959ba27"
     },
+    "database.addProperty.defaultNames.CHECKBOX": {
+      "source": "467e01ba533e1a45",
+      "output": "948d392455cc69c4"
+    },
+    "database.addProperty.defaultNames.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "c6b0e980ee00e56b"
+    },
+    "database.addProperty.defaultNames.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "62ee629f0318b487"
+    },
+    "database.addProperty.defaultNames.DATE": {
+      "source": "9135882d323cd839",
+      "output": "cec3a9b89b2e3913"
+    },
+    "database.addProperty.defaultNames.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "969ccbd3cf6300ec"
+    },
+    "database.addProperty.defaultNames.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "50009ce1da4d15e1"
+    },
+    "database.addProperty.defaultNames.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "d00bd4ec32e4e1cc"
+    },
+    "database.addProperty.defaultNames.MULTI_SELECT": {
+      "source": "f446aa67edb8d37a",
+      "output": "1503916a2ab2b0fd"
+    },
+    "database.addProperty.defaultNames.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "ad14784441da3246"
+    },
+    "database.addProperty.defaultNames.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "31bdeef94e7d9a9c"
+    },
+    "database.addProperty.defaultNames.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "e85e0086c7aba547"
+    },
+    "database.addProperty.defaultNames.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "f3a8c5dde547b8ae"
+    },
+    "database.addProperty.defaultNames.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.addProperty.defaultNames.SELECT": {
+      "source": "920e413c7d411b61",
+      "output": "5d788017bfe473fd"
+    },
+    "database.addProperty.defaultNames.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "ebb9e60cfec069e7"
+    },
+    "database.addProperty.defaultNames.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "01c79ed60f813a61"
+    },
+    "database.addProperty.defaultNames.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "80a47a6e369dbfbe"
+    },
+    "database.addProperty.defaultNames.URL": {
+      "source": "a6a32dbc5618ea39",
+      "output": "a6a32dbc5618ea39"
+    },
     "database.addProperty.namePlaceholder": {
       "source": "11a1bcaa2dfa5db2",
       "output": "595c722e0d7a7ae4"
+    },
+    "database.addProperty.numberedName": {
+      "source": "ae4fed06a11d3aa8",
+      "output": "ae4fed06a11d3aa8"
     },
     "database.addProperty.submit": {
       "source": "cbb95cf02b7d0216",
@@ -93123,8 +93427,8 @@
       "output": "b7c6c80545c5a5b2"
     },
     "features.datenbank-eigenschaften.details.p1": {
-      "source": "2e5376112b7e920b",
-      "output": "ac9f25fc4959945b"
+      "source": "a5b43bd68dd41cb3",
+      "output": "495acd59980ebd17"
     },
     "features.datenbank-eigenschaften.details.p2": {
       "source": "c68fb200cf6dcf2b",
@@ -111316,9 +111620,85 @@
       "source": "16c6622cd37c51d3",
       "output": "778480fdfb66efee"
     },
+    "database.addProperty.defaultNames.CHECKBOX": {
+      "source": "467e01ba533e1a45",
+      "output": "ca53207fe79a3392"
+    },
+    "database.addProperty.defaultNames.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "0009d0acab62c6fc"
+    },
+    "database.addProperty.defaultNames.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "ce9f2a9c9800ffc2"
+    },
+    "database.addProperty.defaultNames.DATE": {
+      "source": "9135882d323cd839",
+      "output": "9135882d323cd839"
+    },
+    "database.addProperty.defaultNames.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "2550d962e536e7c0"
+    },
+    "database.addProperty.defaultNames.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "6067a9a877375a28"
+    },
+    "database.addProperty.defaultNames.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "e7c95542e4496957"
+    },
+    "database.addProperty.defaultNames.MULTI_SELECT": {
+      "source": "f446aa67edb8d37a",
+      "output": "934b8899c3d918d4"
+    },
+    "database.addProperty.defaultNames.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "60f3211112a258df"
+    },
+    "database.addProperty.defaultNames.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "fd29001560056f0c"
+    },
+    "database.addProperty.defaultNames.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "5d54efb51f2c6aec"
+    },
+    "database.addProperty.defaultNames.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "efdc10902d2247a5"
+    },
+    "database.addProperty.defaultNames.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.addProperty.defaultNames.SELECT": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "database.addProperty.defaultNames.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "5d07abcd8c8c6459"
+    },
+    "database.addProperty.defaultNames.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "fdd75cf492e18d4d"
+    },
+    "database.addProperty.defaultNames.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "01df5a4b1feb4062"
+    },
+    "database.addProperty.defaultNames.URL": {
+      "source": "a6a32dbc5618ea39",
+      "output": "a6a32dbc5618ea39"
+    },
     "database.addProperty.namePlaceholder": {
       "source": "11a1bcaa2dfa5db2",
       "output": "c84368a3ddc6474d"
+    },
+    "database.addProperty.numberedName": {
+      "source": "ae4fed06a11d3aa8",
+      "output": "ae4fed06a11d3aa8"
     },
     "database.addProperty.submit": {
       "source": "cbb95cf02b7d0216",
@@ -119629,8 +120009,8 @@
       "output": "a8ac4785ae9e1f75"
     },
     "features.datenbank-eigenschaften.details.p1": {
-      "source": "2e5376112b7e920b",
-      "output": "a985dc2ce3b7e5f6"
+      "source": "a5b43bd68dd41cb3",
+      "output": "545dd64367eab11c"
     },
     "features.datenbank-eigenschaften.details.p2": {
       "source": "c68fb200cf6dcf2b",
@@ -137822,9 +138202,85 @@
       "source": "16c6622cd37c51d3",
       "output": "b20af1c9c3597487"
     },
+    "database.addProperty.defaultNames.CHECKBOX": {
+      "source": "467e01ba533e1a45",
+      "output": "85030e6799f0b878"
+    },
+    "database.addProperty.defaultNames.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "07280b6aeabd2af7"
+    },
+    "database.addProperty.defaultNames.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "83cf305b77469c0c"
+    },
+    "database.addProperty.defaultNames.DATE": {
+      "source": "9135882d323cd839",
+      "output": "cec3a9b89b2e3913"
+    },
+    "database.addProperty.defaultNames.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "2550d962e536e7c0"
+    },
+    "database.addProperty.defaultNames.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "98175ca9c90f16d1"
+    },
+    "database.addProperty.defaultNames.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "7f1cd6c5029c8963"
+    },
+    "database.addProperty.defaultNames.MULTI_SELECT": {
+      "source": "f446aa67edb8d37a",
+      "output": "2c2951f0ec18a399"
+    },
+    "database.addProperty.defaultNames.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "44a1de83dbb0e15b"
+    },
+    "database.addProperty.defaultNames.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "49afd3b1bdac430b"
+    },
+    "database.addProperty.defaultNames.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "fa6906d76ee94d4e"
+    },
+    "database.addProperty.defaultNames.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "84c6e84df48ff6b6"
+    },
+    "database.addProperty.defaultNames.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.addProperty.defaultNames.SELECT": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "database.addProperty.defaultNames.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "5d07abcd8c8c6459"
+    },
+    "database.addProperty.defaultNames.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "7745661055b3942c"
+    },
+    "database.addProperty.defaultNames.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "ed703feb7c10ec34"
+    },
+    "database.addProperty.defaultNames.URL": {
+      "source": "a6a32dbc5618ea39",
+      "output": "a6a32dbc5618ea39"
+    },
     "database.addProperty.namePlaceholder": {
       "source": "11a1bcaa2dfa5db2",
       "output": "0b6da46a31d9af07"
+    },
+    "database.addProperty.numberedName": {
+      "source": "ae4fed06a11d3aa8",
+      "output": "ae4fed06a11d3aa8"
     },
     "database.addProperty.submit": {
       "source": "cbb95cf02b7d0216",
@@ -146135,8 +146591,8 @@
       "output": "feadd8c1a3bf8f21"
     },
     "features.datenbank-eigenschaften.details.p1": {
-      "source": "2e5376112b7e920b",
-      "output": "bfed5714a0b881a8"
+      "source": "a5b43bd68dd41cb3",
+      "output": "c485b2eb7315b49a"
     },
     "features.datenbank-eigenschaften.details.p2": {
       "source": "c68fb200cf6dcf2b",
@@ -164328,9 +164784,85 @@
       "source": "16c6622cd37c51d3",
       "output": "ea9ce10cbb5d875d"
     },
+    "database.addProperty.defaultNames.CHECKBOX": {
+      "source": "467e01ba533e1a45",
+      "output": "2801cb53f1fa6f08"
+    },
+    "database.addProperty.defaultNames.CREATED_BY": {
+      "source": "edf061d48d58d2bf",
+      "output": "d47c097c0a3c77b1"
+    },
+    "database.addProperty.defaultNames.CREATED_TIME": {
+      "source": "94114e0ea7e52eef",
+      "output": "f6d7d1b50677930a"
+    },
+    "database.addProperty.defaultNames.DATE": {
+      "source": "9135882d323cd839",
+      "output": "cec3a9b89b2e3913"
+    },
+    "database.addProperty.defaultNames.EMAIL": {
+      "source": "2fae6fb30b0d0077",
+      "output": "2550d962e536e7c0"
+    },
+    "database.addProperty.defaultNames.FILES": {
+      "source": "09cce161bf4c3e55",
+      "output": "c11445cb4fe129bf"
+    },
+    "database.addProperty.defaultNames.FORMULA": {
+      "source": "2442899d69fc0af9",
+      "output": "d3eaf1ded611a9bf"
+    },
+    "database.addProperty.defaultNames.MULTI_SELECT": {
+      "source": "f446aa67edb8d37a",
+      "output": "1331275bc537b4c2"
+    },
+    "database.addProperty.defaultNames.NUMBER": {
+      "source": "654eb4c0a3800646",
+      "output": "67e494d69c2d20d0"
+    },
+    "database.addProperty.defaultNames.PERSON": {
+      "source": "6007db63e18e532c",
+      "output": "1aa0b2d780d00837"
+    },
+    "database.addProperty.defaultNames.PHONE": {
+      "source": "fa6906d76ee94d4e",
+      "output": "2f151735cce73ad3"
+    },
+    "database.addProperty.defaultNames.RELATION": {
+      "source": "bbfc3ee7fba1d66f",
+      "output": "eb85a833076682d2"
+    },
+    "database.addProperty.defaultNames.ROLLUP": {
+      "source": "6720fa5fd4650222",
+      "output": "6720fa5fd4650222"
+    },
+    "database.addProperty.defaultNames.SELECT": {
+      "source": "920e413c7d411b61",
+      "output": "920e413c7d411b61"
+    },
+    "database.addProperty.defaultNames.TEXT": {
+      "source": "71988c4d8e0803ba",
+      "output": "6df3d6661c095ce7"
+    },
+    "database.addProperty.defaultNames.UPDATED_BY": {
+      "source": "ea4381fc2fb9f0c1",
+      "output": "416f8b3f3eaa70a4"
+    },
+    "database.addProperty.defaultNames.UPDATED_TIME": {
+      "source": "5a31284b05bec317",
+      "output": "fc8d321ac28fdec6"
+    },
+    "database.addProperty.defaultNames.URL": {
+      "source": "a6a32dbc5618ea39",
+      "output": "a6a32dbc5618ea39"
+    },
     "database.addProperty.namePlaceholder": {
       "source": "11a1bcaa2dfa5db2",
       "output": "7ec425c4bd95bbf0"
+    },
+    "database.addProperty.numberedName": {
+      "source": "ae4fed06a11d3aa8",
+      "output": "ae4fed06a11d3aa8"
     },
     "database.addProperty.submit": {
       "source": "cbb95cf02b7d0216",
@@ -172641,8 +173173,8 @@
       "output": "7c3793b5fc9042bd"
     },
     "features.datenbank-eigenschaften.details.p1": {
-      "source": "2e5376112b7e920b",
-      "output": "536f9856d12cb97d"
+      "source": "a5b43bd68dd41cb3",
+      "output": "76ca23a33fdf5644"
     },
     "features.datenbank-eigenschaften.details.p2": {
       "source": "c68fb200cf6dcf2b",

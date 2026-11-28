@@ -192,7 +192,28 @@
   "addProperty": {
     "trigger": "Eigenschaft hinzufügen",
     "namePlaceholder": "Name der Eigenschaft",
-    "submit": "Hinzufügen"
+    "submit": "Hinzufügen",
+    "defaultNames": {
+      "TEXT": "Text",
+      "NUMBER": "Zahl",
+      "SELECT": "Status",
+      "MULTI_SELECT": "Schlagwörter",
+      "DATE": "Datum",
+      "CHECKBOX": "Erledigt",
+      "URL": "Link",
+      "EMAIL": "E-Mail",
+      "PHONE": "Telefon",
+      "PERSON": "Person",
+      "FILES": "Dateien",
+      "CREATED_TIME": "Erstellt am",
+      "UPDATED_TIME": "Zuletzt bearbeitet am",
+      "CREATED_BY": "Erstellt von",
+      "UPDATED_BY": "Zuletzt bearbeitet von",
+      "RELATION": "Verknüpfung",
+      "ROLLUP": "Rollup",
+      "FORMULA": "Formel"
+    },
+    "numberedName": "{name} {number}"
   },
   "propertyMenu": {
     "rename": "Umbenennen",

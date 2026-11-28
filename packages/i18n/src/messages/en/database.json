@@ -192,7 +192,28 @@
   "addProperty": {
     "trigger": "Add property",
     "namePlaceholder": "Property name",
-    "submit": "Add"
+    "submit": "Add",
+    "defaultNames": {
+      "TEXT": "Text",
+      "NUMBER": "Number",
+      "SELECT": "Status",
+      "MULTI_SELECT": "Tags",
+      "DATE": "Date",
+      "CHECKBOX": "Done",
+      "URL": "Link",
+      "EMAIL": "Email",
+      "PHONE": "Phone",
+      "PERSON": "Person",
+      "FILES": "Files",
+      "CREATED_TIME": "Created time",
+      "UPDATED_TIME": "Last edited time",
+      "CREATED_BY": "Created by",
+      "UPDATED_BY": "Last edited by",
+      "RELATION": "Relation",
+      "ROLLUP": "Rollup",
+      "FORMULA": "Formula"
+    },
+    "numberedName": "{name} {number}"
   },
   "propertyMenu": {
     "rename": "Rename",

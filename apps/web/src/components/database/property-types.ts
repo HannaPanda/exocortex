@@ -22,6 +22,46 @@ export function usePropertyTypeLabel(): (type: DatabasePropertyType) => string {
   return React.useCallback((type: DatabasePropertyType) => t(type), [t]);
 }
 
+/**
+ * `base`, or the first of "base 2", "base 3", … that no column of this
+ * database carries yet (issue #259). Names are compared trimmed and without
+ * regard to case, because "datum" beside "Datum" reads as the same column and
+ * a formula's `prop("…")` would no longer say which one it means. `numbered`
+ * spells the suffix in the reader's language.
+ */
+export function uniquePropertyName(
+  base: string,
+  taken: readonly string[],
+  numbered: (name: string, number: number) => string,
+): string {
+  const used = new Set(taken.map((name) => name.trim().toLocaleLowerCase()));
+  if (!used.has(base.trim().toLocaleLowerCase())) return base;
+  for (let number = 2; ; number += 1) {
+    const candidate = numbered(base, number);
+    if (!used.has(candidate.trim().toLocaleLowerCase())) return candidate;
+  }
+}
+
+/**
+ * The name a new column of this type is offered before anybody types one, in
+ * the reader's language and unique among `taken` (issue #259). The words live
+ * under `database.addProperty.defaultNames`, one per type, so a type added to
+ * `DatabasePropertyType` without its default name fails the typecheck here.
+ */
+export function useDefaultPropertyName(): (
+  type: DatabasePropertyType,
+  taken: readonly string[],
+) => string {
+  const t = useTranslations('database.addProperty');
+  return React.useCallback(
+    (type: DatabasePropertyType, taken: readonly string[]) =>
+      uniquePropertyName(t(`defaultNames.${type}`), taken, (name, number) =>
+        t('numberedName', { name, number }),
+      ),
+    [t],
+  );
+}
+
 /** Property types a user can add today. */
 export const CREATABLE_PROPERTY_TYPES = IMPLEMENTED_PROPERTY_TYPES;
 

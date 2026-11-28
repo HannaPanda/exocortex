@@ -192,7 +192,28 @@
   "addProperty": {
     "trigger": "Ajouter une propriété",
     "namePlaceholder": "Nom de la propriété",
-    "submit": "Ajouter"
+    "submit": "Ajouter",
+    "defaultNames": {
+      "TEXT": "Texte",
+      "NUMBER": "Nombre",
+      "SELECT": "Statut",
+      "MULTI_SELECT": "Étiquettes",
+      "DATE": "Date",
+      "CHECKBOX": "Fait",
+      "URL": "Lien",
+      "EMAIL": "E-mail",
+      "PHONE": "Téléphone",
+      "PERSON": "Personne",
+      "FILES": "Fichiers",
+      "CREATED_TIME": "Créé le",
+      "UPDATED_TIME": "Dernière modification le",
+      "CREATED_BY": "Créé par",
+      "UPDATED_BY": "Modifié en dernier par",
+      "RELATION": "Relation",
+      "ROLLUP": "Rollup",
+      "FORMULA": "Formule"
+    },
+    "numberedName": "{name} {number}"
   },
   "propertyMenu": {
     "rename": "Renommer",

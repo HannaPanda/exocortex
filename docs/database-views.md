@@ -64,9 +64,26 @@ All four view types share one query path (`POST /api/documents/:id/rows/query`
    a plain formatted string does not.
 5. Add its name under `propertyTypes` in the German `database` message
    namespace (`packages/i18n/src/messages/de/database.json`, read by
-   `usePropertyTypeLabel` in `apps/web/src/components/database/property-types.ts`)
-   and, if it should be filterable, its operators in `operatorsForType` with
-   their words under `filters`.
+   `usePropertyTypeLabel` in `apps/web/src/components/database/property-types.ts`),
+   the name a new column of that type is offered under
+   `addProperty.defaultNames` (read by `useDefaultPropertyName`; the typecheck
+   fails while one is missing), and, if it should be filterable, its operators
+   in `operatorsForType` with their words under `filters`.
+
+### A new column's offered name (issue #259)
+
+The "+" popover in the table header fills the name field with a name for the
+chosen type ("Datum", "Status", "Dateien") from `addProperty.defaultNames`,
+in the reader's language. It remembers which name it filled in: while the
+field still holds that, or is empty, choosing another type swaps it; a name a
+person typed is never replaced. The offer is made unique against every column
+of the database, hidden ones included, by `uniquePropertyName`: trimmed and
+case-insensitively, counting on from 2 ("Datum 2") through
+`addProperty.numberedName`.
+
+This is deliberately the browser's alone. `name` is required on
+`POST …/properties` and `exo_database_property_create`, and an agent always
+knows what it is naming, so there is no server-side default to keep in step.
 
 ## Dates: point in time or span
 

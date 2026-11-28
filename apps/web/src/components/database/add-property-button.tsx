@@ -29,20 +29,29 @@ import {
 import {
   CONFIGURED_PROPERTY_TYPE_SET,
   CREATABLE_PROPERTY_TYPES,
+  useDefaultPropertyName,
   usePropertyTypeLabel,
 } from './property-types';
 
 export function AddPropertyButton({
   documentId,
   workspaceId,
+  existingNames,
 }: {
   documentId: string;
   workspaceId: string;
+  /** Every column of this database, hidden ones too: a default name avoids them all. */
+  existingNames: readonly string[];
 }) {
   const t = useTranslations('database.addProperty');
   const typeLabel = usePropertyTypeLabel();
+  const defaultName = useDefaultPropertyName();
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState('');
+  // The name this form filled in itself (issue #259). While the field still
+  // holds it, or nothing, choosing another type swaps it for that type's
+  // default; anything a person typed is theirs and is never replaced.
+  const [autoName, setAutoName] = React.useState<string | null>(null);
   const [type, setType] = React.useState<DatabasePropertyType>('TEXT');
   const [config, setConfig] = React.useState<PropertyConfig>(null);
   const createProperty = useCreateDatabaseProperty(documentId);
@@ -59,7 +68,9 @@ export function AddPropertyButton({
       onOpenChange={(next) => {
         setOpen(next);
         if (next) {
-          setName('');
+          const initial = defaultName('TEXT', existingNames);
+          setName(initial);
+          setAutoName(initial);
           setType('TEXT');
           setConfig(null);
           createProperty.reset();
@@ -99,13 +110,24 @@ export function AddPropertyButton({
             autoFocus
             placeholder={t('namePlaceholder')}
             value={name}
+            // An offered name is selected, so the first keystroke replaces it
+            // rather than writing behind it.
+            onFocus={(event) => {
+              if (name === autoName) event.currentTarget.select();
+            }}
             onChange={(event) => setName(event.target.value)}
           />
           <Select
             value={type}
             onValueChange={(next) => {
-              setType(next as DatabasePropertyType);
+              const nextType = next as DatabasePropertyType;
+              setType(nextType);
               setConfig(null);
+              if (name.trim().length === 0 || name === autoName) {
+                const offered = defaultName(nextType, existingNames);
+                setName(offered);
+                setAutoName(offered);
+              }
             }}
           >
             <SelectTrigger className="w-full" data-testid="property-type-select">

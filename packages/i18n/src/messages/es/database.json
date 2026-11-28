@@ -192,7 +192,28 @@
   "addProperty": {
     "trigger": "Añadir propiedad",
     "namePlaceholder": "Nombre de la propiedad",
-    "submit": "Añadir"
+    "submit": "Añadir",
+    "defaultNames": {
+      "TEXT": "Texto",
+      "NUMBER": "Número",
+      "SELECT": "Estado",
+      "MULTI_SELECT": "Etiquetas",
+      "DATE": "Fecha",
+      "CHECKBOX": "Hecho",
+      "URL": "Enlace",
+      "EMAIL": "Correo electrónico",
+      "PHONE": "Teléfono",
+      "PERSON": "Persona",
+      "FILES": "Archivos",
+      "CREATED_TIME": "Fecha de creación",
+      "UPDATED_TIME": "Última edición",
+      "CREATED_BY": "Creado por",
+      "UPDATED_BY": "Editado por última vez por",
+      "RELATION": "Relación",
+      "ROLLUP": "Rollup",
+      "FORMULA": "Fórmula"
+    },
+    "numberedName": "{name} {number}"
   },
   "propertyMenu": {
     "rename": "Cambiar nombre",

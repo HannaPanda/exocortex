@@ -192,7 +192,28 @@
   "addProperty": {
     "trigger": "Dodaj właściwość",
     "namePlaceholder": "Nazwa właściwości",
-    "submit": "Dodaj"
+    "submit": "Dodaj",
+    "defaultNames": {
+      "TEXT": "Tekst",
+      "NUMBER": "Liczba",
+      "SELECT": "Status",
+      "MULTI_SELECT": "Tagi",
+      "DATE": "Data",
+      "CHECKBOX": "Zrobione",
+      "URL": "Link",
+      "EMAIL": "E-mail",
+      "PHONE": "Telefon",
+      "PERSON": "Osoba",
+      "FILES": "Pliki",
+      "CREATED_TIME": "Utworzono",
+      "UPDATED_TIME": "Ostatnia edycja",
+      "CREATED_BY": "Autor",
+      "UPDATED_BY": "Ostatnio zmodyfikowane przez",
+      "RELATION": "Relacja",
+      "ROLLUP": "Rollup",
+      "FORMULA": "Formuła"
+    },
+    "numberedName": "{name} {number}"
   },
   "propertyMenu": {
     "rename": "Zmień nazwę",

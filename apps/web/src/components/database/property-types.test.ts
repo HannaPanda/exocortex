@@ -4,7 +4,12 @@ import { type DatabasePropertyOption } from '@exocortex/contracts';
 
 import { databaseProperty } from '@/test-support/database';
 
-import { filterValueChoices, filterValueLabel, operatorsForType } from './property-types';
+import {
+  filterValueChoices,
+  filterValueLabel,
+  operatorsForType,
+  uniquePropertyName,
+} from './property-types';
 
 const options: DatabasePropertyOption[] = [
   { id: 'opt-1', label: 'Offen', color: 'blue', orderKey: 'a0' },
@@ -92,5 +97,34 @@ describe('filterValueLabel', () => {
 
   it('survives a filter whose property no longer exists', () => {
     expect(filterValueLabel(undefined, 'Berlin', words)).toBe('Berlin');
+  });
+});
+
+describe('uniquePropertyName', () => {
+  const numbered = (name: string, number: number) => `${name} ${number}`;
+
+  it('offers the plain name while no column carries it', () => {
+    expect(uniquePropertyName('Datum', ['Status', 'Dateien'], numbered)).toBe('Datum');
+  });
+
+  it('counts on from 2 when the name is taken', () => {
+    expect(uniquePropertyName('Datum', ['Datum'], numbered)).toBe('Datum 2');
+    expect(uniquePropertyName('Datum', ['Datum', 'Datum 2', 'Datum 3'], numbered)).toBe('Datum 4');
+  });
+
+  it('fills the first gap rather than the end', () => {
+    expect(uniquePropertyName('Datum', ['Datum', 'Datum 3'], numbered)).toBe('Datum 2');
+  });
+
+  it('treats a name differing only in case or spaces as taken', () => {
+    // A formula's prop("datum") beside a column "Datum" would not say which
+    // one it means, so the offer steps around both.
+    expect(uniquePropertyName('Datum', [' datum '], numbered)).toBe('Datum 2');
+  });
+
+  it('spells the suffix the way it is told to', () => {
+    expect(uniquePropertyName('Date', ['Date'], (name, number) => `${name} (${number})`)).toBe(
+      'Date (2)',
+    );
   });
 });

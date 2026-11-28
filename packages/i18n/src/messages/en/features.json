@@ -392,7 +392,7 @@
     "title": "Columns: text, number, select, date, person, files",
     "summary": "A database can have columns of type text, number, select, multi-select, date, checkbox, address, email, phone, person, and files. In addition, there are four self-filling columns: created at, updated at, created by, updated by. A date can be a date range. Relation, Rollup, and formula are listed alongside as separate entries.",
     "details": {
-      "p1": "Via the column header, you create a column, rename it, change its type, or remove it; dragging reorders the columns. For select and multi-select, the available values belong to the column, each with its own color, making a status instantly recognizable on a board.",
+      "p1": "Use the column header to create, rename, change the type of, or delete a column; dragging reorders columns. A new column comes with a name matching its type, such as “Date”, “Status”, or “Files”, and if that already exists, it is named “Date 2”. If you type a custom name, it stays even if you change the type later. For select and multi-select, the possible values belong to the column, each with their own color, making a status instantly recognizable on the board.",
       "p2": "A date can be a single day, a day with a time, or a date range with a start and end. This is the column that the calendar view and reminders rely on later. A person column references members of the workspace, and a files column holds attachments right inside the row.",
       "p3": "Four columns fill themselves automatically and cannot be edited manually: created at, updated at, created by, updated by. They are primarily useful for sorting, such as “what did I touch last”, without anyone having to maintain a date."
     },
