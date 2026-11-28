@@ -98,7 +98,11 @@ if [ "${1:-}" = --inside ]; then
       printf '    line; a key built at run time (t(`errors.${code}`) with code: string) it cannot see. A stale dist of\n'
       printf '    @exocortex/i18n does the same: `pnpm --filter @exocortex/i18n build`.\n'
       printf '  %b→%b Only if the step really needs more: %s=<size> (or off) in front of the command, e.g.\n' "$YELLOW" "$NC" "$variable"
-      printf '    %s=6G bash scripts/build.sh\n' "$variable"
+      if [ "$variable" = EXOCORTEX_TYPECHECK_MEMORY_MAX ]; then
+        printf '    %s=6G pnpm typecheck, or the same in front of bash scripts/build.sh\n' "$variable"
+      else
+        printf '    %s=8G bash scripts/build.sh\n' "$variable"
+      fi
     } >&2
     exit 137
   fi
