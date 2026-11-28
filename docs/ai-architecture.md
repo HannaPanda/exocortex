@@ -1305,7 +1305,7 @@ screen has to be taken back once it is over (issue #242):
   `chatScroll: 'answerStart'` (on the account, `GET`/`PATCH
 /api/me/preferences`, `exo_me_preferences_set`; the panel's menu, the
   palette command "KI-Chat: am Antwortanfang bleiben" and
-  `/einstellungen/ki-chat`) does not follow a sent question. `useAnswerAnchor`
+  the settings dialog's `?einstellungen=chat`) does not follow a sent question. `useAnswerAnchor`
   waits until the question with that message id (the value of
   `data-chat-question`) is in the transcript, glides it to the top once
   (`anchorTop` in `transcript-anchor.ts`: below the padding, or with its end a

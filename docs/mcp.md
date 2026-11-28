@@ -878,7 +878,7 @@ An OAuth access token carries no eXocortex scope — the OpenID scopes it holds
 say nothing about pages. What limits it is the tool list its endpoint serves
 (`/api/mcp/research` cannot write at all) and the fact that it opens no other
 route in the API. Revoke a connector under **Einstellungen → Verbindungen**
-(`/einstellungen/verbindungen`, section "Verbundene Anwendungen"): that deletes
+(`?einstellungen=connections`, section "Verbundene Anwendungen"): that deletes
 the account's refresh grants and its consent and sets `disabled` on the
 `oauth_client` row when nobody else still uses the registration. The `disabled`
 check runs on every use, which is what makes it bite: an access token is a
@@ -1298,7 +1298,7 @@ the switch.
 ## Configuring a client
 
 **The short way, for anyone who is not developing eXocortex:**
-`/einstellungen/verbindungen` in the app. The "Einrichten" section prints the
+**Einstellungen → Verbindungen** in the app (`?einstellungen=connections`). The "Einrichten" section prints the
 finished line per client, with the deployment's own URL filled in, and with the
 token already inside it when it was just created there. Nothing below has to be
 retyped from this document.

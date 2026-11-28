@@ -18,8 +18,8 @@ apps/web/src/components/palette/
                            resolveMenus, nestedCommands, nestedHint
   registry.tsx             usePaletteCommands: the list of providers
   navigation-commands.tsx  PLACES: every screen one goes to by name
-  settings-commands.tsx    the deployment's settings groups, the workspace tabs, the settings menu
-  settings-addresses.ts    ?gruppe= and ?tab=, read by the settings pages
+  settings-commands.tsx    the deployment's settings groups, one command per settings dialog group, the settings menu
+  settings-addresses.ts    ?gruppe=, read by the admin settings page, and the old ?tab=
   shell-commands.tsx       capture, panels, "Kontextbereich öffnen → …", new chat, undo the chat's last run, focus, fullscreen, trash
   create-commands.tsx      a new page, database, project, saved search, a page from a template
   workspace-commands.tsx   "Arbeitsbereich wechseln → …" for every other workspace
@@ -69,10 +69,15 @@ each opens `/admin/einstellungen?gruppe=<group>`. Write its search words under
 `shell.paletteCommands.settings.groups.<group>`; the gate refuses a group
 without them.
 
-**A new tab on a settings page.** Give the page a query parameter the way
-`settings-addresses.ts` does for the workspace settings, and add the command
-to `settings-commands.tsx`. The gate cannot see tabs, so this one is on the
-reviewer.
+**A new group of the settings dialog.** Add it to `SETTINGS_SECTIONS` in
+`apps/web/src/components/settings-dialog/sections.ts` (issue #279); the
+command is derived from that list and opens `?einstellungen=<group>` over the
+page being read. Write its palette `label` and `keywords` under
+`shell.paletteCommands.settingsSections.<group>`: the dialog's own search reads
+the same words, so the palette and the dialog never disagree about what a word
+finds. The gate refuses a group without them, and a settings screen that is
+not a redirect into the dialog. docs/admin.md, "Where a new setting goes", has
+the rest.
 
 **A new domain of commands that needs nothing but the context** (a list of
 places, a workspace's things). Write a provider module beside the others, a

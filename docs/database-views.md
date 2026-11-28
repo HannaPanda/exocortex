@@ -104,7 +104,7 @@ is the ISO string the API answered. Only the rendering is the reader's:
 - a time is shown in the zone of the reader's device (the `exocortex.tz`
   cookie on the server, the browser's own zone in the client) and on the
   reader's clock: the interface language's, or the 24- or 12-hour clock the
-  account chose (`User.timeFormat`, `/einstellungen/sprache`,
+  account chose (`User.timeFormat`, `?einstellungen=language`,
   `exo_me_preferences_set`). `useFormatter` from `apps/web/src/lib/formatter.ts`
   adds that clock to every option set with a time; next-intl's own is refused
   by lint. Time is entered with `TimeInput`, never the browser's time field,

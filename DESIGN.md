@@ -830,7 +830,8 @@ measure beside it; its popover says so where the pin would be, rather than
 leaving the reader to look for a control that is not there.
 
 A person can choose instead that the pinned list lies over the text
-(`outlinePinned: 'overlay'` on the account, `/einstellungen/editor`, issue
+(`outlinePinned: 'overlay'` on the account, the settings dialog's Editor
+group `?einstellungen=editor`, issue
 #283), because on a wide screen the moving text costs more than a covered
 line. The text then stays where it is. In a margin wide enough for the
 column the list lies on nothing and stays flat, exactly as in its column;

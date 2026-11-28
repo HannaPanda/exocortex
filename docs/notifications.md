@@ -169,8 +169,8 @@ list already carries it.
 
 | Who                    | How                                                                                |
 | ---------------------- | ---------------------------------------------------------------------------------- |
-| a person, account-wide | `/einstellungen/benachrichtigungen`, section "Per E-Mail"                          |
-| a person, per device   | the same page, section "Auf deinen Geräten"                                        |
+| a person, account-wide | settings dialog `?einstellungen=notifications`, section "Per E-Mail"               |
+| a person, per device   | the same group, section "Auf deinen Geräten"                                       |
 | an agent, account-wide | `exo_notification_preferences`, `exo_notification_preference_set`                  |
 | an agent, per device   | `exo_push_devices`, `exo_push_device_update`                                       |
 | the API                | `GET`/`PUT /api/me/notification-preferences`, `GET`/`PATCH /api/me/push/devices/*` |

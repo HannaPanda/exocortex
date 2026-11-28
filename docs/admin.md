@@ -107,7 +107,8 @@ first; the admin form and this table follow.
 Every key carries a scope in `SETTING_SCOPES`, and `satisfies` makes a new key
 a type error until somebody classifies it. `deployment` is what this page
 edits. `workspace` means a workspace OWNER or ADMIN may override it for their
-own area, under `/arbeitsbereich/:id/einstellungen`, and resolution becomes
+own area, in the settings dialog's Konfiguration group
+(`?einstellungen=overrides`), and resolution becomes
 four layers: defaults < environment < `setting` < `workspace_setting`.
 
 The line is "who can answer this", not "how risky is it":
@@ -510,12 +511,13 @@ pnpm --filter @exocortex/api token:create -- \
 ```
 
 The raw value is printed on the last line and **never again**: only its SHA-256
-hash and a 12-character `prefix` are stored. Users manage their own tokens at
-`/einstellungen/verbindungen` (the old `/einstellungen/tokens` redirects there)
+hash and a 12-character `prefix` are stored. Users manage their own tokens in
+the settings dialog's Verbindungen group (`?einstellungen=connections`; the old
+`/einstellungen/verbindungen` and `/einstellungen/tokens` redirect there)
 and through `GET`/`POST /api/me/api-tokens` and
 `DELETE /api/me/api-tokens/:tokenId`.
 
-That page has three sections, because "which agent may reach my brain" is one
+That group has three sections, because "which agent may reach my brain" is one
 question, not three:
 
 - **Verbundene Anwendungen** — the OAuth clients this account let in through
@@ -671,6 +673,59 @@ What is actually spent: one small call per changed page under an overview, one
 per overview whose children changed, both only when the input hash has moved.
 A page nobody has marked never reaches a model.
 
+## Where a new setting goes
+
+Every setting a person can change lives in one dialog over the page being
+read (issue #279), not on a page of its own. It opens from the account menu
+("Einstellungen"), from the gear on a workspace's start page, and from one
+palette command per group, and every group has an address:
+`?einstellungen=<group>` appended to whatever page is open. Back closes it,
+Escape closes it (after emptying the search), and on a phone it fills the
+screen, list first, then the group.
+
+The groups are one list, `SETTINGS_SECTIONS` in
+`apps/web/src/components/settings-dialog/sections.ts`, each with an area and
+an audience:
+
+| Area           | Groups (id)                                                                    | Who sees them                                                         |
+| -------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| Konto          | `language`, `editor`, `chat`, `notifications`, `connections`                   | everybody                                                             |
+| Arbeitsbereich | `workspace` (Allgemein), `members`, `ai`, `tools`, `overrides` (Konfiguration) | members; `members` from ADMIN, `tools` OWNER only, as the API decides |
+| Verwaltung     | `admin`                                                                        | a global admin                                                        |
+
+The workspace groups are about the workspace the page underneath belongs to,
+or the first one outside every workspace, and a picker in the navigation
+chooses another. The rules for something new:
+
+1. **A personal preference** (on the account, like `User.timeFormat`) goes
+   into the account group it belongs to, as a panel in that group's
+   component. When no group fits, add one to `SETTINGS_SECTIONS` with its
+   panel in `settings-entries.tsx`, its icon in `section-icons.ts`, its name
+   and intro under `settings.dialog.sections.<id>` and its palette name and
+   search words under `shell.paletteCommands.settingsSections.<id>`. The
+   palette command and the search follow from the list.
+2. **A workspace-scoped key** in `SETTING_SCOPES` needs nothing: the
+   Konfiguration group lists every overridable key, and the dialog's search
+   finds it by its label.
+3. **A deployment key** goes into the admin form below; the Verwaltung group
+   links to its group by name and the search finds it by its label.
+4. **An option that also stays where it acts** (the chat's "Am Antwortanfang
+   bleiben", #282, the outline's pinning) reads and writes the same stored
+   value in both places, so the dialog and the place itself always agree.
+5. **Something with a list, a log or an editor of its own** (automations,
+   workflows, agent profiles, evals, templates, shares, the admin pages, the
+   knowledge map's look) stays a page, and the dialog links to it from the
+   group it belongs to and its search names it.
+
+Never a new page under an `einstellungen` address: `check-palette-coverage.mjs`
+refuses one that renders instead of redirecting into the dialog, unless it is
+listed in `SETTINGS_PAGES` there with the reason (today only
+`/admin/einstellungen`), and it refuses a dialog group without its words. An
+old settings address stays as a redirect into its group, so no bookmark
+breaks: `/einstellungen/<page>` lands on `/arbeitsbereich?einstellungen=<group>`,
+and `/arbeitsbereich/:id/einstellungen?tab=<tab>` on the workspace's start
+page at the group the tab became.
+
 ## Adding a setting
 
 1. Add the field with a `.default()` to `settingsSchema`
@@ -712,5 +767,8 @@ A page nobody has marked never reaches a model.
    prices) uses the same input and the same `formatMicroUsd`, so no screen
    asks a person for micro-dollars; the API and MCP keep them.
 4. Add the row to the table above.
+5. Check where it shows in the settings dialog ("Where a new setting goes"
+   above): a workspace-scoped key appears in Konfiguration by itself; a
+   personal preference needs its place in an account group.
 
 No migration is needed: the `setting` table is key/value.

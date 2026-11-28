@@ -273,9 +273,9 @@ export function SettingsLayout() {
     >
       <DsExample
         id="einstellungen-rahmen"
-        title="Einstellungen eines Arbeitsbereichs"
-        source="apps/web/src/components/settings/workspace-settings-form.tsx"
-        note="Die Kontoeinstellungen sind eigene Seiten ohne diese Navigation (Inventar 2.4, P-12)."
+        title="Einstellungen der Installation"
+        source="apps/web/src/components/admin/settings-form.tsx"
+        note="Im Einstellungsdialog stehen die Gruppen über den Zeilen, weil seine eigene Navigation links steht (Inventar 2.4, P-12)."
         stageClassName={FRAME}
       >
         <div className="flex h-full flex-col">

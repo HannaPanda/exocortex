@@ -86,6 +86,7 @@ same commit series**:
 | a decision that contradicts an ADR                                               | a new ADR in `docs/adr/`, and the ADR list in `CLAUDE.md`                                                 |
 | what the product can and cannot do                                               | the "What works today" and "Not built" sections of `README.md`                                            |
 | a screen, a settings group, a frequent or hidden action                          | a command in `apps/web/src/components/palette`, `docs/command-palette.md`                                 |
+| a setting a person can change                                                    | a group of the settings dialog (`components/settings-dialog/sections.ts`), `docs/admin.md`                |
 
 Four of these are enforced and cannot be forgotten:
 `scripts/check-capability-parity.mjs` and `scripts/check-feature-coverage.mjs`
@@ -95,7 +96,9 @@ capability, the other whether anybody described it in a person's words -- and
 maintenance tasks, compose services, systemd units, the documents under `docs/`)
 plus a short list of claims the tree disproves, and
 `scripts/check-palette-coverage.mjs` for the palette row: a screen no command
-opens, or a settings group without search words. The rest is this table.
+opens, or a settings group without search words; and for the settings row a
+dialog group without its name and search words, or a settings screen that
+renders instead of redirecting into the dialog. The rest is this table.
 
 A document that describes a feature as planned, deferred or unimplemented is a
 claim about today, and it ages worse than anything else in the repository.

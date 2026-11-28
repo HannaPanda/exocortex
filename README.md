@@ -119,6 +119,11 @@ What is deliberately still missing is listed under
   where to find it, marks what is newer than the reader's own marker, and is
   kept complete by a hard gate that refuses a tool, screen or automation
   trigger nobody described (ADR-040)
+- every setting in one dialog over the page being read (issue #279): the
+  account, the workspace and the administration as groups in one navigation
+  with a search field, each group at its own address (`?einstellungen=<group>`),
+  closed by Escape or Back, full screen on a phone; only the groups a role may
+  use are shown, and the old settings addresses redirect into it
 - a command palette: `Strg + K` searches pages and saved searches, opens
   every place by name, from the chats to a single settings group, with
   generous search words ("modell", "connector", "sprache"), and runs what
