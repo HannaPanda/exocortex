@@ -337,9 +337,11 @@ function renderBlock(node: ProseMirrorNode, key: string): React.ReactNode {
         </blockquote>
       );
 
+    // `exocortex-list` carries the markers by depth (issue #250, `globals.css`):
+    // a disc, a circle, a square; 1., a., i. -- the same table as the editor's.
     case 'bulletList':
       return (
-        <ul key={key} className="mb-1.5 list-disc space-y-0.5 pl-5 last:mb-0">
+        <ul key={key} className="exocortex-list mb-1.5 space-y-0.5 last:mb-0">
           {renderBlockChildren(node.content, key)}
         </ul>
       );
@@ -347,7 +349,7 @@ function renderBlock(node: ProseMirrorNode, key: string): React.ReactNode {
     case 'orderedList': {
       const start = typeof node.attrs?.start === 'number' ? node.attrs.start : 1;
       return (
-        <ol key={key} start={start} className="mb-1.5 list-decimal space-y-0.5 pl-5 last:mb-0">
+        <ol key={key} start={start} className="exocortex-list mb-1.5 space-y-0.5 last:mb-0">
           {renderBlockChildren(node.content, key)}
         </ol>
       );

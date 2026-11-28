@@ -525,6 +525,15 @@ editor has the focus. On this canvas the muted ink is 0.832 against the text's
 It is a decoration and never content, so it cannot be selected, copied or
 saved.
 
+**The Marker-Is-Depth Rule.** A nested list says how deep it stands through
+its marker, never through its colour: bullets go disc, circle, square, numbers
+1., a., i., and the round starts again at the fourth level. Every list a point
+stands in counts, a task list too, because the marker names the indentation
+the reader sees; a task keeps its box at every depth. The markers are the
+text's ink. The table lives in `globals.css` and, for the pale marker of a
+list continuation, in `listMarkerText` (`packages/editor`), and both change
+together (issue #250).
+
 **The Values-Are-Monospace Rule.** Numbers and identifiers wear the mono face
 with tabular figures (`.exocortex-numeric`): timestamps, counts, versions, IDs,
 keyboard keys, the search readout. Labels and prose never do. A count that keeps

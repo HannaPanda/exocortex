@@ -61,6 +61,88 @@ const TAB_OWNING_ANCESTORS = new Set(['tableCell', 'tableHeader']);
 export type ListContinuationMarker =
   { kind: 'bullet' } | { kind: 'ordered'; number: number } | { kind: 'task' };
 
+/**
+ * The markers change with the depth of a list (issue #250): a bullet is a
+ * disc, a circle, a square; a number is 1., a., i.; then the round starts
+ * again. The depth counts every list a point stands in, bullets, numbers and
+ * tasks alike, because it is the indentation the reader sees, which is also
+ * how a browser and a word processor count it. `globals.css` in the web app
+ * draws the real markers by the same table; the preview of a continuation
+ * (below) has to name the one its level will carry, or the pale marker would
+ * promise a disc where a circle appears.
+ *
+ * CSS cannot count modulo, so the stylesheet spells out
+ * `LIST_MARKER_STYLED_DEPTH` levels and every deeper list keeps the last one;
+ * `listMarkerLevel` clamps the same way.
+ */
+export const LIST_MARKER_CYCLE = 3;
+export const LIST_MARKER_STYLED_DEPTH = 6;
+
+const BULLET_MARKERS = ['•', '◦', '▪'] as const;
+
+/** Where in the round of markers a list at `depth` (1 = outermost) stands: 0, 1 or 2. */
+export function listMarkerLevel(depth: number): number {
+  const clamped = Math.min(Math.max(Math.trunc(depth), 1), LIST_MARKER_STYLED_DEPTH);
+  return (clamped - 1) % LIST_MARKER_CYCLE;
+}
+
+/** CSS `lower-alpha`: a … z, aa, ab …; nothing below 1, where CSS falls back to digits. */
+function lowerAlpha(value: number): string | null {
+  if (value < 1) return null;
+  let rest = value;
+  let text = '';
+  while (rest > 0) {
+    rest -= 1;
+    text = String.fromCharCode(97 + (rest % 26)) + text;
+    rest = Math.floor(rest / 26);
+  }
+  return text;
+}
+
+const ROMAN: readonly (readonly [number, string])[] = [
+  [1000, 'm'],
+  [900, 'cm'],
+  [500, 'd'],
+  [400, 'cd'],
+  [100, 'c'],
+  [90, 'xc'],
+  [50, 'l'],
+  [40, 'xl'],
+  [10, 'x'],
+  [9, 'ix'],
+  [5, 'v'],
+  [4, 'iv'],
+  [1, 'i'],
+];
+
+/** CSS `lower-roman`, defined from 1 to 3999; outside it CSS falls back to digits. */
+function lowerRoman(value: number): string | null {
+  if (value < 1 || value > 3999) return null;
+  let rest = value;
+  let text = '';
+  for (const [amount, letters] of ROMAN) {
+    while (rest >= amount) {
+      text += letters;
+      rest -= amount;
+    }
+  }
+  return text;
+}
+
+/**
+ * The text of the marker a point at `depth` carries, as the stylesheet draws
+ * it: the bullet of its level, or its number in the level's numbering with the
+ * period. A task's marker is its box, which has no text.
+ */
+export function listMarkerText(marker: ListContinuationMarker, depth: number): string {
+  const level = listMarkerLevel(depth);
+  if (marker.kind === 'bullet') return BULLET_MARKERS[level] ?? '•';
+  if (marker.kind === 'task') return '';
+  const number = Math.trunc(marker.number);
+  const text = level === 1 ? lowerAlpha(number) : level === 2 ? lowerRoman(number) : String(number);
+  return `${text ?? String(number)}.`;
+}
+
 /** How the new point is made. Positions are document positions. */
 export type ListContinuationAction =
   /** Append a point to the list at `listPos` (the line sits right after it). */
@@ -81,6 +163,11 @@ export interface ListContinuation {
    * indents the line so the pale marker stands where the real one will.
    */
   levels: readonly ('list' | 'task')[];
+  /**
+   * How many lists the new point will stand in, itself included (1 = a point
+   * of an outermost list). It decides which marker the preview shows.
+   */
+  depth: number;
 }
 
 function isList(node: PmNode): boolean {
@@ -143,6 +230,10 @@ export function findListContinuation(doc: PmNode, paragraphPos: number): ListCon
   }
   const parent = $pos.parent;
   const index = $pos.index();
+  let enclosingLists = 0;
+  for (let depth = $pos.depth; depth > 0; depth -= 1) {
+    if (isList($pos.node(depth))) enclosingLists += 1;
+  }
   const insideItem = LIST_ITEM_TYPES.has(parent.type.name);
   // The first paragraph of a point is that point's text: it is a list point.
   if (insideItem && index === 0) return null;
@@ -159,6 +250,7 @@ export function findListContinuation(doc: PmNode, paragraphPos: number): ListCon
           action: { type: 'append', listPos: deepest.pos },
           marker: nextMarkerOf(deepest.list),
           levels: deepest.levels,
+          depth: enclosingLists + deepest.levels.length,
         };
       }
       return {
@@ -166,6 +258,7 @@ export function findListContinuation(doc: PmNode, paragraphPos: number): ListCon
         action: { type: 'newList', listPos },
         marker: nextMarkerOf(sibling),
         levels: [levelOf(sibling)],
+        depth: enclosingLists + 1,
       };
     }
     if (sibling.type.name === 'heading') return null;
@@ -185,6 +278,7 @@ export function findListContinuation(doc: PmNode, paragraphPos: number): ListCon
         action: { type: 'splitItem', itemPos: $pos.before() },
         marker,
         levels: [],
+        depth: enclosingLists,
       };
     }
     gap += 1;
@@ -305,12 +399,6 @@ export function backspaceBelowListTransaction(state: EditorState): Transaction |
 
 const listContinuationKey = new PluginKey('listContinuation');
 
-function markerText(marker: ListContinuationMarker): string {
-  if (marker.kind === 'bullet') return '•';
-  if (marker.kind === 'ordered') return `${marker.number}.`;
-  return '';
-}
-
 /**
  * The preview: the empty line the caret stands in, indented to where the new
  * point's text will be, with the pale marker in front of it and the hint as
@@ -331,7 +419,7 @@ function previewDecorations(
     Decoration.node(continuation.paragraphPos, continuation.paragraphPos + paragraph.nodeSize, {
       class: 'exocortex-list-ghost',
       'data-list-ghost': continuation.marker.kind,
-      'data-list-ghost-marker': markerText(continuation.marker),
+      'data-list-ghost-marker': listMarkerText(continuation.marker, continuation.depth),
       'data-list-ghost-hint': continuation.marker.kind === 'task' ? words.taskHint : words.hint,
       style: `--exocortex-list-ghost-lists: ${lists}; --exocortex-list-ghost-tasks: ${tasks}`,
     }),

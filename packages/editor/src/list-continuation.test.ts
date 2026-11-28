@@ -10,6 +10,9 @@ import {
   backspaceBelowListTransaction,
   findListContinuation,
   LIST_CONTINUATION_MAX_GAP,
+  LIST_MARKER_STYLED_DEPTH,
+  listMarkerLevel,
+  listMarkerText,
 } from './list-continuation';
 
 /**
@@ -406,6 +409,62 @@ describe('Backspace in an empty line below a list (issue #302)', () => {
     );
     expect(withText.state.selection.$from.parent.textContent).toBe('Text');
     expect(backspaceBelowListTransaction(withText.state)).toBeNull();
+  });
+});
+
+describe('the marker of a level (issue #250)', () => {
+  it('goes disc, circle, square and 1., a., i., then round again', () => {
+    const bullets = [1, 2, 3, 4, 5, 6].map((depth) => listMarkerText({ kind: 'bullet' }, depth));
+    expect(bullets).toEqual(['•', '◦', '▪', '•', '◦', '▪']);
+    const numbers = [1, 2, 3, 4].map((depth) =>
+      listMarkerText({ kind: 'ordered', number: 4 }, depth),
+    );
+    expect(numbers).toEqual(['4.', 'd.', 'iv.', '4.']);
+    expect(listMarkerText({ kind: 'task' }, 2)).toBe('');
+  });
+
+  it('counts like CSS: aa after z, digits where a numbering has no word', () => {
+    expect(listMarkerText({ kind: 'ordered', number: 27 }, 2)).toBe('aa.');
+    expect(listMarkerText({ kind: 'ordered', number: 1994 }, 3)).toBe('mcmxciv.');
+    expect(listMarkerText({ kind: 'ordered', number: 0 }, 2)).toBe('0.');
+    expect(listMarkerText({ kind: 'ordered', number: 4000 }, 3)).toBe('4000.');
+  });
+
+  it('keeps the last styled level below it, as the stylesheet does', () => {
+    expect(listMarkerLevel(LIST_MARKER_STYLED_DEPTH + 1)).toBe(
+      listMarkerLevel(LIST_MARKER_STYLED_DEPTH),
+    );
+    expect(listMarkerLevel(0)).toBe(0);
+  });
+
+  it('previews the marker of the level the new point will stand at', () => {
+    // Directly below a sub-list: the point joins it, one level down.
+    const nested = createEditor(
+      `<ul><li><p>eins</p><ul><li><p>unter</p></li></ul></li></ul><p></p>`,
+    );
+    caretInEmpty(nested);
+    expect(ghost(nested)?.getAttribute('data-list-ghost-marker')).toBe('◦');
+
+    // Across a picture the point goes to the outer level again.
+    const across = createEditor(
+      `<ul><li><p>eins</p><ul><li><p>unter</p></li></ul></li></ul>${IMAGE}<p></p>`,
+    );
+    caretInEmpty(across);
+    expect(ghost(across)?.getAttribute('data-list-ghost-marker')).toBe('•');
+
+    // Inside a point of a numbered list under a bullet: second level, letters.
+    const inside = createEditor(
+      `<ul><li><p>oben</p><ol><li><p>eins</p>${IMAGE}<p></p></li></ol></li></ul>`,
+    );
+    caretInEmpty(inside);
+    expect(ghost(inside)?.getAttribute('data-list-ghost-marker')).toBe('b.');
+
+    // Under a task, a list is one level down although a task has no marker.
+    const underTask = createEditor(
+      `<ul data-type="taskList"><li data-type="taskItem"><p>Aufgabe</p><ul><li><p>a</p><ul><li><p>b</p></li></ul></li></ul></li></ul><p></p>`,
+    );
+    caretInEmpty(underTask);
+    expect(ghost(underTask)?.getAttribute('data-list-ghost-marker')).toBe('▪');
   });
 });
 

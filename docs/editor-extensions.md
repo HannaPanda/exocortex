@@ -559,6 +559,24 @@ and italic) is DESIGN.md's Hint-Is-Not-Ink Rule. The list continuation below
 swaps the text through the same class. Covered by `line-placeholder.test.ts`
 and `e2e/tests/editor.spec.ts`.
 
+## A list's marker says its depth
+
+A nested list changes its marker with the depth (issue #250): bullets go disc,
+circle, square, numbers 1., a., i., and then the round starts again. The depth
+counts every list a point stands in, bullets, numbers and tasks alike, because
+it is the indentation the reader sees; a task keeps its box at every depth.
+Nothing is stored: it is CSS in `globals.css`, six levels spelled out (CSS
+cannot count modulo, a deeper list keeps the sixth marker), and the same rules
+cover the Markdown reader (`chat-markdown.tsx`, whose lists carry
+`exocortex-list`), so the editor, a read-only view, a transclusion, the print,
+the public link and a chat answer draw the same markers. The one place that
+has to name a marker in text is the continuation preview below, and it takes
+it from `listMarkerText` in `list-continuation.ts`, which holds the same table
+(`LIST_MARKER_CYCLE`, `LIST_MARKER_STYLED_DEPTH`). A change to one is a change
+to both. The PDF export (`latex-runner.ts`) is not covered: there LaTeX's own
+defaults already change a bullet per level (•, –, ∗, ·), while Pandoc labels a
+numbered list from Markdown with Arabic numerals at every level.
+
 ## Continuing a list across a block
 
 An empty line below a list, with a picture, a quote or a table in between,
@@ -568,8 +586,8 @@ answers two things from one function, `findListContinuation`:
 
 - **The preview.** While the caret stands in such a line, a node decoration
   (`.exocortex-list-ghost`) indents it to where the new point's text will be,
-  draws the point's marker pale in front of it (bullet, next number, empty task
-  box) and replaces the placeholder with the `Tab` hint from
+  draws the point's marker pale in front of it (the bullet or the next number
+  of its level, an empty task box) and replaces the placeholder with the `Tab` hint from
   `EditorWords.listContinuation`. It is a decoration only: nothing reaches the
   Yjs state, and the first character typed removes it, so the line stays a
   paragraph. The look lives in `globals.css` and uses the placeholder's token.

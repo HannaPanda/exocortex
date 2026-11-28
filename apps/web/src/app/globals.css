@@ -483,12 +483,104 @@
     @apply border-l-2 border-border-strong pl-4 text-muted-foreground;
   }
 
-  .exocortex-editor ul {
+  /*
+   * A list's marker says how deep it stands (issue #250): a bullet is a disc,
+   * a circle, a square, a number 1., a., i., and then the round starts again.
+   * The depth counts every list a point stands in, bullets, numbers and tasks
+   * alike, because it is the indentation a reader sees (and how a browser or
+   * a word processor counts). A task keeps its box at every depth.
+   *
+   * CSS cannot count modulo, so the levels are spelled out: each rule is one
+   * list deeper than the one before, they share one specificity, and the
+   * later one wins. Six levels are two rounds, and a deeper list keeps the
+   * sixth marker. `LIST_MARKER_STYLED_DEPTH` in `packages/editor` holds the
+   * same table for the pale marker of a list continuation, so the preview
+   * names the marker its level will carry.
+   *
+   * `.exocortex-list` is the same list in the Markdown reader
+   * (`chat-markdown.tsx`: a public link, a chat answer), so a page reads the
+   * same wherever it is shown. Every ancestor is wrapped in `:where()` and every
+   * list in `:is()` of two selectors of equal weight, so all levels weigh the
+   * same as `.exocortex-editor ul` and a task list's own rule still wins.
+   */
+  .exocortex-editor ul,
+  ul.exocortex-list {
     @apply list-disc pl-5;
   }
 
-  .exocortex-editor ol {
+  .exocortex-editor ol,
+  ol.exocortex-list {
     @apply list-decimal pl-5;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ul, ul.exocortex-list) {
+    list-style-type: circle;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ol, ol.exocortex-list) {
+    list-style-type: lower-alpha;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ul, ul.exocortex-list) {
+    list-style-type: square;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ol, ol.exocortex-list) {
+    list-style-type: lower-roman;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ul, ul.exocortex-list) {
+    list-style-type: disc;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ol, ol.exocortex-list) {
+    list-style-type: decimal;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ul, ul.exocortex-list) {
+    list-style-type: circle;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ol, ol.exocortex-list) {
+    list-style-type: lower-alpha;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ul, ul.exocortex-list) {
+    list-style-type: square;
+  }
+
+  :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :where(.exocortex-editor :is(ul, ol), .exocortex-list)
+    :is(.exocortex-editor ol, ol.exocortex-list) {
+    list-style-type: lower-roman;
   }
 
   .exocortex-editor ul[data-type='taskList'] {
@@ -1009,13 +1101,15 @@
     content: attr(data-list-ghost-hint);
   }
 
+  /* The marker is the one its level will carry (issue #250, the depth table
+     above the lists), and like a browser's own marker it ends a little before
+     the text, so a long one („12.“, „viii.“) grows towards the margin rather
+     than into the line. */
   .exocortex-editor .ProseMirror .exocortex-list-ghost::after {
     content: attr(data-list-ghost-marker);
     position: absolute;
     inset-block-start: 0;
-    inset-inline-start: calc(var(--exocortex-list-ghost-indent) - 1.25rem);
-    inline-size: 0.875rem;
-    text-align: end;
+    inset-inline-end: calc(100% - var(--exocortex-list-ghost-indent) + 0.375rem);
     white-space: nowrap;
     @apply pointer-events-none text-muted-foreground;
   }
@@ -1024,6 +1118,7 @@
     content: '';
     inset-block-start: calc((1lh - 1rem) / 2);
     inset-inline-start: calc(var(--exocortex-list-ghost-indent) - 1.5rem);
+    inset-inline-end: auto;
     @apply size-4 rounded-sm border border-current;
   }
 
