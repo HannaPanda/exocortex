@@ -235,7 +235,8 @@
     "details": {
       "p1": "No hay carpetas independientes de las páginas: una página es ambas cosas a la vez, texto y contenedor. «Vacaciones 2026» puede contener una lista de equipaje y colgar a su vez de «Viajes». Así, la propia ubicación ya responde a media pregunta sobre de qué trata una página, y te ahorras categorías que nadie mantiene.",
       "p2": "En la navegación, despliegas una página con la flecha. El botón junto al más sobre el árbol vuelve a plegarlo todo; solo se mantiene abierta la ruta hasta la página actual. Con el teclado, Mayús y Flecha derecha despliegan una página junto con todo lo que contiene, Mayús y Flecha izquierda vuelven a plegarla, y el asterisco abre todas las páginas del mismo nivel. Arrastrar permite mover: soltar sobre una página la anida debajo; soltar entre dos páginas la coloca en esa posición. Todo lo que dependa de la página arrastrada se mueve con ella, y las referencias hacia ella no se rompen, ya que una referencia apunta a la página y no a su ruta.",
-      "p3": "Strg+B oculta la navegación cuando necesitas espacio para escribir y vuelve a mostrarla. En el teléfono se muestra como una superposición sobre la página en lugar de al lado."
+      "p3": "Strg+B oculta la navegación cuando necesitas espacio para escribir y vuelve a mostrarla. En el teléfono se muestra como una superposición sobre la página en lugar de al lado.",
+      "p4": "Una base de datos aparece en el árbol como una sola entrada con el número de filas al lado, aunque tenga miles. Puedes encontrar sus filas en su tabla, a través de la búsqueda o con Strg+K. Si abres una fila, el árbol no despliega nada; su ubicación se muestra en la ruta encima de la página. Si una fila tiene sus propias subpáginas, aparecerá junto con ellas debajo de su base de datos para que no se pierda ninguna subpágina."
     },
     "where": "La navegación a la izquierda, con el ratón."
   },

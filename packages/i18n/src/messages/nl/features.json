@@ -235,7 +235,8 @@
     "details": {
       "p1": "Er zijn geen mappen naast de pagina’s: een pagina is beide tegelijk, tekst én houder. \"Vakantie 2026\" kan een inpaklijst bevatten en zelf onder \"Reizen\" hangen. Daardoor beantwoordt de plek al de halve vraag waar een pagina over gaat, en bespaar je je categorieën die niemand bijhoudt.",
       "p2": "In de navigatie klap je een pagina uit met het pijltje. De knop naast de plus boven de boomstructuur klapt alles weer in, alleen het pad naar de geopende pagina blijft zichtbaar. Met het toetsenbord klapt Shift en Pijl-rechts een pagina inclusief alles eronder uit, Shift en Pijl-links weer in, en de asterisk opent alle pagina’s op hetzelfde niveau. Slepen verplaatst: neerzetten op een pagina hangt hem eronder, neerzetten tussen twee pagina’s sorteert hem op die plek. Alles wat onder de versleepte pagina hangt, gaat mee, en verwijzingen ernaar blijven intact, omdat een verwijzing naar de pagina wijst en niet naar het pad ervan.",
-      "p3": "Ctrl+B verbergt de navigatie als je ruimte nodig hebt om te schrijven, en toont deze weer. Op een telefoon verschijnt deze als overlay over de pagina in plaats van ernaast."
+      "p3": "Ctrl+B verbergt de navigatie als je ruimte nodig hebt om te schrijven, en toont deze weer. Op een telefoon verschijnt deze als overlay over de pagina in plaats van ernaast.",
+      "p4": "Een database staat in de structuur als één item met daarnaast het aantal rijen, zelfs als dat er duizenden zijn. De rijen vind je in de tabel, via de zoekfunctie of via Strg+K. Open je een rij, dan klapt de structuur niets uit; waar hij zich bevindt, toont het pad boven de pagina. Heeft een rij eigen subpagina’s, dan staat deze samen met die subpagina’s onder de bijbehorende database, zodat er geen subpagina verloren gaat."
     },
     "where": "De navigatie links, met de muis."
   },

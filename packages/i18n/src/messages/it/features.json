@@ -235,7 +235,8 @@
     "details": {
       "p1": "Non ci sono cartelle oltre alle pagine: una pagina è entrambe le cose, testo e contenitore. \"Vacanze 2026\" può contenere una lista bagagli ed essere a sua volta sotto \"Viaggi\". In questo modo la collocazione risponde già a metà della domanda su cosa tratti una pagina, risparmiandoti categorie che nessuno aggiorna.",
       "p2": "Nella navigazione espandi una pagina con la freccia. Il pulsante accanto al più sopra l’albero richiude tutto, lasciando visibile solo il percorso verso la pagina aperta. Dalla tastiera, Maiusc e Freccia destra espande una pagina insieme a tutto ciò che contiene, Maiusc e Freccia sinistra la richiude, mentre l’asterisco apre tutte le pagine allo stesso livello. Il trascinamento sposta: rilasciando sopra una pagina la nidifichi sotto di essa, rilasciando tra due pagine la posizioni in quel punto. Tutto ciò che è nidificato sotto la pagina trascinata si sposta con essa, e i collegamenti a essa restano intatti, poiché un collegamento punta alla pagina e non al suo percorso.",
-      "p3": "Ctrl+B nasconde la navigazione se hai bisogno di spazio per scrivere, e la mostra di nuovo. Sul telefono compare come sovrapposizione sopra la pagina anziché a fianco."
+      "p3": "Ctrl+B nasconde la navigazione se hai bisogno di spazio per scrivere, e la mostra di nuovo. Sul telefono compare come sovrapposizione sopra la pagina anziché a fianco.",
+      "p4": "Un database compare nell’albero come una singola voce con accanto il numero delle sue righe, anche se ne ha a migliaia. Trovi le sue righe nella sua tabella, tramite la ricerca o con Strg+K. Se apri una riga, l’albero non espande nulla; la sua posizione è indicata dal percorso sopra la pagina. Se una riga ha delle sottopagine proprie, viene mostrata insieme a queste sotto il rispettivo database, così da non perdere alcuna sottopagina."
     },
     "where": "La navigazione a sinistra, con il mouse."
   },

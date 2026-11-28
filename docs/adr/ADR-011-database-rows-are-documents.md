@@ -82,7 +82,7 @@ Costs accepted on purpose:
   10,000 rows cost about 22 KB each, queries stayed near 100 ms and no
   snapshot or materialization was written for an empty row. What did not
   hold were the page tree, which drew every row, and the order key, which
-  grew linearly; both are fixed there.
+  grew linearly; both are fixed there (see the amendment below).
 - **Offset pagination once a view sorts or filters.** The fractional
   `orderKey` cursor only works for the default, unsorted order; a sorted or
   filtered query falls back to an offset cursor, which can skip or repeat a
@@ -92,3 +92,32 @@ Costs accepted on purpose:
   here is what let issue #76 add them as query-engine work alone: a relation
   reuses the `jsonValue` column the array-valued types already write, and a
   rollup and a formula store nothing at all (ADR-041).
+
+## Amendment (2026-11-28, issue #221): a row is a document, not a branch
+
+Being a document gives a row a tree position; it does not make it a page of
+the navigation. A database of ten thousand rows is a table, and drawing it as
+ten thousand sub-pages took 18 s and 1.6 GB of browser memory to unfold.
+
+- The tree's readers that show the hierarchy (the sidebar, the move menu, the
+  editor's `@` menu and link markers, `exo_page_tree`, the workspace resource)
+  ask with `rows: 'count'`: a database is one entry carrying `rowCount`, and
+  its rows are reached through its views and `exo_database_query`. The rows of
+  the database named as `parentId` are still listed, because asking for that
+  branch is asking for them.
+- A row with sub-pages of its own stays under its database, with them. It is a
+  branch of the hierarchy as well as a line of the table, and leaving it out
+  would leave its sub-pages nowhere.
+- Opening a row unfolds nothing in the sidebar; the breadcrumb above the page,
+  which the API derives from the hierarchy itself, says where it lives.
+- A realtime event about a row the tree does not show moves its database's
+  count in the browser's cached tree instead of refetching the tree.
+- Whatever still has to find a row by its name asks for that name (link
+  resolution, search) instead of holding every title in the workspace.
+
+The order key keeps its one format: appending and prepending count up or down
+in blocks that grow by a character when they fill, instead of halving the gap
+to the end of the list (`packages/database/src/order-key.ts`). Greenspan's own
+answer is an integer head in front of the fraction; that would have been a
+second key format beside the one every stored row already had, for the same
+logarithmic growth (5 characters after 10,000 appends, 9 after a million).

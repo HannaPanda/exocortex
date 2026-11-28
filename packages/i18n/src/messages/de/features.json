@@ -235,7 +235,8 @@
     "details": {
       "p1": "Es gibt keine Ordner neben den Seiten: eine Seite ist beides zugleich, Text und Behälter. \"Urlaub 2026\" kann eine Packliste enthalten und selbst unter \"Reisen\" hängen. Dadurch beantwortet die Ablage schon die halbe Frage, worum es auf einer Seite geht, und du sparst dir Kategorien, die niemand pflegt.",
       "p2": "In der Navigation klappst du eine Seite mit dem Pfeil auf. Der Knopf neben dem Plus über dem Baum klappt alles wieder zu, nur der Weg zur offenen Seite bleibt stehen. Mit der Tastatur klappt Umschalt und Pfeil rechts eine Seite samt allem darunter auf, Umschalt und Pfeil links wieder zu, und der Stern öffnet alle Seiten auf derselben Ebene. Ziehen verschiebt: auf eine Seite fallen lassen hängt sie darunter, zwischen zwei Seiten fallen lassen sortiert sie an diese Stelle. Alles, was unter der gezogenen Seite hängt, geht mit, und Verweise auf sie bleiben heil, weil ein Verweis auf die Seite zeigt und nicht auf ihren Pfad.",
-      "p3": "Strg+B blendet die Navigation aus, wenn du Platz zum Schreiben brauchst, und wieder ein. Auf dem Telefon liegt sie als Überlagerung über der Seite statt daneben."
+      "p3": "Strg+B blendet die Navigation aus, wenn du Platz zum Schreiben brauchst, und wieder ein. Auf dem Telefon liegt sie als Überlagerung über der Seite statt daneben.",
+      "p4": "Eine Datenbank steht im Baum als ein Eintrag mit der Zahl ihrer Zeilen daneben, auch wenn sie Tausende hat. Ihre Zeilen findest du in ihrer Tabelle, über die Suche oder Strg+K. Öffnest du eine Zeile, klappt der Baum nichts auf; wo sie liegt, zeigt der Pfad über der Seite. Hat eine Zeile eigene Unterseiten, steht sie samt diesen unter ihrer Datenbank, damit keine Unterseite verloren geht."
     },
     "where": "Die Navigation links, mit der Maus."
   },

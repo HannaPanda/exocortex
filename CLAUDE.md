@@ -314,6 +314,9 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   transactional outbox, not through fire-and-forget calls.
 - ADR-011: a database is a `Document` with `type: 'COLLECTION'`; its rows are
   ordinary `Document`s (`type: 'PAGE'`) underneath it, not a separate model.
+  A row is not a branch of the navigation: the tree is asked with
+  `rows: 'count'` and shows a database with its row count, keeping only rows
+  that have sub-pages of their own (issue #221).
 - ADR-013: runtime configuration lives in the `setting` table; the environment is
   the bootstrap fallback, never the runtime authority.
 - ADR-014: one tool catalogue (`packages/mcp-tools`) serves external MCP clients
