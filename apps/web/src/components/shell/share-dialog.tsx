@@ -11,6 +11,7 @@ import {
   Badge,
   Button,
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -165,169 +166,179 @@ export function ShareDialog({
 
   return (
     <Dialog open={open} onOpenChange={close}>
-      <DialogContent className="max-w-xl" data-testid="share-dialog">
+      <DialogContent className="max-w-2xl" data-testid="share-dialog">
         <DialogHeader>
-          <DialogTitle>{t('title', { title: documentTitle })}</DialogTitle>
+          {/* A page title can run to two lines: room for the close button, and
+              line spacing that keeps the lines apart. */}
+          <DialogTitle className="pr-6 leading-snug break-words">
+            {t('title', { title: documentTitle })}
+          </DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
-        {inherited.length > 0 ? (
-          <Alert data-testid="share-inherited">
-            <TriangleAlertIcon />
-            <AlertDescription>
-              {t('inherited')}
-              <ul className="mt-2 list-disc pl-4">
-                {inherited.map((share) => (
-                  <li key={share.id}>{describe(share)}</li>
+        {/* Header and footer stay put; a page with many grants scrolls in here. */}
+        <DialogBody className="flex flex-col gap-4" data-testid="share-dialog-body">
+          {inherited.length > 0 ? (
+            <Alert data-testid="share-inherited">
+              <TriangleAlertIcon />
+              {/* `anywhere`, not `break-word`: the alert is a grid, and only this
+                lets a long address stop widening its column past the popup. */}
+              <AlertDescription className="wrap-anywhere">
+                {t('inherited')}
+                <ul className="mt-2 list-disc pl-4">
+                  {inherited.map((share) => (
+                    <li key={share.id}>{describe(share)}</li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          ) : null}
+
+          {errorCode === undefined ? null : (
+            <Alert variant="destructive">
+              <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
+            </Alert>
+          )}
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="share-scope">{t('scope')}</Label>
+            <div className="flex flex-wrap gap-2">
+              <Select value={scope} onValueChange={(next) => setScope(next as ShareScope)}>
+                <SelectTrigger id="share-scope" className="w-64">
+                  <SelectValue>{() => t(SCOPE_KEYS[scope])}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PAGE_ONLY">{t(SCOPE_KEYS.PAGE_ONLY)}</SelectItem>
+                  <SelectItem value="SUBTREE">{t(SCOPE_KEYS.SUBTREE)}</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={expiry} onValueChange={(next) => setExpiry(next as ExpiryOption)}>
+                <SelectTrigger aria-label={t('expiry')} className="w-40">
+                  <SelectValue>{() => expiryLabel(expiry)}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {EXPIRY_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {expiryLabel(option)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {scope === 'PAGE_ONLY' ? (
+              <p className="text-xs text-muted-foreground" data-testid="share-page-only-write">
+                {t('scopePageOnlyWrite')}
+              </p>
+            ) : null}
+            {isDatabase && scope === 'PAGE_ONLY' ? (
+              <p className="text-xs text-muted-foreground" data-testid="share-database-rows">
+                {t('scopeDatabaseRows')}
+              </p>
+            ) : null}
+          </div>
+
+          <form className="flex flex-wrap items-end gap-2" onSubmit={handleInvite}>
+            <div className="flex min-w-56 flex-1 flex-col gap-1.5">
+              <Label htmlFor="share-email">{t('toAccount')}</Label>
+              <Input
+                id="share-email"
+                type="email"
+                value={email}
+                placeholder={t('emailPlaceholder')}
+                data-testid="share-email"
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </div>
+            <Select
+              value={permission}
+              onValueChange={(next) => setPermission(next as 'READ' | 'WRITE')}
+            >
+              <SelectTrigger aria-label={t('permission')} className="w-40">
+                <SelectValue>
+                  {() => (permission === 'WRITE' ? tCommon('write') : tCommon('read'))}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="READ">{tCommon('read')}</SelectItem>
+                <SelectItem value="WRITE">{tCommon('write')}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button type="submit" disabled={email.trim().length === 0 || createShare.isPending}>
+              <MailIcon /> {t('share')}
+            </Button>
+          </form>
+
+          <div className="flex flex-col gap-2 rounded-lg border border-border p-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <p className="text-sm font-medium">{t('publicLink')}</p>
+                <p className="text-xs text-muted-foreground">{t('publicLinkExplanation')}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="shrink-0 self-start sm:self-auto"
+                data-testid="share-create-link"
+                disabled={createShare.isPending}
+                onClick={handleCreateLink}
+              >
+                <LinkIcon /> {t('createLink')}
+              </Button>
+            </div>
+            {freshLink === null ? null : (
+              <div className="flex flex-col gap-1.5" data-testid="share-fresh-link">
+                <div className="rounded-md border border-border bg-muted p-2 font-mono text-xs select-all break-all">
+                  {freshLink}
+                </div>
+                <Button variant="outline" size="sm" onClick={() => void handleCopy(freshLink)}>
+                  <CopyIcon /> {copied ? t('copied') : t('copyAddress')}
+                </Button>
+                <p className="text-xs text-muted-foreground">{t('addressKept')}</p>
+              </div>
+            )}
+          </div>
+
+          <section className="flex flex-col gap-2">
+            <h3 className="text-sm font-semibold">{t('current')}</h3>
+            {shares.isPending ? (
+              <LoadingState label={tCommon('loading')} variant="skeleton" rows={2} />
+            ) : shares.isError ? (
+              <ErrorState title={tCommon('loadError')} onRetry={() => void shares.refetch()} />
+            ) : active.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t('nobody')}</p>
+            ) : (
+              <ul className="flex flex-col gap-2" data-testid="share-list">
+                {active.map((share) => (
+                  <ShareRow
+                    key={share.id}
+                    share={share}
+                    description={describe(share)}
+                    confirming={revoking === share.id}
+                    onAskRevoke={() => {
+                      revokeShare.reset();
+                      setRevoking(share.id);
+                    }}
+                    onCancelRevoke={() => setRevoking(null)}
+                    onConfirmRevoke={() =>
+                      revokeShare.mutate(share.id, { onSuccess: () => setRevoking(null) })
+                    }
+                    onPermissionChange={(permission) =>
+                      updateShare.mutate({ shareId: share.id, request: { permission } })
+                    }
+                    revokePending={revokeShare.isPending}
+                    revokeError={
+                      revokeShare.isError
+                        ? revokeShare.error instanceof ApiError
+                          ? messageForCode(revokeShare.error.code)
+                          : t('revokeFailed')
+                        : null
+                    }
+                  />
                 ))}
               </ul>
-            </AlertDescription>
-          </Alert>
-        ) : null}
-
-        {errorCode === undefined ? null : (
-          <Alert variant="destructive">
-            <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
-          </Alert>
-        )}
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="share-scope">{t('scope')}</Label>
-          <div className="flex flex-wrap gap-2">
-            <Select value={scope} onValueChange={(next) => setScope(next as ShareScope)}>
-              <SelectTrigger id="share-scope" className="w-64">
-                <SelectValue>{() => t(SCOPE_KEYS[scope])}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PAGE_ONLY">{t(SCOPE_KEYS.PAGE_ONLY)}</SelectItem>
-                <SelectItem value="SUBTREE">{t(SCOPE_KEYS.SUBTREE)}</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={expiry} onValueChange={(next) => setExpiry(next as ExpiryOption)}>
-              <SelectTrigger aria-label={t('expiry')} className="w-40">
-                <SelectValue>{() => expiryLabel(expiry)}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {EXPIRY_OPTIONS.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {expiryLabel(option)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          {scope === 'PAGE_ONLY' ? (
-            <p className="text-xs text-muted-foreground" data-testid="share-page-only-write">
-              {t('scopePageOnlyWrite')}
-            </p>
-          ) : null}
-          {isDatabase && scope === 'PAGE_ONLY' ? (
-            <p className="text-xs text-muted-foreground" data-testid="share-database-rows">
-              {t('scopeDatabaseRows')}
-            </p>
-          ) : null}
-        </div>
-
-        <form className="flex flex-wrap items-end gap-2" onSubmit={handleInvite}>
-          <div className="flex min-w-56 flex-1 flex-col gap-1.5">
-            <Label htmlFor="share-email">{t('toAccount')}</Label>
-            <Input
-              id="share-email"
-              type="email"
-              value={email}
-              placeholder={t('emailPlaceholder')}
-              data-testid="share-email"
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </div>
-          <Select
-            value={permission}
-            onValueChange={(next) => setPermission(next as 'READ' | 'WRITE')}
-          >
-            <SelectTrigger aria-label={t('permission')} className="w-40">
-              <SelectValue>
-                {() => (permission === 'WRITE' ? tCommon('write') : tCommon('read'))}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="READ">{tCommon('read')}</SelectItem>
-              <SelectItem value="WRITE">{tCommon('write')}</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button type="submit" disabled={email.trim().length === 0 || createShare.isPending}>
-            <MailIcon /> {t('share')}
-          </Button>
-        </form>
-
-        <div className="flex flex-col gap-2 rounded-lg border border-border p-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium">{t('publicLink')}</p>
-              <p className="text-xs text-muted-foreground">{t('publicLinkExplanation')}</p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              data-testid="share-create-link"
-              disabled={createShare.isPending}
-              onClick={handleCreateLink}
-            >
-              <LinkIcon /> {t('createLink')}
-            </Button>
-          </div>
-          {freshLink === null ? null : (
-            <div className="flex flex-col gap-1.5" data-testid="share-fresh-link">
-              <div className="rounded-md border border-border bg-muted p-2 font-mono text-xs select-all break-all">
-                {freshLink}
-              </div>
-              <Button variant="outline" size="sm" onClick={() => void handleCopy(freshLink)}>
-                <CopyIcon /> {copied ? t('copied') : t('copyAddress')}
-              </Button>
-              <p className="text-xs text-muted-foreground">{t('addressKept')}</p>
-            </div>
-          )}
-        </div>
-
-        <section className="flex flex-col gap-2">
-          <h3 className="text-sm font-semibold">{t('current')}</h3>
-          {shares.isPending ? (
-            <LoadingState label={tCommon('loading')} variant="skeleton" rows={2} />
-          ) : shares.isError ? (
-            <ErrorState title={tCommon('loadError')} onRetry={() => void shares.refetch()} />
-          ) : active.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t('nobody')}</p>
-          ) : (
-            <ul className="flex flex-col gap-2" data-testid="share-list">
-              {active.map((share) => (
-                <ShareRow
-                  key={share.id}
-                  share={share}
-                  description={describe(share)}
-                  confirming={revoking === share.id}
-                  onAskRevoke={() => {
-                    revokeShare.reset();
-                    setRevoking(share.id);
-                  }}
-                  onCancelRevoke={() => setRevoking(null)}
-                  onConfirmRevoke={() =>
-                    revokeShare.mutate(share.id, { onSuccess: () => setRevoking(null) })
-                  }
-                  onPermissionChange={(permission) =>
-                    updateShare.mutate({ shareId: share.id, request: { permission } })
-                  }
-                  revokePending={revokeShare.isPending}
-                  revokeError={
-                    revokeShare.isError
-                      ? revokeShare.error instanceof ApiError
-                        ? messageForCode(revokeShare.error.code)
-                        : t('revokeFailed')
-                      : null
-                  }
-                />
-              ))}
-            </ul>
-          )}
-        </section>
+            )}
+          </section>
+        </DialogBody>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => close(false)}>
@@ -378,11 +389,16 @@ function ShareRow({
       className="flex flex-col gap-2 rounded-md border border-border px-3 py-2"
       data-testid="share-row"
     >
+      {/* The sentence is the grant, so it wraps rather than being cut off.
+          Below 12rem beside the controls it takes the whole line, and the
+          controls move under it, to the right. */}
       <div className="flex flex-wrap items-center gap-2">
-        {share.kind === 'PUBLIC_LINK' ? <GlobeIcon className="size-4" /> : null}
-        <span className="min-w-0 flex-1 truncate text-sm">{description}</span>
+        {share.kind === 'PUBLIC_LINK' ? <GlobeIcon className="size-4 shrink-0" /> : null}
+        <span className="min-w-48 flex-1 text-sm break-words" data-testid="share-row-description">
+          {description}
+        </span>
         {confirming ? null : (
-          <>
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             {share.kind === 'USER' ? (
               <Select
                 value={share.permission}
@@ -412,7 +428,7 @@ function ShareRow({
             >
               {tCommon('revoke')}
             </Button>
-          </>
+          </div>
         )}
       </div>
 

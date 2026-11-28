@@ -268,6 +268,17 @@ Two things to keep in mind when changing this feature:
   DESIGN.md rules out reaching for a modal while an inline answer works. The
   safe half of the choice takes focus, so a second Return never destroys
   anything.
+- **The share dialog grows with what it lists, never past the screen**
+  (issue #230). It is as wide as `max-w-2xl` allows and one gutter short of a
+  phone's edge; everything between the title and „Schließen“ sits in a
+  `DialogBody`, so a page with a dozen grants scrolls there while the title,
+  the close button and the footer stay put. A grant's sentence wraps instead of
+  ending in an ellipsis, because the sentence is the grant, and the inherited
+  grants' note breaks a long address anywhere (`wrap-anywhere`), since an alert
+  is a grid whose column a single long word would otherwise widen past the
+  popup. Only a link's address stays on one line: it is selectable and has its
+  copy button beside it. `e2e/tests/share-dialog-size.spec.ts` measures this
+  at 1440 and 390 px.
 - **There are two outgoing lists, and they answer different questions.**
   `GET /api/workspaces/:id/shares` is "what did anybody hand out from here" and
   needs the person to remember the workspace. `GET /api/me/outgoing-shares`
