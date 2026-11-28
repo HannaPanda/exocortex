@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 
 import {
   type ChatScrollMode,
+  DEFAULT_ACTIVE_BLOCK_MARKER,
   DEFAULT_CHAT_SCROLL_MODE,
   DEFAULT_OUTLINE_DODGE,
   DEFAULT_OUTLINE_HOVER_EXPAND,
@@ -22,7 +23,8 @@ import { queryKeys } from './query-keys';
 
 /**
  * The account's personal settings: language (#98), the clock (#255), chat
- * scrolling (#282), the outline (#283).
+ * scrolling (#282), the outline (#283), the line beside the caret's block
+ * (#238).
  */
 export const preferenceKeys = {
   preferences: ['me', 'preferences'] as const,
@@ -216,6 +218,56 @@ export function useOutlinePreferences(): OutlinePreferences {
     dodge: query.data?.outlineDodge ?? DEFAULT_OUTLINE_DODGE,
     hoverExpand: query.data?.outlineHoverExpand ?? DEFAULT_OUTLINE_HOVER_EXPAND,
     change: (change, options) => mutation.mutate(change, { onError: options?.onError }),
+    pending: mutation.isPending,
+  };
+}
+
+export interface ActiveBlockMarkerPreference {
+  enabled: boolean;
+  change: (enabled: boolean, options?: { onError?: () => void }) => void;
+  pending: boolean;
+}
+
+/**
+ * Whether the editor marks the block the caret is in (issue #238), read by
+ * the editor and changed from the settings dialog and the palette.
+ *
+ * Optimistic like the chat's scrolling: the line goes or comes the moment the
+ * switch is pressed and comes back if saving fails. Until the preferences have
+ * loaded it is the default, on.
+ */
+export function useActiveBlockMarkerPreference(): ActiveBlockMarkerPreference {
+  const client = useQueryClient();
+  const query = useUserPreferences();
+  const mutation = useMutation({
+    mutationFn: (activeBlockMarker: boolean) =>
+      apiRequest<UserPreferences>('/api/me/preferences', {
+        method: 'PATCH',
+        body: { activeBlockMarker } satisfies UpdateUserPreferencesRequest,
+      }),
+    onMutate: async (activeBlockMarker) => {
+      await client.cancelQueries({ queryKey: preferenceKeys.preferences });
+      const before = client.getQueryData<UserPreferences>(preferenceKeys.preferences);
+      if (before !== undefined) {
+        client.setQueryData<UserPreferences>(preferenceKeys.preferences, {
+          ...before,
+          activeBlockMarker,
+        });
+      }
+      return { before };
+    },
+    onError: (_error, _enabled, context) => {
+      if (context?.before !== undefined) {
+        client.setQueryData(preferenceKeys.preferences, context.before);
+      }
+    },
+    onSuccess: (result) => {
+      client.setQueryData(preferenceKeys.preferences, result);
+    },
+  });
+  return {
+    enabled: query.data?.activeBlockMarker ?? DEFAULT_ACTIVE_BLOCK_MARKER,
+    change: (enabled, options) => mutation.mutate(enabled, { onError: options?.onError }),
     pending: mutation.isPending,
   };
 }

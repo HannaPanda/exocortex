@@ -691,6 +691,49 @@ screen`), so a printed page ends with its text; a page that is only read
 Covered by `writing-room.test.ts` and `e2e/tests/writing-room.spec.ts`
 (desktop, print, an archived page, and a phone with a simulated keyboard).
 
+## The caret's block, marked in the margin
+
+While the page's own editor has the focus, a hairline in the left margin
+stands beside the block the caret is in, as tall as that block (issue #238).
+On a long page, or among nested lists and tables, it answers "where am I
+writing" without reading. Nothing of it is stored and nothing in the text
+moves:
+
+- **Which block.** `activeTextblockPos` in
+  `apps/web/src/components/editor/active-block-marker.ts`: the innermost text
+  block holding a text caret. In a list that is the point being written, in a
+  table the cell's paragraph, in a quote or callout the paragraph inside it; a
+  code block is one block. A node selection (a picture, a divider), a cell
+  selection and Strg+A over the page mark nothing, because each already shows
+  itself.
+- **Where it is drawn.** One element (`.exocortex-active-block-marker`,
+  `data-testid="active-block-marker"`) in the editor's positioned parent, the
+  way the drop line is (`block-drop.ts`), and not a decoration on the block: a
+  class there would have to make every kind of block a positioned box, and a
+  paragraph's pseudo-elements already carry the line's hint and a list's
+  markers. `globals.css` fixes `left` at the seam between a heading's
+  disclosure lane and the block handle, the same distance from the text column
+  however deep the block is nested; the plugin measures only `top` and
+  `height`, once per frame, after a transaction, a focus change or a change of
+  the editor's size (a `ResizeObserver`, for text that rewraps or a picture
+  above that loaded).
+- **When.** Only while the editor is editable and focused: it goes with the
+  focus (a menu, the sidebar, another window) and is never there on a page
+  that is only read or in print. It jumps from block to block; only appearing
+  and going fade, over `duration-fast`.
+- **Switched off** by the account preference `activeBlockMarker` (on by
+  default; `/api/me/preferences`, `exo_me_preferences_set`, the editor group of
+  the settings dialog, the palette). `ActiveBlockMarkerSync` in the editor
+  chrome hands it to the plugin as a meta transaction
+  (`setActiveBlockMarkerEnabled`), so a changed setting never rebuilds the
+  editor.
+
+It is deliberately unlike the other marks beside a block: an agent's change is
+a wash with a tab above the block (ADR-065), a comment a wash with a count at
+the right edge. The caret's mark has neither, only the caret's amber at half
+strength (DESIGN.md, "The caret's mark"). Unit tests:
+`active-block-marker.test.ts`; the browser: `e2e/tests/active-block-marker.spec.ts`.
+
 ## Where a new code block goes
 
 The catalog's "Codeblock" (slash menu, selection toolbar), `Mod-Alt-c` and a

@@ -898,6 +898,25 @@ reads the document and writes nothing, so a jump changes the scroll position
 and nothing else: not the selection, not the focus inside the editor, not the
 history.
 
+### The caret's mark
+
+While the editor has the focus, a 2px hairline in the left margin stands
+beside the block the caret is in, as tall as the block (issue #238): the
+innermost text block, so the point of a nested list, the paragraph of a table
+cell, a code block whole. It is the caret's own amber at half strength
+(`primary` at 50%), because it says where the caret is and nothing else; at
+2px it stays well inside the One Signal Rule. It is not an accent border: it
+stands apart from the block, in the seam between a heading's disclosure lane
+and the block handle, at the same distance from the text column however deep
+the block is nested, and it never touches the text or either control. It
+carries no wash and no label, which is what keeps it apart from an agent's
+change (a wash and a tab, ADR-065) and a comment (a wash and a count at the
+right). It jumps from block to block, because the place is the state; only
+appearing and going fade over `duration-fast`, which reduced motion drops. It
+goes with the focus, is never on a page that is only read, is gone in print,
+and a reader can switch it off in the editor settings (on by default: a caret
+that is hard to find is the defect, and the mark moves nothing).
+
 ### A row beside its database
 
 A row of a database opens in a side panel over the right-hand part of the

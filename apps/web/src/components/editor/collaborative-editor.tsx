@@ -29,6 +29,7 @@ import { ErrorState, LoadingState } from '@exocortex/ui';
 
 import { DatabaseEmbedNodeView } from '@/components/database/database-embed-node-view';
 import { ImageLightboxArea } from '@/components/document/image-lightbox-area';
+import { ActiveBlockMarkerSync } from '@/components/editor/active-block-marker-sync';
 import { AgentEditMarkers, createAgentEditMarkers } from '@/components/editor/agent-edit-markers';
 import { AiSelectionReporter } from '@/components/editor/ai-selection-reporter';
 import { BlockHandle } from '@/components/editor/block-handle';
@@ -87,6 +88,7 @@ import { attachmentMediaInfoResolverFor } from '@/lib/api/attachment-info';
 import { uploadAttachment } from '@/lib/api/attachment-queries';
 import { useDocumentTree } from '@/lib/api/document-queries';
 
+import { ActiveBlockMarker } from './active-block-marker';
 import { BlockNodeRange } from './node-range';
 import { PaletteFileUpload } from './palette-file-upload';
 import {
@@ -473,6 +475,10 @@ function EditorSurface({
           // room past the end of the page that `globals.css` gives it
           // (issue #281).
           WritingRoom,
+          // A short line in the left margin beside the block the caret is in
+          // (issue #238). Only while writing; `ActiveBlockMarkerSync` in the
+          // chrome switches it off for a reader who chose that.
+          ActiveBlockMarker,
           // Drag-and-drop and paste. The block type is chosen from the MIME type,
           // so dropping a video produces a player and not a broken image.
           FileHandler.configure({
@@ -721,6 +727,9 @@ function EditorChrome({
           <CalloutMenu editor={editor} />
           <TableToolbar editor={editor} />
           <BlockHandle editor={editor} catalog={catalog} />
+          {/* Renders nothing: it hands the reader's choice to the line beside
+              the caret's block (#238). */}
+          <ActiveBlockMarkerSync editor={editor} />
           {destructive.element}
         </DestructiveConfirmProvider>
       ) : null}

@@ -314,6 +314,35 @@
     @apply rounded-sm bg-accent;
   }
 
+  /* The block the caret is in (issue #238, `active-block-marker.ts`): a
+     hairline in the left margin, as tall as the block, while the editor has
+     the focus. It is the caret's amber at half strength, because it says
+     where the caret is and nothing else: no wash and no label, so it never
+     reads as an agent's change (a wash and a tab above the block, #112) or a
+     comment (a wash and a count at the right). It stands in the seam
+     between a heading's disclosure lane and the block handle, at the same
+     distance from the text column however deeply the block is nested, so
+     it covers neither control and never touches the text. Drawn into the
+     editor's positioned parent and absolutely placed: nothing moves and no
+     width changes. It jumps from block to block, because the place is the
+     state; only appearing and going fade, over duration-fast, which reduced
+     motion collapses. */
+  .exocortex-active-block-marker {
+    @apply pointer-events-none absolute w-0.5 rounded-full bg-primary/50 opacity-0;
+    left: calc(-1 * (var(--gutter-collapse, 1.25rem) + 0.125rem));
+    transition: opacity var(--duration-fast) var(--ease-out-quint);
+  }
+
+  .exocortex-active-block-marker[data-visible='true'] {
+    @apply opacity-100;
+  }
+
+  @media print {
+    .exocortex-active-block-marker {
+      display: none;
+    }
+  }
+
   /* A block a write from outside the editor just changed (issue #112): an
      agent, or somebody using the API. A decoration like the comment marker,
      never stored. The wash fires at full strength and settles over
