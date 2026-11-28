@@ -296,8 +296,10 @@ test.describe('Topbar auf breitem Schirm', () => {
     await page.keyboard.press('Enter');
     await expect(page.getByTestId('menu-open-features')).toBeVisible();
     await expect(page.getByTestId('menu-open-features')).toBeFocused();
+    // The next entry is "Wartet auf dich", which the menu always lists
+    // (issue #139), whether or not anything is waiting right now.
     await page.keyboard.press('ArrowDown');
-    await expect(page.getByTestId('menu-open-chats')).toBeFocused();
+    await expect(page.getByTestId('menu-open-attention-menu')).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(page.getByTestId('menu-open-features')).toHaveCount(0);
     await expect(menu).toBeFocused();
