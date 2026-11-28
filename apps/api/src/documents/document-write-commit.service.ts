@@ -96,6 +96,9 @@ export class DocumentWriteCommitService {
           yjsState: Buffer.from(input.applied.yjsState),
           schemaVersion: EXOCORTEX_SCHEMA_VERSION,
           yjsUpdatedAt: now,
+          // Not somebody's typing: this write left its own version with its
+          // own author, so the sampler of issue #235 has nothing to add.
+          yjsUpdatedById: null,
           proseMirrorJson: input.applied.proseMirrorJson as unknown as Prisma.InputJsonObject,
           plainText: input.applied.plainText,
           markdown: input.markdown,

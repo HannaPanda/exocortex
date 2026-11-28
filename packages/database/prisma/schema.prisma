@@ -88,6 +88,7 @@ model User {
   createdDocuments            Document[]                 @relation("DocumentCreatedBy")
   updatedDocuments            Document[]                 @relation("DocumentUpdatedBy")
   createdSnapshots            DocumentSnapshot[]
+  typedContents               DocumentContent[]          @relation("DocumentContentTypedBy")
   createdAttachments          Attachment[]
   correctedAttachmentTexts    Attachment[]               @relation("AttachmentTextCorrectedBy")
   databasePropertyAiWrites    DatabasePropertyAi[]       @relation("DatabasePropertyAiUpdatedBy")
@@ -1118,6 +1119,13 @@ model DocumentContent {
   schemaVersion   Int       @default(1)
   /// Timestamp of the last binary Yjs write. Used for job idempotency.
   yjsUpdatedAt    DateTime  @default(now())
+  /// Who typed the change the collaboration server stored last (issue #235),
+  /// so a version sampled while typing names its author. A write through the
+  /// API or a restore clears it, because that write left its own version with
+  /// its own author; a store from somewhere other than a connection leaves it
+  /// as it is. `null`: nobody has typed since, or the account is gone.
+  yjsUpdatedById  String?
+  yjsUpdatedBy    User?     @relation("DocumentContentTypedBy", fields: [yjsUpdatedById], references: [id], onDelete: SetNull)
   /// Derived representations. All of them are rebuilt by materialization.
   proseMirrorJson Json?
   plainText       String?

@@ -19,6 +19,7 @@ import { createInternalContentHandler } from './internal-content';
 import { createInternalProjectHandler } from './internal-projects';
 import { DocumentPersistence } from './persistence';
 import { type AuthorizationRevocations, createAuthorizationRevocations } from './revocations';
+import { typistOf } from './typist';
 
 /** The y-protocols sync message types that carry content. */
 const SYNC_STEP_2 = 1;
@@ -235,8 +236,12 @@ export function createCollaborationServer(
     extensions: [
       new Database({
         fetch: async ({ documentName }) => persistence.fetch(documentName),
-        store: async ({ documentName, state }) => {
-          await persistence.store({ documentId: documentName, state });
+        store: async ({ documentName, state, lastTransactionOrigin }) => {
+          await persistence.store({
+            documentId: documentName,
+            state,
+            typistId: typistOf(lastTransactionOrigin),
+          });
         },
       }),
     ],

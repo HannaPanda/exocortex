@@ -325,6 +325,8 @@ export class DocumentSnapshotService {
           yjsState: Buffer.from(input.nextState),
           schemaVersion: input.nextSchemaVersion,
           yjsUpdatedAt: new Date(),
+          // A restore is not typing; see `document-write-commit.service.ts`.
+          yjsUpdatedById: null,
           materializedAt: null,
         },
       });

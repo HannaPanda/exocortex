@@ -281,6 +281,13 @@ describe('collaboration server', () => {
       const derived = yjsStateToProseMirrorJson(content.yjsState);
       return JSON.stringify(derived).includes(marker);
     }, 20_000);
+    // ...and recorded who typed it, which is what a sampled version is
+    // attributed to (issue #235).
+    const typed = await prisma.documentContent.findUnique({
+      where: { documentId },
+      select: { yjsUpdatedById: true },
+    });
+    expect(typed?.yjsUpdatedById).toBe(userId);
 
     providerA.destroy();
     documentA.destroy();
