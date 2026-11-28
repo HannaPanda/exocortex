@@ -249,6 +249,16 @@
       "p4": "Se aplican exactamente los mismos permisos que en la búsqueda. Un acceso restringido a un subárbol solo recibe fragmentos de ese subárbol y ni siquiera llega a conocer los nombres de las páginas situadas por encima. La memoria de los agentes solo se busca si se indica de forma explícita; para eso está la función de recordar. Esta vía nunca entrega texto de archivos adjuntos como PDF: la IA solo los lee explícitamente y, después de hacerlo, se aplica el bloqueo para contenidos externos."
     }
   },
+  "lange-anhaenge-nach-gliederung-lesen": {
+    "title": "Lectura dirigida de PDF largos: primero el esquema, luego las páginas",
+    "summary": "Un PDF largo ya no responde a un agente con todo su texto o solo con su inicio, sino con su esquema por páginas, cada una con su tamaño y primera línea. A continuación, lee solo las páginas que necesita, igual que lee únicamente la sección requerida en una página grande.",
+    "details": {
+      "p1": "Antes, el texto de un adjunto se enviaba entero; en un informe extenso, eran más de cien mil caracteres a la vez. Ahora, hasta unos diez mil caracteres, el agente recibe el texto; por encima de eso, recibe el esquema: página 1, página 2, etc., cada una con su tamaño y su primera línea. Con un rango de páginas, lee con precisión el fragmento que responde a una pregunta.",
+      "p2": "Donde no hay páginas identificadas, como en un documento de Word, un texto corregido a mano o un PDF leído antes del 28 de noviembre de 2026, el texto se organiza por sus encabezados y, en su defecto, por párrafos. Un PDF más antiguo recuperará sus páginas en cuanto se vuelva a iniciar el reconocimiento de texto.",
+      "p3": "Esto se aplica tanto a la IA del chat como a los agentes a través de MCP. Si adjuntas un PDF largo en el chat, la IA ve primero una parte y, para responder a una pregunta sobre un punto posterior, consulta selectivamente las páginas adecuadas en lugar de cargar todo el documento. El contenido permanece etiquetado como contenido del archivo, incluido el esquema."
+    },
+    "where": "Invisible para ti: cambia la forma en que los agentes y la IA del chat leen archivos largos."
+  },
   "anhaenge-mitdurchsuchen": {
     "title": "Buscar también en archivos adjuntos",
     "summary": "La búsqueda encuentra una página incluso mediante una frase que solo aparece en un PDF o documento ofimático adjunto, no únicamente por el nombre del archivo.",

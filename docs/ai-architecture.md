@@ -144,7 +144,9 @@ queued for screening. `awaitChatDocumentTexts`
 45 seconds for a text still being read or screened; `chatDocumentContext` then
 fences the texts in the note in front of the message, at most
 `CHAT_DOCUMENT_PROMPT_CHARS` (24 000) per message shared by its files, and
-names `exo_attachment_read_text` for what was cut. A compaction summary is
+names `exo_attachment_read_text` for what was cut, with the advice to read the
+needed stretch through its outline rather than on from the cut (ADR-101). A
+compaction summary is
 built from message text, so the compaction marks every message it retires
 with `summarizedIntoId`; `summarizedMessageIds` follows that chain from the
 active summaries, and `carriedFilesContext` names those messages' files right
@@ -1069,6 +1071,22 @@ Two read routes:
 of these fields to the text it returns, so a model knows it is looking at a
 33-page scan before it starts quoting, and `includeText: false` routes it to
 the side-effect-free variant.
+
+`GET /api/attachments/:id/text` also reads within a budget (issue #133,
+ADR-101). `maxChars` and `maxEntries` bound the answer, `fromPage`/`toPage` or
+`fromChar`/`toChar` name a stretch; without any of them the route answers as
+it always has. Over the budget `view` is `map` and `text` is empty: the
+stretch's pages when it covers two or more, else its Markdown headings, else
+windows of paragraphs no larger than the budget, built by
+`readAttachmentText` in `packages/contracts/src/attachment-text-map.ts`.
+`exo_attachment_read_text` sends the page read's budget (10 000 characters, 40
+entries) on every call. Pages come from `Attachment.textPageStarts`, the
+UTF-16 offset of each page in `extractedText` (`-1` where a page could not be
+placed), written with the text: Docling's are placed by
+`locateDoclingPages` (`packages/ai/src/docling-pages.ts`) from the provenance
+in its JSON, OpenRouter's from its `### Page N` headings, office files have
+none. A correction is read without pages, and a PDF extracted before
+2026-11-28 gains them on its next extraction.
 
 The editor's `pdf` and `fileAttachment` blocks show the same facts as a line of
 chips under the header, plus the extraction status and a "retry" action when it

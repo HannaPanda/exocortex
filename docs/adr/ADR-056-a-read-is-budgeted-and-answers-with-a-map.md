@@ -1,6 +1,6 @@
 # ADR-056: a read carries a budget, and a page too big for it answers with its map
 
-- Status: accepted
+- Status: accepted, extended to attachment text by [ADR-101](ADR-101-an-attachment-text-is-read-by-its-pages.md)
 - Date: 2026-09-21
 
 ## Context

@@ -249,6 +249,16 @@
       "p4": "Search permissions apply strictly. An access level limited to a subtree receives passages only from that subtree and does not even learn the names of pages above it. The agent memory area is only searched when explicitly named; remembering exists for that purpose. This path never outputs text from attachments like PDFs: the AI only reads those explicitly, after which foreign content restrictions apply."
     }
   },
+  "lange-anhaenge-nach-gliederung-lesen": {
+    "title": "Targeted reading of long PDFs: first the outline, then the pages",
+    "summary": "A long PDF no longer responds to an agent with its entire text or its beginning, but with its outline by page, each with its size and first line. After that, it only reads the pages it needs, just as it reads only the section of a large page.",
+    "details": {
+      "p1": "Previously, the text of an attachment always arrived in full—for a thick report, well over a hundred thousand characters at once. Now an agent receives the full text up to about ten thousand characters; beyond that, it gets the outline: Page 1, Page 2, and so on, each with its size and first line. Using a page range, it then reads exactly the spot that answers a question.",
+      "p2": "Where pages are not known, such as in a Word document, manually corrected text, or a PDF read before November 28, 2026, the text is structured by its headings and otherwise by paragraphs. An older PDF gets its pages as soon as text recognition is run again.",
+      "p3": "This applies to the AI in chat just as it does to agents via MCP. If you attach a long PDF in chat, the AI first sees part of it and specifically looks up the relevant pages for a question about a later section, instead of loading the entire document. The content remains labeled as content of the file, including the outline."
+    },
+    "where": "Invisible to you: it changes how agents and the AI in chat read long files."
+  },
   "anhaenge-mitdurchsuchen": {
     "title": "Search through attachments",
     "summary": "Search also finds a page via a sentence that appears only inside an attached PDF or Office document, not merely by file name.",

@@ -1018,6 +1018,17 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   the file and the block showing it, never another block. `NULL` is still owed
   and `backfill-search-block-map` fills it in batches; fusion keeps a located
   keyword hit whole and borrows the semantic section only for an unlocated one.
+- ADR-101: an attachment's text is read by its pages, and a long one answers
+  with its map. `Attachment.textPageStarts` holds the UTF-16 offset of each
+  page in `extractedText` (`-1` unplaced, empty unknown), written and cut with
+  the text; Docling's pages are placed by finding each item's text in order
+  from the provenance in its JSON, never from its page-break placeholder. A
+  correction has no pages. `GET /api/attachments/:id/text` takes `maxChars`,
+  `maxEntries` and `fromPage`/`toPage` or `fromChar`/`toChar`; without them it
+  answers as before, over the budget with a map (pages, then headings, then
+  paragraph windows no larger than the budget) and never a prefix.
+  `exo_attachment_read_text` sends the page read's budget; the map is fenced
+  like the text. No vectors, no attachment passages in the context compiler.
   Full list: `docs/adr/`.
 
 ## How to extend the system

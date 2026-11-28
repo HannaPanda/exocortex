@@ -249,6 +249,16 @@
       "p4": "Es gelten genau die Rechte der Suche. Ein Zugang, der auf einen Teilbaum beschränkt ist, bekommt nur Stellen aus diesem Teilbaum und erfährt nicht einmal die Namen der Seiten darüber. Der Gedächtnisbereich der Agenten wird nur durchsucht, wenn er ausdrücklich genannt ist; dafür gibt es das Erinnern. Text aus Anhängen wie PDFs gibt dieser Weg nie heraus: den liest die KI nur ausdrücklich, und danach gilt die Sperre für fremde Inhalte."
     }
   },
+  "lange-anhaenge-nach-gliederung-lesen": {
+    "title": "Lange PDFs gezielt lesen: erst die Gliederung, dann die Seiten",
+    "summary": "Ein langes PDF antwortet einem Agenten nicht mehr mit seinem ganzen Text oder seinem Anfang, sondern mit seiner Gliederung nach Seiten, jeweils mit Größe und erster Zeile. Danach liest er nur die Seiten, die er braucht, so wie er bei einer großen Seite nur den Abschnitt liest.",
+    "details": {
+      "p1": "Vorher kam der Text eines Anhangs immer ganz, bei einem dicken Bericht weit über hunderttausend Zeichen auf einmal. Jetzt bekommt ein Agent bis etwa zehntausend Zeichen den Text, darüber die Gliederung: Seite 1, Seite 2 und so weiter, jede mit ihrer Größe und ihrer ersten Zeile. Mit einem Seitenbereich liest er dann genau die Stelle, die eine Frage beantwortet.",
+      "p2": "Wo keine Seiten bekannt sind, etwa bei einem Word-Dokument, einem von Hand korrigierten Text oder einem PDF, das vor dem 28. November 2026 gelesen wurde, gliedert sich der Text nach seinen Überschriften und sonst nach Absätzen. Ein älteres PDF bekommt seine Seiten, sobald die Texterkennung neu angestoßen wird.",
+      "p3": "Das gilt für die KI im Chat genauso wie für Agenten über MCP. Hängst du im Chat ein langes PDF an, sieht die KI zuerst einen Teil davon und liest für eine Frage zu einer späteren Stelle gezielt die passenden Seiten nach, statt das ganze Dokument zu laden. Der Inhalt bleibt dabei als Inhalt der Datei gekennzeichnet, auch die Gliederung."
+    },
+    "where": "Unsichtbar für dich: es ändert, wie Agenten und die KI im Chat lange Dateien lesen."
+  },
   "anhaenge-mitdurchsuchen": {
     "title": "Anhänge mitdurchsuchen",
     "summary": "Die Suche findet eine Seite auch über einen Satz, der nur in einem angehängten PDF oder Office-Dokument steht, nicht bloß über den Dateinamen.",

@@ -192,6 +192,14 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     // Eintrag, sonst sagt die Hilfe zweimal dasselbe.
   }),
   defineFeature({
+    id: 'lange-anhaenge-nach-gliederung-lesen',
+    area: 'dateien',
+    since: '2026-11-28',
+    ui: {},
+    // Kein eigener Werkzeugeintrag: es ist exo_attachment_read_text, das zu
+    // „texterkennung" gehört. Ein Werkzeug hat genau einen Eintrag.
+  }),
+  defineFeature({
     id: 'anhaenge-mitdurchsuchen',
     area: 'suche',
     since: '2026-09-20',

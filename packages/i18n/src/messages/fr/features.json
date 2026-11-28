@@ -249,6 +249,16 @@
       "p4": "Les droits appliqués sont exactement ceux de la recherche. Un accès limité à une sous-arborescence ne reçoit que des extraits de celle-ci et n’apprend même pas le nom des pages parentes. La zone de mémoire des agents n’est explorée que si elle est explicitement mentionnée ; c’est le rôle du rappel en mémoire. Le texte des pièces jointes comme les PDF n’est jamais extrait par cette méthode : l’IA ne le lit que sur demande explicite, après quoi le blocage des contenus externes s’applique."
     }
   },
+  "lange-anhaenge-nach-gliederung-lesen": {
+    "title": "Lire les longs PDF de manière ciblée : d’abord le plan, puis les pages",
+    "summary": "Un long PDF ne répond plus à un agent avec l’intégralité de son texte ou seulement son début, mais avec son plan découpé en pages, chacune avec sa taille et sa première ligne. Ensuite, il ne lit que les pages nécessaires, tout comme il ne lit qu’une section d’une grande page.",
+    "details": {
+      "p1": "Auparavant, le texte d’une pièce jointe arrivait toujours d’un seul bloc, dépassant largement les cent mille caractères d’un coup pour un rapport volumineux. Désormais, un agent reçoit le texte jusqu’à environ dix mille caractères, et au-delà, il reçoit le plan : page 1, page 2 et ainsi de suite, chacune avec sa taille et sa première ligne. Grâce à une plage de pages, il lit ensuite précisément l’endroit qui répond à une question.",
+      "p2": "Quand les pages ne sont pas connues, par exemple pour un document Word, un texte corrigé manuellement ou un PDF lu avant le 28 novembre 2026, le texte est structuré selon ses titres ou, à défaut, selon ses paragraphes. Un PDF plus ancien obtient ses pages dès que la reconnaissance de texte est relancée.",
+      "p3": "Cela s’applique aussi bien à l’IA dans le chat qu’aux agents via MCP. Si tu joins un long PDF dans le chat, l’IA en voit d’abord une partie et va lire de façon ciblée les pages correspondantes pour répondre à une question portant sur un passage ultérieur, au lieu de charger tout le document. Le contenu reste identifié comme le contenu du fichier, y compris le plan."
+    },
+    "where": "Invisible pour toi : cela modifie la façon dont les agents et l’IA dans le chat lisent les fichiers volumineux."
+  },
   "anhaenge-mitdurchsuchen": {
     "title": "Rechercher aussi dans les pièces jointes",
     "summary": "La recherche trouve aussi une page à partir d’une phrase présente uniquement dans un PDF ou un document bureautique joint, et pas seulement via le nom du fichier.",
