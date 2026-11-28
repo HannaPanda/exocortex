@@ -14960,6 +14960,10 @@
       "source": "83e0a692773daa6e",
       "output": "04158073f7de494c"
     },
+    "features.seiten-teilen.details.p6": {
+      "source": "87016858fe3d1339",
+      "output": "4520515f04ad58b8"
+    },
     "features.seiten-teilen.summary": {
       "source": "6ef4cd90afa3f6df",
       "output": "ad0c3a1658149713"
@@ -21481,12 +21485,16 @@
       "output": "b073f6c68ef87211"
     },
     "shares.dialog.scopeDatabaseRows": {
-      "source": "f50cfb57f10ba188",
-      "output": "772306205c91d6aa"
+      "source": "cf435685be492690",
+      "output": "764941172a17d17b"
     },
     "shares.dialog.scopePageOnly": {
       "source": "e4ef05cc5c38c946",
       "output": "0e7cecfe17147a3c"
+    },
+    "shares.dialog.scopePageOnlyWrite": {
+      "source": "cff7890a8cb73563",
+      "output": "c8f432581239761b"
     },
     "shares.dialog.scopeSubtree": {
       "source": "fdd1f3088e1e01d3",
@@ -41314,6 +41322,10 @@
       "source": "83e0a692773daa6e",
       "output": "fa266da1f91e7961"
     },
+    "features.seiten-teilen.details.p6": {
+      "source": "87016858fe3d1339",
+      "output": "0277a9e3ae770f5f"
+    },
     "features.seiten-teilen.summary": {
       "source": "6ef4cd90afa3f6df",
       "output": "4255c61572bf4484"
@@ -47835,12 +47847,16 @@
       "output": "477f2a69f25fbe3c"
     },
     "shares.dialog.scopeDatabaseRows": {
-      "source": "f50cfb57f10ba188",
-      "output": "4122f66537a2c1f9"
+      "source": "cf435685be492690",
+      "output": "6291ae1f3dbb85d2"
     },
     "shares.dialog.scopePageOnly": {
       "source": "e4ef05cc5c38c946",
       "output": "3149b95bc9d934e9"
+    },
+    "shares.dialog.scopePageOnlyWrite": {
+      "source": "cff7890a8cb73563",
+      "output": "b8c9b18b09920f42"
     },
     "shares.dialog.scopeSubtree": {
       "source": "fdd1f3088e1e01d3",
@@ -67668,6 +67684,10 @@
       "source": "83e0a692773daa6e",
       "output": "8a77f6319f2becc2"
     },
+    "features.seiten-teilen.details.p6": {
+      "source": "87016858fe3d1339",
+      "output": "5004e49c470da894"
+    },
     "features.seiten-teilen.summary": {
       "source": "6ef4cd90afa3f6df",
       "output": "dc72fb197999a9f8"
@@ -74189,12 +74209,16 @@
       "output": "b9e11a362f7974e2"
     },
     "shares.dialog.scopeDatabaseRows": {
-      "source": "f50cfb57f10ba188",
-      "output": "fed0f8368109e2cd"
+      "source": "cf435685be492690",
+      "output": "afedf35d30e85e21"
     },
     "shares.dialog.scopePageOnly": {
       "source": "e4ef05cc5c38c946",
       "output": "44bafbcff40117fe"
+    },
+    "shares.dialog.scopePageOnlyWrite": {
+      "source": "cff7890a8cb73563",
+      "output": "3620cabf88612a63"
     },
     "shares.dialog.scopeSubtree": {
       "source": "fdd1f3088e1e01d3",
@@ -94022,6 +94046,10 @@
       "source": "83e0a692773daa6e",
       "output": "597f02e1ab631916"
     },
+    "features.seiten-teilen.details.p6": {
+      "source": "87016858fe3d1339",
+      "output": "d62c6ad6b881ee69"
+    },
     "features.seiten-teilen.summary": {
       "source": "6ef4cd90afa3f6df",
       "output": "1cc22bc2f6bf363c"
@@ -100543,12 +100571,16 @@
       "output": "03cbc24f25f2f662"
     },
     "shares.dialog.scopeDatabaseRows": {
-      "source": "f50cfb57f10ba188",
-      "output": "0de9af9ced6dad20"
+      "source": "cf435685be492690",
+      "output": "e13dd0d5c217f2a5"
     },
     "shares.dialog.scopePageOnly": {
       "source": "e4ef05cc5c38c946",
       "output": "8c494dcc49c22cfe"
+    },
+    "shares.dialog.scopePageOnlyWrite": {
+      "source": "cff7890a8cb73563",
+      "output": "c4ba4d424bb47f11"
     },
     "shares.dialog.scopeSubtree": {
       "source": "fdd1f3088e1e01d3",
@@ -120376,6 +120408,10 @@
       "source": "83e0a692773daa6e",
       "output": "799eff7ba7d74843"
     },
+    "features.seiten-teilen.details.p6": {
+      "source": "87016858fe3d1339",
+      "output": "35fe9eb2b071c429"
+    },
     "features.seiten-teilen.summary": {
       "source": "6ef4cd90afa3f6df",
       "output": "ef7214cebf60006c"
@@ -126897,12 +126933,16 @@
       "output": "94621294aa79165b"
     },
     "shares.dialog.scopeDatabaseRows": {
-      "source": "f50cfb57f10ba188",
-      "output": "a1145f005a8a871d"
+      "source": "cf435685be492690",
+      "output": "28d5f442df5721a3"
     },
     "shares.dialog.scopePageOnly": {
       "source": "e4ef05cc5c38c946",
       "output": "38825cccefaa884a"
+    },
+    "shares.dialog.scopePageOnlyWrite": {
+      "source": "cff7890a8cb73563",
+      "output": "7c8f7b8b2ac2fca5"
     },
     "shares.dialog.scopeSubtree": {
       "source": "fdd1f3088e1e01d3",
@@ -146730,6 +146770,10 @@
       "source": "83e0a692773daa6e",
       "output": "b6950f75dd81a390"
     },
+    "features.seiten-teilen.details.p6": {
+      "source": "87016858fe3d1339",
+      "output": "a6a6dcac31736962"
+    },
     "features.seiten-teilen.summary": {
       "source": "6ef4cd90afa3f6df",
       "output": "33a09ed605f2ec51"
@@ -153251,12 +153295,16 @@
       "output": "10cae49c850fd1d2"
     },
     "shares.dialog.scopeDatabaseRows": {
-      "source": "f50cfb57f10ba188",
-      "output": "c9843f670df9e953"
+      "source": "cf435685be492690",
+      "output": "418f24aa30af00f6"
     },
     "shares.dialog.scopePageOnly": {
       "source": "e4ef05cc5c38c946",
       "output": "7a5762810b863b2b"
+    },
+    "shares.dialog.scopePageOnlyWrite": {
+      "source": "cff7890a8cb73563",
+      "output": "9773a74f06b94918"
     },
     "shares.dialog.scopeSubtree": {
       "source": "fdd1f3088e1e01d3",
@@ -173084,6 +173132,10 @@
       "source": "83e0a692773daa6e",
       "output": "fb3dc0d34460356f"
     },
+    "features.seiten-teilen.details.p6": {
+      "source": "87016858fe3d1339",
+      "output": "2e962be6318ae12e"
+    },
     "features.seiten-teilen.summary": {
       "source": "6ef4cd90afa3f6df",
       "output": "1dd5aa7c6c028f04"
@@ -179605,12 +179657,16 @@
       "output": "2997da3ea0387e47"
     },
     "shares.dialog.scopeDatabaseRows": {
-      "source": "f50cfb57f10ba188",
-      "output": "069274ca61709652"
+      "source": "cf435685be492690",
+      "output": "ee812bedfdcf0377"
     },
     "shares.dialog.scopePageOnly": {
       "source": "e4ef05cc5c38c946",
       "output": "a2717d08a181d264"
+    },
+    "shares.dialog.scopePageOnlyWrite": {
+      "source": "cff7890a8cb73563",
+      "output": "269022418add8001"
     },
     "shares.dialog.scopeSubtree": {
       "source": "fdd1f3088e1e01d3",

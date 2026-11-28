@@ -216,6 +216,11 @@ export function ShareDialog({
               </SelectContent>
             </Select>
           </div>
+          {scope === 'PAGE_ONLY' ? (
+            <p className="text-xs text-muted-foreground" data-testid="share-page-only-write">
+              {t('scopePageOnlyWrite')}
+            </p>
+          ) : null}
           {isDatabase && scope === 'PAGE_ONLY' ? (
             <p className="text-xs text-muted-foreground" data-testid="share-database-rows">
               {t('scopeDatabaseRows')}

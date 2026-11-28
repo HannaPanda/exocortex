@@ -91,7 +91,7 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
     id: 'seiten-teilen',
     area: 'veroeffentlichen',
     since: '2026-09-20',
-    references: ['#83', 'ADR-044'],
+    references: ['#83', '#264', 'ADR-044'],
     ui: {},
     tools: [
       'exo_share_create',
