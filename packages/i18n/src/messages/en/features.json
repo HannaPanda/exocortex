@@ -664,13 +664,13 @@
   },
   "werkzeugauswahl-jev": {
     "title": "The AI finds its tools even without matching keywords",
-    "summary": "Before each run, the decision model Jev determines which tool areas the AI needs. This way it gets image tools even for “What does this sketch show?” or a question in Japanese, and the archive for “you can remove the empty things”.",
+    "summary": "Jev is a small, fast decision model that estimates which tools are needed before each run. This way, the AI gets the image tools even for “What does this sketch show?” or a question in Japanese, and the archive for “you can remove the empty things”.",
     "details": {
       "p1": "Previously, a list of German and English keywords selected which tools the AI was offered. In a test across eleven languages, it only got everything it needed in 14 out of 100 cases, compared to 98 out of 100 with Jev. This matters because the default model rarely reloads a missing tool on its own, instead tending to claim there is no image or nothing to do.",
       "p2": "For this, your latest messages are sent to OpenRouter, nothing else: no page, no attachment. If Jev doesn’t respond within 1.5 seconds or returns an error, the run selects tools by keywords as before and still starts. If the open page has an image or a PDF, attachment tools are included, and whatever the AI used in the latest runs of the same conversation remains available.",
       "p3": "Which method made the selection is shown in the timeline of each run. You can turn it off in the AI settings, either for the entire deployment or just for a single workspace, and with administrator permissions also via MCP. This is not a permission: what the AI is allowed to do is still decided by the tool switches and your own permissions."
     },
-    "where": "Settings under AI, toggle “Select tools with Jev”. During a run: the timeline in the run inspector."
+    "where": "In settings under Workspace, Configuration group, AI section: “Select tools with Jev” switch. For the whole installation under Administration. In a run: the timeline in the run inspector."
   },
   "kompaktierung": {
     "title": "Long conversations keep going",
@@ -986,7 +986,7 @@
       "p2": "The memory is a dedicated workspace designated as such in its settings. The separation is key: curated knowledge is written by a human because it is worth it, while transcripts are created automatically and may be cleaned up or discarded at any time. Automatic transcripts therefore never belong in the curated area.",
       "p3": "What is saved is a condensation, never the raw conversation. Notes are ordinary pages—readable, searchable, editable, and deletable like everything else—and what an agent is allowed to do is determined by its workspace membership, not its token."
     },
-    "where": "A workspace is designated as memory in its settings."
+    "where": "A workspace is designated as a memory in Settings under Workspace, General group."
   },
   "von-mir-geteilt": {
     "title": "Everything I have shared, in one place",
@@ -1018,7 +1018,7 @@
       "p2": "In the account menu top right, “Shares”, under the “Shared with me” tab, leads in the opposite direction: pages that someone has given you, across workspaces. They do not appear in any page tree, because you are not a member there; this list is the only way to them. Such a page opens without the navigation of the foreign workspace: you see the page and, if the area was included, what hangs below it, nothing else.",
       "p3": "What you reach via a share, you cannot pass on. A shared page has no “Share” button: who may pass it on is a question for the workspace it comes from."
     },
-    "where": "Account menu top right, “Shares”, “Shared with me” tab; workspace settings, “Open shares”."
+    "where": "Account menu at the top right, “Shares”, “Shared with me” tab; in Settings under Workspace, General group, “Shares”."
   },
   "projekt-archive": {
     "title": "Importing and exporting a project as a ZIP",
@@ -1174,7 +1174,7 @@
       "p2": "A read-only token for an evaluation can therefore break nothing, and you do not have to hand over the entire account just because a script needs a list. The token value is displayed exactly once, never again afterwards, so copy it to the right place immediately.",
       "p3": "Below the list are ready-to-use connection commands for common clients, with the address and token prefilled. You copy one line and you are connected, instead of hunting down a configuration file. A token can be revoked at any time."
     },
-    "where": "Settings, Access Tokens."
+    "where": "Settings, Connections."
   },
   "eigene-schluessel": {
     "title": "Custom provider keys per workspace",
@@ -1184,7 +1184,7 @@
       "p2": "This is intended for cases where multiple people or multiple projects share an installation and each side covers its own costs. Without a custom key, the installation’s key is used silently, so nobody has to configure anything.",
       "p3": "The key is stored encrypted and cannot be read out afterwards, not even by administration; you can only replace or remove it. The key for decryption resides in the server configuration and not in the database."
     },
-    "where": "A workspace’s settings."
+    "where": "In Settings under Workspace, AI group."
   },
   "einstellungen-geltungsbereiche": {
     "title": "Settings for the installation and per workspace",
@@ -1194,7 +1194,7 @@
       "p2": "Not every key can be overridden, and that is deliberate: which model responds in a workspace is its own business; how long logs are kept is not. Which keys belong to which level is fixed.",
       "p3": "Some values have an upper limit that propagates downward: if you lower the budget per run for the installation, all workspaces follow suit, even those that had entered a higher value before. Otherwise, a limit would not be one. Credentials are deliberately not a setting and never appear in this list."
     },
-    "where": "Administration, Settings, or a workspace’s settings."
+    "where": "Administration, Settings, or in Settings under Workspace, Configuration group."
   },
   "nutzerverwaltung": {
     "title": "Accounts and roles",
@@ -1349,6 +1349,17 @@
       "p3": "Connecting, changing, and approving can only be done as an owner in the browser—never with a token and never by an agent. This ensures no AI can grant itself new tools.",
       "p4": "During a run, a tool is named mcp_prefix__name. Its response counts as external content: under the “Write after external content” setting, the AI is not allowed to change anything afterward, just like after reading a web page. If the data belongs to you, such as in your own health app, turn on “Responses are my own data” for that server: then the AI may continue writing after reading, including back to that server. A write tool only runs in direct write mode, and an agent profile must allow the “External tools” area. If you disable a tool or turn off the server, even the very next call from an active run will no longer go out. In the run inspector, each call is listed with its duration and the reason if it was rejected or failed."
     },
-    "where": "Workspace settings, External tools tab. The switch for the entire instance is located under administration, Settings, AI section."
+    "where": "In Settings under Workspace, External Tools group. The toggle for the whole instance is located under Administration, Settings, AI section."
+  },
+  "einstellungen-an-einem-ort": {
+    "title": "All settings in one dialog over the page",
+    "summary": "Account, workspace, and administration are gathered in a settings dialog that overlays the page you are currently on. Groups on the left, a search field at the top, and each group has its own address.",
+    "details": {
+      "p1": "You open the dialog from the account menu under “Settings”, using the gear icon on a workspace’s home page, or in the command palette, where each group has its own command. The page beneath stays in place. Escape or your browser’s back button closes the dialog again, putting you right back where you were.",
+      "p2": "Each group has an address: ?einstellungen= and the name of the group are appended to the page’s address, for example ?einstellungen=language for language and time. This lets you bookmark a group or share it with someone. The legacy addresses under /einstellungen and workspace settings continue to work, opening the dialog at the corresponding group.",
+      "p3": "You only see the groups you have permission to use: members starting from the workspace Administrator role, external tools only as an owner, administration only with administrator privileges for the installation. Search finds groups, individual settings, and sections that remain dedicated pages, such as automations, templates, or the knowledge map’s appearance.",
+      "p4": "On phones, the dialog fills the entire screen: first the list of groups, then the group itself, and “All settings” leads back to the list."
+    },
+    "where": "Account menu, “Settings” entry. Or Ctrl + K and type the name of the group."
   }
 }

@@ -664,13 +664,13 @@
   },
   "werkzeugauswahl-jev": {
     "title": "AI znajduje swoje narzędzia nawet bez pasujących słów kluczowych",
-    "summary": "Przed każdym uruchomieniem model decyzyjny Jev ustala, jakich obszarów narzędzi potrzebuje AI. Dzięki temu otrzymuje narzędzia graficzne nawet przy pytaniu „Co przedstawia ten szkic?” lub zadanym po japońsku, a archiwum przy „możesz usunąć puste elementy”.",
+    "summary": "Jev to mały, szybki model decyzyjny, który przed każdym uruchomieniem ocenia, jakie narzędzia będą potrzebne. Dzięki temu sztuczna inteligencja otrzymuje narzędzia do obrazów także przy „Co przedstawia ten szkic?” lub pytaniu po japońsku, a archiwum przy „możesz usunąć puste elementy”.",
     "details": {
       "p1": "Dotychczas lista niemieckich i angielskich słów kluczowych decydowała o tym, jakie narzędzia są oferowane AI. W teście z jedenastoma językami otrzymywała w ten sposób wszystko, czego potrzebowała, tylko w 14 na 100 przypadków, a z modelem Jev – w 98 na 100. Ma to znaczenie, ponieważ model domyślny rzadko sam doładowuje brakujące narzędzie i częściej twierdzi, że nie ma obrazu lub nie ma nic do zrobienia.",
       "p2": "W tym celu twoje ostatnie wiadomości trafiają do OpenRouter i nic więcej: żadna strona, żaden załącznik. Jeśli Jev nie odpowie w ciągu 1,5 sekundy lub zwróci błąd, przebieg wybiera narzędzia na podstawie słów kluczowych tak jak wcześniej i mimo to startuje. Jeśli otwarta strona zawiera obraz lub plik PDF, dołączane są narzędzia do obsługi załączników, a to, z czego sztuczna inteligencja korzystała w ostatnich przebiegach tej samej rozmowy, pozostaje dostępne.",
       "p3": "Informacja o tym, która metoda dokonała wyboru, znajduje się na osi czasu każdego przebiegu. Możesz ją wyłączyć w ustawieniach AI – dla całej instalacji lub tylko dla jednego obszaru roboczego, a z uprawnieniami administratora także przez MCP. To nie jest uprawnienie: o tym, co może robić AI, nadal decydują przełączniki narzędzi i twoje własne uprawnienia."
     },
-    "where": "Ustawienia w sekcji AI, przełącznik „Wybieraj narzędzia za pomocą Jev”. W uruchomieniu: oś czasu w inspektorze uruchomienia."
+    "where": "W ustawieniach w sekcji Obszar roboczy, grupa Konfiguracja, obszar AI: przełącznik „Wybieraj narzędzia za pomocą Jev”. Dla całej instalacji w sekcji Administracja. Podczas uruchomienia: oś czasu w inspektorze uruchomień."
   },
   "kompaktierung": {
     "title": "Długie rozmowy toczą się dalej",
@@ -986,7 +986,7 @@
       "p2": "Pamięć to osobny obszar roboczy, który wyznaczasz w jego ustawieniach. Ten podział to sedno: uporządkowaną wiedzę tworzy człowiek, bo jest tego warta, natomiast notatki powstają automatycznie i można je w każdej chwili uporządkować lub wyrzucić. Automatyczne notatki nigdy nie powinny trafiać do uporządkowanej części.",
       "p3": "Zapisywane jest tylko podsumowanie, nigdy surowy zapis rozmowy. Notatki to zwykłe strony – można je czytać, przeszukiwać, zmieniać i usuwać jak wszystko inne, a o uprawnieniach agenta decyduje jego członkostwo w obszarze roboczym, a nie token."
     },
-    "where": "Obszar roboczy zostaje wyznaczony jako pamięć w swoich ustawieniach."
+    "where": "Obszar roboczy oznacza się jako pamięć w ustawieniach w sekcji Obszar roboczy, w grupie Ogólne."
   },
   "von-mir-geteilt": {
     "title": "Wszystko, co udostępniono przeze mnie, w jednym miejscu",
@@ -1018,7 +1018,7 @@
       "p2": "W menu konta w prawym górnym rogu pozycja „Udostępnienia”, zakładka „Udostępnione mi”, prowadzi w drugą stronę: do stron przekazanych tobie przez innych, w różnych obszarach roboczych. Nie pojawiają się one w żadnym drzewie stron, ponieważ nie należysz do tamtych obszarów; ta lista to jedyna droga do nich. Taka strona otwiera się bez nawigacji obcego obszaru roboczego: widzisz samą stronę i – jeśli udostępniono cały obszar – elementy podrzędne, nic więcej.",
       "p3": "Tego, do czego uzyskujesz dostęp przez udostępnienie, nie możesz przekazywać dalej. Udostępniona strona nie ma przycisku „Udostępnij”: to, kto może podawać ją dalej, zależy wyłącznie od obszaru roboczego, z którego pochodzi."
     },
-    "where": "Menu konta w prawym górnym rogu, „Udostępnienia”, zakładka „Udostępnione mi”; ustawienia obszaru roboczego, „Otwórz udostępnienia”."
+    "where": "Menu konta w prawym górnym rogu, „Udostępnienia”, zakładka „Udostępnione dla mnie”; w ustawieniach w sekcji Obszar roboczy, w grupie Ogólne, „Udostępnienia”."
   },
   "projekt-archive": {
     "title": "Import i eksport projektu jako ZIP",
@@ -1174,7 +1174,7 @@
       "p2": "Token tylko do odczytu użyty do analizy nie może więc niczego uszkodzić, a ty nie musisz udostępniać całego konta tylko dlatego, że skrypt potrzebuje listy. Wartość tokena wyświetla się dokładnie raz i nigdy więcej, dlatego należy od razu skopiować ją we właściwe miejsce.",
       "p3": "Pod listą znajdują się gotowe polecenia połączenia dla popularnych klientów, z wstawionym adresem i tokenem. Kopiujesz jedną linijkę i masz połączenie, zamiast składać plik konfiguracyjny. Token można w każdej chwili unieważnić."
     },
-    "where": "Ustawienia, Tokeny dostępu."
+    "where": "Ustawienia, Połączenia."
   },
   "eigene-schluessel": {
     "title": "Własne klucze dostawców dla każdego obszaru roboczego",
@@ -1184,7 +1184,7 @@
       "p2": "Rozwiązanie to stworzono z myślą o sytuacji, gdy kilka osób lub projektów dzieli jedną instalację i każda strona ponosi własne koszty. Bez własnego klucza po cichu używany jest klucz instalacji, więc nikt nie musi niczego konfigurować.",
       "p3": "Klucz jest przechowywany w postaci zaszyfrowanej i nie można go później odczytać, nawet z poziomu administracji; można go jedynie zastąpić lub usunąć. Klucz do odszyfrowania znajduje się w konfiguracji serwera, a nie w bazie danych."
     },
-    "where": "Ustawienia obszaru roboczego."
+    "where": "W ustawieniach w sekcji Obszar roboczy, w grupie SI."
   },
   "einstellungen-geltungsbereiche": {
     "title": "Ustawienia dla instalacji i poszczególnych obszarów roboczych",
@@ -1194,7 +1194,7 @@
       "p2": "Nie każdy klucz można nadpisać i jest to zamierzone: to, jaki model odpowiada w obszarze roboczym, jest jego sprawą, ale to, jak długo przechowywane są logi – już nie. Przypisanie kluczy do poszczególnych poziomów jest stałe.",
       "p3": "Niektóre wartości mają górny limit, który działa kaskadowo w dół: jeśli obniżysz budżet na przebieg dla instalacji, zmieni się on we wszystkich obszarach roboczych, nawet w tych z wcześniej ustawioną wyższą wartością. Inaczej limit nie byłby limitem. Dane logowania celowo nie są ustawieniem i nigdy nie pojawiają się na tej liście."
     },
-    "where": "Administracja, Ustawienia lub ustawienia obszaru roboczego."
+    "where": "Administracja, Ustawienia lub w ustawieniach w sekcji Obszar roboczy, w grupie Konfiguracja."
   },
   "nutzerverwaltung": {
     "title": "Konta i role",
@@ -1349,6 +1349,17 @@
       "p3": "Podłączanie, modyfikowanie i udostępnianie jest możliwe tylko z poziomu przeglądarki przez osobę będącą właścicielem – nigdy za pomocą tokena ani przez agenta. Dzięki temu żadna AI nie może samodzielnie zdobyć nowych narzędzi.",
       "p4": "W trakcie przebiegu narzędzie nazywa się mcp_kürzel__name. Jego odpowiedź jest traktowana jako treść zewnętrzna: przy włączonym ustawieniu „Zapis po treściach zewnętrznych” AI nie może po niej niczego zmieniać, podobnie jak po stronie internetowej. Jeśli dane należą do ciebie, na przykład we własnej aplikacji zdrowotnej, włącz przy serwerze opcję „Odpowiedzi to moje własne dane”: wtedy AI może po odczycie nadal pisać, także z powrotem na ten serwer. Narzędzie do zapisu działa tylko w bezpośrednim trybie zapisu, a profil agenta musi zezwalać na obszar „Zewnętrzne narzędzia”. Jeśli zablokujesz narzędzie lub wyłączysz serwer, kolejne wywołanie w ramach trwającego przebiegu nie dojdzie już do skutku. W inspektorze przebiegu każde wywołanie ma podany czas trwania oraz powód, jeśli zostało odrzucone lub zakończyło się błędem."
     },
-    "where": "Ustawienia obszaru roboczego, zakładka Zewnętrzne narzędzia. Przełącznik dla całej instancji znajduje się w: Administracja, Ustawienia, sekcja AI."
+    "where": "W ustawieniach w sekcji Obszar roboczy, w grupie Zewnętrzne narzędzia. Przełącznik dla całej instancji znajduje się w Administracja, Ustawienia, sekcja SI."
+  },
+  "einstellungen-an-einem-ort": {
+    "title": "Wszystkie ustawienia w jednym oknie nad stroną",
+    "summary": "Konto, obszar roboczy i administracja znajdują się w jednym oknie ustawień, które nakłada się na aktualnie otwartą stronę. Po lewej stronie widać grupy, na górze pole wyszukiwania, a każda grupa ma swój własny adres.",
+    "details": {
+      "p1": "Okno otworzysz w menu konta w sekcji „Ustawienia”, za pomocą ikony koła zębatego na stronie głównej obszaru roboczego lub w palecie poleceń, gdzie każda grupa ma własne polecenie. Strona pod spodem pozostaje nienaruszona. Klawisz Escape lub przycisk Wstecz w przeglądarce zamykają okno, powracając dokładnie do miejsca, w którym przerwano pracę.",
+      "p2": "Każda grupa ma swój adres: do adresu strony dodawane jest ?einstellungen= oraz nazwa grupy, na przykład ?einstellungen=language dla języka i strefy czasowej. W ten sposób grupę można zapisać w zakładkach lub komuś przesłać. Dawne adresy pod /einstellungen oraz ustawienia obszaru roboczego nadal działają i otwierają okno na odpowiedniej grupie.",
+      "p3": "Widoczne są tylko te grupy, do których masz uprawnienia: członkowie od roli administratora w obszarze roboczym, narzędzia zewnętrzne tylko z rolą właściciela, a administracja tylko z uprawnieniami administratora instalacji. Wyszukiwarka znajduje grupy, pojedyncze ustawienia oraz sekcje pozostające osobnymi stronami, takie jak automatyzacje, szablony czy wygląd mapy wiedzy.",
+      "p4": "Na telefonie okno wypełnia cały ekran: najpierw lista grup, potem sama grupa, a przycisk „Wszystkie ustawienia” przenosi z powrotem do listy."
+    },
+    "where": "Menu konta, pozycja „Ustawienia”. Albo Strg + K i wpisanie nazwy grupy."
   }
 }

@@ -664,13 +664,13 @@
   },
   "werkzeugauswahl-jev": {
     "title": "La IA encuentra sus herramientas incluso sin palabras clave exactas",
-    "summary": "Antes de cada ejecución, el modelo de decisión Jev determina qué áreas de herramientas necesita la IA. De este modo, obtiene las herramientas de imagen incluso con «¿Qué muestra este boceto?» o una pregunta en japonés, y el archivo con «puedes eliminar las cosas vacías».",
+    "summary": "Jev es un modelo de decisión pequeño y rápido que estima antes de cada ejecución qué herramientas se van a necesitar. Así, la IA recibe las herramientas de imagen también con «¿Qué muestra este boceto?» o con una pregunta en japonés, y el archivo con «puedes eliminar las cosas vacías».",
     "details": {
       "p1": "Hasta ahora, una lista de palabras clave en alemán e inglés seleccionaba qué herramientas se le ofrecían a la IA. En una prueba con once idiomas, con ese método solo recibía todo lo necesario en 14 de cada 100 casos, mientras que con Jev lo conseguía en 98 de cada 100. Esto importa, porque el modelo estándar rara vez recarga por sí mismo una herramienta que falta y suele afirmar que no hay ninguna imagen o que no hay nada que hacer.",
       "p2": "Para ello, tus últimos mensajes se envían a OpenRouter y nada más: ni páginas ni archivos adjuntos. Si Jev no responde en 1,5 segundos o da un error, la ejecución seleccionará las herramientas por palabras clave como antes y se iniciará igualmente. Si la página abierta contiene una imagen o un PDF, se incluirán las herramientas de adjuntos, y todo lo que la IA haya usado en las últimas ejecuciones de la misma conversación se seguirá ofreciendo.",
       "p3": "Qué método se ha elegido figura en el cronograma de cada ejecución. Puedes desactivarlo en los ajustes de IA, para toda la instalación o solo para un espacio de trabajo, y con permisos de administración también a través de MCP. Esto no es un permiso: lo que la IA puede hacer sigue dependiendo de los selectores de herramientas y de tus propios derechos."
     },
-    "where": "Ajustes en IA, interruptor «Seleccionar herramientas con Jev». Durante la ejecución: en la cronología del inspector de ejecuciones."
+    "where": "En los ajustes dentro de Espacio de trabajo, grupo Configuración, sección IA: interruptor «Seleccionar herramientas con Jev». Para toda la instalación, en Administración. En la ejecución: la línea de tiempo en el inspector de ejecución."
   },
   "kompaktierung": {
     "title": "Las conversaciones largas siguen adelante",
@@ -986,7 +986,7 @@
       "p2": "La memoria es un espacio de trabajo propio que designas como tal en su configuración. Esta separación es la clave: el conocimiento seleccionado lo escribe una persona porque merece la pena; los apuntes se generan automáticamente y pueden limpiarse o descartarse en cualquier momento. Por eso, unos apuntes automáticos nunca deben mezclarse con el área seleccionada.",
       "p3": "Solo se almacena una síntesis, nunca la conversación en bruto. Las notas son páginas comunes: se pueden leer, buscar, editar y eliminar como cualquier otra cosa, y lo que un agente puede hacer depende de su pertenencia al espacio de trabajo, no de su token."
     },
-    "where": "Un espacio de trabajo se designa como memoria en su configuración."
+    "where": "Un espacio de trabajo se define como memoria en los ajustes, en Espacio de trabajo, grupo General."
   },
   "von-mir-geteilt": {
     "title": "Todo lo compartido por mí en un solo lugar",
@@ -1018,7 +1018,7 @@
       "p2": "En el menú de cuenta arriba a la derecha, «Usos compartidos», pestaña «Compartido conmigo», lleva a la dirección contraria: páginas que alguien ha compartido contigo a través de distintos espacios de trabajo. No aparecen en ningún árbol de páginas, ya que no eres miembro de ellos; esta lista es la única forma de acceder. Una página así se abre sin la navegación del espacio de trabajo ajeno: ves la página y, si se incluyó el área, lo que cuelga debajo de ella, nada más.",
       "p3": "Lo que alcanzas mediante un uso compartido no lo puedes volver a compartir. Una página compartida no tiene botón «Compartir»: quién puede reenviarla es una cuestión que corresponde al espacio de trabajo de donde procede."
     },
-    "where": "Menú de cuenta arriba a la derecha, «Usos compartidos», pestaña «Compartido conmigo»; configuración del espacio de trabajo, «Abrir usos compartidos»."
+    "where": "Menú de cuenta arriba a la derecha, «Uso compartido», pestaña «Compartido conmigo»; en los ajustes, en Espacio de trabajo, grupo General, «Uso compartido»."
   },
   "projekt-archive": {
     "title": "Importar y exportar un proyecto como ZIP",
@@ -1174,7 +1174,7 @@
       "p2": "Así, un token de solo lectura destinado a generar un informe no puede estropear nada, y no necesitas comprometer toda tu cuenta solo porque un script necesite consultar una lista. El valor del token se muestra exactamente una vez y nunca más, de modo que conviene copiarlo de inmediato en el lugar adecuado.",
       "p3": "Debajo de la lista se encuentran los comandos de conexión preparados para los clientes más comunes, ya con la dirección y el token insertados. Solo tienes que copiar una línea para conectarte, sin necesidad de armar un archivo de configuración a mano. Un token se puede revocar en cualquier momento."
     },
-    "where": "Ajustes, Tokens de acceso."
+    "where": "Ajustes, Conexiones."
   },
   "eigene-schluessel": {
     "title": "Claves de proveedor propias por cada espacio de trabajo",
@@ -1184,7 +1184,7 @@
       "p2": "Está pensado para casos en los que varias personas o proyectos comparten una misma instalación y cada parte asume sus propios costes. Si no se indica una clave propia, se utilizará automáticamente la de la instalación, de modo que nadie tiene la obligación de configurar nada.",
       "p3": "La clave se almacena de forma cifrada y ya no se puede volver a leer, ni siquiera desde la administración; únicamente es posible sustituirla o eliminarla. La clave necesaria para descifrarla reside en la configuración del servidor y nunca en la base de datos."
     },
-    "where": "Los ajustes de un espacio de trabajo."
+    "where": "En los ajustes, en Espacio de trabajo, grupo IA."
   },
   "einstellungen-geltungsbereiche": {
     "title": "Ajustes para la instalación y por espacio de trabajo",
@@ -1194,7 +1194,7 @@
       "p2": "No todas las claves admiten excepciones, y es deliberado: qué modelo responde en un espacio de trabajo es asunto suyo, pero cuánto tiempo se conservan los registros no lo es. El nivel al que pertenece cada clave está estrictamente definido.",
       "p3": "Ciertos valores cuentan con un tope que restringe los niveles inferiores: si reduces el presupuesto por ejecución para la instalación, todos los espacios de trabajo se adaptan, incluso los que tenían fijado un valor más alto. De lo contrario, un límite no sería tal. Las credenciales de acceso no se consideran ajustes y nunca figuran en esta lista."
     },
-    "where": "Administración, Ajustes, o los ajustes de un espacio de trabajo."
+    "where": "Administración, Ajustes, o en los ajustes, en Espacio de trabajo, grupo Configuración."
   },
   "nutzerverwaltung": {
     "title": "Cuentas y roles",
@@ -1349,6 +1349,17 @@
       "p3": "Conectar, modificar y habilitar solo se puede hacer desde el navegador teniendo la propiedad del espacio, nunca con un token y nunca mediante un agente. Así, ninguna IA puede conseguir nuevas herramientas por sí misma.",
       "p4": "Durante la ejecución, una herramienta se llama mcp_abreviatura__nombre. Su respuesta se considera contenido externo: después, la IA no puede modificar nada bajo el ajuste «Escribir tras contenido externo», igual que tras una página web. Si los datos te pertenecen, por ejemplo en tu propia aplicación de salud, activa en el servidor «Las respuestas son mis propios datos»: así la IA podrá seguir escribiendo tras leer, incluso de vuelta en este servidor. Una herramienta de escritura solo funciona en el modo de escritura directa, y el perfil de agente debe permitir el área «Herramientas externas». Si bloqueas una herramienta o desactivas el servidor, la siguiente llamada de una ejecución en curso ya no saldrá. En el inspector de ejecuciones aparece cada llamada con su duración y el motivo si fue rechazada o falló."
     },
-    "where": "Configuración del espacio de trabajo, pestaña Herramientas externas. El interruptor para toda la instancia está en Administración, Configuración, sección IA."
+    "where": "En los ajustes, en Espacio de trabajo, grupo Herramientas externas. El interruptor para toda la instancia está en Administración, Ajustes, sección IA."
+  },
+  "einstellungen-an-einem-ort": {
+    "title": "Todos los ajustes en una ventana sobre la página",
+    "summary": "Cuenta, espacio de trabajo y administración se encuentran en una ventana de ajustes que se superpone a la página en la que estás. A la izquierda los grupos, arriba un campo de búsqueda, y cada grupo tiene su propia dirección.",
+    "details": {
+      "p1": "Abres la ventana en el menú de cuenta bajo «Ajustes», con la rueda dentada en la página de inicio de un espacio de trabajo o en la paleta de comandos, donde cada grupo tiene su propio comando. La página que está debajo permanece abierta. Escape o el botón atrás del navegador cierran la ventana de nuevo y vuelves exactamente a donde estabas.",
+      "p2": "Cada grupo tiene una dirección: a la dirección de la página se le añade ?einstellungen= y el nombre del grupo, por ejemplo ?einstellungen=language para el idioma y la hora. Así se puede guardar un grupo en marcadores o enviárselo a alguien. Las direcciones antiguas bajo /einstellungen y los ajustes de un espacio de trabajo siguen funcionando y abren la ventana en el grupo correspondiente.",
+      "p3": "Solo ves los grupos que tienes permiso para usar: miembros a partir del rol de administración en el espacio de trabajo, las herramientas externas solo con rol de propiedad, la administración solo con permisos de administración para la instalación. La búsqueda encuentra grupos, ajustes individuales y las secciones que siguen siendo páginas propias, como automatizaciones, plantillas o el aspecto del mapa de conocimiento.",
+      "p4": "En el teléfono, la ventana ocupa toda la pantalla: primero la lista de grupos, luego el grupo, y «Todos los ajustes» te lleva de vuelta a la lista."
+    },
+    "where": "Menú de cuenta, elemento «Ajustes». O pulsa Strg + K y escribe el nombre del grupo."
   }
 }

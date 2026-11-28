@@ -664,13 +664,13 @@
   },
   "werkzeugauswahl-jev": {
     "title": "A IA encontra suas ferramentas mesmo sem palavras-chave correspondentes",
-    "summary": "Antes de cada execução, o modelo de decisão Jev decide de quais áreas de ferramentas a IA precisa. Assim, ela obtém as ferramentas de imagem mesmo com „O que este esboço mostra?” ou uma pergunta em japonês, e o arquivo com „pode remover as coisas vazias”.",
+    "summary": "O Jev é um modelo de decisão pequeno e rápido que estima quais ferramentas serão necessárias antes de cada execução. Assim, a IA obtém as ferramentas de imagem mesmo com “O que este esboço mostra?” ou uma pergunta em japonês, e o arquivo com “você pode remover os itens vazios”.",
     "details": {
       "p1": "Até agora, uma lista de palavras-chave em alemão e inglês escolhia quais ferramentas eram oferecidas à IA. Em um teste com onze idiomas, ela recebia com isso tudo o que precisava em apenas 14 de 100 casos; com o Jev, em 98 de 100. Isso faz diferença porque o modelo padrão raramente recarrega uma ferramenta ausente por conta própria e prefere afirmar que não há imagem ou nada para fazer.",
       "p2": "Para isso, suas últimas mensagens são enviadas ao OpenRouter e nada mais: nenhuma página, nenhum anexo. Se Jev não responder dentro de 1,5 segundo ou retornar um erro, a execução fará a seleção por palavras-chave como antes e iniciará mesmo assim. Se a página aberta tiver uma imagem ou um PDF, as ferramentas de anexo são incluídas, e o que a IA usou nas últimas execuções da mesma conversa continua disponível.",
       "p3": "Qual método fez a escolha aparece na linha do tempo de cada execução. Você pode desativá-lo nas configurações de IA, para toda a instalação ou apenas para um espaço de trabalho, e com privilégios de administrador também via MCP. Isso não é uma permissão: o que a IA pode fazer continua sendo decidido pelos seletores de ferramentas e pelas suas próprias permissões."
     },
-    "where": "Configurações sob IA, opção „Selecionar ferramentas com Jev”. Na execução: a linha do tempo no inspetor de execução."
+    "where": "Nas configurações em espaço de trabalho, grupo Configuração, seção IA: opção “Selecionar ferramentas com Jev”. Para toda a instalação em administração. Na execução: a linha do tempo no inspetor de execução."
   },
   "kompaktierung": {
     "title": "Conversas longas continuam funcionando",
@@ -986,7 +986,7 @@
       "p2": "A memória é um espaço de trabalho próprio que você define como tal nas configurações dele. A separação é a chave: o conhecimento curado é escrito por pessoas porque vale a pena; registros de sessão surgem automaticamente e podem ser limpos ou descartados a qualquer momento. Por isso, um registro automático nunca deve ir para a área curada.",
       "p3": "O que fica salvo é uma síntese, nunca a conversa bruta. As notas são páginas normais, ou seja, legíveis, pesquisáveis, editáveis e excluíveis como qualquer outra coisa, e o que um agente pode fazer depende de sua participação no espaço de trabalho, não de seu token."
     },
-    "where": "Um espaço de trabalho é definido como memória em suas configurações."
+    "where": "Um espaço de trabalho é definido como memória nas configurações em Espaço de trabalho, grupo Geral."
   },
   "von-mir-geteilt": {
     "title": "Tudo o que compartilhei em um só lugar",
@@ -1018,7 +1018,7 @@
       "p2": "No menu da conta no canto superior direito, „Compartilhamentos“, na aba „Compartilhado comigo“, leva ao sentido inverso: páginas que alguém concedeu a você em diferentes espaços de trabalho. Elas não aparecem em nenhuma árvore de páginas, já que você não é membro por lá; essa lista é o único caminho até elas. Uma página desse tipo abre sem a navegação do espaço de trabalho alheio: você vê a página e, se a área veio junto, o que estiver abaixo dela – nada mais.",
       "p3": "Você não pode repassar o que acessa por meio de um compartilhamento. Uma página compartilhada não tem botão „Compartilhar“: quem pode repassá-la é uma decisão do espaço de trabalho de onde ela veio."
     },
-    "where": "Menu da conta no canto superior direito, „Compartilhamentos“, aba „Compartilhado comigo“; configurações do espaço de trabalho, „Abrir compartilhamentos“."
+    "where": "Menu da conta no canto superior direito, „Compartilhamentos“, aba „Compartilhado comigo“; nas configurações em Espaço de trabalho, grupo Geral, „Compartilhamentos“."
   },
   "projekt-archive": {
     "title": "Importar e exportar um projeto como ZIP",
@@ -1174,7 +1174,7 @@
       "p2": "Assim, um token de somente leitura para uma análise não tem como quebrar nada, e você não precisa entregar a conta inteira só porque um script precisa de uma lista. O valor do token é exibido exatamente uma vez e nunca mais; portanto, copie-o imediatamente para o local correto.",
       "p3": "Abaixo da lista, encontram-se os comandos de conexão prontos para os clientes mais comuns, já preenchidos com o endereço e o token. Você copia uma linha e já se conecta, sem precisar caçar arquivos de configuração. Um token pode ser revogado a qualquer momento."
     },
-    "where": "Configurações, Tokens de acesso."
+    "where": "Configurações, Conexões."
   },
   "eigene-schluessel": {
     "title": "Chaves próprias de provedor por espaço de trabalho",
@@ -1184,7 +1184,7 @@
       "p2": "Isso foi pensado para casos em que várias pessoas ou vários projetos compartilham uma instalação e cada lado arca com seus próprios custos. Sem uma chave própria, a chave da instalação é usada silenciosamente; ninguém precisa configurar nada obrigatoriamente.",
       "p3": "A chave é gravada criptografada e não pode mais ser lida depois, nem mesmo pela administração; você só pode substituí-la ou removê-la. A chave de descriptografia fica na configuração do servidor, e não no banco de dados."
     },
-    "where": "As configurações de um espaço de trabalho."
+    "where": "Nas configurações em Espaço de trabalho, grupo IA."
   },
   "einstellungen-geltungsbereiche": {
     "title": "Configurações da instalação e por espaço de trabalho",
@@ -1194,7 +1194,7 @@
       "p2": "Nem toda chave pode ser substituída, e isso é intencional: qual modelo responde em um espaço de trabalho é assunto dele; por quanto tempo os logs são mantidos, não é. A qual nível cada chave pertence já está predefinido.",
       "p3": "Certos valores têm um limite superior que se aplica para baixo: se você reduzir o orçamento por execução na instalação, todos os espaços de trabalho acompanham, até mesmo aqueles que antes tinham um valor maior configurado. Do contrário, um limite não seria um limite. Dados de acesso deliberadamente não são uma configuração e nunca aparecem nessa lista."
     },
-    "where": "Administração, Configurações, ou as configurações de um espaço de trabalho."
+    "where": "Administração, Configurações, ou nas configurações em Espaço de trabalho, grupo Configuração."
   },
   "nutzerverwaltung": {
     "title": "Contas e funções",
@@ -1349,6 +1349,17 @@
       "p3": "Conectar, alterar e liberar só é possível para quem é proprietário no navegador, nunca com um token e nunca por meio de um agente. Assim, nenhuma IA pode obter novas ferramentas por conta própria.",
       "p4": "Durante a execução, uma ferramenta se chama mcp_kürzel__name. Sua resposta é considerada conteúdo externo: depois dela, sob a configuração „Gravar após conteúdo externo“, a IA não pode mais alterar nada, como aconteceria após uma página web. Se os dados forem seus, por exemplo, no seu próprio aplicativo de saúde, ative a opção „As respostas são meus próprios dados“ no servidor: assim, a IA poderá continuar gravando após a leitura, inclusive de volta para este servidor. Uma ferramenta de escrita só funciona no modo de escrita direta, e um perfil de agente precisa permitir a área „Ferramentas externas“. Se você bloquear uma ferramenta ou desativar o servidor, a próxima chamada de uma execução em andamento já não sairá. No inspetor de execução, cada chamada é listada com duração e o motivo, caso tenha sido rejeitada ou falhado."
     },
-    "where": "Configurações do espaço de trabalho, aba Ferramentas externas. A opção para toda a instância fica em Administração, Configurações, seção IA."
+    "where": "Nas configurações em Espaço de trabalho, grupo Ferramentas externas. O interruptor para toda a instância fica em Administração, Configurações, seção IA."
+  },
+  "einstellungen-an-einem-ort": {
+    "title": "Todas as configurações em uma janela sobre a página",
+    "summary": "Conta, espaço de trabalho e administração ficam em uma janela de configurações sobreposta à página onde você está. À esquerda ficam os grupos, acima há um campo de busca, e cada grupo tem seu próprio endereço.",
+    "details": {
+      "p1": "Você abre a janela no menu da conta em “Configurações”, com a engrenagem na página inicial de um espaço de trabalho ou na paleta de comandos, onde cada grupo tem seu próprio comando. A página de fundo permanece visível. O Escape ou o botão voltar do navegador fecham a janela novamente, e você continua exatamente onde estava.",
+      "p2": "Cada grupo tem um endereço: ao endereço da página adiciona-se ?einstellungen= e o nome do grupo, por exemplo ?einstellungen=language para idioma e hora. Dessa forma, é possível salvar um grupo como favorito ou enviá-lo para alguém. Os endereços antigos em /einstellungen e as configurações de um espaço de trabalho continuam funcionando e abrem a janela no grupo correspondente.",
+      "p3": "Você vê apenas os grupos que tem permissão para usar: membros a partir da função de administração no espaço de trabalho, as ferramentas externas apenas com permissão de proprietário e a administração somente com privilégios de administrador da instalação. A busca encontra grupos, configurações individuais e as seções que continuam sendo páginas próprias, como automações, modelos ou a aparência do mapa de conhecimento.",
+      "p4": "No celular, a janela ocupa a tela inteira: primeiro a lista de grupos, depois o grupo, e “Todas as configurações” leva de volta à lista."
+    },
+    "where": "Menu da conta, item “Configurações”. Ou Strg + K e digitar o nome do grupo."
   }
 }

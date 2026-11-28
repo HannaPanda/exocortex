@@ -664,13 +664,13 @@
   },
   "werkzeugauswahl-jev": {
     "title": "L’IA trova i suoi strumenti anche senza parole chiave corrispondenti",
-    "summary": "Prima di ogni esecuzione, il modello decisionale Jev determina quali aree di strumenti servono all’IA. In questo modo riceve gli strumenti per le immagini anche con «Cosa mostra questo schizzo?» o con una domanda in giapponese, e l’archivio con «puoi rimuovere gli elementi vuoti».",
+    "summary": "Jev è un modello decisionale piccolo e rapido che stima quali strumenti serviranno prima di ogni esecuzione. In questo modo l’IA ottiene gli strumenti per le immagini anche con frasi come «Cosa mostra questo schizzo?» o con una domanda in giapponese, e l’archivio con «puoi rimuovere le cose vuote».",
     "details": {
       "p1": "In precedenza, un elenco di parole chiave in tedesco e inglese stabiliva quali strumenti proporre all’IA. In un test con undici lingue, questo metodo forniva tutto il necessario solo in 14 casi su 100, contro i 98 su 100 con Jev. Questo fa la differenza, perché il modello predefinito ricarica raramente uno strumento mancante da solo e tende piuttosto a sostenere che non ci sia alcuna immagine o nulla da fare.",
       "p2": "A questo scopo, solo i tuoi ultimi messaggi vengono inviati a OpenRouter e nient’altro: nessuna pagina, nessun allegato. Se Jev non risponde entro 1,5 secondi o restituisce un errore, l’esecuzione seleziona come prima in base alle parole chiave e si avvia comunque. Se la pagina aperta contiene un’immagine o un PDF, gli strumenti per gli allegati vengono inclusi, e ciò che l’IA ha utilizzato nelle ultime esecuzioni della stessa conversazione rimane disponibile.",
       "p3": "Il metodo che ha effettuato la selezione è indicato nella cronologia di ogni esecuzione. Puoi disattivarlo nelle impostazioni dell’IA, per l’intera installazione o solo per un’area di lavoro, e con privilegi di amministratore anche tramite MCP. Non si tratta di un’autorizzazione: ciò che l’IA può fare continua a essere stabilito dagli interruttori degli strumenti e dai tuoi permessi."
     },
-    "where": "Impostazioni alla voce IA, opzione «Seleziona strumenti con Jev». Nell’esecuzione: la cronologia nell’ispettore di esecuzione."
+    "where": "Nelle impostazioni sotto Area di lavoro, gruppo Configurazione, sezione IA: interruttore «Seleziona strumenti con Jev». Per l’intera installazione sotto Amministrazione. Durante l’esecuzione: la cronologia nell’ispettore di esecuzione."
   },
   "kompaktierung": {
     "title": "Le conversazioni lunghe continuano senza interrompersi",
@@ -986,7 +986,7 @@
       "p2": "La memoria è un’area di lavoro a sé stante, definita tale nelle sue impostazioni. La separazione è il punto fondamentale: la conoscenza curata è scritta da una persona perché ne vale la pena, mentre gli appunti di lavoro nascono automaticamente e possono essere riordinati o eliminati in qualsiasi momento. Un appunto automatico, quindi, non appartiene mai all’area curata.",
       "p3": "Viene salvata solo una sintesi, mai la conversazione grezza. Le note sono normali pagine, quindi leggibili, ricercabili, modificabili ed eliminabili come tutto il resto; ciò che un agente può fare è stabilito dalla sua appartenenza all’area di lavoro e non dal suo token."
     },
-    "where": "Un’area di lavoro viene definita come memoria nelle sue impostazioni."
+    "where": "Un’area di lavoro viene designata come memoria nelle impostazioni sotto Area di lavoro, gruppo Generale."
   },
   "von-mir-geteilt": {
     "title": "Tutto ciò che ho condiviso, in un unico posto",
@@ -1018,7 +1018,7 @@
       "p2": "Nel menu dell’account in alto a destra, «Condivisioni», scheda «Condivisi con me», mostra la direzione opposta: le pagine che qualcuno ti ha concesso, attraverso diverse aree di lavoro. Non compaiono in nessun albero delle pagine, poiché lì non hai l’accesso come membro; questo elenco è l’unico modo per raggiungerle. Una pagina di questo tipo si apre senza la navigazione dell’area di lavoro esterna: vedi la pagina e, se l’intera sezione è stata inclusa, ciò che contiene al di sotto, nient’altro.",
       "p3": "Ciò a cui accedi tramite una condivisione non può essere ricondiviso. Una pagina condivisa non ha il pulsante «Condividi»: stabilire chi può distribuirla ulteriormente spetta all’area di lavoro da cui proviene."
     },
-    "where": "Menu dell’account in alto a destra, «Condivisioni», scheda «Condivisi con me»; impostazioni dell’area di lavoro, «Apri condivisioni»."
+    "where": "Menu dell’account in alto a destra, «Condivisioni», scheda «Condivisi con me»; nelle impostazioni sotto Area di lavoro, gruppo Generale, «Condivisioni»."
   },
   "projekt-archive": {
     "title": "Importare ed esportare un progetto come ZIP",
@@ -1174,7 +1174,7 @@
       "p2": "Un token di sola lettura per un’analisi non può quindi danneggiare nulla, e non devi cedere l’intero account solo perché a uno script serve un elenco. Il valore del token viene mostrato una sola volta, poi mai più, quindi copialo subito nel posto giusto.",
       "p3": "Sotto l’elenco trovi i comandi di connessione già pronti per i client più comuni, con indirizzo e token già inseriti. Basta copiare una riga e la connessione è stabilita, senza dover cercare file di configurazione. Un token può essere revocato in qualsiasi momento."
     },
-    "where": "Impostazioni, Token di accesso."
+    "where": "Impostazioni, Connessioni."
   },
   "eigene-schluessel": {
     "title": "Chiavi fornitore dedicate per ciascuna area di lavoro",
@@ -1184,7 +1184,7 @@
       "p2": "Questa opzione è pensata per i casi in cui più persone o più progetti condividono la stessa installazione e ciascuna parte sostiene i propri costi. Senza una chiave dedicata viene usata silenziosamente quella dell’installazione, quindi nessuno ha l’obbligo di configurare nulla.",
       "p3": "La chiave viene memorizzata in modo crittografato e successivamente non è più leggibile, nemmeno dall’amministrazione; puoi solo sostituirla o rimuoverla. La chiave per la decrittografia si trova nella configurazione del server e non nel database."
     },
-    "where": "Le impostazioni di un’area di lavoro."
+    "where": "Nelle impostazioni sotto Area di lavoro, gruppo IA."
   },
   "einstellungen-geltungsbereiche": {
     "title": "Impostazioni per l’installazione e per area di lavoro",
@@ -1194,7 +1194,7 @@
       "p2": "Non tutte le chiavi sono sovrascrivibili, e questo è intenzionale: quale modello risponda in un’area di lavoro riguarda quell’area, ma la durata di conservazione dei log no. La suddivisione delle chiavi tra i vari livelli è fissa.",
       "p3": "Alcuni valori hanno un limite massimo che si ripercuote verso il basso: se riduci il budget per esecuzione dell’installazione, tutte le aree di lavoro si adeguano, comprese quelle che avevano impostato un valore più alto. Altrimenti non sarebbe un limite. Le credenziali non sono volutamente considerate un’impostazione e non compaiono mai in questo elenco."
     },
-    "where": "Amministrazione, Impostazioni, oppure le impostazioni di un’area di lavoro."
+    "where": "Amministrazione, Impostazioni, oppure nelle impostazioni sotto Area di lavoro, gruppo Configurazione."
   },
   "nutzerverwaltung": {
     "title": "Account e ruoli",
@@ -1349,6 +1349,17 @@
       "p3": "Il collegamento, la modifica e l’abilitazione sono possibili solo come proprietari nel browser, mai tramite token e mai da parte di un agente. In questo modo nessuna IA può procurarsi da sola nuovi strumenti.",
       "p4": "Durante l’esecuzione, uno strumento si chiama mcp_abbreviazione__nome. La sua risposta è considerata contenuto esterno: dopodiché l’IA non può più apportare modifiche in base all’impostazione «Scrittura dopo contenuti esterni», proprio come dopo una pagina web. Se i dati ti appartengono, ad esempio nella tua app per la salute personale, attiva l’opzione «Le risposte sono dati personali» per il server: in questo modo l’IA può continuare a scrivere dopo la lettura, anche di nuovo su questo server. Uno strumento di scrittura funziona solo in modalità di scrittura diretta, e il profilo dell’agente deve consentire l’area «Strumenti esterni». Se blocchi uno strumento o disattivi il server, già la chiamata successiva di un’esecuzione in corso non verrà più inviata. Nell’ispettore di esecuzione ogni chiamata è indicata con durata e motivo, se è stata rifiutata o non è riuscita."
     },
-    "where": "Impostazioni dell’area di lavoro, scheda Strumenti esterni. L’opzione per l’intera istanza si trova in Amministrazione, Impostazioni, sezione IA."
+    "where": "Nelle impostazioni sotto Area di lavoro, gruppo Strumenti esterni. L’interruttore per l’intera istanza si trova sotto Amministrazione, Impostazioni, sezione IA."
+  },
+  "einstellungen-an-einem-ort": {
+    "title": "Tutte le impostazioni in una finestra sopra la pagina",
+    "summary": "Account, area di lavoro e amministrazione si trovano in una finestra delle impostazioni che si sovrappone alla pagina in cui ti trovi. A sinistra i gruppi, in alto un campo di ricerca, e ogni gruppo ha un proprio indirizzo.",
+    "details": {
+      "p1": "Apri la finestra dal menu dell’account sotto «Impostazioni», con l’ingranaggio nella pagina iniziale di un’area di lavoro o dalla tavolozza dei comandi, dove ogni gruppo ha il proprio comando. La pagina sottostante rimane invariata. Con Esc o con il pulsante Indietro del browser chiudi la finestra e ti ritrovi esattamente dove ti trovavi.",
+      "p2": "Ogni gruppo ha un indirizzo: all’indirizzo della pagina viene aggiunto ?einstellungen= seguito dal nome del gruppo, ad esempio ?einstellungen=language per lingua e ora. In questo modo puoi salvare un gruppo tra i preferiti o inviarlo a qualcuno. I vecchi indirizzi sotto /einstellungen e le impostazioni di un’area di lavoro continuano a funzionare e aprono la finestra direttamente sul gruppo corrispondente.",
+      "p3": "Vedi solo i gruppi che puoi utilizzare: i membri a partire dal ruolo di amministratore nell’area di lavoro, gli strumenti esterni solo con il ruolo di proprietario, l’amministrazione solo con i permessi di amministrazione per l’installazione. La ricerca trova gruppi, singole impostazioni e le sezioni che restano pagine separate, come le automazioni, i modelli o l’aspetto della mappa di conoscenza.",
+      "p4": "Sullo smartphone la finestra riempie l’intero schermo: prima l’elenco dei gruppi, poi il gruppo selezionato, e «Tutte le impostazioni» riporta all’elenco."
+    },
+    "where": "Menu dell’account, voce «Impostazioni». Oppure premi Ctrl + K e digita il nome del gruppo."
   }
 }

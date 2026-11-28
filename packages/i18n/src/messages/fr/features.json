@@ -664,13 +664,13 @@
   },
   "werkzeugauswahl-jev": {
     "title": "L’IA trouve ses outils même sans mots-clés correspondants",
-    "summary": "Avant chaque exécution, le modèle de décision Jev détermine les catégories d’outils dont l’IA a besoin. Ainsi, elle obtient les outils d’image même avec « Que montre ce croquis ? » ou une question en japonais, et les archives avec « tu peux supprimer les éléments vides ».",
+    "summary": "Jev est un petit modèle de décision rapide qui évalue avant chaque exécution les outils nécessaires. Ainsi, l’IA reçoit les outils d’image même pour « Que montre ce croquis ? » ou une question en japonais, et l’archive pour « tu peux supprimer les éléments vides ».",
     "details": {
       "p1": "Jusqu’à présent, une liste de mots-clés allemands et anglais sélectionnait les outils proposés à l’IA. Lors d’un test portant sur onze langues, elle n’obtenait ainsi tout ce dont elle avait besoin que dans 14 cas sur 100, contre 98 sur 100 avec Jev. Cela compte, car le modèle par défaut recharge rarement un outil manquant de lui-même et a plutôt tendance à prétendre qu’il n’y a pas d’image ou rien à faire.",
       "p2": "Pour cela, seuls tes derniers messages sont envoyés à OpenRouter, rien d’autre : aucune page, aucune pièce jointe. Si Jev ne répond pas dans un délai de 1,5 seconde ou renvoie une erreur, l’exécution sélectionne les outils par mots-clés comme auparavant et se lance quand même. Si la page ouverte contient une image ou un PDF, les outils pour pièces jointes sont inclus, et ce que l’IA a utilisé lors des dernières exécutions de la même conversation reste proposé.",
       "p3": "La méthode choisie est indiquée dans la chronologie de chaque exécution. Tu peux la désactiver dans les paramètres d’IA, pour toute l’installation ou seulement pour un espace de travail, et avec des droits d’administrateur également via MCP. Il ne s’agit pas d’une autorisation : ce que l’IA a le droit de faire reste déterminé par les commutateurs d’outils et tes propres autorisations."
     },
-    "where": "Paramètres sous IA, commutateur « Sélectionner les outils avec Jev ». Dans l’exécution : la chronologie dans l’inspecteur d’exécution."
+    "where": "Dans les paramètres sous Espace de travail, groupe Configuration, section IA : commutateur « Sélectionner les outils avec Jev ». Pour toute l’installation sous Administration. Pendant l’exécution : la chronologie dans l’inspecteur d’exécution."
   },
   "kompaktierung": {
     "title": "Les longues conversations se poursuivent",
@@ -986,7 +986,7 @@
       "p2": "La mémoire est un espace de travail dédié, désigné comme tel dans ses paramètres. Cette séparation est essentielle : le savoir curé est rédigé par un humain parce qu’il en vaut la peine ; les notes de travail sont générées automatiquement et peuvent à tout moment être nettoyées ou jetées. Une prise de notes automatique n’a donc jamais sa place dans la section curée.",
       "p3": "Seule une condensation est enregistrée, jamais la conversation brute. Les notes sont des pages ordinaires, donc lisibles, consultables, modifiables et supprimables comme tout le reste, et les droits d’un agent dépendent de son appartenance à l’espace de travail, non de son jeton."
     },
-    "where": "Un espace de travail est déclaré comme mémoire dans ses paramètres."
+    "where": "Un espace de travail est désigné comme mémoire dans les paramètres sous Espace de travail, groupe Général."
   },
   "von-mir-geteilt": {
     "title": "Tout ce que j’ai partagé, au même endroit",
@@ -1018,7 +1018,7 @@
       "p2": "Dans le menu du compte en haut à droite, « Partages », onglet « Partagé avec moi », mène à la direction opposée : les pages qu’on t’a partagées, tous espaces de travail confondus. Elles n’apparaissent dans aucune arborescence, car tu n’y es pas membre ; cette liste est le seul moyen d’y accéder. Une telle page s’ouvre sans la navigation de l’autre espace de travail : tu vois la page et, si la zone a été incluse, ce qui se trouve en dessous, rien d’autre.",
       "p3": "Ce à quoi tu accèdes via un partage ne peut pas être repartagé par toi. Une page partagée n’a pas de bouton « Partager » : savoir qui peut la transmettre est une décision qui appartient à l’espace de travail dont elle provient."
     },
-    "where": "Menu du compte en haut à droite, « Partages », onglet « Partagé avec moi » ; paramètres de l’espace de travail, « Ouvrir les partages »."
+    "where": "Menu du compte en haut à droite, « Partages », onglet « Partagés avec moi » ; dans les paramètres sous Espace de travail, groupe Général, « Partages »."
   },
   "projekt-archive": {
     "title": "Importer et exporter un projet au format ZIP",
@@ -1174,7 +1174,7 @@
       "p2": "Un jeton en lecture seule pour une analyse ne peut donc rien endommager, et tu n’as pas besoin de confier l’ensemble du compte simplement pour qu’un script récupère une liste. La valeur du jeton n’est affichée qu’une seule fois, plus jamais après : copie-la donc tout de suite au bon endroit.",
       "p3": "Sous la liste figurent les commandes de connexion prêtes à l’emploi pour les clients courants, avec l’adresse et le jeton déjà insérés. Tu copies une ligne et te voilà connecté, sans avoir à chercher comment monter un fichier de configuration. Un jeton peut être révoqué à tout moment."
     },
-    "where": "Paramètres, Jetons d’accès."
+    "where": "Paramètres, Connexions."
   },
   "eigene-schluessel": {
     "title": "Des clés de fournisseur propres à chaque espace de travail",
@@ -1184,7 +1184,7 @@
       "p2": "C’est conçu pour le cas où plusieurs personnes ou plusieurs projets partagent une même installation et où chaque partie prend en charge ses propres coûts. Sans clé propre, celle de l’installation est utilisée implicitement ; personne n’a donc l’obligation de configurer quoi que ce soit.",
       "p3": "La clé est stockée chiffrée et ne peut plus être lue par la suite, même pas par l’administration ; tu peux uniquement la remplacer ou la supprimer. La clé de déchiffrement se trouve dans la configuration du serveur et non dans la base de données."
     },
-    "where": "Les paramètres d’un espace de travail."
+    "where": "Dans les paramètres sous Espace de travail, groupe IA."
   },
   "einstellungen-geltungsbereiche": {
     "title": "Paramètres pour l’installation et par espace de travail",
@@ -1194,7 +1194,7 @@
       "p2": "Toutes les clés ne peuvent pas être surchargées, et c’est intentionnel : déterminer quel modèle répond dans un espace de travail relève de son ressort, mais la durée de conservation des journaux ne l’est pas. L’attribution de chaque clé à son niveau respectif est fixe.",
       "p3": "Certaines valeurs ont une limite supérieure qui s’applique vers le bas : si tu réduis le budget par exécution pour l’installation, tous les espaces de travail s’alignent, même ceux qui avaient renseigné une valeur plus élevée auparavant. Sinon, une limite n’en serait pas une. Les identifiants de connexion ne sont délibérément pas un paramètre et ne figurent jamais dans cette liste."
     },
-    "where": "Administration, Paramètres, ou les paramètres d’un espace de travail."
+    "where": "Administration, Paramètres, ou dans les paramètres sous Espace de travail, groupe Configuration."
   },
   "nutzerverwaltung": {
     "title": "Comptes et rôles",
@@ -1349,6 +1349,17 @@
       "p3": "La connexion, la modification et le déblocage se font uniquement en tant que propriétaire dans le navigateur, jamais avec un jeton et jamais par l’intermédiaire d’un agent. Ainsi, aucune IA ne peut s’octroyer elle-même de nouveaux outils.",
       "p4": "Pendant une exécution, un outil s’appelle mcp_kürzel__name. Sa réponse est considérée comme du contenu tiers : après coup, l’IA ne peut plus rien modifier si le paramètre « Écriture après contenus tiers » est actif, comme après une page web. Si ces données t’appartiennent, par exemple dans ta propre application de santé, active « Les réponses sont mes propres données » sur le serveur : l’IA peut alors continuer à écrire après la lecture, y compris de nouveau sur ce serveur. Un outil d’écriture ne fonctionne qu’en mode d’écriture directe, et le profil d’un agent doit autoriser le domaine « Outils externes ». Si tu bloques un outil ou désactives le serveur, le prochain appel d’une exécution en cours ne partira déjà plus. Dans l’inspecteur d’exécution, chaque appel apparaît avec sa durée ainsi que la raison s’il a été refusé ou a échoué."
     },
-    "where": "Paramètres de l’espace de travail, onglet Outils externes. L’interrupteur pour toute l’instance se trouve sous Administration, Paramètres, section IA."
+    "where": "Dans les paramètres sous Espace de travail, groupe Outils externes. L’interrupteur pour toute l’instance se trouve sous Administration, Paramètres, section IA."
+  },
+  "einstellungen-an-einem-ort": {
+    "title": "Tous les paramètres dans une fenêtre par-dessus la page",
+    "summary": "Compte, espace de travail et administration se trouvent dans une fenêtre de paramètres qui se superpose à la page sur laquelle tu te trouves. À gauche les groupes, en haut un champ de recherche, et chaque groupe a sa propre adresse.",
+    "details": {
+      "p1": "Tu ouvres la fenêtre dans le menu du compte sous « Paramètres », avec la roue dentée sur la page d’accueil d’un espace de travail ou dans la palette de commandes, où chaque groupe a sa propre commande. La page située en dessous reste en place. Échap ou le bouton Retour du navigateur ferment la fenêtre, et tu reviens exactement là où tu étais.",
+      "p2": "Chaque groupe possède une adresse : ?einstellungen= et le nom du groupe sont ajoutés à l’adresse de la page, par exemple ?einstellungen=language pour la langue et l’heure. Il est ainsi possible d’ajouter un groupe aux favoris ou de l’envoyer à quelqu’un. Les anciennes adresses sous /einstellungen et les paramètres d’un espace de travail continuent de fonctionner et ouvrent la fenêtre sur le groupe correspondant.",
+      "p3": "Tu ne vois que les groupes que tu as le droit d’utiliser : les membres à partir du rôle d’administrateur dans l’espace de travail, les outils externes uniquement avec le rôle de propriétaire, l’administration uniquement avec les droits d’administrateur pour l’installation. La recherche trouve les groupes, les paramètres individuels et les sections qui restent des pages dédiées, comme les automatisations, les modèles ou l’apparence de la carte de connaissances.",
+      "p4": "Sur téléphone, la fenêtre remplit tout l’écran : d’abord la liste des groupes, puis le groupe choisi, et « Tous les paramètres » permet de revenir à la liste."
+    },
+    "where": "Menu du compte, entrée « Paramètres ». Ou Ctrl + K et taper le nom du groupe."
   }
 }

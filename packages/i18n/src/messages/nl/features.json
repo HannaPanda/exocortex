@@ -664,13 +664,13 @@
   },
   "werkzeugauswahl-jev": {
     "title": "De AI vindt haar tools ook zonder passende trefwoorden",
-    "summary": "Voor elke run bepaalt het beslissingsmodel Jev welke toolgroepen de AI nodig heeft. Zo krijgt ze de beeldtools ook bij „Wat toont deze schets?” of een vraag in het Japans, en het archief bij „de lege dingen kun je verwijderen”.",
+    "summary": "Jev is een klein, snel beslissingsmodel dat voor elke run inschat welke tools nodig zijn. Zo krijgt de AI ook de afbeeldingstools bij „Wat laat deze schets zien?” of een vraag in het Japans, en het archief bij „de lege dingen mag je verwijderen”.",
     "details": {
       "p1": "Tot nu toe koos een lijst met Duitse en Engelse trefwoorden welke tools aan de AI werden aangeboden. In een test met elf talen kreeg ze daarmee slechts in 14 van de 100 gevallen alles wat ze nodig had, met Jev in 98 van de 100. Dat telt, want het standaardmodel vraagt een ontbrekende tool zelden zelf nog op en beweert dan eerder dat er geen afbeelding is of niets te doen valt.",
       "p2": "Hiervoor gaan je laatste berichten naar OpenRouter, verder niets: geen pagina, geen bijlage. Reageert Jev niet binnen 1,5 seconde of met een fout, dan kiest de run net als vroeger op basis van trefwoorden en start alsnog. Bevat de geopende pagina een afbeelding of een pdf, dan worden de bijlagetools meegenomen, en wat de AI in de laatste runs van hetzelfde gesprek heeft gebruikt, blijft aangeboden.",
       "p3": "Welke methode gekozen heeft, staat in de tijdlijn van elke run. Uitschakelen kun je dit in de AI-instellingen, voor de hele installatie of alleen voor een werkruimte, en met beheerdersrechten ook via MCP. Dit is geen machtiging: wat de AI mag, bepalen nog steeds de gereedschapsschakelaars en je eigen rechten."
     },
-    "where": "Instellingen onder AI, schakelaar „Tools selecteren met Jev”. In de run: de tijdlijn in de run-inspector."
+    "where": "In de instellingen onder Werkruimte, groep Configuratie, gedeelte AI: schakelaar „Tools selecteren met Jev”. Voor de hele installatie onder Beheer. In de run: de tijdlijn in de run-inspecteur."
   },
   "kompaktierung": {
     "title": "Lange gesprekken gaan gewoon door",
@@ -986,7 +986,7 @@
       "p2": "Het geheugen is een eigen werkruimte die je in de instellingen ervan tot zodanig verklaart. De scheiding is de kern: gecureerde kennis wordt geschreven door een mens omdat het de moeite waard is; werkaantekeningen ontstaan automatisch en mogen op elk moment worden opgeruimd of weggegooid. Automatische werkaantekeningen horen daarom nooit thuis in het gecureerde gedeelte.",
       "p3": "Er wordt een samenvatting opgeslagen, nooit het ruwe gesprek. De notities zijn gewone pagina’s, dus leesbaar, doorzoekbaar, aanpasbaar en verwijderbaar zoals al het andere, en wat een agent mag, bepaalt zijn lidmaatschap van de werkruimte en niet zijn token."
     },
-    "where": "Een werkruimte wordt in haar instellingen tot geheugen verklaard."
+    "where": "Een werkruimte wordt in de instellingen onder Werkruimte, groep Algemeen, tot geheugen gemaakt."
   },
   "von-mir-geteilt": {
     "title": "Alles wat ik heb gedeeld op één plek",
@@ -1018,7 +1018,7 @@
       "p2": "In het accountmenu rechtsboven leidt „Delingen”, tabblad „Met mij gedeeld”, naar de tegenovergestelde richting: pagina’s die iemand aan jou heeft gegeven, over werkruimtes heen. Ze verschijnen in geen enkele paginaboom, want je bent daar geen lid; deze lijst is de enige weg ernaartoe. Zo’n pagina opent zonder de navigatie van de andere werkruimte: je ziet de pagina en, als het bereik meegegeven is, wat eronder hangt, verder niets.",
       "p3": "Wat je via een deling bereikt, kun je niet doorgeven. Een gedeelde pagina heeft geen „Delen”-knop: wie hem mag doorgeven, is een vraag voor de werkruimte waar hij vandaan komt."
     },
-    "where": "Accountmenu rechtsboven, „Delingen”, tabblad „Met mij gedeeld”; werkruimte-instellingen, „Delingen openen”."
+    "where": "Accountmenu rechtsboven, „Delingen”, tabblad „Met mij gedeeld”; in de instellingen onder Werkruimte, groep Algemeen, „Delingen”."
   },
   "projekt-archive": {
     "title": "Een project als zip importeren en exporteren",
@@ -1174,7 +1174,7 @@
       "p2": "Een alleen-lezen-token voor een analyse kan dus niets kapotmaken, en je hoeft niet je hele account af te staan alleen omdat een script een lijst nodig heeft. De tokenwaarde wordt precies één keer getoond en daarna nooit meer, dus kopieer deze meteen naar de juiste plek.",
       "p3": "Onder de lijst staan de kant-en-klare verbindingscommando’s voor gangbare clients, met al ingevuld adres en token. Je kopieert één regel en bent verbonden, in plaats van een configuratiebestand bij elkaar te moeten zoeken. Een token kan op elk moment worden ingetrokken."
     },
-    "where": "Instellingen, Toegangstokens."
+    "where": "Instellingen, Verbindingen."
   },
   "eigene-schluessel": {
     "title": "Eigen providersleutels per werkruimte",
@@ -1184,7 +1184,7 @@
       "p2": "Dit is bedoeld voor het geval dat meerdere mensen of projecten één installatie delen en elke partij haar eigen kosten draagt. Zonder eigen sleutel wordt stilzwijgend die van de installatie gebruikt; niemand hoeft dus per se iets in te stellen.",
       "p3": "De sleutel wordt versleuteld opgeslagen en kan daarna niet meer worden uitgelezen, ook niet via het beheer; je kunt hem alleen vervangen of verwijderen. De sleutel voor het ontsleutelen bevindt zich in de serverconfiguratie en niet in de database."
     },
-    "where": "De instellingen van een werkruimte."
+    "where": "In de instellingen onder Werkruimte, groep AI."
   },
   "einstellungen-geltungsbereiche": {
     "title": "Instellingen voor de installatie en per werkruimte",
@@ -1194,7 +1194,7 @@
       "p2": "Niet elke sleutel kan worden overschreven, en dat is opzet: welk model in een werkruimte antwoordt, is een zaak van die werkruimte; hoe lang logs bewaard blijven, is dat niet. Welke sleutels bij welk niveau horen, ligt vast.",
       "p3": "Sommige waarden hebben een limiet die naar beneden doorwerkt: verlaag je voor de installatie het budget per taak, dan gaan alle werkruimtes mee, ook die waar eerder een hogere waarde was ingesteld. Anders zou een limiet geen limiet zijn. Inloggegevens zijn bewust geen instelling en staan nooit in deze lijst."
     },
-    "where": "Beheer, Instellingen, of de instellingen van een werkruimte."
+    "where": "Beheer, Instellingen, of in de instellingen onder Werkruimte, groep Configuratie."
   },
   "nutzerverwaltung": {
     "title": "Accounts en rollen",
@@ -1349,6 +1349,17 @@
       "p3": "Koppelen, wijzigen en vrijgeven kan alleen als eigenaar in de browser, nooit met een token en nooit door een agent. Zo kan geen enkele AI zichzelf nieuwe tools verschaffen.",
       "p4": "Tijdens een run heet een gereedschap mcp_afkorting__naam. Het antwoord geldt als externe inhoud: daarna mag de AI onder de instelling „Schrijven na externe inhoud” niets meer wijzigen, net zoals na een webpagina. Zijn de gegevens van jou, bijvoorbeeld in je eigen gezondheids-app, dan schakel je bij de server „Antwoorden zijn mijn eigen gegevens” in: dan mag de AI na het lezen blijven schrijven, ook terug naar deze server. Een gereedschap om te schrijven werkt alleen in de directe schrijfmodus, en een agentprofiel moet het bereik „Externe gereedschappen” toestaan. Blokkeer je een gereedschap of schakel je de server uit, dan gaat de eerstvolgende aanroep van een actieve run al niet meer naar buiten. In de run-inspector staat elke aanroep met duur en reden vermeld als deze is geweigerd of mislukt."
     },
-    "where": "Instellingen van de werkruimte, tabblad Externe tools. De schakelaar voor de hele instantie bevindt zich onder Beheer, Instellingen, sectie AI."
+    "where": "In de instellingen onder Werkruimte, groep Externe tools. De schakelaar voor de hele instantie bevindt zich onder Beheer, Instellingen, sectie AI."
+  },
+  "einstellungen-an-einem-ort": {
+    "title": "Alle instellingen in één venster boven de pagina",
+    "summary": "Account, werkruimte en beheer staan in één instellingenvenster dat over de pagina heen ligt waar je op dat moment bent. Links de groepen, boven een zoekveld, en elke groep heeft een eigen adres.",
+    "details": {
+      "p1": "Je opent het venster in het accountmenu onder „Instellingen”, met het tandwiel op de startpagina van een werkruimte of in het opdrachtpalet, waar elke groep een eigen opdracht heeft. De pagina eronder blijft staan. Escape of de terugknop van de browser sluit het venster weer, en je bent precies waar je was.",
+      "p2": "Elke groep heeft een adres: aan het adres van de pagina wordt ?einstellungen= en de naam van de groep toegevoegd, bijvoorbeeld ?einstellungen=language voor taal en tijd. Zo kun je een groep als bladwijzer opslaan of naar iemand sturen. De oude adressen onder /einstellungen en de instellingen van een werkruimte blijven werken en openen het venster bij de juiste groep.",
+      "p3": "Je ziet alleen de groepen die je mag gebruiken: leden vanaf de rol beheerder in de werkruimte, de externe tools alleen als eigenaar, het beheer alleen met beheerdersrechten voor de installatie. De zoekfunctie vindt groepen, afzonderlijke instellingen en de onderdelen die eigen pagina’s blijven, zoals automatiseringen, sjablonen of het uiterlijk van de kenniskaart.",
+      "p4": "Op de telefoon vult het venster het hele scherm: eerst de lijst met groepen, dan de groep, en „Alle instellingen” brengt je terug naar de lijst."
+    },
+    "where": "Accountmenu, item „Instellingen”. Of Strg + K en de naam van de groep typen."
   }
 }

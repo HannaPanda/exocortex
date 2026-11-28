@@ -99,7 +99,7 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     area: 'seiten',
     since: '2026-11-27',
     references: ['#283', '#267'],
-    ui: { path: '/einstellungen/editor' },
+    ui: { path: '/arbeitsbereich?einstellungen=editor' },
     claims: { screens: ['/einstellungen/editor'] },
   }),
   defineFeature({
@@ -107,7 +107,7 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     area: 'seiten',
     since: '2026-11-27',
     references: ['#283', '#194'],
-    ui: { path: '/einstellungen/editor' },
+    ui: { path: '/arbeitsbereich?einstellungen=editor' },
   }),
   defineFeature({
     id: 'seiten-layout',

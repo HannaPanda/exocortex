@@ -664,13 +664,13 @@
   },
   "werkzeugauswahl-jev": {
     "title": "Die KI findet ihre Werkzeuge auch ohne passende Stichwörter",
-    "summary": "Vor jedem Lauf entscheidet das Entscheidungsmodell Jev, welche Werkzeugbereiche die KI braucht. So bekommt sie die Bildwerkzeuge auch bei „Was zeigt diese Skizze?“ oder einer Frage auf Japanisch, und das Archiv bei „die leeren Sachen kannst du entfernen“.",
+    "summary": "Jev ist ein kleines, schnelles Entscheidungsmodell, das vor jedem Lauf abschätzt, welche Werkzeuge gebraucht werden. So bekommt die KI die Bildwerkzeuge auch bei „Was zeigt diese Skizze?“ oder einer Frage auf Japanisch, und das Archiv bei „die leeren Sachen kannst du entfernen“.",
     "details": {
       "p1": "Bisher wählte eine Liste deutscher und englischer Stichwörter, welche Werkzeuge die KI angeboten bekommt. In einem Test mit elf Sprachen bekam sie damit nur in 14 von 100 Fällen alles, was sie brauchte, mit Jev in 98 von 100. Das zählt, weil das Standardmodell ein fehlendes Werkzeug selten selbst nachlädt und dann eher behauptet, es gebe kein Bild oder nichts zu tun.",
       "p2": "Dafür gehen deine letzten Nachrichten an OpenRouter, sonst nichts: keine Seite, kein Anhang. Antwortet Jev nicht innerhalb von 1,5 Sekunden oder mit einem Fehler, wählt der Lauf wie früher nach Stichwörtern und startet trotzdem. Hat die offene Seite ein Bild oder ein PDF, sind die Anhangwerkzeuge dabei, und was die KI in den letzten Läufen derselben Unterhaltung benutzt hat, bleibt angeboten.",
       "p3": "Welches Verfahren gewählt hat, steht in der Zeitleiste jedes Laufs. Ausschalten kannst du es in den KI-Einstellungen, für die ganze Installation oder nur für einen Arbeitsbereich, und mit Administratorrechten auch über MCP. Das ist keine Berechtigung: was die KI darf, entscheiden weiterhin die Werkzeugschalter und deine eigenen Rechte."
     },
-    "where": "Einstellungen unter KI, Schalter „Werkzeuge mit Jev auswählen“. Im Lauf: die Zeitleiste im Lauf-Inspektor."
+    "where": "In den Einstellungen unter Arbeitsbereich, Gruppe Konfiguration, Bereich KI: Schalter „Werkzeuge mit Jev auswählen“. Für die ganze Installation unter Verwaltung. Im Lauf: die Zeitleiste im Lauf-Inspektor."
   },
   "kompaktierung": {
     "title": "Lange Gespräche laufen weiter",
@@ -986,7 +986,7 @@
       "p2": "Das Gedächtnis ist ein eigener Arbeitsbereich, den du in seinen Einstellungen dazu erklärst. Die Trennung ist der Kern: kuratiertes Wissen schreibt ein Mensch, weil es das wert ist, Mitschrieb entsteht automatisch und darf jederzeit aufgeräumt oder weggeworfen werden. Ein automatischer Mitschrieb gehört deshalb nie in den kuratierten Bereich.",
       "p3": "Gespeichert wird eine Verdichtung, nie das rohe Gespräch. Die Notizen sind gewöhnliche Seiten, also lesbar, durchsuchbar, änderbar und löschbar wie alles andere, und was ein Agent darf, entscheidet seine Mitgliedschaft im Arbeitsbereich und nicht sein Token."
     },
-    "where": "Ein Arbeitsbereich wird in seinen Einstellungen zum Gedächtnis erklärt."
+    "where": "Ein Arbeitsbereich wird in den Einstellungen unter Arbeitsbereich, Gruppe Allgemein, zum Gedächtnis erklärt."
   },
   "von-mir-geteilt": {
     "title": "Alles, was ich geteilt habe, an einer Stelle",
@@ -1018,7 +1018,7 @@
       "p2": "Im Kontomenü oben rechts führt „Freigaben“, Reiter „Mit mir geteilt“, auf die Gegenrichtung: Seiten, die jemand dir gegeben hat, über Arbeitsbereiche hinweg. Sie tauchen in keinem Seitenbaum auf, denn du bist dort kein Mitglied; diese Liste ist der einzige Weg dorthin. Eine solche Seite öffnet sich ohne die Navigation des fremden Arbeitsbereichs: du siehst die Seite und, wenn der Bereich mitgegeben wurde, was darunter hängt, sonst nichts.",
       "p3": "Was du über eine Freigabe erreichst, kannst du nicht weitergeben. Eine geteilte Seite hat keinen „Teilen“-Knopf: wer sie weiterreichen darf, ist eine Frage an den Arbeitsbereich, aus dem sie kommt."
     },
-    "where": "Kontomenü oben rechts, „Freigaben“, Reiter „Mit mir geteilt“; Arbeitsbereich-Einstellungen, „Freigaben öffnen“."
+    "where": "Kontomenü oben rechts, „Freigaben“, Reiter „Mit mir geteilt“; in den Einstellungen unter Arbeitsbereich, Gruppe Allgemein, „Freigaben“."
   },
   "projekt-archive": {
     "title": "Ein Projekt als ZIP ein- und ausspielen",
@@ -1174,7 +1174,7 @@
       "p2": "Ein Nur-Lese-Token für eine Auswertung kann also nichts kaputt machen, und du musst nicht das ganze Konto hergeben, nur weil ein Skript eine Liste braucht. Der Tokenwert wird genau einmal angezeigt, danach nie wieder, also gleich an den richtigen Ort kopieren.",
       "p3": "Unter der Liste stehen die fertigen Anbindungsbefehle für die gängigen Clients, mit eingesetzter Adresse und eingesetztem Token. Du kopierst eine Zeile und bist verbunden, statt eine Konfigurationsdatei zusammenzusuchen. Ein Token lässt sich jederzeit zurückziehen."
     },
-    "where": "Einstellungen, Zugangstoken."
+    "where": "Einstellungen, Verbindungen."
   },
   "eigene-schluessel": {
     "title": "Eigene Anbieter-Schlüssel je Arbeitsbereich",
@@ -1184,7 +1184,7 @@
       "p2": "Gedacht ist das für den Fall, dass mehrere Leute oder mehrere Projekte sich eine Installation teilen und jede Seite ihre eigenen Kosten trägt. Ohne eigenen Schlüssel wird stillschweigend der der Installation benutzt, es muss also niemand etwas einrichten.",
       "p3": "Der Schlüssel wird verschlüsselt abgelegt und ist danach nicht mehr auslesbar, auch nicht von der Verwaltung; du kannst ihn nur ersetzen oder entfernen. Der Schlüssel zum Entschlüsseln liegt in der Serverkonfiguration und nicht in der Datenbank."
     },
-    "where": "Die Einstellungen eines Arbeitsbereichs."
+    "where": "In den Einstellungen unter Arbeitsbereich, Gruppe KI."
   },
   "einstellungen-geltungsbereiche": {
     "title": "Einstellungen für die Installation und je Arbeitsbereich",
@@ -1194,7 +1194,7 @@
       "p2": "Nicht jeder Schlüssel ist überschreibbar, und das ist Absicht: welches Modell in einem Arbeitsbereich antwortet, ist dessen Sache, wie lange Protokolle aufgehoben werden, ist es nicht. Welche Schlüssel welcher Ebene gehören, steht fest.",
       "p3": "Manche Werte haben eine Obergrenze, die nach unten durchwirkt: senkst du für die Installation das Budget pro Lauf, ziehen alle Arbeitsbereiche mit, auch die, die vorher einen höheren Wert eingetragen hatten. Sonst wäre eine Grenze keine. Zugangsdaten sind bewusst keine Einstellung und stehen nie in dieser Liste."
     },
-    "where": "Verwaltung, Einstellungen, oder die Einstellungen eines Arbeitsbereichs."
+    "where": "Verwaltung, Einstellungen, oder in den Einstellungen unter Arbeitsbereich, Gruppe Konfiguration."
   },
   "nutzerverwaltung": {
     "title": "Konten und Rollen",
@@ -1349,6 +1349,17 @@
       "p3": "Anbinden, Ändern und Freigeben geht nur als Besitzerin oder Besitzer im Browser, nie mit einem Token und nie durch einen Agenten. So kann sich keine KI selbst neue Werkzeuge verschaffen.",
       "p4": "Im Lauf heißt ein Werkzeug mcp_kürzel__name. Seine Antwort gilt als Fremdinhalt: Danach darf die KI unter der Einstellung „Schreiben nach Fremdinhalten“ nichts mehr ändern, wie nach einer Webseite. Gehören die Daten dir, etwa in deiner eigenen Health-App, schaltest du beim Server „Antworten sind meine eigenen Daten“ ein: Dann darf die KI nach dem Lesen weiter schreiben, auch zurück auf diesen Server. Ein Werkzeug zum Schreiben läuft nur im direkten Schreibmodus, und ein Agentenprofil muss den Bereich „Externe Werkzeuge“ erlauben. Sperrst du ein Werkzeug oder schaltest den Server aus, geht schon der nächste Aufruf eines laufenden Laufs nicht mehr hinaus. Im Lauf-Inspektor steht jeder Aufruf mit Dauer und Grund, wenn er abgelehnt wurde oder scheiterte."
     },
-    "where": "Einstellungen des Arbeitsbereichs, Reiter Externe Werkzeuge. Der Schalter für die ganze Instanz liegt unter Verwaltung, Einstellungen, Abschnitt KI."
+    "where": "In den Einstellungen unter Arbeitsbereich, Gruppe Externe Werkzeuge. Der Schalter für die ganze Instanz liegt unter Verwaltung, Einstellungen, Abschnitt KI."
+  },
+  "einstellungen-an-einem-ort": {
+    "title": "Alle Einstellungen in einem Fenster über der Seite",
+    "summary": "Konto, Arbeitsbereich und Verwaltung stehen in einem Einstellungsfenster, das sich über die Seite legt, an der du gerade bist. Links die Gruppen, oben ein Suchfeld, und jede Gruppe hat ihre eigene Adresse.",
+    "details": {
+      "p1": "Das Fenster öffnest du im Kontomenü unter „Einstellungen“, mit dem Zahnrad auf der Startseite eines Arbeitsbereichs oder in der Befehlspalette, wo jede Gruppe ihren eigenen Befehl hat. Die Seite darunter bleibt stehen. Escape oder der Zurück-Knopf des Browsers schließen das Fenster wieder, und du bist genau dort, wo du warst.",
+      "p2": "Jede Gruppe hat eine Adresse: an die Adresse der Seite wird ?einstellungen= und der Name der Gruppe gehängt, zum Beispiel ?einstellungen=language für Sprache und Uhrzeit. So lässt sich eine Gruppe als Lesezeichen speichern oder jemandem schicken. Die alten Adressen unter /einstellungen und die Einstellungen eines Arbeitsbereichs funktionieren weiter und öffnen das Fenster an der passenden Gruppe.",
+      "p3": "Du siehst nur die Gruppen, die du benutzen darfst: Mitglieder ab der Rolle Administrator im Arbeitsbereich, die externen Werkzeuge nur als Besitzerin, die Verwaltung nur mit Administratorrechten für die Installation. Die Suche findet Gruppen, einzelne Einstellungen und die Bereiche, die eigene Seiten bleiben, etwa Automationen, Vorlagen oder das Aussehen der Wissenskarte.",
+      "p4": "Auf dem Telefon füllt das Fenster den ganzen Schirm: erst die Liste der Gruppen, dann die Gruppe, und „Alle Einstellungen“ führt zurück zur Liste."
+    },
+    "where": "Kontomenü, Eintrag „Einstellungen“. Oder Strg + K und den Namen der Gruppe tippen."
   }
 }

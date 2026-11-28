@@ -64,7 +64,7 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     area: 'gedaechtnis',
     since: '2026-08-12',
     references: ['ADR-019', 'ADR-023'],
-    ui: {},
+    ui: { path: '/arbeitsbereich?einstellungen=workspace' },
     settings: ['memory.enabled', 'memory.captureModelSlug', 'memory.retentionDays'],
     tools: ['recall', 'remember'],
   }),

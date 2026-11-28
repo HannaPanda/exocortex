@@ -29,7 +29,7 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     area: 'ki',
     since: '2026-11-26',
     references: ['#282', '#242'],
-    ui: { path: '/einstellungen/ki-chat' },
+    ui: { path: '/arbeitsbereich?einstellungen=chat' },
     claims: { screens: ['/einstellungen/ki-chat'] },
   }),
   defineFeature({
@@ -81,7 +81,7 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     area: 'ki',
     since: '2026-10-23',
     references: ['#206', 'ADR-089'],
-    ui: {},
+    ui: { path: '/arbeitsbereich?einstellungen=overrides' },
     settings: ['ai.semanticToolRouting'],
     tools: ['exo_tool_routing', 'exo_tool_routing_set'],
   }),
@@ -136,7 +136,7 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     area: 'ki',
     since: '2026-10-14',
     references: ['#196', 'ADR-086'],
-    ui: {},
+    ui: { path: '/arbeitsbereich?einstellungen=tools' },
     settings: ['ai.externalMcpEnabled', 'ai.externalMcpTimeoutSeconds'],
   }),
   defineFeature({
@@ -360,7 +360,7 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     since: '2026-09-24',
     references: ['#107', 'ADR-052'],
     ui: {
-      path: '/einstellungen/benachrichtigungen',
+      path: '/arbeitsbereich?einstellungen=notifications',
     },
     settings: ['automations.maxConsecutiveFailures', 'notifications.digestTimeZone'],
   }),

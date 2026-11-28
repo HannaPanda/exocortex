@@ -12453,8 +12453,8 @@
       "output": "b2bc6d50d5120d5b"
     },
     "features.agenten-gedaechtnis.where": {
-      "source": "b1fbaa48a1cbe67a",
-      "output": "b161b0c1ca7f27a8"
+      "source": "938e54944677896c",
+      "output": "6bc05c429191de2e"
     },
     "features.agenten-journal.details.p1": {
       "source": "e49f68a3c9ba43f0",
@@ -12689,8 +12689,8 @@
       "output": "aad63f88ecc9c263"
     },
     "features.api-tokens.where": {
-      "source": "bd73ba1aa4585c0c",
-      "output": "d9a6214e243df852"
+      "source": "0cebf07ed2e840ad",
+      "output": "8d09ca14c9fe8a02"
     },
     "features.arbeitsbereiche-sortieren.details.p1": {
       "source": "00c0786fbf695767",
@@ -13529,8 +13529,8 @@
       "output": "4d25d9674c433467"
     },
     "features.eigene-schluessel.where": {
-      "source": "ada68447117a813d",
-      "output": "0aa6f2df9663da22"
+      "source": "63ba3d4a4264beaa",
+      "output": "a1f8b1e4bb27fa91"
     },
     "features.eingang.details.p1": {
       "source": "260f5c52194aa401",
@@ -13580,6 +13580,34 @@
       "source": "3f0087bd19a5a773",
       "output": "073dce0d1ef4f7bf"
     },
+    "features.einstellungen-an-einem-ort.details.p1": {
+      "source": "9ab5d5a2a0f45561",
+      "output": "2bfd1b5f1358600c"
+    },
+    "features.einstellungen-an-einem-ort.details.p2": {
+      "source": "01e12bc38675acd2",
+      "output": "187921f7ad0c8246"
+    },
+    "features.einstellungen-an-einem-ort.details.p3": {
+      "source": "5edd75e8ab3a99f4",
+      "output": "57ca63f8b5804de0"
+    },
+    "features.einstellungen-an-einem-ort.details.p4": {
+      "source": "6c69750531808569",
+      "output": "923353b653e1bc30"
+    },
+    "features.einstellungen-an-einem-ort.summary": {
+      "source": "9aac56e40ae93e26",
+      "output": "3ca06482c58cf4a4"
+    },
+    "features.einstellungen-an-einem-ort.title": {
+      "source": "c2be7d2560369798",
+      "output": "8b71db67ed3fdd7e"
+    },
+    "features.einstellungen-an-einem-ort.where": {
+      "source": "28369ddff4de3c72",
+      "output": "0d5c48005d221bb8"
+    },
     "features.einstellungen-geltungsbereiche.details.p1": {
       "source": "5c42fd9e836371ba",
       "output": "b3ad889d3173d202"
@@ -13601,8 +13629,8 @@
       "output": "8cfb3173c4b08acb"
     },
     "features.einstellungen-geltungsbereiche.where": {
-      "source": "f1c7eebcd2afdebb",
-      "output": "fd79d6e5ada4d37e"
+      "source": "241a4e0b2dbe6543",
+      "output": "6e64c0bcbab05724"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -13681,8 +13709,8 @@
       "output": "ab28ae7cf79877c6"
     },
     "features.externe-mcp-server.where": {
-      "source": "ee28281054697866",
-      "output": "57221ff7c74613fa"
+      "source": "69ca3d38e89f4c12",
+      "output": "306137c29f934136"
     },
     "features.freigaben-uebersicht.details.p1": {
       "source": "ce8d644150448170",
@@ -13705,8 +13733,8 @@
       "output": "c859d280501ec002"
     },
     "features.freigaben-uebersicht.where": {
-      "source": "378c98d6ea08cca1",
-      "output": "c2b0fe7cb3677a1d"
+      "source": "cc59267dea7d1768",
+      "output": "907a1911b73088a4"
     },
     "features.fremdinhalte-sperre.details.p1": {
       "source": "5fc61cc4c3bacc2e",
@@ -15297,16 +15325,16 @@
       "output": "c0450843cbca132a"
     },
     "features.werkzeugauswahl-jev.summary": {
-      "source": "9e9aaea640b3cf06",
-      "output": "1d125506a1d4a908"
+      "source": "56d82811c31d5320",
+      "output": "5c4c702aaf0c4527"
     },
     "features.werkzeugauswahl-jev.title": {
       "source": "ba97165053b3f3c1",
       "output": "41841db1fc305f06"
     },
     "features.werkzeugauswahl-jev.where": {
-      "source": "1a7e6dd3ac8a6965",
-      "output": "f1d5e6d92e823d05"
+      "source": "7add4037a410d42f",
+      "output": "f2aa1066a734e28d"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -18672,6 +18700,34 @@
       "source": "e85705add045d307",
       "output": "e26d51d36781ba17"
     },
+    "settings.dialog.search.adminHint": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "4b42c6690ebeb867"
+    },
+    "settings.dialog.search.count": {
+      "source": "728e3348f13fa044",
+      "output": "67ce6b2b7ca21a69"
+    },
+    "settings.dialog.search.label": {
+      "source": "8b73468f9e0c4702",
+      "output": "255b076dd8285543"
+    },
+    "settings.dialog.search.none": {
+      "source": "b3d8ad9318dc3468",
+      "output": "b64024b7e5faa809"
+    },
+    "settings.dialog.search.pageHint": {
+      "source": "d90e1f61e3e96129",
+      "output": "f26410cc2d33585b"
+    },
+    "settings.dialog.search.placeholder": {
+      "source": "51942c20d177a28d",
+      "output": "7336265a0467a255"
+    },
+    "settings.dialog.search.results": {
+      "source": "a8f1fedbf2f3f70d",
+      "output": "e978b00de465a271"
+    },
     "settings.dialog.sections.admin.intro": {
       "source": "36c4d3405219faff",
       "output": "15a7730a2efd891f"
@@ -19637,8 +19693,8 @@
       "output": "3fee5c367b82bd26"
     },
     "settings.keys.ai.semanticToolRouting.help": {
-      "source": "814cebf1d1453a8a",
-      "output": "b17bbf5eb08297d5"
+      "source": "475458fb266f45b7",
+      "output": "63cfc33c6f9035b0"
     },
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
@@ -22209,8 +22265,8 @@
       "output": "416c1d4676188436"
     },
     "shell.paletteCommands.navigation.knowledgeMap.keywords": {
-      "source": "9a305185b8236572",
-      "output": "0afcc8503004f8ac"
+      "source": "ee0f91acf1b3f0d3",
+      "output": "4ab9245b0e61a94e"
     },
     "shell.paletteCommands.navigation.knowledgeMap.label": {
       "source": "ce041eba16475566",
@@ -38323,8 +38379,8 @@
       "output": "5ab1c11c0e597223"
     },
     "features.agenten-gedaechtnis.where": {
-      "source": "b1fbaa48a1cbe67a",
-      "output": "4f0ca9d0ca9bcb3f"
+      "source": "938e54944677896c",
+      "output": "273e53eef5a7b885"
     },
     "features.agenten-journal.details.p1": {
       "source": "e49f68a3c9ba43f0",
@@ -38559,8 +38615,8 @@
       "output": "fdcecda7c0c2e465"
     },
     "features.api-tokens.where": {
-      "source": "bd73ba1aa4585c0c",
-      "output": "070969d989418adf"
+      "source": "0cebf07ed2e840ad",
+      "output": "4cea21ddd9a38893"
     },
     "features.arbeitsbereiche-sortieren.details.p1": {
       "source": "00c0786fbf695767",
@@ -39399,8 +39455,8 @@
       "output": "6299b019890d68df"
     },
     "features.eigene-schluessel.where": {
-      "source": "ada68447117a813d",
-      "output": "3cf002e4e44ffc59"
+      "source": "63ba3d4a4264beaa",
+      "output": "ab7980faaa031991"
     },
     "features.eingang.details.p1": {
       "source": "260f5c52194aa401",
@@ -39450,6 +39506,34 @@
       "source": "3f0087bd19a5a773",
       "output": "36e0138750b5fe8b"
     },
+    "features.einstellungen-an-einem-ort.details.p1": {
+      "source": "9ab5d5a2a0f45561",
+      "output": "5b6234b5b80887d2"
+    },
+    "features.einstellungen-an-einem-ort.details.p2": {
+      "source": "01e12bc38675acd2",
+      "output": "6452f9991381a225"
+    },
+    "features.einstellungen-an-einem-ort.details.p3": {
+      "source": "5edd75e8ab3a99f4",
+      "output": "cc485d65edc0f35d"
+    },
+    "features.einstellungen-an-einem-ort.details.p4": {
+      "source": "6c69750531808569",
+      "output": "38ac90d22f7a572e"
+    },
+    "features.einstellungen-an-einem-ort.summary": {
+      "source": "9aac56e40ae93e26",
+      "output": "f5f45b4765d08353"
+    },
+    "features.einstellungen-an-einem-ort.title": {
+      "source": "c2be7d2560369798",
+      "output": "68f650996e6e9015"
+    },
+    "features.einstellungen-an-einem-ort.where": {
+      "source": "28369ddff4de3c72",
+      "output": "e2131874dcde8641"
+    },
     "features.einstellungen-geltungsbereiche.details.p1": {
       "source": "5c42fd9e836371ba",
       "output": "4f3cb352a0d9f134"
@@ -39471,8 +39555,8 @@
       "output": "25cc7f5d5d853921"
     },
     "features.einstellungen-geltungsbereiche.where": {
-      "source": "f1c7eebcd2afdebb",
-      "output": "d0a5ec1fa592ee4a"
+      "source": "241a4e0b2dbe6543",
+      "output": "08707786e1da79dd"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -39551,8 +39635,8 @@
       "output": "106843130e8768b9"
     },
     "features.externe-mcp-server.where": {
-      "source": "ee28281054697866",
-      "output": "3eee8afd8f8a1c0d"
+      "source": "69ca3d38e89f4c12",
+      "output": "136c8b107e0432fa"
     },
     "features.freigaben-uebersicht.details.p1": {
       "source": "ce8d644150448170",
@@ -39575,8 +39659,8 @@
       "output": "3cdd97993a31689d"
     },
     "features.freigaben-uebersicht.where": {
-      "source": "378c98d6ea08cca1",
-      "output": "c9d593694ed4a66a"
+      "source": "cc59267dea7d1768",
+      "output": "ae8c7a94ccee0c2f"
     },
     "features.fremdinhalte-sperre.details.p1": {
       "source": "5fc61cc4c3bacc2e",
@@ -41167,16 +41251,16 @@
       "output": "fca253482b292d0c"
     },
     "features.werkzeugauswahl-jev.summary": {
-      "source": "9e9aaea640b3cf06",
-      "output": "2aa08bf154d6d7e8"
+      "source": "56d82811c31d5320",
+      "output": "f6bee7f39b02ac63"
     },
     "features.werkzeugauswahl-jev.title": {
       "source": "ba97165053b3f3c1",
       "output": "94bc51ff00f68ba9"
     },
     "features.werkzeugauswahl-jev.where": {
-      "source": "1a7e6dd3ac8a6965",
-      "output": "42c2ada48bcd1c41"
+      "source": "7add4037a410d42f",
+      "output": "293d2d9db59a0362"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -44542,6 +44626,34 @@
       "source": "e85705add045d307",
       "output": "c503baa712db906a"
     },
+    "settings.dialog.search.adminHint": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "1a1b3e6ecc51b478"
+    },
+    "settings.dialog.search.count": {
+      "source": "728e3348f13fa044",
+      "output": "17bcf766e8d6460b"
+    },
+    "settings.dialog.search.label": {
+      "source": "8b73468f9e0c4702",
+      "output": "8815a81572634867"
+    },
+    "settings.dialog.search.none": {
+      "source": "b3d8ad9318dc3468",
+      "output": "a6ef388ee8b10f38"
+    },
+    "settings.dialog.search.pageHint": {
+      "source": "d90e1f61e3e96129",
+      "output": "8f023a793b990ea2"
+    },
+    "settings.dialog.search.placeholder": {
+      "source": "51942c20d177a28d",
+      "output": "9120df43bebb82c8"
+    },
+    "settings.dialog.search.results": {
+      "source": "a8f1fedbf2f3f70d",
+      "output": "095f488701e5e222"
+    },
     "settings.dialog.sections.admin.intro": {
       "source": "36c4d3405219faff",
       "output": "b0c5356b05a59a6b"
@@ -45507,8 +45619,8 @@
       "output": "f2151f39d020434c"
     },
     "settings.keys.ai.semanticToolRouting.help": {
-      "source": "814cebf1d1453a8a",
-      "output": "18423d1c808e7614"
+      "source": "475458fb266f45b7",
+      "output": "217089bee0cb7cf5"
     },
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
@@ -48079,8 +48191,8 @@
       "output": "b1698d866dd82889"
     },
     "shell.paletteCommands.navigation.knowledgeMap.keywords": {
-      "source": "9a305185b8236572",
-      "output": "c89dbd5bf30cd7b4"
+      "source": "ee0f91acf1b3f0d3",
+      "output": "d3ac5d1163cc6f3f"
     },
     "shell.paletteCommands.navigation.knowledgeMap.label": {
       "source": "ce041eba16475566",
@@ -64193,8 +64305,8 @@
       "output": "1ee08ea3c51c7b52"
     },
     "features.agenten-gedaechtnis.where": {
-      "source": "b1fbaa48a1cbe67a",
-      "output": "61e90c5bc385f9d5"
+      "source": "938e54944677896c",
+      "output": "2602695e2f9bd145"
     },
     "features.agenten-journal.details.p1": {
       "source": "e49f68a3c9ba43f0",
@@ -64429,8 +64541,8 @@
       "output": "24e47c90758b4301"
     },
     "features.api-tokens.where": {
-      "source": "bd73ba1aa4585c0c",
-      "output": "3fc213f666d9c01a"
+      "source": "0cebf07ed2e840ad",
+      "output": "b41d5e3e1ba850dc"
     },
     "features.arbeitsbereiche-sortieren.details.p1": {
       "source": "00c0786fbf695767",
@@ -65269,8 +65381,8 @@
       "output": "2271c67067d2f225"
     },
     "features.eigene-schluessel.where": {
-      "source": "ada68447117a813d",
-      "output": "c7a1b4acb5481b91"
+      "source": "63ba3d4a4264beaa",
+      "output": "f78a986056169c52"
     },
     "features.eingang.details.p1": {
       "source": "260f5c52194aa401",
@@ -65320,6 +65432,34 @@
       "source": "3f0087bd19a5a773",
       "output": "7a5105574dd444cb"
     },
+    "features.einstellungen-an-einem-ort.details.p1": {
+      "source": "9ab5d5a2a0f45561",
+      "output": "acebd64a0576517d"
+    },
+    "features.einstellungen-an-einem-ort.details.p2": {
+      "source": "01e12bc38675acd2",
+      "output": "924daa37ad0baf83"
+    },
+    "features.einstellungen-an-einem-ort.details.p3": {
+      "source": "5edd75e8ab3a99f4",
+      "output": "be94c7d3c952ddbe"
+    },
+    "features.einstellungen-an-einem-ort.details.p4": {
+      "source": "6c69750531808569",
+      "output": "e24194f8af88e874"
+    },
+    "features.einstellungen-an-einem-ort.summary": {
+      "source": "9aac56e40ae93e26",
+      "output": "eee59e2dfeda67a5"
+    },
+    "features.einstellungen-an-einem-ort.title": {
+      "source": "c2be7d2560369798",
+      "output": "7f8954b6d9796c05"
+    },
+    "features.einstellungen-an-einem-ort.where": {
+      "source": "28369ddff4de3c72",
+      "output": "58fdd3ceb6010e09"
+    },
     "features.einstellungen-geltungsbereiche.details.p1": {
       "source": "5c42fd9e836371ba",
       "output": "04d7a74471292b1f"
@@ -65341,8 +65481,8 @@
       "output": "b96dca805ca6bcdf"
     },
     "features.einstellungen-geltungsbereiche.where": {
-      "source": "f1c7eebcd2afdebb",
-      "output": "f3bc0874c7b64497"
+      "source": "241a4e0b2dbe6543",
+      "output": "4509a7958a749a18"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -65421,8 +65561,8 @@
       "output": "6048453a1217484c"
     },
     "features.externe-mcp-server.where": {
-      "source": "ee28281054697866",
-      "output": "bd848bb6a40d5fb0"
+      "source": "69ca3d38e89f4c12",
+      "output": "30bcdb09730869c4"
     },
     "features.freigaben-uebersicht.details.p1": {
       "source": "ce8d644150448170",
@@ -65445,8 +65585,8 @@
       "output": "d77f079a2e893c7f"
     },
     "features.freigaben-uebersicht.where": {
-      "source": "378c98d6ea08cca1",
-      "output": "763f17441595e929"
+      "source": "cc59267dea7d1768",
+      "output": "9b9d68ab6167c4d8"
     },
     "features.fremdinhalte-sperre.details.p1": {
       "source": "5fc61cc4c3bacc2e",
@@ -67037,16 +67177,16 @@
       "output": "538d3a58d1366230"
     },
     "features.werkzeugauswahl-jev.summary": {
-      "source": "9e9aaea640b3cf06",
-      "output": "fcb4d3410f771da5"
+      "source": "56d82811c31d5320",
+      "output": "7a2ac37038f168e2"
     },
     "features.werkzeugauswahl-jev.title": {
       "source": "ba97165053b3f3c1",
       "output": "ef0db38955cf05be"
     },
     "features.werkzeugauswahl-jev.where": {
-      "source": "1a7e6dd3ac8a6965",
-      "output": "1bf06ad75daf86cf"
+      "source": "7add4037a410d42f",
+      "output": "7b8affd26259c36a"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -70412,6 +70552,34 @@
       "source": "e85705add045d307",
       "output": "f748798b9353050c"
     },
+    "settings.dialog.search.adminHint": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "4b42c6690ebeb867"
+    },
+    "settings.dialog.search.count": {
+      "source": "728e3348f13fa044",
+      "output": "6b9e723de57746c6"
+    },
+    "settings.dialog.search.label": {
+      "source": "8b73468f9e0c4702",
+      "output": "b84fea8c9832afdc"
+    },
+    "settings.dialog.search.none": {
+      "source": "b3d8ad9318dc3468",
+      "output": "9b69b47d1cab34c7"
+    },
+    "settings.dialog.search.pageHint": {
+      "source": "d90e1f61e3e96129",
+      "output": "87947cfa10f6a95f"
+    },
+    "settings.dialog.search.placeholder": {
+      "source": "51942c20d177a28d",
+      "output": "2bd604574ca4590d"
+    },
+    "settings.dialog.search.results": {
+      "source": "a8f1fedbf2f3f70d",
+      "output": "ef41278b42beb36f"
+    },
     "settings.dialog.sections.admin.intro": {
       "source": "36c4d3405219faff",
       "output": "a59498a039c775ca"
@@ -71377,8 +71545,8 @@
       "output": "f461cb9cd2291a28"
     },
     "settings.keys.ai.semanticToolRouting.help": {
-      "source": "814cebf1d1453a8a",
-      "output": "faf13f7d99d209a0"
+      "source": "475458fb266f45b7",
+      "output": "c47900a4ec4d6f4e"
     },
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
@@ -73949,8 +74117,8 @@
       "output": "97bd8f1495205e89"
     },
     "shell.paletteCommands.navigation.knowledgeMap.keywords": {
-      "source": "9a305185b8236572",
-      "output": "ba377dce888c9609"
+      "source": "ee0f91acf1b3f0d3",
+      "output": "ce96eb1f58aa6213"
     },
     "shell.paletteCommands.navigation.knowledgeMap.label": {
       "source": "ce041eba16475566",
@@ -90063,8 +90231,8 @@
       "output": "c03f8773ded3878c"
     },
     "features.agenten-gedaechtnis.where": {
-      "source": "b1fbaa48a1cbe67a",
-      "output": "7f4bfb342c461338"
+      "source": "938e54944677896c",
+      "output": "8b65af26a14a62c1"
     },
     "features.agenten-journal.details.p1": {
       "source": "e49f68a3c9ba43f0",
@@ -90299,8 +90467,8 @@
       "output": "0c0ef150464e02c3"
     },
     "features.api-tokens.where": {
-      "source": "bd73ba1aa4585c0c",
-      "output": "d0d80f6d64de07e3"
+      "source": "0cebf07ed2e840ad",
+      "output": "d79401a5fcf068ae"
     },
     "features.arbeitsbereiche-sortieren.details.p1": {
       "source": "00c0786fbf695767",
@@ -91139,8 +91307,8 @@
       "output": "08f0d36921edce1c"
     },
     "features.eigene-schluessel.where": {
-      "source": "ada68447117a813d",
-      "output": "c759a6a34e5a29a5"
+      "source": "63ba3d4a4264beaa",
+      "output": "cbf40b235743a28c"
     },
     "features.eingang.details.p1": {
       "source": "260f5c52194aa401",
@@ -91190,6 +91358,34 @@
       "source": "3f0087bd19a5a773",
       "output": "f420ca04462796a3"
     },
+    "features.einstellungen-an-einem-ort.details.p1": {
+      "source": "9ab5d5a2a0f45561",
+      "output": "25c5a333cb3ed6b4"
+    },
+    "features.einstellungen-an-einem-ort.details.p2": {
+      "source": "01e12bc38675acd2",
+      "output": "d44ab59bb2b96b68"
+    },
+    "features.einstellungen-an-einem-ort.details.p3": {
+      "source": "5edd75e8ab3a99f4",
+      "output": "6b9b143edc9404f1"
+    },
+    "features.einstellungen-an-einem-ort.details.p4": {
+      "source": "6c69750531808569",
+      "output": "49fa94894ccf2942"
+    },
+    "features.einstellungen-an-einem-ort.summary": {
+      "source": "9aac56e40ae93e26",
+      "output": "852ab6929d56a823"
+    },
+    "features.einstellungen-an-einem-ort.title": {
+      "source": "c2be7d2560369798",
+      "output": "c48bef3df14c2414"
+    },
+    "features.einstellungen-an-einem-ort.where": {
+      "source": "28369ddff4de3c72",
+      "output": "eb993238af2e5b5a"
+    },
     "features.einstellungen-geltungsbereiche.details.p1": {
       "source": "5c42fd9e836371ba",
       "output": "538e9af982219cbb"
@@ -91211,8 +91407,8 @@
       "output": "378292a2fbe8beda"
     },
     "features.einstellungen-geltungsbereiche.where": {
-      "source": "f1c7eebcd2afdebb",
-      "output": "35dea423033f9c53"
+      "source": "241a4e0b2dbe6543",
+      "output": "6aac669e9f91183c"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -91291,8 +91487,8 @@
       "output": "e78b400ed133d0f7"
     },
     "features.externe-mcp-server.where": {
-      "source": "ee28281054697866",
-      "output": "dad08061a281dd8b"
+      "source": "69ca3d38e89f4c12",
+      "output": "92c45b5d1aa41e83"
     },
     "features.freigaben-uebersicht.details.p1": {
       "source": "ce8d644150448170",
@@ -91315,8 +91511,8 @@
       "output": "ddefdcd8056fcf99"
     },
     "features.freigaben-uebersicht.where": {
-      "source": "378c98d6ea08cca1",
-      "output": "ed351ec833957d58"
+      "source": "cc59267dea7d1768",
+      "output": "932ded5d0ae86546"
     },
     "features.fremdinhalte-sperre.details.p1": {
       "source": "5fc61cc4c3bacc2e",
@@ -92907,16 +93103,16 @@
       "output": "9aa1ae32a7265f95"
     },
     "features.werkzeugauswahl-jev.summary": {
-      "source": "9e9aaea640b3cf06",
-      "output": "6ed162b8ff26f3ea"
+      "source": "56d82811c31d5320",
+      "output": "a549439e7ba3f21e"
     },
     "features.werkzeugauswahl-jev.title": {
       "source": "ba97165053b3f3c1",
       "output": "7ce7a89b50d81076"
     },
     "features.werkzeugauswahl-jev.where": {
-      "source": "1a7e6dd3ac8a6965",
-      "output": "5f0e69f258314aa4"
+      "source": "7add4037a410d42f",
+      "output": "c8618647c79c7ba4"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -96282,6 +96478,34 @@
       "source": "e85705add045d307",
       "output": "431353a417d0c06b"
     },
+    "settings.dialog.search.adminHint": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "a3573199a663b82b"
+    },
+    "settings.dialog.search.count": {
+      "source": "728e3348f13fa044",
+      "output": "4f645cacf559d148"
+    },
+    "settings.dialog.search.label": {
+      "source": "8b73468f9e0c4702",
+      "output": "b14ff3f0a957f823"
+    },
+    "settings.dialog.search.none": {
+      "source": "b3d8ad9318dc3468",
+      "output": "303ee52d4781be27"
+    },
+    "settings.dialog.search.pageHint": {
+      "source": "d90e1f61e3e96129",
+      "output": "dab33231f76d5277"
+    },
+    "settings.dialog.search.placeholder": {
+      "source": "51942c20d177a28d",
+      "output": "30109da716dd2260"
+    },
+    "settings.dialog.search.results": {
+      "source": "a8f1fedbf2f3f70d",
+      "output": "022a051d6f74f553"
+    },
     "settings.dialog.sections.admin.intro": {
       "source": "36c4d3405219faff",
       "output": "c7623b984488e275"
@@ -97247,8 +97471,8 @@
       "output": "9e4a033af305fb44"
     },
     "settings.keys.ai.semanticToolRouting.help": {
-      "source": "814cebf1d1453a8a",
-      "output": "bea46a6ca641a5b5"
+      "source": "475458fb266f45b7",
+      "output": "e04090f1935963df"
     },
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
@@ -99819,8 +100043,8 @@
       "output": "89675d7d0e10a461"
     },
     "shell.paletteCommands.navigation.knowledgeMap.keywords": {
-      "source": "9a305185b8236572",
-      "output": "c6b9990c57968e73"
+      "source": "ee0f91acf1b3f0d3",
+      "output": "0d85b1fa7a84a7d9"
     },
     "shell.paletteCommands.navigation.knowledgeMap.label": {
       "source": "ce041eba16475566",
@@ -115933,8 +116157,8 @@
       "output": "29d9ca1c01fe3975"
     },
     "features.agenten-gedaechtnis.where": {
-      "source": "b1fbaa48a1cbe67a",
-      "output": "6eac3ab4bb5c6dd7"
+      "source": "938e54944677896c",
+      "output": "e299a54cbe448a99"
     },
     "features.agenten-journal.details.p1": {
       "source": "e49f68a3c9ba43f0",
@@ -116169,8 +116393,8 @@
       "output": "3ccd9e726ecfbb0d"
     },
     "features.api-tokens.where": {
-      "source": "bd73ba1aa4585c0c",
-      "output": "e1cf4ec2928c5708"
+      "source": "0cebf07ed2e840ad",
+      "output": "98fd76df65a9fd94"
     },
     "features.arbeitsbereiche-sortieren.details.p1": {
       "source": "00c0786fbf695767",
@@ -117009,8 +117233,8 @@
       "output": "d9a6f930a6206e17"
     },
     "features.eigene-schluessel.where": {
-      "source": "ada68447117a813d",
-      "output": "6970f5bb584d6c58"
+      "source": "63ba3d4a4264beaa",
+      "output": "08a69710d3460733"
     },
     "features.eingang.details.p1": {
       "source": "260f5c52194aa401",
@@ -117060,6 +117284,34 @@
       "source": "3f0087bd19a5a773",
       "output": "be8ba2ec2fbb13a2"
     },
+    "features.einstellungen-an-einem-ort.details.p1": {
+      "source": "9ab5d5a2a0f45561",
+      "output": "288a3d9f4b95c75b"
+    },
+    "features.einstellungen-an-einem-ort.details.p2": {
+      "source": "01e12bc38675acd2",
+      "output": "be810f162a12a510"
+    },
+    "features.einstellungen-an-einem-ort.details.p3": {
+      "source": "5edd75e8ab3a99f4",
+      "output": "2f1f9ee9e8b8fdc9"
+    },
+    "features.einstellungen-an-einem-ort.details.p4": {
+      "source": "6c69750531808569",
+      "output": "15221f0611bf946f"
+    },
+    "features.einstellungen-an-einem-ort.summary": {
+      "source": "9aac56e40ae93e26",
+      "output": "2c550abb3f1b3c6d"
+    },
+    "features.einstellungen-an-einem-ort.title": {
+      "source": "c2be7d2560369798",
+      "output": "79abed2a88e33263"
+    },
+    "features.einstellungen-an-einem-ort.where": {
+      "source": "28369ddff4de3c72",
+      "output": "bb2a595b39f9d692"
+    },
     "features.einstellungen-geltungsbereiche.details.p1": {
       "source": "5c42fd9e836371ba",
       "output": "a385a5e9840b572e"
@@ -117081,8 +117333,8 @@
       "output": "6341ade21dd1e538"
     },
     "features.einstellungen-geltungsbereiche.where": {
-      "source": "f1c7eebcd2afdebb",
-      "output": "f54d511f325ec183"
+      "source": "241a4e0b2dbe6543",
+      "output": "b4ce00a7f7c5fb6e"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -117161,8 +117413,8 @@
       "output": "580b1967e3ed9b3a"
     },
     "features.externe-mcp-server.where": {
-      "source": "ee28281054697866",
-      "output": "807f34418aeb64e8"
+      "source": "69ca3d38e89f4c12",
+      "output": "50783bb63dc2570d"
     },
     "features.freigaben-uebersicht.details.p1": {
       "source": "ce8d644150448170",
@@ -117185,8 +117437,8 @@
       "output": "5f61a68ce5250474"
     },
     "features.freigaben-uebersicht.where": {
-      "source": "378c98d6ea08cca1",
-      "output": "82e7551dc94d10fb"
+      "source": "cc59267dea7d1768",
+      "output": "bd2437e742c87246"
     },
     "features.fremdinhalte-sperre.details.p1": {
       "source": "5fc61cc4c3bacc2e",
@@ -118777,16 +119029,16 @@
       "output": "73fb7d6bec5a30e3"
     },
     "features.werkzeugauswahl-jev.summary": {
-      "source": "9e9aaea640b3cf06",
-      "output": "4848d8ef2039873e"
+      "source": "56d82811c31d5320",
+      "output": "2997106c13f74526"
     },
     "features.werkzeugauswahl-jev.title": {
       "source": "ba97165053b3f3c1",
       "output": "3fd4e7a622be2878"
     },
     "features.werkzeugauswahl-jev.where": {
-      "source": "1a7e6dd3ac8a6965",
-      "output": "50db639c509ec0e5"
+      "source": "7add4037a410d42f",
+      "output": "75cf1c4d6a1e0573"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -122152,6 +122404,34 @@
       "source": "e85705add045d307",
       "output": "554bba5f4b8fc218"
     },
+    "settings.dialog.search.adminHint": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "c88e8f8aabb68d14"
+    },
+    "settings.dialog.search.count": {
+      "source": "728e3348f13fa044",
+      "output": "377b80a3769226ec"
+    },
+    "settings.dialog.search.label": {
+      "source": "8b73468f9e0c4702",
+      "output": "d0bdfc6ca984b30f"
+    },
+    "settings.dialog.search.none": {
+      "source": "b3d8ad9318dc3468",
+      "output": "ce332908b971d5d7"
+    },
+    "settings.dialog.search.pageHint": {
+      "source": "d90e1f61e3e96129",
+      "output": "8d908189f40952a1"
+    },
+    "settings.dialog.search.placeholder": {
+      "source": "51942c20d177a28d",
+      "output": "39d8ad97a3791a78"
+    },
+    "settings.dialog.search.results": {
+      "source": "a8f1fedbf2f3f70d",
+      "output": "823eaa1013a584dd"
+    },
     "settings.dialog.sections.admin.intro": {
       "source": "36c4d3405219faff",
       "output": "36df64b9b6ef9fc0"
@@ -123117,8 +123397,8 @@
       "output": "492a9d4d86aa83ed"
     },
     "settings.keys.ai.semanticToolRouting.help": {
-      "source": "814cebf1d1453a8a",
-      "output": "bd6339dbdc46e3ff"
+      "source": "475458fb266f45b7",
+      "output": "e1cb0e486f03d3f1"
     },
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
@@ -125689,8 +125969,8 @@
       "output": "eb3f1d25df70d7ff"
     },
     "shell.paletteCommands.navigation.knowledgeMap.keywords": {
-      "source": "9a305185b8236572",
-      "output": "17699852a3801959"
+      "source": "ee0f91acf1b3f0d3",
+      "output": "5870ad62cfafb947"
     },
     "shell.paletteCommands.navigation.knowledgeMap.label": {
       "source": "ce041eba16475566",
@@ -141803,8 +142083,8 @@
       "output": "0c4a0357f4016d99"
     },
     "features.agenten-gedaechtnis.where": {
-      "source": "b1fbaa48a1cbe67a",
-      "output": "b72401354f27adf1"
+      "source": "938e54944677896c",
+      "output": "3b946d30ca971d72"
     },
     "features.agenten-journal.details.p1": {
       "source": "e49f68a3c9ba43f0",
@@ -142039,8 +142319,8 @@
       "output": "fc256f890cfe6541"
     },
     "features.api-tokens.where": {
-      "source": "bd73ba1aa4585c0c",
-      "output": "5015b0bee36742b3"
+      "source": "0cebf07ed2e840ad",
+      "output": "98ce0b8851d5edfe"
     },
     "features.arbeitsbereiche-sortieren.details.p1": {
       "source": "00c0786fbf695767",
@@ -142879,8 +143159,8 @@
       "output": "4af4a93b593a8648"
     },
     "features.eigene-schluessel.where": {
-      "source": "ada68447117a813d",
-      "output": "d4e245457817b593"
+      "source": "63ba3d4a4264beaa",
+      "output": "7bd6e55849957e1e"
     },
     "features.eingang.details.p1": {
       "source": "260f5c52194aa401",
@@ -142930,6 +143210,34 @@
       "source": "3f0087bd19a5a773",
       "output": "7b550a57971f6f01"
     },
+    "features.einstellungen-an-einem-ort.details.p1": {
+      "source": "9ab5d5a2a0f45561",
+      "output": "2abc7a82ce662d14"
+    },
+    "features.einstellungen-an-einem-ort.details.p2": {
+      "source": "01e12bc38675acd2",
+      "output": "d4b548a034e55e65"
+    },
+    "features.einstellungen-an-einem-ort.details.p3": {
+      "source": "5edd75e8ab3a99f4",
+      "output": "59ce46f916c37365"
+    },
+    "features.einstellungen-an-einem-ort.details.p4": {
+      "source": "6c69750531808569",
+      "output": "1ca8754355428112"
+    },
+    "features.einstellungen-an-einem-ort.summary": {
+      "source": "9aac56e40ae93e26",
+      "output": "b3383c35e92bab76"
+    },
+    "features.einstellungen-an-einem-ort.title": {
+      "source": "c2be7d2560369798",
+      "output": "55b5d67985a9cea0"
+    },
+    "features.einstellungen-an-einem-ort.where": {
+      "source": "28369ddff4de3c72",
+      "output": "58cc774110197ac8"
+    },
     "features.einstellungen-geltungsbereiche.details.p1": {
       "source": "5c42fd9e836371ba",
       "output": "7158fcef4061c7f1"
@@ -142951,8 +143259,8 @@
       "output": "d071630c295e23a7"
     },
     "features.einstellungen-geltungsbereiche.where": {
-      "source": "f1c7eebcd2afdebb",
-      "output": "bc1907d5dea9ec56"
+      "source": "241a4e0b2dbe6543",
+      "output": "f330f7fd942e3936"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -143031,8 +143339,8 @@
       "output": "33ce3ed8d2ad5aa1"
     },
     "features.externe-mcp-server.where": {
-      "source": "ee28281054697866",
-      "output": "8af6c78525b9a845"
+      "source": "69ca3d38e89f4c12",
+      "output": "54f15546e3b56e78"
     },
     "features.freigaben-uebersicht.details.p1": {
       "source": "ce8d644150448170",
@@ -143055,8 +143363,8 @@
       "output": "2685adbc3cf97846"
     },
     "features.freigaben-uebersicht.where": {
-      "source": "378c98d6ea08cca1",
-      "output": "dd75693345c63fee"
+      "source": "cc59267dea7d1768",
+      "output": "ea398ff245358dd8"
     },
     "features.fremdinhalte-sperre.details.p1": {
       "source": "5fc61cc4c3bacc2e",
@@ -144647,16 +144955,16 @@
       "output": "2946e2690e52415d"
     },
     "features.werkzeugauswahl-jev.summary": {
-      "source": "9e9aaea640b3cf06",
-      "output": "e909cb768c310e2b"
+      "source": "56d82811c31d5320",
+      "output": "7c837879fbef205a"
     },
     "features.werkzeugauswahl-jev.title": {
       "source": "ba97165053b3f3c1",
       "output": "e83c934f505a424d"
     },
     "features.werkzeugauswahl-jev.where": {
-      "source": "1a7e6dd3ac8a6965",
-      "output": "e4ea3e8718c3b800"
+      "source": "7add4037a410d42f",
+      "output": "a984505922887ea4"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -148022,6 +148330,34 @@
       "source": "e85705add045d307",
       "output": "d3356992a8431b8f"
     },
+    "settings.dialog.search.adminHint": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "6ac745ccb40997a7"
+    },
+    "settings.dialog.search.count": {
+      "source": "728e3348f13fa044",
+      "output": "ae8cef39a7a160e1"
+    },
+    "settings.dialog.search.label": {
+      "source": "8b73468f9e0c4702",
+      "output": "93c5e9a1840f7fe8"
+    },
+    "settings.dialog.search.none": {
+      "source": "b3d8ad9318dc3468",
+      "output": "4796ab77ce9f42c2"
+    },
+    "settings.dialog.search.pageHint": {
+      "source": "d90e1f61e3e96129",
+      "output": "58d6e9d9259242e9"
+    },
+    "settings.dialog.search.placeholder": {
+      "source": "51942c20d177a28d",
+      "output": "efd3944b073965a6"
+    },
+    "settings.dialog.search.results": {
+      "source": "a8f1fedbf2f3f70d",
+      "output": "e9779a1755e06bad"
+    },
     "settings.dialog.sections.admin.intro": {
       "source": "36c4d3405219faff",
       "output": "739a164097b0d716"
@@ -148987,8 +149323,8 @@
       "output": "8b7be118bd2a48fe"
     },
     "settings.keys.ai.semanticToolRouting.help": {
-      "source": "814cebf1d1453a8a",
-      "output": "6b6332ddfd0efd39"
+      "source": "475458fb266f45b7",
+      "output": "853c0916c303e959"
     },
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
@@ -151559,8 +151895,8 @@
       "output": "54568146c8df1104"
     },
     "shell.paletteCommands.navigation.knowledgeMap.keywords": {
-      "source": "9a305185b8236572",
-      "output": "9e9b2e469df1e855"
+      "source": "ee0f91acf1b3f0d3",
+      "output": "55539503986cf734"
     },
     "shell.paletteCommands.navigation.knowledgeMap.label": {
       "source": "ce041eba16475566",
@@ -167673,8 +168009,8 @@
       "output": "7a0994b6aff5f5bc"
     },
     "features.agenten-gedaechtnis.where": {
-      "source": "b1fbaa48a1cbe67a",
-      "output": "6f87b5ef5b59c0dc"
+      "source": "938e54944677896c",
+      "output": "4cebcaa11e32d818"
     },
     "features.agenten-journal.details.p1": {
       "source": "e49f68a3c9ba43f0",
@@ -167909,8 +168245,8 @@
       "output": "ce995f9838db01e1"
     },
     "features.api-tokens.where": {
-      "source": "bd73ba1aa4585c0c",
-      "output": "7abb229642299dd4"
+      "source": "0cebf07ed2e840ad",
+      "output": "41da57aa0c5902bb"
     },
     "features.arbeitsbereiche-sortieren.details.p1": {
       "source": "00c0786fbf695767",
@@ -168749,8 +169085,8 @@
       "output": "b0666a90854d7a8b"
     },
     "features.eigene-schluessel.where": {
-      "source": "ada68447117a813d",
-      "output": "265a2056243435fc"
+      "source": "63ba3d4a4264beaa",
+      "output": "eb95412eba8ac55c"
     },
     "features.eingang.details.p1": {
       "source": "260f5c52194aa401",
@@ -168800,6 +169136,34 @@
       "source": "3f0087bd19a5a773",
       "output": "7764369b34fcf33e"
     },
+    "features.einstellungen-an-einem-ort.details.p1": {
+      "source": "9ab5d5a2a0f45561",
+      "output": "0e763f6aa003f674"
+    },
+    "features.einstellungen-an-einem-ort.details.p2": {
+      "source": "01e12bc38675acd2",
+      "output": "bf33c7a5e59b01a6"
+    },
+    "features.einstellungen-an-einem-ort.details.p3": {
+      "source": "5edd75e8ab3a99f4",
+      "output": "f24c8df79ed4c5d9"
+    },
+    "features.einstellungen-an-einem-ort.details.p4": {
+      "source": "6c69750531808569",
+      "output": "e780db3e7bbe2da9"
+    },
+    "features.einstellungen-an-einem-ort.summary": {
+      "source": "9aac56e40ae93e26",
+      "output": "e61c3f5365e5b1e6"
+    },
+    "features.einstellungen-an-einem-ort.title": {
+      "source": "c2be7d2560369798",
+      "output": "8708dc12f69a58c7"
+    },
+    "features.einstellungen-an-einem-ort.where": {
+      "source": "28369ddff4de3c72",
+      "output": "161a228c7aecf6f6"
+    },
     "features.einstellungen-geltungsbereiche.details.p1": {
       "source": "5c42fd9e836371ba",
       "output": "a2a6bcd0b2b88aa5"
@@ -168821,8 +169185,8 @@
       "output": "fba0a040ae199932"
     },
     "features.einstellungen-geltungsbereiche.where": {
-      "source": "f1c7eebcd2afdebb",
-      "output": "71e2592959d72f8a"
+      "source": "241a4e0b2dbe6543",
+      "output": "565b99d3cd54d60c"
     },
     "features.entitaeten.details.p1": {
       "source": "e5b6547d6112df01",
@@ -168901,8 +169265,8 @@
       "output": "106843130e8768b9"
     },
     "features.externe-mcp-server.where": {
-      "source": "ee28281054697866",
-      "output": "f7d33ab6300e7871"
+      "source": "69ca3d38e89f4c12",
+      "output": "1d971dd5eacf7639"
     },
     "features.freigaben-uebersicht.details.p1": {
       "source": "ce8d644150448170",
@@ -168925,8 +169289,8 @@
       "output": "1084bc69f6716933"
     },
     "features.freigaben-uebersicht.where": {
-      "source": "378c98d6ea08cca1",
-      "output": "409dfc6f7eb12fcb"
+      "source": "cc59267dea7d1768",
+      "output": "798d0d1e980445d6"
     },
     "features.fremdinhalte-sperre.details.p1": {
       "source": "5fc61cc4c3bacc2e",
@@ -170517,16 +170881,16 @@
       "output": "e3f663456d161cea"
     },
     "features.werkzeugauswahl-jev.summary": {
-      "source": "9e9aaea640b3cf06",
-      "output": "8f5dca0eb2d42b0d"
+      "source": "56d82811c31d5320",
+      "output": "fb11107f5001b5d8"
     },
     "features.werkzeugauswahl-jev.title": {
       "source": "ba97165053b3f3c1",
       "output": "f19075511489b0f2"
     },
     "features.werkzeugauswahl-jev.where": {
-      "source": "1a7e6dd3ac8a6965",
-      "output": "f3eed790a2006a1d"
+      "source": "7add4037a410d42f",
+      "output": "cf6b828c5f6b05eb"
     },
     "features.wissenskarte.details.p1": {
       "source": "ae36c593c764fe3b",
@@ -173892,6 +174256,34 @@
       "source": "e85705add045d307",
       "output": "64e1842b12eacc56"
     },
+    "settings.dialog.search.adminHint": {
+      "source": "2456bb8ed72ffaa4",
+      "output": "7d8098b4f7eeea90"
+    },
+    "settings.dialog.search.count": {
+      "source": "728e3348f13fa044",
+      "output": "4f590ad770154adf"
+    },
+    "settings.dialog.search.label": {
+      "source": "8b73468f9e0c4702",
+      "output": "577fa2d55241f3b8"
+    },
+    "settings.dialog.search.none": {
+      "source": "b3d8ad9318dc3468",
+      "output": "7834aa9d6c849511"
+    },
+    "settings.dialog.search.pageHint": {
+      "source": "d90e1f61e3e96129",
+      "output": "20c556a25f0fcd94"
+    },
+    "settings.dialog.search.placeholder": {
+      "source": "51942c20d177a28d",
+      "output": "56f7853429b6651b"
+    },
+    "settings.dialog.search.results": {
+      "source": "a8f1fedbf2f3f70d",
+      "output": "f0601d26a5b601c5"
+    },
     "settings.dialog.sections.admin.intro": {
       "source": "36c4d3405219faff",
       "output": "7280907629d2ef7f"
@@ -174857,8 +175249,8 @@
       "output": "5da79538fd38aa66"
     },
     "settings.keys.ai.semanticToolRouting.help": {
-      "source": "814cebf1d1453a8a",
-      "output": "ff9751ab42eb0398"
+      "source": "475458fb266f45b7",
+      "output": "e5f5cd0b74b3da5b"
     },
     "settings.keys.ai.semanticToolRouting.label": {
       "source": "043536cc52084f06",
@@ -177429,8 +177821,8 @@
       "output": "692d3fd839444e8e"
     },
     "shell.paletteCommands.navigation.knowledgeMap.keywords": {
-      "source": "9a305185b8236572",
-      "output": "0c35127462532244"
+      "source": "ee0f91acf1b3f0d3",
+      "output": "5123ceebb4f3365c"
     },
     "shell.paletteCommands.navigation.knowledgeMap.label": {
       "source": "ce041eba16475566",
