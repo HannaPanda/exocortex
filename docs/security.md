@@ -466,7 +466,13 @@ route in the API that authenticates itself instead of leaving it to
   against the keys in `jwks`, together with the issuer, the resource audience
   and the client's `disabled` flag, and then exchanged for a 120-second
   `mcp-tools` service token for the loopback. It opens no other route. Its
-  limit is the tool list its endpoint serves.
+  limit is the tool list its endpoint serves. On `/api/mcp/compact` that list
+  includes what `exo_tool_read` and `exo_tool_write` may dispatch
+  (`COMPACT_ENDPOINT_EXECUTABLE`, issue #265), which is why it is derived from
+  fixed criteria in `packages/mcp-tools/src/compact-executable.ts` (nothing
+  destructive or irreversible, nothing about accounts, invitations, shares or
+  deployment settings, no automation rule, nothing kept from the built-in AI)
+  and pinned by a test: widening it widens what a connector may do.
 - **CORS is `*` on this path only**, which is sound precisely because the path
   refuses cookies: a cross-origin caller has nothing ambient to ride on and
   must present a credential a person handed it.

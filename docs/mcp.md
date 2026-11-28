@@ -915,7 +915,7 @@ Four endpoints, differing only in which tools they serve:
 | URL                                      | Tools                                                     | For                                  |
 | ---------------------------------------- | --------------------------------------------------------- | ------------------------------------ |
 | `https://exocortex.app/api/mcp`          | every `exo_` tool on the `mcp` surface                    | a general-purpose agent              |
-| `https://exocortex.app/api/mcp/compact`  | the `exo_` tools of `COMPACT_ENDPOINT_DOMAINS` (about 60) | ChatGPT                              |
+| `https://exocortex.app/api/mcp/compact`  | the `exo_` tools of `COMPACT_ENDPOINT_DOMAINS` (about 75) | ChatGPT                              |
 | `https://exocortex.app/api/mcp/research` | `search`, `fetch`                                         | ChatGPT deep research                |
 | `https://exocortex.app/api/mcp/memory`   | `recall`, `remember`, `fetch`                             | a chat client using the agent memory |
 
@@ -926,34 +926,85 @@ serves the everyday domains (pages, search, databases, comments, history,
 inbox, templates) and is accepted. A connector created while the catalogue was
 small keeps working on its cached list until it is reconnected.
 
-The compact endpoint also lists two meta-tools (issue #256, a spike), so the
-rest of the catalogue is not simply gone for ChatGPT:
+The compact endpoint also lists three meta-tools (issue #256 as a spike,
+issue #265 as built), so the rest of the catalogue is not simply gone for
+ChatGPT:
 
 - `exo_tool_search({ query, limit? })` looks through the `mcp` tools the
-  connection was _not_ listed, with a plain word match over name, description
-  and domain (no embeddings). It answers at most ten, five by default: name,
-  description, `operation` (`read`/`write`), `destructive`, `domain` and
-  `executable`; only an executable tool comes with its `inputSchema`.
-- `exo_tool_execute({ tool, arguments })` runs one of
-  `COMPACT_ENDPOINT_EXECUTABLE` (in `packages/mcp-tools/src/domains.ts`; for
-  the spike `exo_entity_list` and `exo_page_set_layout`). It dispatches into
-  the connection's own `callTool`, so the target's schema, the confirmation
-  gate, the agent session journal and the loopback credential apply exactly
-  as on a direct call; it declares no `target` of its own, because the gate
-  keys on the tool that writes. A refusal is a tool result with `isError`
-  and `structuredContent.error`: `tool_unknown`, `tool_directly_exposed`,
-  `tool_recursive`, `tool_irreversible` (nothing destructive or irreversible
-  is ever dispatched, whatever the list says) or `tool_not_allowed`. Invalid
-  arguments answer `invalid_input` with the issues, an API refusal its error
-  code; both hold for every tool since, not only an indirect one.
-- The log line of every call names the envelope as `tool` and, for
-  `exo_tool_execute`, the tool that ran as `targetTool`.
+  connection was _not_ listed (`packages/mcp-tools/src/tool-search.ts`, no
+  embeddings). It reads each tool's name (with a small German gloss of the
+  English words names are built from), its description, its domain's label
+  and switch-on keywords from `domains.ts`, and the title and summary of the
+  feature entry that claims it in every interface language
+  (`apps/api/src/mcp/tool-search-words.ts`), so there is no third list of
+  synonyms. Case, umlauts and their transliteration fold to one spelling, a
+  crude stem cuts endings, and a compound query word is taken apart into
+  words the tools use ("Seitenbreite" finds `exo_page_set_layout` through
+  "Breite des Seitenkörpers"); a word every tool carries weighs less than a
+  rare one (inverse document frequency). It answers at most ten, five by
+  default: name, description, `operation` (`read`/`write`), `destructive`,
+  `domain` and `executable`; an executable tool comes with its `inputSchema`
+  and its `dispatcher`, any other with a `reason` (`irreversible` or
+  `not_allowed`). A gold standard of 38 German and English queries is a unit
+  test (`apps/api/src/mcp/tool-search-words.test.ts`).
+- `exo_tool_read({ tool, arguments })` runs an executable tool that only
+  reads. It carries `readOnlyHint: true`, so a client that asks its person
+  before a write does not ask here, and it keeps the promise: a tool the
+  catalogue marks `mutating` is refused with `tool_not_read_only`, whatever
+  the call says. Read or write is the catalogue's `mutating`, the same fact
+  every directly listed tool's annotations are made of.
+- `exo_tool_write({ tool, arguments })` runs an executable tool, reading or
+  writing, with `readOnlyHint: false` and `destructiveHint: false` (nothing
+  it reaches destroys).
+- `exo_tool_execute`, the spike's single dispatcher, is still callable for
+  connectors that cached it, as `exo_tool_write` under its old name, and no
+  longer listed.
 
-`createMcpRequestHandler` builds both per connection from its `discovery`
+Both dispatchers dispatch into the connection's own `callTool`, so the
+target's schema, the confirmation gate, the agent session journal and the
+loopback credential apply exactly as on a direct call: scopes, a page
+confinement (ADR-044) and the `propose` scope (ADR-070) are checked by the API
+on every call. They declare no `target` of their own, because the gate keys on
+the tool that writes. A refusal is a tool result with `isError` and
+`structuredContent.error`: `tool_unknown`, `tool_directly_exposed`,
+`tool_recursive`, `tool_irreversible` (nothing destructive or irreversible is
+ever dispatched, whatever the list says), `tool_not_allowed` or
+`tool_not_read_only`. Invalid arguments answer `invalid_input` with the
+issues, an API refusal its error code. The log line of every call names the
+envelope as `tool` and, for a dispatcher, the tool that ran as `targetTool`.
+
+What the dispatchers may run is `COMPACT_ENDPOINT_EXECUTABLE`, derived in
+`packages/mcp-tools/src/compact-executable.ts` from fixed criteria rather than
+named by hand, because over OAuth the loopback credential carries the person's
+whole authority and this list _is_ what the connector may do. A hidden tool is
+released when the built-in AI may use it too (`surfaces` holds `ai`, which
+leaves out every decision kept for a person or an admin token in
+`SURFACE_EXEMPT`: applying or rejecting a changeset, starting or cancelling a
+workflow run, agent profiles, eval writes), when it is neither `destructive`
+nor `irreversible`, when its domain is not `admin` or `shares`, when it does
+not write an automation rule (admin class in `requestClassFor`), and when its
+output is not from the open web. `COMPACT_WITHHELD` names the tools that pass
+and are still withheld, each with its reason (`exo_attention_resolve`,
+`exo_memory_fact_promote`, `exo_push_send`, `exo_push_device_remove`). In
+November 2026 that is 110 tools; `compact-executable.test.ts` pins the list
+and checks every criterion against the whole catalogue, so a new tool that
+would be released turns it red until somebody decided.
+
+Not every released write lands in the agent session journal (ADR-022): the
+journal follows the outbox events about one page, so `exo_project_create`,
+`exo_entity_create` and `exo_entity_candidate_confirm` are journalled, and the
+page metadata switches (layout, cover, AI rule, overview), project files,
+builds and exports, renders, saved queries, previews, preferences and push
+devices are not. Work items, changesets, attention items, agent messages and
+workflow drafts keep their own record of who changed what (ADR-066 to
+ADR-070, ADR-080). The log line with `targetTool` names every call either way.
+
+`createMcpRequestHandler` builds them per connection from its `discovery`
 option; they are not in the catalogue, so the full endpoint, stdio and the
-built-in loop (which has `exo_toolbox`) do not list them. The two together add
-about 2 KB to the compact `tools/list` (63 tools and 70.9 KB before, 65 and
-72.9 KB after).
+built-in loop (which has `exo_toolbox`) do not list them. The spike's two
+meta-tools added about 2 KB to the compact `tools/list` (63 tools and 70.9 KB
+before, 65 and 72.9 KB after); the three of issue #265 add 0.3 KB over the
+spike's two (76 tools and 84,896 bytes before, 77 and 85,239 after).
 
 The POST body is read as JSON whatever its declared content type, because
 ChatGPT's connector check sends `application/octet-stream`; any other route
