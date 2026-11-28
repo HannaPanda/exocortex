@@ -8,6 +8,16 @@ import {
 } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
+/** The slice of the DOM library the clipboard checks use; the e2e project
+ *  compiles without it, the browser has it. */
+interface ClipboardBrowser {
+  DataTransfer: new () => {
+    setData: (type: string, value: string) => void;
+    getData: (type: string) => string;
+  };
+  ClipboardEvent: new (type: string, init: Record<string, unknown>) => unknown;
+}
+
 // Reuse the session created by the global setup instead of logging in again:
 // sign-in is rate limited by design.
 test.use({ storageState: storageStatePath('johanna') });
@@ -613,6 +623,139 @@ test.describe('editor', () => {
     await expect.poll(selection).toContain('Bleibt stehen');
     await page.keyboard.press('ArrowRight');
     await expect(paragraph).toHaveText('Bleibt stehen');
+  });
+
+  /**
+   * Issue #263: like Notion, the first press selects the block the caret is
+   * in, whatever block it is, and every further press widens: a list item
+   * with its nested items, a toggle, a column, then the page. The keymap is
+   * unit-tested in `packages/editor`; the browser proves the native
+   * selection, that copying a list item keeps it a list, cutting and the
+   * Yjs undo.
+   */
+  test('Strg+A starts at the line and widens block by block', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Alles ${Date.now().toString(36)}`);
+    const markdown = [
+      'Davor alpha',
+      '- Oben\n  - Mitte\n    - Unten\n- Daneben',
+      ':::toggle Kopf\nInnen eins\n\nInnen zwei\n:::',
+      '::::columns\n:::column\nLinks eins\n\nLinks zwei\n:::\n:::column\nRechts\n:::\n::::',
+      'Ende omega',
+    ].join('\n\n');
+    const write = await page.request.post(`/api/documents/${documentId}/content`, {
+      data: { markdown: `${markdown}\n`, mode: 'replace' },
+    });
+    expect(write.ok(), await write.text()).toBe(true);
+    // A fresh load, so no marker of the write sits in the document.
+    await page.reload();
+    const paragraph = (text: string) => page.locator('.exocortex-editor p', { hasText: text });
+    await expect(paragraph('Ende omega')).toBeVisible({ timeout: 30_000 });
+
+    // The e2e project has no DOM library; this is the slice of it used here.
+    interface BrowserSelection {
+      getSelection(): { toString(): string } | null;
+    }
+    const selection = (): Promise<string> =>
+      page.evaluate(() =>
+        ((globalThis as unknown as BrowserSelection).getSelection()?.toString() ?? '')
+          .replace(/\s+/g, ' ')
+          .trim(),
+      );
+    const press = async (expected: string): Promise<void> => {
+      await page.keyboard.press('Control+a');
+      await expect.poll(selection).toBe(expected);
+    };
+
+    // A paragraph: its line, then the page.
+    await paragraph('Davor alpha').click();
+    await press('Davor alpha');
+    await page.keyboard.press('Control+a');
+    await expect.poll(selection).toContain('Ende omega');
+    await expect.poll(selection).toContain('Davor alpha');
+
+    // A list item: its line, the item with its nested items, the item above.
+    await paragraph('Mitte').click();
+    await press('Mitte');
+    await press('Mitte Unten');
+    await press('Oben Mitte Unten');
+
+    // A toggle and a column: the line, then the block around it.
+    await paragraph('Innen zwei').click();
+    await press('Innen zwei');
+    await press('Kopf Innen eins Innen zwei');
+    await paragraph('Links eins').click();
+    await press('Links eins');
+    await press('Links eins Links zwei');
+
+    // Copying the item with its nested items and pasting it into an empty
+    // line brings a list, not a run of paragraphs.
+    await paragraph('Mitte').click();
+    await press('Mitte');
+    await press('Mitte Unten');
+    const editor = page.locator('.ProseMirror.exocortex-editor-canvas');
+    const copied = await editor.evaluate((element) => {
+      // The e2e workspace compiles without the DOM library; the browser has it.
+      const browser = globalThis as unknown as ClipboardBrowser;
+      const data = new browser.DataTransfer();
+      element.dispatchEvent(
+        new browser.ClipboardEvent('copy', {
+          clipboardData: data,
+          bubbles: true,
+          cancelable: true,
+        }) as Event,
+      );
+      return data.getData('text/html');
+    });
+    expect(copied).toContain('<li');
+    await paragraph('Ende omega').click();
+    await page.keyboard.press('End');
+    await page.keyboard.press('Enter');
+    await editor.evaluate((element, html) => {
+      const browser = globalThis as unknown as ClipboardBrowser;
+      const data = new browser.DataTransfer();
+      data.setData('text/html', html);
+      data.setData('text/plain', 'Mitte\nUnten');
+      element.dispatchEvent(
+        new browser.ClipboardEvent('paste', {
+          clipboardData: data,
+          bubbles: true,
+          cancelable: true,
+        }) as Event,
+      );
+    }, copied);
+    const lastList = page.locator('.ProseMirror.exocortex-editor-canvas > ul').last();
+    await expect(page.locator('.ProseMirror.exocortex-editor-canvas > ul')).toHaveCount(2);
+    await expect(lastList.locator('li li')).toHaveText('Unten');
+    await expect(lastList.locator(':scope > li > p')).toHaveText('Mitte');
+
+    // Typing after the first press replaces the line only, and Strg+Z
+    // brings it back. The pause keeps the paste and the typing two steps.
+    await page.waitForTimeout(800);
+    await paragraph('Davor alpha').click();
+    await press('Davor alpha');
+    await page.keyboard.type('neu');
+    await expect(page.locator('.ProseMirror.exocortex-editor-canvas > p').first()).toHaveText(
+      'neu',
+    );
+    await expect(paragraph('Oben')).toBeVisible();
+    await page.keyboard.press('Control+z');
+    await expect(paragraph('Davor alpha')).toBeVisible();
+
+    // Cutting the item with its nested items takes those and nothing else.
+    await page.waitForTimeout(800);
+    const firstList = page.locator('.ProseMirror.exocortex-editor-canvas > ul').first();
+    await firstList.locator('p', { hasText: 'Mitte' }).click();
+    await press('Mitte');
+    await press('Mitte Unten');
+    await page.keyboard.press('Control+x');
+    await expect(firstList).not.toContainText('Mitte');
+    await expect(firstList).not.toContainText('Unten');
+    await expect(firstList).toContainText('Oben');
+    await expect(firstList).toContainText('Daneben');
+    await page.keyboard.press('Control+z');
+    await expect(firstList).toContainText('Unten');
   });
 
   /**
