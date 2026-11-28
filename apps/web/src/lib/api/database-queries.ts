@@ -13,6 +13,7 @@ import {
   type DatabaseRowsResponse,
   type DatabaseView,
   type DocumentRowResponse,
+  type DuplicateDatabaseRowsResponse,
   type QueryDatabaseRowsRequest,
   type QueryDatabaseRowsResponse,
   type ReorderDatabasePropertyRequest,
@@ -367,7 +368,7 @@ export function useDuplicateDatabaseRows(documentId: string) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (rowIds: string[]) =>
-      apiRequest<DatabaseRowsResponse>(`/api/documents/${documentId}/rows/duplicate`, {
+      apiRequest<DuplicateDatabaseRowsResponse>(`/api/documents/${documentId}/rows/duplicate`, {
         method: 'POST',
         body: { rowIds },
       }),

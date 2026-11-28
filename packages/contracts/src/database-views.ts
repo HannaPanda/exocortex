@@ -511,6 +511,23 @@ export const databaseRowFileSchema = z.object({
 export type DatabaseRowFile = z.infer<typeof databaseRowFileSchema>;
 
 /**
+ * A file of a FILES cell that a copied row got as its own (issue #316): a row
+ * made from a template or duplicated holds copies, never the source's files,
+ * so removing a file from the source cannot empty the copy's cell.
+ */
+export const copiedCellFileSchema = z.object({
+  /** The new row the copy hangs on. */
+  rowId: idSchema,
+  /** The FILES column, the same on the source and on the copy. */
+  propertyId: idSchema,
+  /** The file in the source row's cell. */
+  sourceAttachmentId: idSchema,
+  /** The copy, now in the new row's cell. */
+  attachmentId: idSchema,
+});
+export type CopiedCellFile = z.infer<typeof copiedCellFileSchema>;
+
+/**
  * Somebody a row names (issue #314): in a PERSON value, or as the account that
  * created or last changed it. The name comes from the account itself, so a
  * person who has since left the workspace stays readable (`member: false`);

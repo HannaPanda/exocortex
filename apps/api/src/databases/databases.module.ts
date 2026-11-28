@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AiModule } from '../ai/ai.module';
+import { AttachmentsModule } from '../attachments/attachments.module';
 import { OutboxService } from '../common/outbox.service';
 import { DocumentsModule } from '../documents/documents.module';
 import { RealtimeModule } from '../realtime/realtime.module';
@@ -18,8 +19,9 @@ import { DatabaseViewsController } from './database-views.controller';
 import { DatabaseViewsService } from './database-views.service';
 
 @Module({
-  // `AiModule` for the model a column's AI fill is started with (issue #237).
-  imports: [RealtimeModule, DocumentsModule, AiModule],
+  // `AiModule` for the model a column's AI fill is started with (issue #237),
+  // `AttachmentsModule` for the files a duplicated row copies (issue #316).
+  imports: [RealtimeModule, DocumentsModule, AiModule, AttachmentsModule],
   controllers: [
     DatabasePropertiesController,
     DatabaseViewsController,

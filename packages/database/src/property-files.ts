@@ -77,9 +77,10 @@ export async function appendPropertyFile(
  * deleted column or a column that changed its type, or uploaded by a request
  * whose value write never happened.
  *
- * "Any value of the column", not only the row the file hangs on: a row made
- * from a template copies its values (ADR-039) and so names the template's
- * files, and those must not vanish while the copy still shows them.
+ * "Any value of the column", not only the row the file hangs on: a value
+ * may still name a file of another row (a row copied before issue #316 named
+ * the source's files), and a file must not vanish while a cell still shows
+ * it. A row copied since holds copies of its own (`CellFileCopyService`).
  */
 export async function findUnreferencedPropertyFiles(
   prisma: PrismaClient,

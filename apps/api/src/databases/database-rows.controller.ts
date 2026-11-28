@@ -13,6 +13,8 @@ import {
   databaseRowsResponseSchema,
   type DocumentRowResponse,
   documentRowResponseSchema,
+  type DuplicateDatabaseRowsResponse,
+  duplicateDatabaseRowsResponseSchema,
   type QueryDatabaseRowsRequest,
   queryDatabaseRowsRequestSchema,
   type QueryDatabaseRowsResponse,
@@ -147,12 +149,12 @@ export class DatabaseRowsController {
   /** A copy of each named row, directly below it. */
   @Post(':documentId/rows/duplicate')
   @ApiBody({ schema: openApiSchema(databaseRowIdsRequestSchema) })
-  @ApiCreatedResponse({ schema: openApiResponseSchema(databaseRowsResponseSchema) })
+  @ApiCreatedResponse({ schema: openApiResponseSchema(duplicateDatabaseRowsResponseSchema) })
   async duplicate(
     @CurrentSession() session: VerifiedSession,
     @Param('documentId') documentId: string,
     @Body(zodPipe(databaseRowIdsRequestSchema)) body: DatabaseRowIdsRequest,
-  ): Promise<DatabaseRowsResponse> {
+  ): Promise<DuplicateDatabaseRowsResponse> {
     return this.rowActions.duplicate({
       collectionDocumentId: documentId,
       userId: session.userId,

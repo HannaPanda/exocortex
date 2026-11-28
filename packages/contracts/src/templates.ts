@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { copiedCellFileSchema } from './database-views';
 import { documentSummarySchema } from './documents';
 import { documentTitleSchema, idSchema, isoDateTimeSchema } from './primitives';
 
@@ -89,6 +90,11 @@ export const instantiateTemplateResponseSchema = z.object({
   parent: documentSummarySchema.nullable(),
   /** How many database properties were carried over, 0 when there are none. */
   copiedProperties: z.number().int().nonnegative(),
+  /**
+   * The files of the template's FILES cells, copied onto the new row (issue
+   * #316). Empty outside a database and when the template's cells hold none.
+   */
+  copiedFiles: z.array(copiedCellFileSchema),
   /** What could not be copied exactly, in German, for the person who asked. */
   warnings: z.array(z.string()),
 });

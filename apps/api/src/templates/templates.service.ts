@@ -8,6 +8,7 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
+  type CopiedCellFile,
   type CreateTemplateRequest,
   type DeleteTemplateResponse,
   type DocumentTemplate,
@@ -26,6 +27,7 @@ import {
 } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 
+import { CellFileCopyService, copiedValue } from '../attachments/cell-file-copy.service';
 import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
 import {
@@ -83,6 +85,7 @@ export class TemplatesService {
     private readonly access: WorkspaceAccessService,
     private readonly documents: DocumentsService,
     private readonly settings: SettingsService,
+    private readonly cellFiles: CellFileCopyService,
   ) {}
 
   /**
@@ -298,12 +301,15 @@ export class TemplatesService {
       });
     }
 
-    const copiedProperties = await this.copyProperties({
+    const { copiedProperties, copiedFiles } = await this.copyProperties({
       templateId: input.documentId,
       templateParentId: template.document.parentId,
       newDocumentId: created.id,
       parent,
       warnings,
+      workspaceId: context.workspaceId,
+      userId: input.userId,
+      correlationId: input.correlationId,
     });
 
     await this.prisma.documentTemplate.update({
@@ -317,6 +323,7 @@ export class TemplatesService {
       workspaceId: context.workspaceId,
       parentId,
       copiedProperties,
+      copiedFiles: copiedFiles.length,
       correlationId: input.correlationId,
     });
 
@@ -324,6 +331,7 @@ export class TemplatesService {
       document: created,
       parent: parent === null ? null : toSummary(parent),
       copiedProperties,
+      copiedFiles,
       warnings,
     };
   }
@@ -337,6 +345,10 @@ export class TemplatesService {
    * name is exactly the kind of guess that puts the wrong date in the wrong
    * field. When the target is a different database, the copy is made without
    * its properties and the caller is told so.
+   *
+   * The files of a FILES cell are copied as files of the new row (issue
+   * #316), never named where they are: a value names only files of its own
+   * row (ADR-098), and a shared one would empty with the template's cell.
    */
   private async copyProperties(input: {
     templateId: string;
@@ -344,20 +356,32 @@ export class TemplatesService {
     newDocumentId: string;
     parent: DocumentRow | null;
     warnings: string[];
-  }): Promise<number> {
-    if (input.parent === null || input.parent.type !== 'COLLECTION') return 0;
+    workspaceId: string;
+    userId: string;
+    correlationId: string;
+  }): Promise<{ copiedProperties: number; copiedFiles: CopiedCellFile[] }> {
+    const none = { copiedProperties: 0, copiedFiles: [] };
+    if (input.parent === null || input.parent.type !== 'COLLECTION') return none;
 
     const values = await this.prisma.documentPropertyValue.findMany({
       where: { documentId: input.templateId },
     });
-    if (values.length === 0) return 0;
+    if (values.length === 0) return none;
 
     if (input.templateParentId !== input.parent.id) {
       input.warnings.push(
         'Die Eigenschaften der Vorlage gehören zu einer anderen Datenbank und wurden nicht übernommen.',
       );
-      return 0;
+      return none;
     }
+
+    const files = await this.cellFiles.copy({
+      values,
+      targetRowId: input.newDocumentId,
+      workspaceId: input.workspaceId,
+      userId: input.userId,
+      correlationId: input.correlationId,
+    });
 
     await this.prisma.documentPropertyValue.createMany({
       data: values.map((value) => ({
@@ -369,10 +393,10 @@ export class TemplatesService {
         dateValue: value.dateValue,
         dateEndValue: value.dateEndValue,
         dateAllDay: value.dateAllDay,
-        jsonValue: value.jsonValue ?? undefined,
+        jsonValue: copiedValue(files.values, value),
       })),
     });
-    return values.length;
+    return { copiedProperties: values.length, copiedFiles: files.copiedFiles };
   }
 
   private async loadOrThrow(documentId: string): Promise<TemplateRow> {

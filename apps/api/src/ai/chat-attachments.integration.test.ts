@@ -1,5 +1,3 @@
-import { Readable } from 'node:stream';
-
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { WorkspaceAccessService } from '@exocortex/auth';
@@ -8,9 +6,9 @@ import { QUEUE_NAMES } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
-import { type ObjectStorage, type PutObjectInput, type StoredObject } from '@exocortex/storage';
 
 import { AttachmentsService } from '../attachments/attachments.service';
+import { MemoryStorage } from '../attachments/memory-storage.test-support';
 import { OutboxService } from '../common/outbox.service';
 import { SettingsService } from '../platform/settings.service';
 
@@ -35,36 +33,6 @@ const PNG = Buffer.from(
   'base64',
 );
 const PDF = Buffer.from('%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF\n', 'utf8');
-
-/** The bucket, as a map, so a test can see what is left in it. */
-class MemoryStorage implements ObjectStorage {
-  readonly objects = new Map<string, Buffer>();
-  putObject(input: PutObjectInput): Promise<StoredObject> {
-    const body = Buffer.from(input.body);
-    this.objects.set(input.key, body);
-    return Promise.resolve({
-      key: input.key,
-      byteSize: body.byteLength,
-      etag: null,
-      contentType: input.contentType,
-    });
-  }
-  getObject(input: { key: string }): Promise<Readable> {
-    const body = this.objects.get(input.key);
-    if (body === undefined) throw new Error(`no object ${input.key}`);
-    return Promise.resolve(Readable.from(body));
-  }
-  deleteObject(input: { key: string }): Promise<void> {
-    this.objects.delete(input.key);
-    return Promise.resolve();
-  }
-  createDownloadUrl(input: { key: string }): Promise<string> {
-    return Promise.resolve(`memory://${input.key}`);
-  }
-  healthCheck(): Promise<boolean> {
-    return Promise.resolve(true);
-  }
-}
 
 let prisma: PrismaClient;
 let queues: QueueRegistry;

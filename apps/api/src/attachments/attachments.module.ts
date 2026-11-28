@@ -5,6 +5,7 @@ import { RealtimeModule } from '../realtime/realtime.module';
 
 import { AttachmentsController } from './attachments.controller';
 import { AttachmentsService } from './attachments.service';
+import { CellFileCopyService } from './cell-file-copy.service';
 import { CellFilesService } from './cell-files.service';
 import { DownloadTicketsController } from './download-tickets.controller';
 import { DownloadTicketsService } from './download-tickets.service';
@@ -18,10 +19,13 @@ import { UploadTicketsService } from './upload-tickets.service';
   providers: [
     AttachmentsService,
     CellFilesService,
+    CellFileCopyService,
     UploadTicketsService,
     DownloadTicketsService,
     OutboxService,
   ],
-  exports: [AttachmentsService],
+  // The copy is for the services that copy a row: templates and duplicating
+  // rows (issue #316).
+  exports: [AttachmentsService, CellFileCopyService],
 })
 export class AttachmentsModule {}

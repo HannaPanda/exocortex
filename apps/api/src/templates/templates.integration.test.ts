@@ -3,12 +3,17 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv, loadDotEnv } from '@exocortex/config';
 import { resolveSettings } from '@exocortex/contracts';
-import { createPrismaClient, type PrismaClient } from '@exocortex/database';
+import {
+  createPrismaClient,
+  findUnreferencedPropertyFiles,
+  type PrismaClient,
+} from '@exocortex/database';
 import { yjsStateToProseMirrorJson } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
-import { type ObjectStorage } from '@exocortex/storage';
 
+import { CellFileCopyService } from '../attachments/cell-file-copy.service';
+import { MemoryStorage, seedCellFile } from '../attachments/memory-storage.test-support';
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
 import { type CollaborationBridgeService } from '../documents/collaboration-bridge.service';
@@ -49,7 +54,7 @@ let workspaceId: string;
 let ownerId: string;
 
 const realtime = { emit: async () => undefined } as unknown as RealtimeService;
-const storage = { deleteObject: async () => undefined } as unknown as ObjectStorage;
+const storage = new MemoryStorage();
 const collaboration = {
   applyToLiveSession: async () => ({
     applied: false,
@@ -99,7 +104,14 @@ beforeAll(async () => {
     new PageLinkIdentityService(prisma),
     settingsStub(),
   );
-  templates = new TemplatesService(prisma, logger, access, documents, settings);
+  templates = new TemplatesService(
+    prisma,
+    logger,
+    access,
+    documents,
+    settings,
+    new CellFileCopyService(prisma, storage, queues, logger),
+  );
 
   const suffix = Date.now().toString(36);
   const owner = await prisma.user.create({
@@ -370,6 +382,115 @@ describe('using a template', () => {
     });
     expect(outside.copiedProperties).toBe(0);
     expect(outside.warnings.join(' ')).toContain('andere');
+  });
+
+  it("gives a row made from a template copies of its cell files, not the template's (issue #316)", async () => {
+    const database = await documents.create({
+      workspaceId,
+      userId: ownerId,
+      request: { title: 'Belege', type: 'COLLECTION' },
+      correlationId,
+    });
+    const column = await prisma.databaseProperty.create({
+      data: {
+        document: { connect: { id: database.id } },
+        name: 'Dateien',
+        type: 'FILES',
+        orderKey: 'a0',
+      },
+    });
+    const templateId = await createPage('Belegvorlage', database.id);
+    const pdf = await seedCellFile(prisma, storage, {
+      workspaceId,
+      rowId: templateId,
+      propertyId: column.id,
+      createdById: ownerId,
+      filename: 'rechnung.pdf',
+      mimeType: 'application/pdf',
+      body: Buffer.from('%PDF-1.4 rechnung'),
+      extension: 'pdf',
+      text: {
+        textStatus: 'READY',
+        extractedText: 'Seite eins\fSeite zwei',
+        textPageStarts: [0, 11],
+        correctedText: 'Seite eins, Seite zwei',
+        textCorrectedById: ownerId,
+        screening: 'CLEAN',
+        screenModel: 'jev',
+        screenScore: 0.01,
+      },
+    });
+    const picture = await seedCellFile(prisma, storage, {
+      workspaceId,
+      rowId: templateId,
+      propertyId: column.id,
+      createdById: ownerId,
+      filename: 'foto.png',
+      mimeType: 'image/png',
+      body: Buffer.from('png bytes'),
+      extension: 'png',
+      preview: Buffer.from('webp bytes'),
+    });
+    await prisma.documentPropertyValue.create({
+      data: {
+        documentId: templateId,
+        propertyId: column.id,
+        jsonValue: [pdf.id, picture.id, 'gone-file-id'],
+      },
+    });
+    await templates.create({ workspaceId, userId: ownerId, request: { documentId: templateId } });
+
+    const made = await templates.instantiate({
+      documentId: templateId,
+      userId: ownerId,
+      request: { parentId: database.id },
+      correlationId,
+    });
+
+    // Two copies, in the order the template named them; the gone file is not
+    // invented back.
+    expect(made.copiedFiles.map((file) => file.sourceAttachmentId)).toEqual([pdf.id, picture.id]);
+    const copyIds = made.copiedFiles.map((file) => file.attachmentId);
+    expect(copyIds).not.toContain(pdf.id);
+    const value = await prisma.documentPropertyValue.findUniqueOrThrow({
+      where: { documentId_propertyId: { documentId: made.document.id, propertyId: column.id } },
+    });
+    expect(value.jsonValue).toEqual(copyIds);
+
+    const [pdfCopy, pictureCopy] = await Promise.all(
+      copyIds.map((id) => prisma.attachment.findUniqueOrThrow({ where: { id } })),
+    );
+    // A file of the new row, of the same column, with what was read from it.
+    expect(pdfCopy).toMatchObject({
+      documentId: made.document.id,
+      propertyId: column.id,
+      filename: 'rechnung.pdf',
+      textStatus: 'READY',
+      extractedText: 'Seite eins\fSeite zwei',
+      textPageStarts: [0, 11],
+      correctedText: 'Seite eins, Seite zwei',
+      screening: 'CLEAN',
+      // The uploader stays the uploader (ADR-096).
+      createdById: ownerId,
+    });
+    expect(pdfCopy!.storageKey).not.toBe(pdf.storageKey);
+    expect(storage.objects.get(pdfCopy!.storageKey)?.toString()).toBe('%PDF-1.4 rechnung');
+    expect(pictureCopy!.previewKey).not.toBeNull();
+    expect(pictureCopy!.previewKey).not.toBe(picture.previewKey);
+    expect(storage.objects.get(pictureCopy!.previewKey!)?.toString()).toBe('webp bytes');
+
+    // Taking the PDF out of the template leaves the copy's cell alone: the
+    // sweep collects the template's file and nothing of the new row.
+    await prisma.documentPropertyValue.update({
+      where: { documentId_propertyId: { documentId: templateId, propertyId: column.id } },
+      data: { jsonValue: [picture.id] },
+    });
+    const unnamed = await findUnreferencedPropertyFiles(prisma, {
+      before: new Date(Date.now() + 60_000),
+      workspaceId,
+      limit: 100,
+    });
+    expect(unnamed.map((file) => file.id)).toEqual([pdf.id]);
   });
 
   it('refuses a template nobody marked', async () => {

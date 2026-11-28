@@ -2,9 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { assertPolicy, canCreateDocument, canEditDocument, canReadDocument } from '@exocortex/auth';
 import {
+  type CopiedCellFile,
   type DatabaseRowIdsRequest,
-  type DatabaseRowsResponse,
   type DocumentSummary,
+  type DuplicateDatabaseRowsResponse,
   type TrashDatabaseRowsResponse,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
@@ -14,6 +15,7 @@ import {
   yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 
+import { CellFileCopyService, copiedValue } from '../attachments/cell-file-copy.service';
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
 import { DOCUMENT_SELECT, toIconColor } from '../documents/document-shape';
@@ -40,6 +42,7 @@ export class DatabaseRowActionsService {
     private readonly rows: DatabaseRowsService,
     private readonly documents: DocumentsService,
     private readonly outbox: OutboxService,
+    private readonly cellFiles: CellFileCopyService,
   ) {}
 
   /**
@@ -77,15 +80,17 @@ export class DatabaseRowActionsService {
 
   /**
    * A copy of each row directly below it: same title, icon, cover, text and
-   * values, new block ids and no link back. Files the copy names stay the
-   * source row's, which is what a page made from a template does too.
+   * values, new block ids and no link back. The files of its FILES cells are
+   * copies of its own (issue #316), so emptying the source's cell leaves the
+   * copy's alone; files the page text shows stay the source's, as they do in
+   * a page made from a template.
    */
   async duplicate(input: {
     collectionDocumentId: string;
     userId: string;
     request: DatabaseRowIdsRequest;
     correlationId: string;
-  }): Promise<DatabaseRowsResponse> {
+  }): Promise<DuplicateDatabaseRowsResponse> {
     const collection = await this.rows.requireCollection(input.collectionDocumentId, input.userId);
     assertPolicy(canCreateDocument(collection.role));
     const rowIds = [...new Set(input.request.rowIds)];
@@ -98,21 +103,23 @@ export class DatabaseRowActionsService {
     });
 
     const copies: string[] = [];
+    const copiedFiles: CopiedCellFile[] = [];
     for (const rowId of rowIds) {
-      copies.push(
-        await this.duplicateOne({
-          collectionDocumentId: input.collectionDocumentId,
-          workspaceId: collection.workspaceId,
-          rowId,
-          userId: input.userId,
-          correlationId: input.correlationId,
-        }),
-      );
+      const copy = await this.duplicateOne({
+        collectionDocumentId: input.collectionDocumentId,
+        workspaceId: collection.workspaceId,
+        rowId,
+        userId: input.userId,
+        correlationId: input.correlationId,
+      });
+      copies.push(copy.id);
+      copiedFiles.push(...copy.copiedFiles);
     }
     return {
       rows: await Promise.all(
         copies.map((id) => this.rows.toRowResponse(input.collectionDocumentId, id)),
       ),
+      copiedFiles,
     };
   }
 
@@ -122,7 +129,7 @@ export class DatabaseRowActionsService {
     rowId: string;
     userId: string;
     correlationId: string;
-  }): Promise<string> {
+  }): Promise<{ id: string; copiedFiles: CopiedCellFile[] }> {
     const [source, content, values] = await Promise.all([
       this.prisma.document.findUniqueOrThrow({
         where: { id: input.rowId },
@@ -167,6 +174,15 @@ export class DatabaseRowActionsService {
       });
     }
 
+    // Before the values, because a FILES value names the copies.
+    const files = await this.cellFiles.copy({
+      values,
+      targetRowId: created.id,
+      workspaceId: input.workspaceId,
+      userId: input.userId,
+      correlationId: input.correlationId,
+    });
+
     if (values.length > 0) {
       // Same database, so every value names a column that exists here. The
       // event is the one `create` with values writes: a rule watching for
@@ -182,7 +198,7 @@ export class DatabaseRowActionsService {
             dateValue: value.dateValue,
             dateEndValue: value.dateEndValue,
             dateAllDay: value.dateAllDay,
-            jsonValue: value.jsonValue ?? undefined,
+            jsonValue: copiedValue(files.values, value),
           })),
         });
         await this.outbox.writeEvent(tx, {
@@ -193,6 +209,6 @@ export class DatabaseRowActionsService {
         });
       });
     }
-    return created.id;
+    return { id: created.id, copiedFiles: files.copiedFiles };
   }
 }

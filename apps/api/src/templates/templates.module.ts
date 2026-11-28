@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AttachmentsModule } from '../attachments/attachments.module';
 import { DocumentsModule } from '../documents/documents.module';
 
 import { TemplatesController } from './templates.controller';
@@ -11,7 +12,7 @@ import { TemplatesService } from './templates.service';
  * the same outbox event and is indexed like any other page.
  */
 @Module({
-  imports: [DocumentsModule],
+  imports: [DocumentsModule, AttachmentsModule],
   controllers: [TemplatesController],
   providers: [TemplatesService],
   exports: [TemplatesService],

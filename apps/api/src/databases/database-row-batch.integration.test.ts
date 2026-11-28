@@ -2,11 +2,17 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
-import { createPrismaClient, type PrismaClient } from '@exocortex/database';
+import {
+  createPrismaClient,
+  findUnreferencedPropertyFiles,
+  type PrismaClient,
+} from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
+import { CellFileCopyService } from '../attachments/cell-file-copy.service';
+import { MemoryStorage, seedCellFile } from '../attachments/memory-storage.test-support';
 import { OutboxService } from '../common/outbox.service';
 import { DocumentMoveService } from '../documents/document-move.service';
 import { DocumentTrashService } from '../documents/document-trash.service';
@@ -25,6 +31,7 @@ loadDotEnv();
 
 const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
 const noopStorage = {} as unknown as ObjectStorage;
+const storage = new MemoryStorage();
 const correlationId = 'row-batch-test';
 
 let prisma: PrismaClient;
@@ -66,7 +73,13 @@ beforeAll(async () => {
   );
   properties = new DatabasePropertiesService(prisma, access, outbox, realtime);
   rows = new DatabaseRowsService(prisma, access, documents, outbox, realtime);
-  actions = new DatabaseRowActionsService(prisma, rows, documents, outbox);
+  actions = new DatabaseRowActionsService(
+    prisma,
+    rows,
+    documents,
+    outbox,
+    new CellFileCopyService(prisma, storage, queues, logger),
+  );
 
   const suffix = Date.now().toString(36);
   const [owner, guest] = await Promise.all([
@@ -303,6 +316,89 @@ describe('duplicate', () => {
       correlationId,
     });
     expect(valueOf((await rows.getForDocument(first, ownerId))!, db.note)).toBe('Erste Notiz');
+  });
+
+  it('gives each copy its own cell files, so emptying the source leaves it alone (issue #316)', async () => {
+    const db = await database();
+    const column = await properties.create({
+      collectionDocumentId: db.id,
+      userId: ownerId,
+      request: { type: 'FILES', name: 'Belege' },
+      correlationId,
+    });
+    const source = await row(db.id, 'Mit Dateien');
+    const read = await seedCellFile(prisma, storage, {
+      workspaceId,
+      rowId: source,
+      propertyId: column.id,
+      createdById: ownerId,
+      filename: 'gelesen.pdf',
+      mimeType: 'application/pdf',
+      body: Buffer.from('%PDF gelesen'),
+      extension: 'pdf',
+      text: { textStatus: 'READY', extractedText: 'schon gelesen', screening: 'CLEAN' },
+    });
+    const reading = await seedCellFile(prisma, storage, {
+      workspaceId,
+      rowId: source,
+      propertyId: column.id,
+      createdById: ownerId,
+      filename: 'wird-gelesen.pdf',
+      mimeType: 'application/pdf',
+      body: Buffer.from('%PDF wird gelesen'),
+      extension: 'pdf',
+      text: { textStatus: 'PENDING' },
+    });
+    await prisma.documentPropertyValue.create({
+      data: { documentId: source, propertyId: column.id, jsonValue: [read.id, reading.id] },
+    });
+
+    const result = await actions.duplicate({
+      collectionDocumentId: db.id,
+      userId: ownerId,
+      request: { rowIds: [source] },
+      correlationId,
+    });
+    const copyRow = result.rows[0]!.document.id;
+    expect(result.copiedFiles.map((file) => [file.rowId, file.sourceAttachmentId])).toEqual([
+      [copyRow, read.id],
+      [copyRow, reading.id],
+    ]);
+    const copyIds = result.copiedFiles.map((file) => file.attachmentId);
+    // The row in the answer already names the copies, by name too.
+    expect(valueOf(result.rows[0]!, column.id)).toEqual(copyIds);
+    expect(result.rows[0]!.files?.map((file) => file.filename)).toEqual([
+      'gelesen.pdf',
+      'wird-gelesen.pdf',
+    ]);
+
+    const copies = await prisma.attachment.findMany({ where: { id: { in: copyIds } } });
+    const byName = new Map(copies.map((copy) => [copy.filename, copy]));
+    expect(byName.get('gelesen.pdf')).toMatchObject({
+      documentId: copyRow,
+      propertyId: column.id,
+      textStatus: 'READY',
+      extractedText: 'schon gelesen',
+      screening: 'CLEAN',
+    });
+    // A file still being read is read again for the copy, not copied half-done.
+    expect(byName.get('wird-gelesen.pdf')).toMatchObject({
+      textStatus: 'PENDING',
+      extractedText: null,
+    });
+
+    await rows.updateValues({
+      rowId: source,
+      userId: ownerId,
+      request: { values: [{ propertyId: column.id, value: [reading.id] }] },
+      correlationId,
+    });
+    const unnamed = await findUnreferencedPropertyFiles(prisma, {
+      before: new Date(Date.now() + 60_000),
+      workspaceId,
+      limit: 100,
+    });
+    expect(unnamed.map((file) => file.id)).toEqual([read.id]);
   });
 
   it('refuses a reader, who may not create rows', async () => {

@@ -649,9 +649,10 @@ export class DatabaseRowsService {
   /**
    * A FILES value as written, checked (issue #245): ids once each, and every
    * id the cell does not already hold must be a file uploaded onto this row.
-   * Ids it already holds may stay even when they hang elsewhere, which is
-   * what a row made from a template holds (ADR-039), so removing one of
-   * several files never fails on the others.
+   * Ids it already holds may stay even when they hang elsewhere, so removing
+   * one of several files never fails on the others. Since issue #316 a copied
+   * row holds copies of its own, so that only matters for a value written
+   * before.
    */
   private async normalizeFilesValue(input: {
     rowId: string;

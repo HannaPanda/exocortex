@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-import { databaseRowPropertyValueSchema, databaseRowSchema } from './database-views';
+import {
+  copiedCellFileSchema,
+  databaseRowPropertyValueSchema,
+  databaseRowSchema,
+} from './database-views';
 import { documentSummarySchema } from './documents';
 import { idSchema } from './primitives';
 
@@ -29,6 +33,16 @@ export type DatabaseRowIdsRequest = z.infer<typeof databaseRowIdsRequestSchema>;
 /** The rows as they are after the change, in the order they were named. */
 export const databaseRowsResponseSchema = z.object({ rows: z.array(databaseRowSchema) });
 export type DatabaseRowsResponse = z.infer<typeof databaseRowsResponseSchema>;
+
+/**
+ * The copies, in the order their rows were named, and every file of a FILES
+ * cell that was copied for them (issue #316): each copy holds files of its
+ * own, never the source row's.
+ */
+export const duplicateDatabaseRowsResponseSchema = databaseRowsResponseSchema.extend({
+  copiedFiles: z.array(copiedCellFileSchema),
+});
+export type DuplicateDatabaseRowsResponse = z.infer<typeof duplicateDatabaseRowsResponseSchema>;
 
 /**
  * The rows now in the trash, each restorable on its own like any page. A row
