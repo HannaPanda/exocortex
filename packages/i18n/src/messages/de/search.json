@@ -126,6 +126,7 @@
     "empty": "Nichts gefunden",
     "readout": "{count, plural, one {# Treffer} other {# Treffer}} · {tookMs} ms · {adapter}",
     "idleHint": "Zuletzt bearbeitet, oder tippen für die Volltextsuche",
-    "menuHint": "Rücktaste im leeren Feld: eine Ebene zurück"
+    "menuHint": "Rücktaste im leeren Feld: eine Ebene zurück",
+    "inAttachment": "Anhang {filename}"
   }
 }

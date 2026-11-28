@@ -126,6 +126,7 @@
     "empty": "Nothing found",
     "readout": "{count, plural, one {# match} other {# matches}} · {tookMs} ms · {adapter}",
     "idleHint": "Recently edited, or type for full-text search",
-    "menuHint": "Backspace in an empty field: go back one level"
+    "menuHint": "Backspace in an empty field: go back one level",
+    "inAttachment": "Attachment {filename}"
   }
 }

@@ -35,14 +35,20 @@ export interface SearchCommandProps {
 }
 
 /**
- * The hit's own line, with the section it came out of in front (issue #118).
+ * The hit's own line, with where it stands in front (issues #118, #280).
  *
  * The innermost heading rather than the whole path: one row of a palette is
  * about sixty characters wide, and on a long page the last heading is the one
- * that says which part of it was found.
+ * that says which part of it was found. Words out of an attached file say
+ * which file instead, because the page's headings say nothing about it.
  */
-function withSection(section: SearchResult['section'], snippet: string): string {
-  const heading = section?.path[section.path.length - 1];
+function withPlace(
+  result: Pick<SearchResult, 'section' | 'attachment'>,
+  snippet: string,
+  inAttachment: (filename: string) => string,
+): string {
+  if (result.attachment !== null) return `${inAttachment(result.attachment.filename)} · ${snippet}`;
+  const heading = result.section?.path[result.section.path.length - 1];
   return heading === undefined ? snippet : `${heading} · ${snippet}`;
 }
 
@@ -230,7 +236,9 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
         id: result.documentId,
         group: t('groupPages'),
         label: result.title,
-        hint: withSection(result.section, result.snippet.replace(/<\/?mark>/g, '').slice(0, 60)),
+        hint: withPlace(result, result.snippet.replace(/<\/?mark>/g, '').slice(0, 60), (filename) =>
+          t('inAttachment', { filename }),
+        ),
         icon: (
           <DocumentIcon
             icon={result.icon}

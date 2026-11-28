@@ -126,6 +126,7 @@
     "empty": "Nada encontrado",
     "readout": "{count, plural, one {# resultado} many {# resultados} other {# resultados}} · {tookMs} ms · {adapter}",
     "idleHint": "Editadas recentemente, ou digite para buscar em texto completo",
-    "menuHint": "Backspace no campo vazio: volta um nível"
+    "menuHint": "Backspace no campo vazio: volta um nível",
+    "inAttachment": "Anexo {filename}"
   }
 }
