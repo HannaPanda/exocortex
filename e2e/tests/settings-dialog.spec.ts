@@ -120,6 +120,41 @@ test.describe('Einstellungsdialog', () => {
     await expect(page.getByTestId('settings-nav-members')).toHaveAttribute('aria-current', 'page');
   });
 
+  test('the search finds a single setting, a page that stays a page, and Escape clears it first', async ({
+    page,
+  }) => {
+    const workspacePath = await openWorkspace(page);
+    await page.goto(`${workspacePath}?einstellungen=language`);
+    const dialog = page.getByTestId('settings-dialog');
+    const search = dialog.getByTestId('settings-search');
+    await expect(search).toBeVisible({ timeout: 30_000 });
+
+    // A word only an option holds finds its group and names the option.
+    await search.fill('jev');
+    const overrides = dialog.getByTestId('settings-search-hit-section-overrides');
+    await expect(overrides).toContainText('Werkzeuge mit Jev auswählen');
+
+    // The knowledge map's look is set on the map, and the search says where.
+    await search.fill('sterne');
+    await expect(dialog.getByTestId('settings-search-hit-page-knowledgeMap')).toContainText(
+      'Eigene Seite',
+    );
+
+    // Escape empties the field and leaves the dialog open, the second closes it.
+    await search.press('Escape');
+    await expect(search).toHaveValue('');
+    await expect(dialog).toBeVisible();
+
+    // Enter takes the first hit.
+    await search.fill('jev');
+    await search.press('Enter');
+    await expect(page).toHaveURL(/einstellungen=overrides$/);
+    await expect(page.getByTestId('workspace-setting-group-ai')).toBeVisible({ timeout: 30_000 });
+
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+  });
+
   test.describe('on a phone', () => {
     test.use({ viewport: { width: 390, height: 844 } });
 

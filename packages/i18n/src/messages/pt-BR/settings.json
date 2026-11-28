@@ -60,6 +60,15 @@
     "admin": {
       "pages": "Páginas da administração",
       "groups": "Configurações da instalação por área"
+    },
+    "search": {
+      "label": "Pesquisar nas configurações",
+      "placeholder": "Pesquisar…",
+      "results": "Resultados da pesquisa",
+      "count": "{count, plural, =0 {Nenhum resultado} one {# resultado} many {# resultados} other {# resultados}}",
+      "none": "Nada encontrado para “{query}”.",
+      "adminHint": "Administração",
+      "pageHint": "Página própria"
     }
   },
   "language": {
@@ -163,7 +172,7 @@
       },
       "semanticToolRouting": {
         "label": "Selecionar ferramentas com Jev",
-        "help": "O Jev decide antes de cada execução quais áreas de ferramentas são oferecidas à IA, mesmo que a solicitação seja feita em outro idioma ou sem palavras-chave correspondentes. Para isso, suas últimas mensagens são enviadas ao OpenRouter, nunca o conteúdo de uma página. Se o Jev não responder em até 1,5 segundo, a execução seleciona por palavras-chave como antes e inicia mesmo assim. Desativado significa: apenas palavras-chave. Isso não é uma permissão; todas as ferramentas continuam acessíveis."
+        "help": "Jev é um modelo de decisão pequeno e rápido que estima quais ferramentas serão necessárias antes de cada execução. Assim, a IA recebe as áreas de ferramentas adequadas, mesmo que a solicitação seja feita em outro idioma ou sem palavras-chave correspondentes. Para isso, suas últimas mensagens são enviadas ao OpenRouter, nunca o conteúdo de uma página. Se Jev não responder em até 1,5 segundo, a execução seleciona por palavras-chave como antes e inicia mesmo assim. Desativado significa: apenas palavras-chave. Isso não é uma permissão; qualquer ferramenta continua acessível."
       },
       "mutatingToolsEnabled": {
         "label": "Permitir ferramentas de escrita",

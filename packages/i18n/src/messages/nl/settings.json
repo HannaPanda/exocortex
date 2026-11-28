@@ -60,6 +60,15 @@
     "admin": {
       "pages": "Beheerpagina’s",
       "groups": "Instellingen van de installatie per categorie"
+    },
+    "search": {
+      "label": "Instellingen doorzoeken",
+      "placeholder": "Zoeken …",
+      "results": "Zoekresultaten",
+      "count": "{count, plural, =0 {Geen resultaten} one {# resultaat} other {# resultaten}}",
+      "none": "Niets gevonden voor „{query}”.",
+      "adminHint": "Beheer",
+      "pageHint": "Eigen pagina"
     }
   },
   "language": {
@@ -163,7 +172,7 @@
       },
       "semanticToolRouting": {
         "label": "Tools selecteren met Jev",
-        "help": "Jev bepaalt vóór elke run welke toolbereiken de AI aangeboden krijgt, zelfs als het verzoek in een andere taal of zonder passende trefwoorden is gesteld. Hiervoor worden je laatste berichten naar OpenRouter gestuurd, nooit de inhoud van een pagina. Reageert Jev niet binnen 1,5 seconde, dan selecteert de run net als voorheen op basis van trefwoorden en start alsnog. Uit betekent: alleen trefwoorden. Dit is geen toegangsbeperking; elke tool blijft bereikbaar."
+        "help": "Jev is een klein, snel beslissingsmodel dat vóór elke sessie inschat welke tools nodig zijn. Zo krijgt de AI de juiste toolbereiken aangeboden, ook als de vraag in een andere taal of zonder passende trefwoorden is gesteld. Hiervoor worden je laatste berichten naar OpenRouter gestuurd, nooit de inhoud van een pagina. Antwoordt Jev niet binnen 1,5 seconde, dan selecteert de sessie net als vroeger op trefwoorden en start alsnog. Uit betekent: alleen trefwoorden. Dit is geen machtiging; elke tool blijft toegankelijk."
       },
       "mutatingToolsEnabled": {
         "label": "Schrijvende tools toestaan",

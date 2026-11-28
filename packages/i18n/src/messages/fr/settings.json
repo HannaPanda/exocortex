@@ -60,6 +60,15 @@
     "admin": {
       "pages": "Pages d’administration",
       "groups": "Paramètres de l’installation par section"
+    },
+    "search": {
+      "label": "Rechercher dans les paramètres",
+      "placeholder": "Rechercher…",
+      "results": "Résultats de recherche",
+      "count": "{count, plural, =0 {Aucun résultat} one {# résultat} many {# de résultats} other {# résultats}}",
+      "none": "Rien trouvé pour « {query} ».",
+      "adminHint": "Administration",
+      "pageHint": "Propre page"
     }
   },
   "language": {
@@ -163,7 +172,7 @@
       },
       "semanticToolRouting": {
         "label": "Sélectionner les outils avec Jev",
-        "help": "Avant chaque exécution, Jev décide des domaines d’outils proposés à l’IA, même si la requête est formulée dans une autre langue ou sans mots-clés correspondants. Pour cela, tes derniers messages sont envoyés à OpenRouter, jamais le contenu d’une page. Si Jev ne répond pas dans les 1,5 seconde, l’exécution sélectionne par mots-clés comme avant et démarre quand même. Désactivé signifie : uniquement par mots-clés. Il ne s’agit pas d’une restriction de droits, chaque outil reste accessible."
+        "help": "Jev est un modèle de décision léger et rapide qui évalue avant chaque exécution les outils nécessaires. L’IA se voit ainsi proposer les bons domaines d’outils, même si la demande est formulée dans une autre langue ou sans mots-clés correspondants. Pour cela, tes derniers messages sont envoyés à OpenRouter, jamais le contenu d’une page. Si Jev ne répond pas en 1,5 seconde, l’exécution sélectionne les outils par mots-clés comme avant et démarre tout de même. Désactivé signifie : uniquement par mots-clés. Il ne s’agit pas d’une restriction de droits, chaque outil reste accessible."
       },
       "mutatingToolsEnabled": {
         "label": "Autoriser les outils d’écriture",

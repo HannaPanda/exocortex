@@ -60,6 +60,15 @@
     "admin": {
       "pages": "Strony administracji",
       "groups": "Ustawienia instalacji według sekcji"
+    },
+    "search": {
+      "label": "Przeszukaj ustawienia",
+      "placeholder": "Szukaj…",
+      "results": "Wyniki wyszukiwania",
+      "count": "{count, plural, =0 {Brak wyników} one {# wynik} few {# wyniki} many {# wyników} other {# wyniku}}",
+      "none": "Nic nie znaleziono dla „{query}”.",
+      "adminHint": "Administracja",
+      "pageHint": "Osobna strona"
     }
   },
   "language": {
@@ -163,7 +172,7 @@
       },
       "semanticToolRouting": {
         "label": "Wybieranie narzędzi za pomocą Jev",
-        "help": "Przed każdym uruchomieniem Jev decyduje, jakie obszary narzędzi otrzyma AI, nawet jeśli zapytanie jest w innym języku lub bez pasujących słów kluczowych. W tym celu twoje ostatnie wiadomości trafiają do OpenRouter, ale nigdy zawartość strony. Jeśli Jev nie odpowie w ciągu 1,5 sekundy, uruchomienie wybiera narzędzia tak jak dawniej na podstawie słów kluczowych i mimo to startuje. Wyłączone oznacza: tylko słowa kluczowe. To nie są uprawnienia – każde narzędzie pozostaje dostępne."
+        "help": "Jev to mały, szybki model decyzyjny, który przed każdym uruchomieniem ocenia, które narzędzia będą potrzebne. Dzięki temu sztuczna inteligencja ma do dyspozycji odpowiednie obszary narzędzi, nawet jeśli zapytanie zadano w innym języku lub bez pasujących słów kluczowych. W tym celu twoje ostatnie wiadomości trafiają do OpenRouter – treść strony nigdy nie jest przesyłana. Jeśli Jev nie odpowie w ciągu 1,5 sekundy, uruchomienie wybiera narzędzia tak jak dawniej na podstawie słów kluczowych i mimo to startuje. Wyłączenie oznacza: tylko słowa kluczowe. Nie jest to kwestia uprawnień – każde narzędzie pozostaje dostępne."
       },
       "mutatingToolsEnabled": {
         "label": "Zezwalaj na narzędzia zapisujące",

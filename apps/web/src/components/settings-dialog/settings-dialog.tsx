@@ -2,21 +2,11 @@
 
 import { ChevronLeftIcon } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import {
-  Button,
-  cn,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  LoadingState,
-  SectionRule,
-  useIsMobile,
-} from '@exocortex/ui';
+import { Button, cn, Dialog, DialogContent, LoadingState, useIsMobile } from '@exocortex/ui';
 
 import {
   UnsavedChangesDialog,
@@ -28,7 +18,8 @@ import { isPlainClick } from '@/lib/plain-click';
 import { settingsAddress, settingsRequestOf, type SettingsSectionId } from './sections';
 import { SettingsDialogContext } from './settings-dialog-context';
 import { type SettingsEntry, useSettingsEntries } from './settings-entries';
-import { SettingsWorkspacePicker, useSettingsWorkspace } from './use-settings-workspace';
+import { SettingsNav } from './settings-nav';
+import { useSettingsWorkspace } from './use-settings-workspace';
 
 /** The page's address without the dialog, the part Back returns to. */
 function plainAddress(location: Location): string {
@@ -116,6 +107,31 @@ export function SettingsDialogProvider({ children }: { children: React.ReactNode
   );
 }
 
+/**
+ * Which group the dialog shows. A group the reader may not see (a workspace
+ * role that changed, a pasted address) is answered with the first one they
+ * may, never with a group they would only be refused in; a phone shows the
+ * list instead. Until the workspace and the account's role have arrived, a
+ * group that may still turn out to be theirs is waited for, so a link to
+ * "Mitglieder" does not flash "Sprache" first.
+ */
+function shownGroup({
+  entries,
+  section,
+  pending,
+  isMobile,
+}: {
+  entries: readonly SettingsEntry[];
+  section: SettingsSectionId | null;
+  pending: boolean;
+  isMobile: boolean;
+}): { shown: SettingsEntry | null; waiting: boolean } {
+  const active = entries.find((entry) => entry.id === section) ?? null;
+  if (active !== null) return { shown: active, waiting: false };
+  if (section !== null && pending) return { shown: null, waiting: true };
+  return { shown: isMobile ? null : (entries[0] ?? null), waiting: false };
+}
+
 function SettingsDialog({
   section,
   onSelect,
@@ -132,19 +148,17 @@ function SettingsDialog({
   const isMobile = useIsMobile();
   const session = useSessionQuery();
   const chosen = useSettingsWorkspace();
-  const entries = useSettingsEntries({
-    admin: session.data?.user?.role === 'admin',
-    workspace: chosen.workspace,
-  });
+  const admin = session.data?.user?.role === 'admin';
+  const entries = useSettingsEntries({ admin, workspace: chosen.workspace });
+  const router = useRouter();
+  const [query, setQuery] = React.useState('');
 
-  // A group the reader may not see (a workspace role that changed, a pasted
-  // address) is answered with the first one they may, never with a group they
-  // would only be refused in. Until the workspace and the account's role have
-  // arrived, a group that may still turn out to be theirs is waited for
-  // instead, so a link to "Mitglieder" does not flash "Sprache" first.
-  const active = entries.find((entry) => entry.id === section) ?? null;
-  const waiting = active === null && section !== null && (chosen.pending || session.isPending);
-  const shown = waiting ? null : (active ?? (isMobile ? null : (entries[0] ?? null)));
+  const { shown, waiting } = shownGroup({
+    entries,
+    section,
+    pending: chosen.pending || session.isPending,
+    isMobile,
+  });
 
   // How much of an open form is unsaved, so closing or switching can ask.
   const [unsaved, setUnsaved] = React.useState(0);
@@ -159,13 +173,18 @@ function SettingsDialog({
 
   const select = (id: SettingsSectionId | '') => guarded(() => onSelect(id));
 
-  const areas = groupByArea(entries);
-
   return (
     <Dialog
       open
-      onOpenChange={(next: boolean) => {
-        if (!next) guarded(onClose);
+      onOpenChange={(next, details) => {
+        if (next) return;
+        // Escape empties a search first and closes the dialog only after,
+        // the way a search field anywhere else behaves.
+        if (details.reason === 'escape-key' && query !== '') {
+          setQuery('');
+          return;
+        }
+        guarded(onClose);
       }}
     >
       <DialogContent
@@ -181,47 +200,20 @@ function SettingsDialog({
           'max-md:rounded-none max-md:border-0',
         )}
       >
-        <nav
-          aria-label={t('navigation')}
-          className={cn(
-            'flex w-64 shrink-0 flex-col border-r border-border bg-surface',
-            'max-md:w-full max-md:border-r-0',
-            isMobile && (shown !== null || waiting) && 'hidden',
-          )}
-        >
-          <div className="flex flex-col gap-1 px-4 pt-4 pb-3">
-            <DialogTitle>{t('title')}</DialogTitle>
-            <DialogDescription className="exocortex-sr-only">{t('description')}</DialogDescription>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-4">
-            {areas.map(({ area, items }) => (
-              <div key={area} className="mt-3 first:mt-0">
-                <SectionRule as="h3" className="px-2 pb-1">
-                  {t(`areas.${area}`)}
-                </SectionRule>
-                {area === 'workspace' ? (
-                  <SettingsWorkspacePicker
-                    workspaces={chosen.workspaces}
-                    workspaceId={chosen.workspaceId}
-                    onPick={(id) => guarded(() => chosen.pick(id))}
-                  />
-                ) : null}
-                <ul className="flex flex-col gap-0.5">
-                  {items.map((entry) => (
-                    <li key={entry.id}>
-                      <NavItem
-                        entry={entry}
-                        current={shown?.id === entry.id}
-                        href={href(entry.id)}
-                        onSelect={() => select(entry.id)}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </nav>
+        <SettingsNav
+          entries={entries}
+          shownId={shown?.id ?? null}
+          href={href}
+          onSelect={select}
+          onOpenPage={(target) => guarded(() => router.push(target))}
+          query={query}
+          onQuery={setQuery}
+          admin={admin}
+          workspaces={chosen.workspaces}
+          workspaceId={chosen.workspaceId}
+          onPickWorkspace={(id) => guarded(() => chosen.pick(id))}
+          className={cn(isMobile && (shown !== null || waiting) && 'hidden')}
+        />
 
         {waiting ? (
           <div className="flex min-w-0 flex-1 items-center justify-center">
@@ -261,60 +253,6 @@ function SettingsDialog({
         />
       </DialogContent>
     </Dialog>
-  );
-}
-
-function groupByArea(entries: readonly SettingsEntry[]) {
-  const areas: { area: SettingsEntry['area']; items: SettingsEntry[] }[] = [];
-  for (const entry of entries) {
-    const last = areas.at(-1);
-    if (last?.area === entry.area) last.items.push(entry);
-    else areas.push({ area: entry.area, items: [entry] });
-  }
-  return areas;
-}
-
-/**
- * One group in the navigation: a real link, so it opens in a new tab and can
- * be copied, that switches the group in place on an ordinary click. "This one"
- * is marked the way the page tree marks the open page (DESIGN.md,
- * Navigation): the strong surface, full-strength text and an amber icon.
- */
-function NavItem({
-  entry,
-  current,
-  href,
-  onSelect,
-}: {
-  entry: SettingsEntry;
-  current: boolean;
-  href: string;
-  onSelect: () => void;
-}) {
-  const Icon = entry.icon;
-  return (
-    <Link
-      href={href}
-      replace
-      scroll={false}
-      aria-current={current ? 'page' : undefined}
-      data-testid={`settings-nav-${entry.id}`}
-      onClick={(event) => {
-        if (!isPlainClick(event)) return;
-        event.preventDefault();
-        onSelect();
-      }}
-      className={cn(
-        'flex min-h-8 items-center gap-2 rounded-md px-2 py-1.5 text-sm',
-        'max-md:min-h-11',
-        current
-          ? 'bg-accent-strong font-medium text-foreground'
-          : 'text-muted-foreground hover:bg-accent hover:text-foreground',
-      )}
-    >
-      <Icon className={cn('size-4 shrink-0', current && 'text-primary')} aria-hidden />
-      <span className="truncate">{entry.label}</span>
-    </Link>
   );
 }
 
