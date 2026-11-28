@@ -42,7 +42,7 @@ export const BLOCK_ICON_NAMES = [
   'ChevronRight',
   'Columns2',
   'Sigma',
-  'ListTodo',
+  'TableOfContents',
   'Link2',
   'AtSign',
   'Smile',

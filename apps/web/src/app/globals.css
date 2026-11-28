@@ -834,26 +834,27 @@
   }
 
   /* Table of contents and breadcrumb: derived content, so they read as chrome
-     inside the document rather than as prose. */
-  .exocortex-editor .exocortex-toc {
+     inside the document rather than as prose. The table of contents is drawn
+     the same way behind a public link, which has no editor around it. */
+  .exocortex-toc {
     @apply rounded-md border border-border bg-card px-4 py-3 text-sm;
   }
 
-  .exocortex-editor .exocortex-toc ol {
+  .exocortex-toc ol {
     @apply list-none pl-0;
   }
 
-  .exocortex-editor .exocortex-toc li[data-level='2'] {
+  /* Indented by the levels the page really uses (issue #228), as the floating
+     outline does: a page starting at H2 does not open with an indented list. */
+  .exocortex-toc li[data-depth='1'] {
     @apply pl-4;
   }
 
-  .exocortex-editor .exocortex-toc li[data-level='3'] {
+  .exocortex-toc li[data-depth='2'] {
     @apply pl-8;
   }
 
-  .exocortex-editor .exocortex-toc li[data-level='4'],
-  .exocortex-editor .exocortex-toc li[data-level='5'],
-  .exocortex-editor .exocortex-toc li[data-level='6'] {
+  .exocortex-toc li[data-depth='3'] {
     @apply pl-12;
   }
 
