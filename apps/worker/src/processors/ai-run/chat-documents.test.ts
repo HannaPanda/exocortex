@@ -41,7 +41,9 @@ describe('chatDocumentContext', () => {
     const fenceEnd = content.indexOf('<<<ENDE FREMDINHALT>>>');
     expect(content.indexOf('exo_attachment_read_text und der Kennung d2')).toBeGreaterThan(
       fenceEnd,
-    );
+    ); // The rest is read where it is needed, not from where the prompt stopped (issue #133).
+    expect(content).toContain('ohne Bereich kommt die Gliederung');
+    expect(content).toContain('fromPage/toPage');
   });
 
   it('names a document still being read and one that could not be, and fences neither', () => {

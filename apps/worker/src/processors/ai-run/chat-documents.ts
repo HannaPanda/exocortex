@@ -17,7 +17,8 @@ import { type RunPromptMessage } from './chat-images';
  * (ADR-050), or, for a text, Markdown or JSON file, the text it arrived as.
  * Where it reaches a prompt it is fenced as attachment content, cut to a
  * budget per message; the rest is read with `exo_attachment_read_text`, which
- * answers the same text to the same person. Pure text builders apart from the
+ * answers the same text to the same person, as an outline first and then the
+ * stretch that is needed (ADR-101). Pure text builders apart from the
  * wait, so the wording is tested as text.
  */
 
@@ -71,9 +72,16 @@ export function chatDocumentContext(documents: readonly ChatDocumentForPrompt[])
   for (const file of ready) {
     const length = file.text?.length ?? 0;
     if (length > share || file.truncated) {
+      // Not "read on from here": the rest is read where it is needed. The
+      // read tool answers a long text with its outline (ADR-101), so a question
+      // about page 40 costs page 40, not the 39 before it.
       parts.push(
-        `${file.filename}: oben stehen die ersten ${String(Math.min(share, length))} Zeichen; ` +
-          `den Rest liest du ${readLater(file.id)}.`,
+        `${file.filename}: oben stehen nur die ersten ${String(Math.min(share, length))} Zeichen ` +
+          `von ${String(length)}${file.truncated ? ' (die Datei ist noch länger)' : ''}. ` +
+          `Braucht die Antwort eine spätere Stelle, dann lies gezielt ${readLater(file.id)}: ` +
+          'ohne Bereich kommt die Gliederung (bei einem PDF nach Seiten), danach liest du nur ' +
+          'den Bereich, der die Frage beantwortet (fromPage/toPage oder fromChar/toChar). ' +
+          'Lies das Dokument nicht von vorne durch.',
       );
     }
     const note = file.trust === undefined ? null : attachmentTrustNote(file.trust);
