@@ -55,8 +55,8 @@ function messagePosted(page: Page): Promise<unknown> {
 
 /**
  * Types `/help` with a space after it, which opens no command hint, so Enter
- * sends instead of choosing. (Escape would close the hint, and on a phone the
- * sheet the chat sits in along with it.)
+ * sends instead of choosing. (Escape closes the hint too, and since #269 only
+ * the hint, also in the sheet the chat sits in on a phone.)
  */
 async function typeHelp(page: Page, testId: string): Promise<void> {
   await page.getByTestId(testId).fill('/help ');

@@ -15,7 +15,7 @@ import { type Editor, useEditorState } from '@tiptap/react';
 import * as React from 'react';
 
 /**
- * Shared machinery for the `/` and `@` menus.
+ * Shared machinery for the `/`, `@` and `:` menus.
  *
  * ## Why these menus do not use the suggestion renderer
  *
@@ -115,6 +115,13 @@ export interface SuggestionKeyboardState {
   setIndex: (index: number) => void;
   /** Applies the highlighted option. */
   choose: (index: number) => void;
+  /**
+   * Asked first about every key while options are offered, for a menu whose
+   * keys differ from the rest: `true` or `false` is the answer, `null` leaves
+   * the key to the shared handling below. The `:` menu uses it for a closing
+   * colon and for an Enter it lets through (issue #269).
+   */
+  intercept?: (event: KeyboardEvent) => boolean | null;
 }
 
 export class SuggestionKeyboard {
@@ -132,6 +139,9 @@ export class SuggestionKeyboard {
   handleKeyDown(event: KeyboardEvent): boolean {
     const state = this.#state;
     if (state === null || state.count === 0) return false;
+
+    const decided = state.intercept?.(event) ?? null;
+    if (decided !== null) return decided;
 
     if (event.key === 'ArrowDown') {
       state.setIndex((state.index + 1) % state.count);

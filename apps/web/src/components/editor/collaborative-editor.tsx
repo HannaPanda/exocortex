@@ -53,6 +53,11 @@ import {
   useDestructiveConfirmDialog,
 } from '@/components/editor/destructive-confirm';
 import { useEditorWords } from '@/components/editor/editor-words';
+import {
+  createEmojiShortcodeExtension,
+  createEmojiShortcodeKeyboard,
+  EmojiShortcodeMenu,
+} from '@/components/editor/emoji-shortcode-menu';
 import { type FollowLink, FollowLinkContext } from '@/components/editor/follow-link-context';
 import { LinkBubble } from '@/components/editor/link-bubble';
 import { useLinkNavigation } from '@/components/editor/link-navigation';
@@ -333,10 +338,15 @@ function EditorSurface({
    */
   const slashKeyboard = React.useMemo(() => createSlashKeyboard(), []);
   const mentionKeyboard = React.useMemo(() => createMentionKeyboard(), []);
+  const emojiKeyboard = React.useMemo(() => createEmojiShortcodeKeyboard(), []);
   const slashExtension = React.useMemo(() => createSlashExtension(slashKeyboard), [slashKeyboard]);
   const mentionExtension = React.useMemo(
     () => createMentionExtension(mentionKeyboard),
     [mentionKeyboard],
+  );
+  const emojiExtension = React.useMemo(
+    () => createEmojiShortcodeExtension(emojiKeyboard),
+    [emojiKeyboard],
   );
   // Marks the blocks that carry an open comment thread. Stateless and stable,
   // like the suggestion plugins above: which blocks are marked is pushed in
@@ -463,6 +473,7 @@ function EditorSurface({
           LinePlaceholder.configure({ placeholder }),
           slashExtension,
           mentionExtension,
+          emojiExtension,
           commentMarkers,
           wikiLinkMarkers,
           agentEditMarkers,
@@ -536,6 +547,7 @@ function EditorSurface({
       access,
       slashExtension,
       mentionExtension,
+      emojiExtension,
       commentMarkers,
       wikiLinkMarkers,
       agentEditMarkers,
@@ -585,6 +597,7 @@ function EditorSurface({
           catalog={catalog}
           slashKeyboard={slashKeyboard}
           mentionKeyboard={mentionKeyboard}
+          emojiKeyboard={emojiKeyboard}
           editable={access === 'write'}
           askDatabaseEmbedRef={askDatabaseEmbedRef}
           askSavedQueryEmbedRef={askSavedQueryEmbedRef}
@@ -605,6 +618,7 @@ interface EditorChromeProps {
   catalog: readonly BlockCatalogEntry[];
   slashKeyboard: SuggestionKeyboard;
   mentionKeyboard: SuggestionKeyboard;
+  emojiKeyboard: SuggestionKeyboard;
   editable: boolean;
   askDatabaseEmbedRef: React.RefObject<AskDatabaseEmbed | null>;
   askSavedQueryEmbedRef: React.RefObject<AskSavedQueryEmbed | null>;
@@ -627,6 +641,7 @@ function EditorChrome({
   catalog,
   slashKeyboard,
   mentionKeyboard,
+  emojiKeyboard,
   editable,
   askDatabaseEmbedRef,
   askSavedQueryEmbedRef,
@@ -741,6 +756,7 @@ function EditorChrome({
         pages={mentionPages}
         users={mentionUsers}
       />
+      <EmojiShortcodeMenu editor={editor} keyboard={emojiKeyboard} />
       {/* Renders nothing: it keeps the comment markers in the text in step with
           the panel, in both directions. Read-only pages get them too — a marker
           is a pointer to a discussion, not an editing affordance. */}

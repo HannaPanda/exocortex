@@ -9,6 +9,7 @@ import { Button, Textarea, Tooltip, TooltipContent, TooltipTrigger } from '@exoc
 
 import { CommandHint } from './command-hint';
 import { CHAT_FILE_INPUT_ACCEPT } from './use-chat-attachments';
+import { useComposerEmoji } from './use-composer-emoji';
 
 export interface ChatComposerProps {
   /**
@@ -112,6 +113,8 @@ export function ChatComposer({
   const [hintIndex, setHintIndex] = React.useState(0);
   const [hintDismissed, setHintDismissed] = React.useState(false);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
+  // Where the caret is, for the `:` menu (issue #269); `null` over a selection.
+  const [caret, setCaret] = React.useState<number | null>(null);
   // What pressed the send button last, read by its click: a click carries no
   // pointer type in every browser, the pointerdown before it does.
   const pressedWith = React.useRef<string | null>(null);
@@ -137,6 +140,18 @@ export function ChatComposer({
     commandQuery === null || hintDismissed
       ? []
       : CHAT_COMMANDS.filter((command) => command.name.startsWith(commandQuery));
+
+  const emoji = useComposerEmoji({
+    value,
+    caret,
+    textareaRef,
+    onChange: (next, at) => {
+      setValue(next);
+      setCaret(at);
+      // The new text is not in the field until React has rendered it.
+      requestAnimationFrame(() => textareaRef.current?.setSelectionRange(at, at));
+    },
+  });
 
   const applyCommand = (name: string): void => {
     setValue(`/${name} `);
@@ -174,6 +189,7 @@ export function ChatComposer({
       {matches.length > 0 ? (
         <CommandHint commands={matches} activeIndex={hintIndex} onSelect={applyCommand} />
       ) : null}
+      {emoji.element}
 
       <div className="flex items-end gap-2">
         <Textarea
@@ -182,10 +198,16 @@ export function ChatComposer({
           value={value}
           placeholder={variant === 'start' ? t('startPlaceholder') : t('placeholder')}
           data-testid={look.inputTestId}
-          onChange={(event) => setValue(event.target.value)}
+          {...emoji.fieldProps}
+          onChange={(event) => {
+            setValue(event.target.value);
+            setCaret(caretOf(event.target));
+          }}
+          onSelect={(event) => setCaret(caretOf(event.currentTarget))}
           onPaste={(event) => pasteFiles(event, files)}
           ref={textareaRef}
           onKeyDown={(event) => {
+            if (emoji.onKeyDown(event)) return;
             if (matches.length > 0) {
               if (event.key === 'ArrowDown') {
                 event.preventDefault();
@@ -205,6 +227,10 @@ export function ChatComposer({
               }
               if (event.key === 'Escape') {
                 event.preventDefault();
+                // Not the sheet around the chat as well, on a phone (#301):
+                // see `use-composer-emoji.tsx` for why it takes both stops.
+                event.stopPropagation();
+                event.nativeEvent.stopImmediatePropagation();
                 setHintDismissed(true);
                 return;
               }
@@ -245,6 +271,11 @@ export function ChatComposer({
       </div>
     </div>
   );
+}
+
+/** The caret of a field, or `null` while a range is selected. */
+function caretOf(field: HTMLTextAreaElement): number | null {
+  return field.selectionStart === field.selectionEnd ? field.selectionStart : null;
 }
 
 /**

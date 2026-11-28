@@ -128,13 +128,14 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `emoji-menu.tsx`                | emoji picker (inserts characters)                                                                                                                                                                                                     |
 | `slash-menu.tsx`                | `/` block menu, reads the catalog                                                                                                                                                                                                     |
 | `mention-menu.tsx`              | `@` menu for pages, people and dates                                                                                                                                                                                                  |
+| `emoji-shortcode-menu.tsx`      | `:` menu: emoji by name in the reader's language or by shortcode (`:tada`), inserted as text; where a colon may open it is `lib/emoji-shortcode.ts` (issue #269)                                                                      |
 | `block-handle.tsx`              | drag handle in the outer lane of the interaction gutter (docs/ui-system.md, and docs/deviations.md 17)                                                                                                                                |
 | `handle-hover.ts`               | which block the handle belongs to while the pointer moves: a nested block keeps it over its text and on the way to the handle (issue #286)                                                                                            |
 | `block-actions.tsx`             | turn into, colour, move, duplicate, copy link, delete — shared by handle and toolbar; a delete that loses a whole structure is confirmed first and re-finds its block by id afterwards                                                |
 | `block-target.ts`               | the block a handle action is aimed at: found again by its id, then selected with `runOnBlock` before the selection command runs (issue #229)                                                                                          |
 | `block-removal.ts`              | which blocks are worth a confirmation (compound ones, and anything above 280 characters) and what the dialog says about them (issue #91)                                                                                              |
 | `destructive-confirm.tsx`       | the confirmation dialog itself. Rendered by `EditorChrome` and reached through a context, because every caller is a bubble menu or a drag handle that unmounts as soon as the text loses focus                                        |
-| `suggestion-menu.tsx`           | shared state-driven machinery for `/` and `@`, including where the popup goes and how far its list may grow                                                                                                                           |
+| `suggestion-menu.tsx`           | shared state-driven machinery for `/`, `@` and `:`, including where the popup goes and how far its list may grow                                                                                                                      |
 | `callout-menu.tsx`              | symbol, heading and frame colour of a callout, opened from its symbol or heading, or with `Tab` from its text (issue #306)                                                                                                            |
 | `code-block-toolbar.tsx`        | language picker and copy, in the block's top right corner while the pointer rests on it or the caret is in it, one `Tab` stop after the text (issue #304)                                                                             |
 | `table-toolbar.tsx`             | rows, columns, header, merge, and the confirmed "Tabelle löschen"                                                                                                                                                                     |
@@ -231,7 +232,7 @@ Two rules hold for this layer, both learned the hard way (docs/deviations.md 16�
 - **suggestion menus render from the plugin state**, never from the suggestion
   renderer's `onStart`/`onExit`, because those do not survive a plugin-view rebuild.
 
-A suggestion popup (`/`, `@`) is placed by `SuggestionPopup` with the same
+A suggestion popup (`/`, `@`, `:`) is placed by `SuggestionPopup` with the same
 `@floating-ui/dom` the block handle uses (issue #236): below the typed
 character when the list fits, above it when that side has more room, and never
 taller than the side it lands on, published as `--available-height` and read by
@@ -242,6 +243,23 @@ arrow keys move a highlight while the focus stays in the editor, so
 `useActiveOptionInView` scrolls the list, and only the list, to keep the
 highlighted option visible. A new suggestion menu uses both rather than a
 fixed position of its own.
+
+The `:` menu (issue #269) is the one whose trigger is also punctuation, so
+which colon may open it is decided by one rule both the editor and the chat
+field ask (`apps/web/src/lib/emoji-shortcode.ts`): a letter (or `+1`/`-1`)
+right after the colon, and before it nothing that makes the colon part of a
+word, a time, an address or a notation. The plugin therefore runs with
+`allowedPrefixes: null` and judges the prefix in `allow`, where it also reads
+the schema: no list in a code block (`spec.code`) or under the `code` mark.
+The chat field has no schema and reads Markdown fences and code spans off the
+text before the caret instead. Two keys differ from the other menus, through
+`SuggestionKeyboardState.intercept`: a closing `:` after a shortcode spelled
+out in full (`:tada:`) inserts its emoji, and Enter after a single character
+nobody moved the highlight from is let through, because `:D` followed by Enter
+is an emoticon and a new line far more often than a search. The data is
+`emoji-catalog.ts`, the same as the palette's, one generated file per
+interface language with GitHub's shortcodes as keywords, and it is only
+requested once a shortcode is being typed.
 
 ## Stable block identifiers
 
