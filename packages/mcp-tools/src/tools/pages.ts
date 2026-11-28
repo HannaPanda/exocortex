@@ -82,8 +82,8 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
     'vollständige Liste: um sicher zu wissen, was unter einer Seite hängt, ruf das Tool mit ' +
     'deren parentId auf. Eine Datenbank steht mit ihrer Zeilenzahl statt mit ihren Zeilen da; ' +
     'die Zeilen liest exo_database_query, oder dieses Tool mit der Datenbank als parentId ' +
-    '(rows: "include" listet sie überall mit). Ein Nichtmitglied sieht nur seine Freigaben ' +
-    '(exo_shared_with_me), mit Unterseiten ab der geteilten Seite, nie darüber oder daneben.',
+    '(rows: "include" listet sie überall mit). Ein Nichtmitglied sieht nur, was mit ihm geteilt ' +
+    'ist (exo_shared_with_me), mit Unterseiten ab der geteilten Seite, nie darüber oder daneben.',
   inputSchema: z.object({ workspaceId: idSchema }).extend(documentTreeRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   domain: 'core',

@@ -188,9 +188,8 @@ export const sharedWithMeTool: AnyToolDefinition = defineTool({
   description:
     'Listet Seiten, die andere mit diesem Konto geteilt haben, über alle Arbeitsbereiche ' +
     'hinweg. Diese Seiten tauchen in keinem Seitenbaum auf, weil das Konto dort kein Mitglied ' +
-    'ist; nur diese Liste führt zu ihnen. Was unter einer Freigabe mit allem darunter hängt, ' +
-    'liest exo_page_tree mit der workspaceId und der Seite als parentId; es nennt nur Seiten ' +
-    'innerhalb der Freigabe.',
+    'ist; nur diese Liste führt zu ihnen. Was darunter hängt, wenn mit allem darunter geteilt ' +
+    'wurde, liest exo_page_tree mit der workspaceId und der Seite als parentId.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
   domain: 'shares',
