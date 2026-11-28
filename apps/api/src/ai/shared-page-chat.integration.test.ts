@@ -361,15 +361,20 @@ describe("the run's tool calls reach exactly what the grant reaches", () => {
     await expect(access.findDocumentContext(sectionId, readerId)).resolves.toBeNull();
   });
 
-  it("reaches nothing else in the sharer's workspace: no search, no tree, no database", async () => {
+  it("reaches nothing else in the sharer's workspace: no search, no database, only its branch of the tree", async () => {
     await setGrant({ permission: 'WRITE', scope: 'SUBTREE' });
     // `requireScopedRole` is what the search, the tree and the trash ask.
     await expect(access.requireScopedRole(sharerWorkspaceId, readerId)).rejects.toBeInstanceOf(
       AuthorizationError,
     );
-    await expect(tree.getTree(sharerWorkspaceId, readerId)).rejects.toBeInstanceOf(
-      AuthorizationError,
-    );
+    // The tree answers a grantee since issue #327, with the branch the grant
+    // reaches and nothing above it or beside it.
+    const branch = await tree.getTree(sharerWorkspaceId, readerId);
+    expect(branch.nodes.map((node) => node.id)).toEqual([sharedId]);
+    expect(branch.nodes.flatMap((node) => node.children.map((child) => child.id))).toEqual([
+      childId,
+    ]);
+    expect(branch.archived).toEqual([]);
     await expect(access.findRole(sharerWorkspaceId, readerId)).resolves.toBeNull();
     await expect(access.findDocumentContext(collectionId, readerId)).resolves.toBeNull();
   });
