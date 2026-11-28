@@ -66,14 +66,14 @@ function isEmptyParagraph(node: PmNode | null | undefined): boolean {
 }
 
 /**
- * Whether `$pos` is the first (`dir < 0`) or last (`dir > 0`) position of an
+ * Whether `$pos` is the first (`direction < 0`) or last (`direction > 0`) position of an
  * isolating block (a column, a table cell): the edge a key must not cross.
  */
-function atIsolatingEdge($pos: ResolvedPos, depth: number, dir: -1 | 1): boolean {
+function atIsolatingEdge($pos: ResolvedPos, depth: number, direction: -1 | 1): boolean {
   for (let level = depth; level > 0; level -= 1) {
     const parent = $pos.node(level - 1);
     const index = $pos.index(level - 1);
-    const atEdge = dir < 0 ? index === 0 : index === parent.childCount - 1;
+    const atEdge = direction < 0 ? index === 0 : index === parent.childCount - 1;
     if (!atEdge) return false;
     if (parent.type.spec.isolating === true) return true;
   }
@@ -81,25 +81,25 @@ function atIsolatingEdge($pos: ResolvedPos, depth: number, dir: -1 | 1): boolean
 }
 
 /**
- * The node directly before (`dir < 0`) or after (`dir > 0`) the text block
+ * The node directly before (`direction < 0`) or after (`direction > 0`) the text block
  * around `$pos`, climbing out of the containers it starts or ends, the way
  * ProseMirror finds where to join; `null` at the edge of the document.
  */
 function neighbourAcross(
   $pos: ResolvedPos,
-  dir: -1 | 1,
+  direction: -1 | 1,
 ): { node: PmNode; depth: number; pos: number } | null {
   for (let depth = $pos.depth - 1; depth >= 0; depth -= 1) {
     const parent = $pos.node(depth);
     const index = $pos.index(depth);
     if (parent.type.spec.isolating === true && depth > 0) {
-      const atEdge = dir < 0 ? index === 0 : index === parent.childCount - 1;
+      const atEdge = direction < 0 ? index === 0 : index === parent.childCount - 1;
       if (atEdge) return null;
     }
-    const neighbourIndex = index + dir;
+    const neighbourIndex = index + direction;
     if (neighbourIndex < 0 || neighbourIndex >= parent.childCount) continue;
     const node = parent.child(neighbourIndex);
-    const pos = dir < 0 ? $pos.before(depth + 1) - node.nodeSize : $pos.after(depth + 1);
+    const pos = direction < 0 ? $pos.before(depth + 1) - node.nodeSize : $pos.after(depth + 1);
     return { node, depth, pos };
   }
   return null;
