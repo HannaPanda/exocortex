@@ -1,6 +1,17 @@
 import { ATTACHMENT_SEARCH_TEXT_MAX_CHARS, type QUEUE_NAMES } from '@exocortex/contracts';
-import { type PassageAnchor, type PrismaClient, type SearchAdapter } from '@exocortex/database';
-import { plainTextHeadingAnchors } from '@exocortex/editor';
+import {
+  type PassageAnchor,
+  type PrismaClient,
+  type SearchAdapter,
+  type SearchBlockMapUnit,
+  type StoredSearchBlockMap,
+  toStoredBlockMap,
+} from '@exocortex/database';
+import {
+  blocksShowingAttachments,
+  plainTextBlockMap,
+  plainTextHeadingAnchors,
+} from '@exocortex/editor';
 import { type JobContext } from '@exocortex/queue';
 
 import { asProseMirrorDocument } from './document-links';
@@ -41,7 +52,7 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
           // Oldest first, so which attachments fit inside the budget below is
           // stable across runs rather than shuffling on every reindex.
           orderBy: { createdAt: 'asc' },
-          select: { extractedText: true, correctedText: true },
+          select: { id: true, filename: true, extractedText: true, correctedText: true },
         },
       },
     });
@@ -57,14 +68,28 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
 
     // A page without materialized content is still findable by its title.
     const pageText = document.content?.plainText ?? '';
-    const attachmentText = collectAttachmentText(document.attachments);
+    const attachments = collectAttachmentText(document.attachments);
+    const attachmentText = attachments.text;
+    const plainText = attachmentText.length === 0 ? pageText : `${pageText}\n\n${attachmentText}`;
+    const blockMap = blockMapOf({
+      proseMirrorJson: document.content?.proseMirrorJson,
+      pageText,
+      plainText,
+      attachments,
+    });
+    if (blockMap.textDiffers) {
+      logger.warn('Stored plain text differs from its JSON; page text left unlocated', {
+        documentId: document.id,
+      });
+    }
 
     await search.index({
       documentId: document.id,
       workspaceId: document.workspaceId,
       title: document.title,
-      plainText: attachmentText.length === 0 ? pageText : `${pageText}\n\n${attachmentText}`,
+      plainText,
       archivedAt: document.archivedAt,
+      ...(blockMap.map === undefined ? {} : { blockMap: blockMap.map }),
       isDatabaseRow: document.parent?.type === 'COLLECTION',
       headingAnchors: headingAnchorsOf(
         document.content?.proseMirrorJson,
@@ -109,6 +134,70 @@ function headingAnchorsOf(
   return anchors;
 }
 
+interface AttachmentTextSegment {
+  attachmentId: string;
+  filename: string;
+  /** Where this attachment's text starts in the joined attachment text. */
+  offset: number;
+}
+
+/**
+ * Which block every stretch of the indexed text came from (issue #280).
+ *
+ * Read off the stored ProseMirror JSON for the reason `headingAnchorsOf`
+ * gives. The map is only trusted when the JSON renders to exactly the stored
+ * plain text; when it does not, the page's own text stays unlocated rather
+ * than located against a different version of the page, and the next
+ * materialization indexes it again anyway. Attachment text is located by
+ * file, at the block that shows it when there is one.
+ *
+ * `map` is absent when the page has text but no materialized JSON yet: that
+ * is "still owed", which the backfill sweep and the next materialization
+ * both come back for.
+ */
+function blockMapOf(input: {
+  proseMirrorJson: unknown;
+  pageText: string;
+  plainText: string;
+  attachments: { text: string; segments: readonly AttachmentTextSegment[] };
+}): { map: StoredSearchBlockMap | undefined; textDiffers: boolean } {
+  const document = asProseMirrorDocument(input.proseMirrorJson);
+  if (document === null && input.pageText.length > 0) return { map: undefined, textDiffers: false };
+
+  const page = document === null ? null : plainTextBlockMap(document);
+  const textDiffers = page !== null && page.text !== input.pageText;
+  const units: SearchBlockMapUnit[] =
+    page === null || textDiffers
+      ? []
+      : page.units.map((unit) => ({
+          offset: unit.offset,
+          blockId: unit.blockId,
+          heading: unit.heading < 0 ? null : unit.heading,
+          attachment: null,
+        }));
+
+  const shown = document === null ? new Map<string, string>() : blocksShowingAttachments(document);
+  const base = input.pageText.length + 2;
+  input.attachments.segments.forEach((segment, index) => {
+    units.push({
+      offset: base + segment.offset,
+      blockId: shown.get(segment.attachmentId) ?? null,
+      heading: null,
+      attachment: index,
+    });
+  });
+
+  return {
+    map: toStoredBlockMap({
+      text: input.plainText,
+      units,
+      headings: page === null || textDiffers ? [] : page.headings,
+      attachments: input.attachments.segments,
+    }),
+    textDiffers,
+  };
+}
+
 /**
  * The text of a page's attachments, as the search projection carries it
  * (issue #101).
@@ -123,19 +212,30 @@ function headingAnchorsOf(
  * reader uses: somebody who fixed a garbled scan fixed it for the search too.
  * The budget is shared and spent oldest first rather than divided per
  * attachment, so one long PDF beside three short ones is not cut to a quarter
- * for the sake of symmetry.
+ * for the sake of symmetry. Where each file's text starts is kept, so a hit in
+ * it can name the file (issue #280).
  */
 function collectAttachmentText(
-  attachments: readonly { extractedText: string | null; correctedText: string | null }[],
-): string {
+  attachments: readonly {
+    id: string;
+    filename: string;
+    extractedText: string | null;
+    correctedText: string | null;
+  }[],
+): { text: string; segments: AttachmentTextSegment[] } {
   const parts: string[] = [];
+  const segments: AttachmentTextSegment[] = [];
+  let at = 0;
   let remaining = ATTACHMENT_SEARCH_TEXT_MAX_CHARS;
   for (const attachment of attachments) {
     if (remaining <= 0) break;
     const text = attachment.correctedText ?? attachment.extractedText;
     if (text === null || text.length === 0) continue;
-    parts.push(text.slice(0, remaining));
+    const part = text.slice(0, remaining);
+    segments.push({ attachmentId: attachment.id, filename: attachment.filename, offset: at });
+    parts.push(part);
+    at += part.length + 2;
     remaining -= Math.min(text.length, remaining);
   }
-  return parts.join('\n\n');
+  return { text: parts.join('\n\n'), segments };
 }

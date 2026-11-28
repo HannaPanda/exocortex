@@ -19,6 +19,7 @@ export * from './property-files';
 export * from './render-source';
 export * from './saved-query';
 export * from './search';
+export * from './search-block-map';
 export * from './semantic-search';
 export * from './tree';
 export * from './work-checkpoints';

@@ -1373,6 +1373,13 @@ model DocumentSearchIndex {
   archivedAt   DateTime?
   updatedAt    DateTime                 @updatedAt
   searchVector Unsupported("tsvector")?
+  /// Which block every stretch of `plainText` came from (issue #280), so a
+  /// keyword hit can name its block, list point or attachment and the section
+  /// above it. Written in the same upsert as `plainText`; the shape is
+  /// `StoredSearchBlockMap` in `search-block-map.ts`. `NULL` means nobody has
+  /// worked it out yet, and `backfill-search-block-map` comes back for it; a
+  /// page with nothing to locate stores an empty map instead.
+  blockMap     Json?
 
   @@index([workspaceId])
   @@map("document_search_index")

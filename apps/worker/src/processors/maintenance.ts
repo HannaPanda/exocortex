@@ -32,6 +32,7 @@ import {
   backfillAttachmentSearchText,
   backfillEmbeddings,
   backfillPassageAnchors,
+  backfillSearchBlockMap,
   vacuumSearchIndex,
 } from './maintenance-tasks/search-index';
 import { pruneSnapshots, snapshotActiveDocuments } from './maintenance-tasks/snapshots';
@@ -103,6 +104,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'backfill-attachment-search-text': backfillAttachmentSearchText,
   'screen-attachments': screenAttachments,
   'backfill-passage-anchors': backfillPassageAnchors,
+  'backfill-search-block-map': backfillSearchBlockMap,
   'prune-memories': pruneMemories,
   'prune-invitations': pruneInvitations,
   'prune-upload-tickets': pruneUploadTickets,

@@ -106,6 +106,12 @@ export const indexDocumentJobSchema = jobBase.extend({
      * adds the address and pays no model call.
      */
     'passage_anchors',
+    /**
+     * The page was indexed before the projection kept a map from text to
+     * blocks (issue #280). Nothing about the page changed; this write adds the
+     * map, and the unchanged text costs no embedding call.
+     */
+    'block_map',
   ]),
 });
 export type IndexDocumentJob = z.infer<typeof indexDocumentJobSchema>;
@@ -192,6 +198,14 @@ export const maintenanceJobSchema = jobBase.extend({
      * what tells the two meanings of an absent heading apart.
      */
     'backfill-passage-anchors',
+    /**
+     * Re-indexes the pages whose search projection has no block map yet
+     * (issue #280), so a keyword hit on them can name its block. Ordinary
+     * re-indexing in batches, a no-op once every page has one: `NULL` is what
+     * "still owed" looks like, and a page with nothing to locate stores an
+     * empty map.
+     */
+    'backfill-search-block-map',
     /**
      * Deletes session notes in the memory workspace that are older than
      * `memory.retentionDays`. Off while that is zero. Never touches the project

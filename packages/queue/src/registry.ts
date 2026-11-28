@@ -432,6 +432,10 @@ export class QueueRegistry {
     // without paying for a vector, so the only cost is one indexed query per
     // run once it has caught up.
     await schedule('backfill-passage-anchors', { every: 600_000 });
+    // Every ten minutes while a projection has no block map, and nothing
+    // afterwards (issue #280). The same shape again: ordinary re-indexing of
+    // up to 200 pages, which pays no model call for unchanged text.
+    await schedule('backfill-search-block-map', { every: 600_000 });
     // Daily, after the snapshot sweep. Does nothing while
     // `memory.retentionDays` is zero, which is the default.
     await schedule('prune-memories', { pattern: '15 4 * * *' });

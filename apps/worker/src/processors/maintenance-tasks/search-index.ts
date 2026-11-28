@@ -127,6 +127,53 @@ export const backfillPassageAnchors: MaintenanceTask = async ({
   }
 };
 
+/**
+ * Re-indexes the pages whose projection has no block map yet (issue #280).
+ *
+ * Every index writes the map from now on, so this is for the pages indexed
+ * before it existed. `blockMap IS NULL` is "still owed"; a page with nothing
+ * to locate stores an empty map, so the sweep runs out of work. A page whose
+ * text has never been materialized is left out: the indexer cannot build its
+ * map without the JSON and would hand back `NULL` every ten minutes, and the
+ * materialization indexes it anyway once it runs.
+ */
+export const backfillSearchBlockMap: MaintenanceTask = async ({
+  prisma,
+  queues,
+  payload,
+  logger,
+}) => {
+  const scope =
+    payload.workspaceId === null
+      ? Prisma.empty
+      : Prisma.sql`AND index."workspaceId" = ${payload.workspaceId}`;
+
+  const pending = await prisma.$queryRaw<{ documentId: string; workspaceId: string }[]>(Prisma.sql`
+    SELECT index."documentId" AS "documentId", index."workspaceId" AS "workspaceId"
+    FROM "document_search_index" AS index
+    LEFT JOIN "document_content" AS content ON content."documentId" = index."documentId"
+    WHERE index."blockMap" IS NULL
+      AND (content."proseMirrorJson" IS NOT NULL OR COALESCE(content."plainText", '') = '')
+      ${scope}
+    LIMIT ${ATTACHMENT_SEARCH_BACKFILL_BATCH}
+  `);
+
+  for (const row of pending) {
+    await queues.enqueue(QUEUE_NAMES.searchIndexing, {
+      correlationId: payload.correlationId,
+      documentId: row.documentId,
+      workspaceId: row.workspaceId,
+      reason: 'block_map',
+    });
+  }
+
+  if (pending.length > 0) {
+    logger.info('Re-indexing pages whose search projection has no block map yet', {
+      pages: pending.length,
+    });
+  }
+};
+
 /** Fills in vectors for the pages the semantic index has never seen. */
 export const backfillEmbeddings: MaintenanceTask = async (context) => {
   const { prisma, search, payload, logger, reportProgress } = context;

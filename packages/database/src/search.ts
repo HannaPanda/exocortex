@@ -2,6 +2,7 @@ import { type SearchResult } from '@exocortex/contracts';
 
 import { type PassageAnchor } from './chunking';
 import { Prisma, type PrismaClient } from './client';
+import { type StoredSearchBlockMap } from './search-block-map';
 
 export interface SearchQuery {
   workspaceId: string;
@@ -35,6 +36,14 @@ export interface IndexDocumentInput {
    * search finds by title anyway. Absent means "not a row".
    */
   isDatabaseRow?: boolean;
+  /**
+   * Which block every stretch of `plainText` came from (issue #280), built by
+   * `toStoredBlockMap`. Written with the text it indexes, so the two never
+   * disagree. Absent means "not computed": the column is cleared, because a
+   * map of the previous text would point at the wrong blocks, and the
+   * backfill sweep comes back for it.
+   */
+  blockMap?: StoredSearchBlockMap;
 }
 
 /**
@@ -199,12 +208,14 @@ export class PostgresSearchAdapter implements SearchAdapter {
         title: input.title,
         plainText: input.plainText,
         archivedAt: input.archivedAt,
+        blockMap: blockMapValue(input),
       },
       update: {
         workspaceId: input.workspaceId,
         title: input.title,
         plainText: input.plainText,
         archivedAt: input.archivedAt,
+        blockMap: blockMapValue(input),
       },
     });
   }
@@ -221,4 +232,9 @@ export class PostgresSearchAdapter implements SearchAdapter {
       return false;
     }
   }
+}
+
+/** The column value: the map, or SQL `NULL` for "still owed". */
+function blockMapValue(input: IndexDocumentInput): Prisma.InputJsonValue | typeof Prisma.DbNull {
+  return input.blockMap === undefined ? Prisma.DbNull : { ...input.blockMap };
 }

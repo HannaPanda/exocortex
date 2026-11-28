@@ -279,8 +279,59 @@ function contextFor<TName extends QueueKey>(
   return { context, progress };
 }
 
-async function createDocument(): Promise<string> {
-  const imported = markdownToYjsState(MARKDOWN);
+/** Two long-ish lists; the word the tests look for stands only in the second. */
+const TWO_LISTS_MARKDOWN = `# Zwei Listen
+
+## Einkauf
+
+- Hafermilch
+- Brot
+- Linsen
+
+## Garten
+
+- Rosen schneiden
+- Kompost umsetzen
+- Mirabellenbaum gießen
+`;
+
+/** The ids of the list points of a materialized page, in reading order. */
+function listItemIds(json: unknown): string[] {
+  const ids: string[] = [];
+  const walk = (node: unknown): void => {
+    if (typeof node !== 'object' || node === null) return;
+    const record = node as { type?: unknown; attrs?: { blockId?: unknown }; content?: unknown };
+    if (record.type === 'listItem' && typeof record.attrs?.blockId === 'string') {
+      ids.push(record.attrs.blockId);
+    }
+    if (Array.isArray(record.content)) record.content.forEach(walk);
+  };
+  walk(json);
+  return ids;
+}
+
+async function materializeAndIndex(documentId: string): Promise<void> {
+  await createMaterializeDocumentProcessor({ prisma, queues, bus, settings: stubSettings() })(
+    contextFor<'document-materialization'>({
+      correlationId: 'test-block-map',
+      documentId,
+      workspaceId,
+      yjsUpdatedAt: Date.now(),
+      reason: 'manual',
+    }).context,
+  );
+  await createIndexDocumentProcessor({ prisma, search })(
+    contextFor<'search-indexing'>({
+      correlationId: 'test-block-map',
+      documentId,
+      workspaceId,
+      reason: 'materialized',
+    }).context,
+  );
+}
+
+async function createDocument(markdown: string = MARKDOWN): Promise<string> {
+  const imported = markdownToYjsState(markdown);
   const document = await prisma.document.create({
     data: {
       workspaceId,
@@ -568,6 +619,26 @@ describe('search indexing', () => {
     await indexer(contextFor<'search-indexing'>(payload).context);
     const rows = await prisma.documentSearchIndex.count({ where: { documentId } });
     expect(rows).toBe(1);
+  }, 60_000);
+
+  /**
+   * A keyword hit can only be located if the projection knows which block
+   * every stretch of its text came from (issue #280). The map is written with
+   * the text, and a list point is a unit of its own.
+   */
+  it('stores which block every stretch of the indexed text came from', async () => {
+    const documentId = await createDocument(TWO_LISTS_MARKDOWN);
+    await materializeAndIndex(documentId);
+
+    const row = await prisma.documentSearchIndex.findUniqueOrThrow({ where: { documentId } });
+    const map = row.blockMap as { o: number[]; b: (string | null)[] } | null;
+    expect(map).not.toBeNull();
+    const itemIds = listItemIds(
+      (await prisma.documentContent.findUniqueOrThrow({ where: { documentId } })).proseMirrorJson,
+    );
+    expect(itemIds.length).toBe(6);
+    expect(map?.b).toEqual(expect.arrayContaining(itemIds));
+    expect(map?.o.length).toBe(map?.b.length);
   }, 60_000);
 
   /**
