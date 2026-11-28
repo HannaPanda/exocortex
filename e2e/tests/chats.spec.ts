@@ -11,9 +11,10 @@ test.use({ storageState: storageStatePath('johanna') });
  *
  * The loop the issue promises, end to end and in one test on purpose: a chat
  * written in the panel, found in `/chats` by a word out of its transcript
- * rather than its title, read there, continued in the panel, archived, and
- * finally deleted for good. Split into six tests they would each need the same
- * minute of setup and would still only prove the loop if they ran in order.
+ * rather than its title, read there, renamed with a suggested title (issue
+ * #233), continued in the panel, archived, and finally deleted for good. Split
+ * into seven tests they would each need the same minute of setup and would
+ * still only prove the loop if they ran in order.
  *
  * The suite clears up after itself: the conversation is deleted at the end,
  * which is also the last step under test.
@@ -59,6 +60,23 @@ test.describe('Chats area', () => {
     // Reading the transcript in place.
     await page.getByTestId('chat-row-open').first().click();
     await expect(page.getByTestId('chat-transcript')).toContainText(marker, { timeout: 30_000 });
+
+    // Renaming offers a title from the conversation itself (issue #233). It
+    // lands in the field, where it can still be changed, and only the save
+    // stores it.
+    await page.getByTestId('chat-rename').first().click();
+    await page.getByTestId('chat-rename-suggest').click();
+    await expect(page.getByTestId('chat-rename-note')).toContainText('Vorschlag eingesetzt', {
+      timeout: 60_000,
+    });
+    const titleField = page.getByTestId('chat-rename-input');
+    const suggested = await titleField.inputValue();
+    expect(suggested.trim().length).toBeGreaterThan(0);
+    await titleField.fill(`${suggested} (bearbeitet)`);
+    await page.getByTestId('chat-rename-save').click();
+    await expect(page.getByTestId('chat-row').first()).toContainText(`${suggested} (bearbeitet)`, {
+      timeout: 30_000,
+    });
 
     // Continuing hands the conversation back to the panel, which opens on the
     // page the chat was standing on with the same transcript in it.
