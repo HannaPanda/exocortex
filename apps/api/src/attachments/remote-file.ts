@@ -105,7 +105,11 @@ async function readCapped(body: IncomingMessage, maxBytes: number, url: string):
  * `accept-encoding: identity` because `node:http` decompresses nothing, and
  * the size ceiling is meant for the bytes that are stored.
  */
-function requestOnce(url: string, lookup: LookupFunction): Promise<IncomingMessage> {
+function requestOnce(
+  url: string,
+  lookup: LookupFunction,
+  timeoutMs: number,
+): Promise<IncomingMessage> {
   const target = new URL(url);
   const client = target.protocol === 'https:' ? https : http;
   return new Promise((resolve, reject) => {
@@ -115,7 +119,7 @@ function requestOnce(url: string, lookup: LookupFunction): Promise<IncomingMessa
         method: 'GET',
         agent: false,
         lookup,
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        signal: AbortSignal.timeout(timeoutMs),
         headers: { accept: '*/*', 'accept-encoding': 'identity' },
       },
       resolve,
@@ -141,8 +145,19 @@ export async function fetchRemoteFile(
     correlationId: string;
     /** Only for tests: a resolver that can change its answer between calls. */
     resolve?: Resolver;
+    /** Only for tests: how long one hop may take. */
+    timeoutMs?: number;
+    /**
+     * Only for tests: makes the request a hop would make, after the address
+     * check passed. Stands in for the network so redirects, status codes and
+     * the size cap can be tried against a local server, which the real
+     * socket rightly refuses to dial. The rebinding tests leave it out.
+     */
+    request?: (url: string, lookup: LookupFunction, timeoutMs: number) => Promise<IncomingMessage>;
   },
 ): Promise<RemoteFile> {
+  const send = options.request ?? requestOnce;
+  const timeoutMs = options.timeoutMs ?? FETCH_TIMEOUT_MS;
   const lookup = publicOnlyLookup(options.resolve);
   let current = url;
   for (let hop = 0; hop <= MAX_REDIRECTS; hop += 1) {
@@ -156,7 +171,7 @@ export async function fetchRemoteFile(
 
     let response: IncomingMessage;
     try {
-      response = await requestOnce(checked.url, lookup);
+      response = await send(checked.url, lookup, timeoutMs);
     } catch (error) {
       // The name answered differently at the socket than at the check above.
       // That is the rebinding this exists to stop, and it is the same refusal.

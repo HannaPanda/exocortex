@@ -26,6 +26,7 @@ import {
 import { type Logger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
+import { currentAiRunId } from '../common/correlation';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
@@ -128,6 +129,35 @@ const MEDIA_TYPE_LABELS: Readonly<Record<string, string>> = {
 };
 
 /**
+ * The way in the warning below names, by who is reading it (issue #212).
+ *
+ * A warning that names a tool the caller cannot see is an instruction it
+ * cannot follow, which is how issue #212 began. `exo_attachment_upload_url`
+ * is on every agent surface: stdio, `/api/mcp`, listed on `/api/mcp/compact`
+ * and on the built-in AI's. The upload ticket is not: the built-in AI holds no
+ * files and no shell (`SURFACE_EXEMPT`), so its runs are told about the
+ * address import alone. An external agent can hold a file on its own disk,
+ * and for that the ticket is the way, or the Base64 upload where a client
+ * offers no ticket (a chat connector reaches it through `exo_tool_write`).
+ */
+function foreignMediaWayIn(builtInAi: boolean): string {
+  if (builtInAi) {
+    return (
+      'Übernimm eine öffentlich erreichbare Datei mit exo_attachment_upload_url als Anhang dieser ' +
+      'Seite und verweise dann auf ihre embedUrl (/api/attachments/<id>/download).'
+    );
+  }
+  return (
+    'Übernimm die Datei stattdessen als Anhang und verweise auf ihre embedUrl ' +
+    '(/api/attachments/<id>/download): eine, die schon öffentlich im Netz steht, mit ' +
+    'exo_attachment_upload_url (eXocortex holt sie selbst, du brauchst die Bytes nicht); eine, ' +
+    'die bei dir lokal liegt, mit exo_attachment_upload_ticket, oder, wo dein Client kein Ticket ' +
+    'anbietet, als kleine Datei mit exo_attachment_upload. Lege eine Datei dafür nie auf einem ' +
+    'anderen Server ab.'
+  );
+}
+
+/**
  * The warning a write earns by pointing at a file on somebody else's host
  * (issue #117).
  *
@@ -138,9 +168,14 @@ const MEDIA_TYPE_LABELS: Readonly<Record<string, string>> = {
  * nothing anywhere saying why is exactly what it is for.
  *
  * The sentence names the way out rather than only the problem, because the
- * reader is usually an agent that has no other way to learn it.
+ * reader is usually an agent that has no other way to learn it, and it names
+ * only tools that reader has (`foreignMediaWayIn`).
  */
-export function foreignMediaWarnings(document: ProseMirrorDocument, origin: string): string[] {
+export function foreignMediaWarnings(
+  document: ProseMirrorDocument,
+  origin: string,
+  builtInAi: boolean = currentAiRunId() !== undefined,
+): string[] {
   const foreign = collectForeignMediaSources(document, origin);
   if (foreign.length === 0) return [];
 
@@ -153,10 +188,7 @@ export function foreignMediaWarnings(document: ProseMirrorDocument, origin: stri
   return [
     `Diese Seite verweist auf ${foreign.length === 1 ? 'eine Datei' : `${foreign.length} Dateien`} ` +
       `auf einem fremden Server: ${named}${rest}. Der Browser lädt das nicht, die Stelle bleibt ` +
-      'leer. Lade die Datei stattdessen als Anhang hoch und verweise auf ' +
-      '/api/attachments/<id>/download: eine Datei, die bei dir lokal liegt, mit ' +
-      'exo_attachment_upload_ticket, eine, die schon öffentlich im Netz steht, mit ' +
-      'exo_attachment_upload_url. Lege eine Datei dafür nie auf einem anderen Server ab.',
+      `leer. ${foreignMediaWayIn(builtInAi)}`,
   ];
 }
 

@@ -1,5 +1,5 @@
 import { type LookupAddress } from 'node:dns';
-import { createServer, type Server } from 'node:http';
+import { createServer, type IncomingMessage, request as httpRequest, type Server } from 'node:http';
 import { type AddressInfo } from 'node:net';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -120,4 +120,173 @@ describe('fetching a file by address', () => {
     expect(error.code).toBe('web_address_refused');
     expect(hits).toBe(0);
   });
+});
+
+/**
+ * The rest of what a fetch on somebody's behalf has to refuse (issue #212):
+ * every redirect hop judged again, a status that is not a success, a body
+ * over the cap, a server that stalls, a scheme that is not the web's.
+ *
+ * The network is replaced by a local server here, through the `request`
+ * seam: the address check still runs on every hop, with a resolver that
+ * answers every name publicly, and only the connection itself is routed to
+ * loopback. A redirect to a literal private address therefore meets the real
+ * check, and the counter below proves it was never followed.
+ */
+describe('fetching a file by address, hop by hop', () => {
+  let web: Server;
+  let webPort = 0;
+  let secretHits = 0;
+  const PNG = Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex');
+
+  beforeAll(async () => {
+    web = createServer((request, response) => {
+      switch (request.url) {
+        case '/foto.png':
+          response.writeHead(200, { 'content-type': 'image/png' });
+          response.end(PNG);
+          return;
+        case '/weiter':
+          response.writeHead(302, { location: 'https://cdn.example/foto.png' });
+          response.end();
+          return;
+        case '/nach-innen':
+          response.writeHead(302, { location: `http://127.0.0.1:${webPort}/geheim` });
+          response.end();
+          return;
+        case '/metadaten':
+          response.writeHead(307, { location: 'http://169.254.169.254/latest/meta-data/' });
+          response.end();
+          return;
+        case '/geheim':
+          secretHits += 1;
+          response.end('internal secret');
+          return;
+        case '/kreis':
+          response.writeHead(301, { location: '/kreis' });
+          response.end();
+          return;
+        case '/riesig': {
+          // No content-length: only counting while reading stops it.
+          response.writeHead(200, { 'content-type': 'image/jpeg' });
+          const chunk = Buffer.alloc(1024, 1);
+          for (let index = 0; index < 16; index += 1) response.write(chunk);
+          response.end();
+          return;
+        }
+        case '/stockt':
+          response.writeHead(200, { 'content-type': 'image/jpeg' });
+          response.write(Buffer.alloc(16, 1));
+          // ...and never ends.
+          return;
+        case '/schweigt':
+          // Never answers at all.
+          return;
+        default:
+          response.writeHead(404);
+          response.end('not found');
+      }
+    });
+    await new Promise<void>((resolve) => web.listen(0, '127.0.0.1', resolve));
+    webPort = (web.address() as AddressInfo).port;
+  });
+
+  afterAll(async () => {
+    web.closeAllConnections();
+    await new Promise<void>((resolve) => web.close(() => resolve()));
+  });
+
+  const publicEverywhere = (): Promise<readonly LookupAddress[]> =>
+    Promise.resolve([{ address: '93.184.216.34', family: 4 }]);
+
+  /** The hop as the real code would make it, delivered to the local server. */
+  function toLocal(url: string, _lookup: unknown, timeoutMs: number): Promise<IncomingMessage> {
+    const target = new URL(url);
+    return new Promise((resolve, reject) => {
+      const request = httpRequest(
+        {
+          host: '127.0.0.1',
+          port: webPort,
+          path: `${target.pathname}${target.search}`,
+          headers: { host: target.host },
+          agent: false,
+          signal: AbortSignal.timeout(timeoutMs),
+        },
+        resolve,
+      );
+      request.on('error', reject);
+      request.end();
+    });
+  }
+
+  function fetchVia(url: string, maxBytes = 4096) {
+    return fetchRemoteFile(url, {
+      maxBytes,
+      logger: silent,
+      correlationId: 'test',
+      resolve: publicEverywhere,
+      request: toLocal,
+      timeoutMs: 300,
+    });
+  }
+
+  it('fetches a picture and names it after the address', async () => {
+    const file = await fetchVia('https://bilder.example/foto.png');
+    expect(file.body.equals(PNG)).toBe(true);
+    expect(file.contentType).toBe('image/png');
+    expect(file.filename).toBe('foto.png');
+  });
+
+  it('follows a redirect to another public address and reports where it ended', async () => {
+    const file = await fetchVia('https://bilder.example/weiter');
+    expect(file.url).toBe('https://cdn.example/foto.png');
+    expect(file.body.equals(PNG)).toBe(true);
+  });
+
+  it('judges the redirect target again and never follows it into loopback', async () => {
+    secretHits = 0;
+    const error = await refusal(fetchVia('https://bilder.example/nach-innen'));
+    expect(error.code).toBe('web_address_refused');
+    expect(error.details).toMatchObject({ reason: 'private_address' });
+    expect(secretHits).toBe(0);
+  });
+
+  it('refuses a redirect to the cloud metadata address', async () => {
+    const error = await refusal(fetchVia('https://bilder.example/metadaten'));
+    expect(error.code).toBe('web_address_refused');
+  });
+
+  it('gives up on a redirect loop', async () => {
+    const error = await refusal(fetchVia('https://bilder.example/kreis'));
+    expect(error.code).toBe('web_fetch_failed');
+  });
+
+  it('reports a missing file as a failed fetch with its status', async () => {
+    const error = await refusal(fetchVia('https://bilder.example/gibt-es-nicht.jpg'));
+    expect(error.code).toBe('web_fetch_failed');
+    expect(error.details).toMatchObject({ statusCode: 404 });
+  });
+
+  it('cuts a body off at the cap while reading, without a content-length', async () => {
+    const error = await refusal(fetchVia('https://bilder.example/riesig', 4096));
+    expect(error.code).toBe('payload_too_large');
+  });
+
+  it('gives up on a server that stalls halfway through the body', async () => {
+    const error = await refusal(fetchVia('https://bilder.example/stockt'));
+    expect(error.code).toBe('web_fetch_failed');
+  });
+
+  it('gives up on a server that never answers', async () => {
+    const error = await refusal(fetchVia('https://bilder.example/schweigt'));
+    expect(error.code).toBe('web_fetch_failed');
+  });
+
+  it.each(['ftp://bilder.example/foto.png', 'file:///etc/passwd', 'data:image/png;base64,AAAA'])(
+    'refuses %s before any request',
+    async (url) => {
+      const error = await refusal(fetchVia(url));
+      expect(error.code).toBe('web_address_refused');
+    },
+  );
 });

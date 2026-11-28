@@ -351,3 +351,75 @@ describe('forcing a re-extraction', () => {
     ).rejects.toMatchObject({ code: 'attachment_text_unavailable' });
   });
 });
+
+/**
+ * Importing a file from an address (issues #117, #212): who may make this
+ * deployment fetch something, and what the fetched bytes have to be.
+ *
+ * The addresses below point at loopback on purpose. Were the access check not
+ * the first thing that happens, the call would reach the address check and
+ * fail with `web_address_refused` instead; an `AuthorizationError` therefore
+ * proves nothing was fetched. Storage is stubbed out, and nothing here gets far
+ * enough to need it.
+ */
+describe('importing a file from an address', () => {
+  const request = {
+    url: 'http://127.0.0.1:9/foto.png',
+    documentId: null,
+    filename: null,
+    propertyId: null,
+  };
+
+  it('refuses a guest before anything is fetched', async () => {
+    await expect(
+      service.uploadFromUrl({ workspaceId, userId: guestId, request, correlationId: 'test' }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  it('refuses somebody outside the workspace before anything is fetched', async () => {
+    const stranger = await prisma.user.create({
+      data: {
+        email: `attach-stranger-${Date.now().toString(36)}@exocortex.test`,
+        name: 'Stranger',
+        emailVerified: true,
+      },
+    });
+    try {
+      const error = await service
+        .uploadFromUrl({ workspaceId, userId: stranger.id, request, correlationId: 'test' })
+        .then(
+          () => null,
+          (caught: unknown) => caught,
+        );
+      expect(error).not.toBeNull();
+      expect((error as { code?: string }).code).not.toBe('web_address_refused');
+    } finally {
+      await prisma.user.delete({ where: { id: stranger.id } });
+    }
+  });
+
+  it('lets a member ask, and then refuses the private address itself', async () => {
+    const before = await prisma.attachment.count({ where: { workspaceId } });
+    await expect(
+      service.uploadFromUrl({ workspaceId, userId: memberId, request, correlationId: 'test' }),
+    ).rejects.toMatchObject({ code: 'web_address_refused' });
+    expect(await prisma.attachment.count({ where: { workspaceId } })).toBe(before);
+  });
+
+  it('believes the bytes and not the type a server declared', async () => {
+    // What a server answering `content-type: image/png` with a web page hands
+    // `upload`: the declared type is the fetched one, the body is not a PNG.
+    await expect(
+      service.upload({
+        workspaceId,
+        userId: memberId,
+        documentId: null,
+        filename: 'foto.png',
+        declaredMimeType: 'image/png',
+        body: Buffer.from('<!doctype html><script>alert(1)</script>'),
+        correlationId: 'test',
+        fetchedFromUrl: true,
+      }),
+    ).rejects.toMatchObject({ code: 'unsupported_media_type' });
+  });
+});
