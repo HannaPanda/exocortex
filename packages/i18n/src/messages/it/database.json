@@ -273,6 +273,8 @@
     "label": "Riga nella barra laterale",
     "close": "Chiudi barra laterale",
     "closeHint": "Chiudi barra laterale (Esc)",
+    "resize": "Larghezza del pannello laterale",
+    "resizeHint": "Trascina per modificare la larghezza, fai doppio clic per reimpostarla",
     "openAsPage": "Apri come pagina intera",
     "loading": "Caricamento riga in corso",
     "unavailableTitle": "Riga non disponibile",

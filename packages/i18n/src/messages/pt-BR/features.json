@@ -403,7 +403,7 @@
       "p1": "Um clique na seta ao lado do nome abre a linha na barra lateral; no menu de controle, isso se chama „Abrir”. Em um quadro, na galeria e no calendário, clicar no cartão ou no item abre a mesma barra. Uma nova linha ou cartão abre-se imediatamente lá, com o nome selecionado para você começar a digitar na hora.",
       "p2": "O que você escreve na barra lateral é salvo pelo eXocortex como em qualquer página. Se você clicar em outra linha, a barra muda para ela sem perder nada. Pressionar Escape ou o botão no canto superior esquerdo fecha a barra, retornando você exatamente à linha de onde veio.",
       "p3": "A linha aberta fica registrada no endereço. Você pode compartilhar o link; ao recarregar, a barra continua aberta, e o botão Voltar do navegador fecha a barra lateral. „Abrir como página inteira” exibe a linha sem o banco de dados, e clicar segurando Ctrl abre-a em uma nova aba.",
-      "p4": "No celular, a barra ocupa a tela inteira. O painel de contexto à direita e o chat de IA continuam onde estão, mantendo o foco no banco de dados."
+      "p4": "Você ajusta a largura da barra arrastando sua borda esquerda, ou pode selecionar a borda com a tecla Tab e usar as teclas de seta. Um clique duplo na borda a redefine para a largura padrão, e este navegador memoriza a largura que você preferir. No celular, a barra ocupa a tela inteira. O painel de contexto à direita e o chat de IA continuam onde estão e seguem se comunicando sobre o banco de dados."
     },
     "where": "Em um banco de dados, clique na seta ao lado do nome de uma linha, ou em um cartão no quadro, na galeria ou no calendário."
   },

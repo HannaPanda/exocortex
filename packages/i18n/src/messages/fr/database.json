@@ -273,6 +273,8 @@
     "label": "Ligne dans le panneau latéral",
     "close": "Fermer le panneau latéral",
     "closeHint": "Fermer le panneau latéral (Échap)",
+    "resize": "Largeur du volet latéral",
+    "resizeHint": "Glisse pour modifier la largeur, double-clique pour la réinitialiser",
     "openAsPage": "Ouvrir en pleine page",
     "loading": "Chargement de la ligne…",
     "unavailableTitle": "Ligne non disponible",

@@ -403,7 +403,7 @@
       "p1": "Clicking the arrow next to the name opens the row in the sidebar; in the handle menu this is called “Open”. On a board, in the gallery, and in the calendar, clicking a card or entry opens the same sidebar. A new row or card opens there right away, with its name selected so you can overwrite it immediately.",
       "p2": "Whatever you write in the sidebar, eXocortex saves just like on any page. If you click another row, the sidebar switches to it without losing anything. Escape or the button at the top left closes it, and you are right back at the row you came from.",
       "p3": "The open row is included in the URL. You can share the link, the sidebar stays open after reloading, and the browser’s back button closes it. “Open as full page” shows the row without the database; Ctrl-clicking opens it in a new tab.",
-      "p4": "On a phone, the sidebar takes up the full screen. The context panel on the right and the AI chat stay where they are and continue to talk about the database."
+      "p4": "You drag the sidebar’s left edge to adjust its width, or select the edge with the Tab key and use the arrow keys. Double-clicking the edge resets it to the default width, and this browser remembers how wide you want it. On your phone, the sidebar takes up the entire screen. The context area on the right and the AI chat stay where they are and continue talking about the database."
     },
     "where": "In a database, click the arrow next to a row’s name, or click a card on a board, in the gallery, or in the calendar."
   },

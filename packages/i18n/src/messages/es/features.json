@@ -403,7 +403,7 @@
       "p1": "Un clic en la flecha situada junto al nombre abre la fila en la barra lateral; en el menú de arrastre se llama «Abrir». En un tablero, en la galería y en el calendario, al hacer clic en la tarjeta o en la entrada se abre la misma barra. Una nueva fila o tarjeta se abre directamente allí, con el nombre seleccionado para que puedas sobrescribirlo de inmediato.",
       "p2": "Lo que escribes en la barra, eXocortex lo guarda como en cualquier página. Si haces clic en otra fila, la barra cambia a ella sin que se pierda nada. Escape o el botón superior izquierdo la cierran, y vuelves a estar en la fila de la que venías.",
       "p3": "La fila abierta aparece en la dirección URL. Puedes compartir el enlace; tras recargar, la barra vuelve a estar abierta, y el botón Atrás del navegador la cierra. «Abrir como página completa» muestra la fila sin la base de datos; con Ctrl y clic se abre en una pestaña nueva.",
-      "p4": "En el teléfono, la barra ocupa toda la pantalla. El panel de contexto de la derecha y el chat de IA permanecen donde están y continúan refiriéndose a la base de datos."
+      "p4": "Puedes ajustar el ancho de la barra arrastrando su borde izquierdo, o bien seleccionando el borde con la tecla Tabulador y usando las teclas de flecha. Al hacer doble clic en el borde, se restablece a su ancho predeterminado, y este navegador recuerda qué ancho prefieres. En el teléfono, la barra ocupa toda la pantalla. El panel de contexto a la derecha y el chat de IA se quedan donde están y siguen refiriéndose a la base de datos."
     },
     "where": "En una base de datos, haz clic en la flecha junto al nombre de una fila, o en una tarjeta del tablero, la galería o el calendario."
   },

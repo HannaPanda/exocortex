@@ -403,7 +403,7 @@
       "p1": "Een klik op de pijl naast de naam opent de rij in de zijbalk; in het handgreepmenu heet dit „Openen”. Op een bord, in de galerij en in de kalender opent een klik op de kaart of het item dezelfde balk. Een nieuwe rij of kaart opent direct daar, met geselecteerde naam, zodat je deze meteen kunt overschrijven.",
       "p2": "Wat je in de balk schrijft, slaat eXocortex op zoals op elke pagina. Klik je op een andere rij, dan schakelt de balk daarnaar over zonder dat er iets verloren gaat. Escape of de knop linksboven sluit de balk, en je bent weer terug bij de rij waar je vandaan kwam.",
       "p3": "De geopende rij staat in het adres. Je kunt de link delen, na het vernieuwen is de balk weer open, en de terugknop van de browser sluit hem. „Als volledige pagina openen” toont de rij zonder de database; met Ctrl en klik opent hij in een nieuw tabblad.",
-      "p4": "Op de telefoon neemt de balk het hele scherm in beslag. Het contextpaneel rechts en de AI-chat blijven waar ze zijn en blijven betrekking hebben op de database."
+      "p4": "De breedte van de balk pas je aan door aan de linkerrand te slepen, of je selecteert de rand met de Tab-toets en gebruikt de pijltoetsen. Een dubbelklik op de rand zet hem terug op de standaardbreedte, en deze browser onthoudt hoe breed je hem wilt hebben. Op een telefoon neemt de balk het hele scherm in beslag. Het contextpaneel rechts en de AI-chat blijven waar ze zijn, en blijven verwijzen naar de database."
     },
     "where": "In een database op de pijl naast de naam van een rij klikken, of op een kaart in het bord, in de galerij of in de kalender."
   },

@@ -273,6 +273,8 @@
     "label": "Wiersz na pasku bocznym",
     "close": "Zamknij pasek boczny",
     "closeHint": "Zamknij pasek boczny (Esc)",
+    "resize": "Szerokość panelu bocznego",
+    "resizeHint": "Przeciągnij, aby zmienić szerokość; kliknij dwukrotnie, aby ją zresetować",
     "openAsPage": "Otwórz jako pełną stronę",
     "loading": "Wczytywanie wiersza",
     "unavailableTitle": "Wiersz jest niedostępny",

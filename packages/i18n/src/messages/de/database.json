@@ -273,6 +273,8 @@
     "label": "Zeile in der Seitenleiste",
     "close": "Seitenleiste schließen",
     "closeHint": "Seitenleiste schließen (Esc)",
+    "resize": "Breite der Seitenleiste",
+    "resizeHint": "Ziehen ändert die Breite, ein Doppelklick setzt sie zurück",
     "openAsPage": "Als ganze Seite öffnen",
     "loading": "Zeile wird geladen",
     "unavailableTitle": "Zeile nicht verfügbar",

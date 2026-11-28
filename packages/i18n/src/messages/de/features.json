@@ -403,7 +403,7 @@
       "p1": "Ein Klick auf den Pfeil neben dem Namen öffnet die Zeile in der Seitenleiste, im Griffmenü heißt das „Öffnen“. Auf einem Board, in der Galerie und im Kalender öffnet ein Klick auf die Karte oder den Eintrag dieselbe Leiste. Eine neue Zeile oder Karte öffnet sich gleich dort, mit markiertem Namen, damit du ihn sofort überschreiben kannst.",
       "p2": "Was du in der Leiste schreibst, speichert eXocortex wie auf jeder Seite. Klickst du eine andere Zeile an, wechselt die Leiste zu ihr, ohne dass etwas verloren geht. Escape oder der Knopf oben links schließt sie, und du bist wieder an der Zeile, von der du gekommen bist.",
       "p3": "Die geöffnete Zeile steht in der Adresse. Du kannst den Link teilen, nach dem Neuladen ist die Leiste wieder offen, und die Zurück-Taste des Browsers schließt sie. „Als ganze Seite öffnen“ zeigt die Zeile ohne die Datenbank, mit Strg und Klick geht sie in einem neuen Tab auf.",
-      "p4": "Auf dem Telefon nimmt die Leiste den ganzen Bildschirm ein. Der Kontextbereich rechts und der KI-Chat bleiben, wo sie sind, und sprechen weiter über die Datenbank."
+      "p4": "Die Breite der Leiste ziehst du an ihrem linken Rand, oder du wählst den Rand mit der Tabulatortaste und nimmst die Pfeiltasten. Ein Doppelklick auf den Rand setzt sie auf die Standardbreite zurück, und dieser Browser merkt sich, wie breit du sie haben willst. Auf dem Telefon nimmt die Leiste den ganzen Bildschirm ein. Der Kontextbereich rechts und der KI-Chat bleiben, wo sie sind, und sprechen weiter über die Datenbank."
     },
     "where": "In einer Datenbank auf den Pfeil neben dem Namen einer Zeile klicken, oder auf eine Karte im Board, in der Galerie oder im Kalender."
   },

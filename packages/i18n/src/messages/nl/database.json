@@ -273,6 +273,8 @@
     "label": "Rij in de zijbalk",
     "close": "Zijbalk sluiten",
     "closeHint": "Zijbalk sluiten (Esc)",
+    "resize": "Breedte van zijbalk",
+    "resizeHint": "Sleep om de breedte aan te passen, dubbelklik om te herstellen",
     "openAsPage": "Als volledige pagina openen",
     "loading": "Rij wordt geladen",
     "unavailableTitle": "Rij niet beschikbaar",

@@ -403,7 +403,7 @@
       "p1": "Un clic sur la flèche à côté du nom ouvre la ligne dans le volet latéral ; dans le menu de la poignée, cela s’appelle « Ouvrir ». Sur un tableau, dans la galerie et dans le calendrier, un clic sur la carte ou l’entrée ouvre ce même volet. Une nouvelle ligne ou carte s’y ouvre directement, avec le nom sélectionné pour que tu puisses l’écraser immédiatement.",
       "p2": "Ce que tu écris dans le volet, eXocortex l’enregistre comme sur n’importe quelle page. Si tu cliques sur une autre ligne, le volet bascule vers celle-ci sans rien perdre. Échap ou le bouton en haut à gauche le ferme, et tu reviens à la ligne d’où tu viens.",
       "p3": "La ligne ouverte apparaît dans l’adresse URL. Tu peux partager le lien, le volet reste ouvert après rechargement, et le bouton retour du navigateur le ferme. « Ouvrir en pleine page » affiche la ligne sans la base de données ; avec Ctrl et clic, elle s’ouvre dans un nouvel onglet.",
-      "p4": "Sur smartphone, le volet occupe tout l’écran. La zone de contexte à droite et le chat IA restent à leur place et continuent de faire référence à la base de données."
+      "p4": "Tu peux ajuster la largeur du volet en faisant glisser son bord gauche, ou sélectionner le bord avec la touche Tabulation et utiliser les touches fléchées. Un double-clic sur le bord réinitialise la largeur par défaut, et ce navigateur mémorise la largeur que tu as choisie. Sur téléphone, le volet occupe tout l’écran. La zone de contexte à droite et le chat IA restent à leur place et continuent de porter sur la base de données."
     },
     "where": "Dans une base de données, clique sur la flèche à côté du nom d’une ligne, ou sur une carte dans le tableau, la galerie ou le calendrier."
   },

@@ -273,6 +273,8 @@
     "label": "Linha na barra lateral",
     "close": "Fechar barra lateral",
     "closeHint": "Fechar barra lateral (Esc)",
+    "resize": "Largura da barra lateral",
+    "resizeHint": "Arraste para alterar a largura, clique duas vezes para redefinir",
     "openAsPage": "Abrir como página inteira",
     "loading": "Carregando linha",
     "unavailableTitle": "Linha não disponível",

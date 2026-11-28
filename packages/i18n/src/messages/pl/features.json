@@ -403,7 +403,7 @@
       "p1": "Kliknięcie strzałki obok nazwy otwiera wiersz w panelu bocznym – w menu uchwytu opcja ta nazywa się „Otwórz”. Na tablicy, w galerii i w kalendarzu kliknięcie karty lub wpisu otwiera ten sam panel. Nowy wiersz lub nowa karta otwiera się tam od razu, z zaznaczoną nazwą, aby można ją było natychmiast zastąpić.",
       "p2": "To, co piszesz w panelu, eXocortex zapisuje tak jak na każdej stronie. Jeśli klikniesz inny wiersz, panel przełączy się na niego, niczego nie tracąc. Klawisz Escape lub przycisk w lewym górnym rogu zamyka panel, przywracając cię do wiersza, z którego przyszedł(-aś) początek.",
       "p3": "Otwarty wiersz znajduje się w adresie URL. Możesz udostępnić link, po odświeżeniu panel znów będzie otwarty, a przycisk wstecz w przeglądarce go zamyka. Opcja „Otwórz jako pełną stronę” wyświetla wiersz bez bazy danych, a kliknięcie z klawiszem Ctrl otwiera go w nowej karcie.",
-      "p4": "Na telefonie panel zajmuje cały ekran. Panel kontekstowy po prawej stronie i czat SI pozostają na swoim miejscu i nadal odnoszą się do bazy danych."
+      "p4": "Szerokość paska zmienisz, przeciągając jego lewą krawędź, albo zaznaczając krawędź klawiszem Tab i używając strzałek. Dwukrotne kliknięcie krawędzi przywraca domyślną szerokość, a przeglądarka zapamiętuje wybraną szerokość. Na telefonie pasek zajmuje cały ekran. Panel kontekstowy po prawej stronie i czat SI pozostają na swoim miejscu i nadal odnoszą się do bazy danych."
     },
     "where": "W bazie danych kliknij strzałkę obok nazwy wiersza lub kliknij kartę na tablicy, w galerii albo w kalendarzu."
   },

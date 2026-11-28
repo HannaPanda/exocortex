@@ -5,7 +5,14 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
+import {
+  Button,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  ResizeHandle,
+  useIsMobile,
+} from '@exocortex/ui';
 
 import { useLatest } from '@/components/palette/contributions';
 import { replacesPageOnError } from '@/components/shell/document-load-failure';
@@ -15,8 +22,15 @@ import { SaveIndicator } from '@/components/shell/save-indicator';
 import { useDocument } from '@/lib/api/document-queries';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import { useDocumentHrefs } from '@/lib/document-href-context';
+import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { ROW_PEEK_ATTRIBUTE, type RowPeek, useRowPeek } from './row-peek';
+import {
+  parseRowPeekWidth,
+  resolveRowPeekWidth,
+  ROW_PEEK_STORAGE_KEY,
+  ROW_PEEK_WIDTH_DEFAULT,
+} from './row-peek-width';
 
 /**
  * The side panel a row of a database opens in (issue #239).
@@ -32,6 +46,9 @@ import { ROW_PEEK_ATTRIBUTE, type RowPeek, useRowPeek } from './row-peek';
  * the collaborative editor. It reports into a document session of its own, so
  * the header's presence, save and connection state keep describing the page
  * underneath, and the panel shows its own save state.
+ *
+ * Its left edge is a handle that sets its width (`row-peek-width.ts`), except
+ * on a phone, where the panel always takes the whole page area.
  */
 export function RowPeekPanel() {
   const peek = useRowPeek();
@@ -61,14 +78,42 @@ function PeekFrame({ peek, rowId }: { peek: RowPeek; rowId: string }) {
     panel.current?.focus({ preventScroll: true });
   }, [rowId, titleTakesFocus]);
 
+  const isMobile = useIsMobile();
+  const [areaWidth, measureArea] = useAreaWidth();
+  const panelRef = React.useCallback(
+    (node: HTMLElement | null) => {
+      panel.current = node;
+      return measureArea(node);
+    },
+    [measureArea],
+  );
+  const [preference, setPreference] = usePersistentState(
+    ROW_PEEK_STORAGE_KEY,
+    ROW_PEEK_WIDTH_DEFAULT,
+    parseRowPeekWidth,
+  );
+  // Until the page area is measured, and on a phone, the stylesheet's width
+  // applies: the same default, drawn without a number.
+  const sizing =
+    isMobile || areaWidth === 0 ? null : resolveRowPeekWidth(preference.width, areaWidth);
+  const changeWidth = React.useCallback(
+    (width: number) => setPreference({ width }),
+    [setPreference],
+  );
+  const resetWidth = React.useCallback(
+    () => setPreference(ROW_PEEK_WIDTH_DEFAULT),
+    [setPreference],
+  );
+
   return (
     <aside
-      ref={panel}
+      ref={panelRef}
       tabIndex={-1}
       aria-label={t('label')}
       data-testid="row-peek"
       {...{ [ROW_PEEK_ATTRIBUTE]: rowId }}
       className="absolute inset-y-0 right-0 z-40 flex w-[clamp(26rem,48%,44rem)] max-w-full flex-col border-l border-border-strong bg-background shadow-lg outline-none"
+      style={sizing === null ? undefined : { width: sizing.width }}
     >
       <div className="flex h-11 shrink-0 items-center gap-1 border-b border-border px-2">
         <Button
@@ -93,11 +138,57 @@ function PeekFrame({ peek, rowId }: { peek: RowPeek; rowId: string }) {
         <SaveIndicator />
       </div>
       <RowPeekContent key={rowId} peek={peek} rowId={rowId} href={href} />
+      {sizing === null ? null : (
+        <ResizeHandle
+          width={sizing.width}
+          minWidth={sizing.min}
+          maxWidth={sizing.max}
+          onWidthChange={changeWidth}
+          onReset={resetWidth}
+          edge="left"
+          label={t('resize')}
+          title={t('resizeHint')}
+          data-testid="row-peek-resize"
+          // A wider grip than the line it draws, reaching out over the table:
+          // four pixels are a target for a mouse, not for a finger or a pen.
+          className="z-10 before:absolute before:inset-y-0 before:-left-2 before:w-5"
+        />
+      )}
     </aside>
   );
 }
 
-function RowPeekContent({ peek, rowId, href }: { peek: RowPeek; rowId: string; href: string }) {
+/**
+ * The width of the page area the panel lies over, which is what its limits
+ * are measured against. Read from a ref callback, which runs before the first
+ * paint, so a remembered width does not jump in a frame after the panel opened.
+ */
+function useAreaWidth(): [number, (node: HTMLElement | null) => (() => void) | undefined] {
+  const [width, setWidth] = React.useState(0);
+  const measure = React.useCallback((node: HTMLElement | null) => {
+    const area = node?.parentElement;
+    if (area === null || area === undefined) return undefined;
+    setWidth(area.clientWidth);
+    const observer = new ResizeObserver(() => setWidth(area.clientWidth));
+    observer.observe(area);
+    return () => observer.disconnect();
+  }, []);
+  return [width, measure];
+}
+
+/**
+ * Memoised: a drag re-renders the frame on every pointer move, and the page
+ * inside it, editor included, has no reason to follow.
+ */
+const RowPeekContent = React.memo(function RowPeekContent({
+  peek,
+  rowId,
+  href,
+}: {
+  peek: RowPeek;
+  rowId: string;
+  href: string;
+}) {
   const t = useTranslations('database.peek');
   const tView = useTranslations('document.view');
   const session = useSessionQuery();
@@ -152,4 +243,4 @@ function RowPeekContent({ peek, rowId, href }: { peek: RowPeek; rowId: string; h
       />
     </>
   );
-}
+});

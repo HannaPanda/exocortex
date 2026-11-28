@@ -273,6 +273,8 @@
     "label": "Row in side peek",
     "close": "Close side peek",
     "closeHint": "Close side peek (Esc)",
+    "resize": "Sidebar width",
+    "resizeHint": "Drag to resize, double-click to reset",
     "openAsPage": "Open as full page",
     "loading": "Loading row",
     "unavailableTitle": "Row unavailable",

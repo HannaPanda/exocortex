@@ -273,6 +273,8 @@
     "label": "Fila en la barra lateral",
     "close": "Cerrar barra lateral",
     "closeHint": "Cerrar barra lateral (Esc)",
+    "resize": "Ancho de la barra lateral",
+    "resizeHint": "Arrastra para cambiar el ancho, haz doble clic para restablecerlo",
     "openAsPage": "Abrir como página completa",
     "loading": "Cargando fila",
     "unavailableTitle": "Fila no disponible",

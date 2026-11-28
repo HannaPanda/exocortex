@@ -403,7 +403,7 @@
       "p1": "Un clic sulla freccia accanto al nome apre la riga nella barra laterale; nel menu della maniglia l’opzione si chiama «Apri». In una bacheca, nella galleria e nel calendario, basta fare clic sulla scheda o sulla voce per aprire la stessa barra. Una nuova riga o scheda si apre subito lì, con il nome evidenziato per poterlo sovrascrivere all’istante.",
       "p2": "Ciò che scrivi nella barra viene salvato da eXocortex come in qualsiasi pagina. Se fai clic su un’altra riga, la barra passa a quest’ultima senza perdere nulla. Con Esc o con il pulsante in alto a sinistra puoi chiuderla e tornare alla riga da cui eri partito.",
       "p3": "La riga aperta è inclusa nell’indirizzo. Puoi condividere il link: dopo aver ricaricato la pagina la barra sarà di nuovo aperta, e il tasto Indietro del browser la chiuderà. «Apri a tutta pagina» mostra la riga senza il database; tenendo premuto Ctrl e facendo clic si apre in una nuova scheda.",
-      "p4": "Sullo smartphone la barra occupa l’intero schermo. L’area contestuale a destra e la chat dell’IA rimangono al loro posto e continuano a fare riferimento al database."
+      "p4": "Trascina il bordo sinistro della barra per regolarne la larghezza, oppure seleziona il bordo con il tasto Tab e usa i tasti freccia. Facendo doppio clic sul bordo viene ripristinata la larghezza predefinita, e questo browser ricorderà la larghezza scelta. Sul telefono la barra occupa l’intero schermo. L’area contestuale a destra e la chat dell’IA rimangono al loro posto e continuano a fare riferimento al database."
     },
     "where": "In un database, fai clic sulla freccia accanto al nome di una riga, oppure su una scheda nella bacheca, nella galleria o nel calendario."
   },
